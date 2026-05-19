@@ -795,7 +795,7 @@ export default function WeeklyAgendaScreen() {
                           return (
                             <div
                               key={task.id}
-                              className={`${pc.bg} ${pc.border} no-print-hover`}
+                              className={`${pc.bg} ${pc.border} group-hover/slot:opacity-70 hover:!opacity-100 no-print-hover transition-opacity`}
                               style={{
                                 position: 'absolute',
                                 top: 0,
@@ -883,8 +883,17 @@ export default function WeeklyAgendaScreen() {
                           );
                         })}
 
-                        {/* + button on hover (always show, even on occupied cells) */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/slot:opacity-60 transition-opacity pointer-events-none no-print">
+                        {/* + button on hover to create new activity (only shows when no task card is hovered) */}
+                        <div
+                          className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/slot:opacity-60 transition-opacity no-print z-[5]"
+                          onClick={e => {
+                            if (!drag?.active) {
+                              e.stopPropagation();
+                              handleCellClick(dk, hour);
+                            }
+                          }}
+                          style={{ cursor: 'pointer' }}
+                        >
                           <Plus className="w-4 h-4 text-[var(--muted-foreground)]" />
                         </div>
                       </div>
