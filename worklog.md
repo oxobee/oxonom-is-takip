@@ -1295,3 +1295,43 @@ Stage Summary:
 - Agenda semanal ahora se ve correctamente en modo claro Y oscuro
 - Commit: 6038af4
 - Deploy automático a Vercel en curso
+
+---
+Task ID: 15
+Agent: Super Z (Main) + full-stack-developer subagent
+Task: Agenda Semanal Pro — multi-hora, vinculación tareas, participantes, badge Agenda
+
+Protocolo leido: LEE_PRIMERO.txt + INSTRUCTIVO_BITACORA.txt
+
+Work Log:
+- Diseñada arquitectura completa basada en respuestas del usuario:
+  1. Drag-to-select para horas consecutivas + "Agregar hora" para no consecutivas
+  2. Crear nueva tarea O vincular tarea existente desde la agenda
+  3. Responsable + múltiples participantes del equipo
+  4. Bloque alto estilo Google Calendar (se estira por horas)
+  5. Persistencia como tareas reales en Firestore con campo agendaMeta
+  6. Badge "Agenda" en TasksScreen
+- Actualizados tipos en types.ts e interfaces.ts: agregado campo agendaMeta a TaskData
+  { dayKey: string, hourSlots: number[], participantIds: string[], isAgendaItem: boolean }
+- WeeklyAgendaScreen.tsx reescrito completamente (~1221 líneas):
+  * Drag selection: mousedown/mousemove/mouseup para seleccionar horas consecutivas
+  * Mobile: tap simple + botón "Agregar hora" en formulario
+  * Modal con dos tabs: "Nueva tarea" y "Vincular existente"
+  * Multi-select de participantes con chips
+  * Bloques altos con position:absolute que ocupan múltiples franjas
+  * Subtareas visibles dentro del bloque de actividad
+  * Delete inteligente: isAgendaItem=true borra tarea, false solo quita meta
+  * Firestore: escribe directamente con getFirebase().firestore()
+  * 100% compatible con dark mode (variables CSS)
+- TasksScreen.tsx: badge "Agenda" con CalendarDays icon + rango horario
+  en vista lista y kanban
+- Build verificado: ✓ Compiled successfully in 7.8s, 0 errores
+- Commit: 274e36b, push a main completado
+
+Stage Summary:
+- Archivos modificados: 4 (WeeklyAgendaScreen.tsx reescrito, types.ts, interfaces.ts, TasksScreen.tsx)
+- +1134 líneas, -197 líneas
+- Agenda semanal ahora es un módulo completo de planificación conectado al sistema de tareas
+- Tareas creadas desde agenda aparecen en módulo de Tareas con badge "Agenda"
+- Tareas existentes se pueden vincular a la agenda
+- Deploy automático a Vercel en curso

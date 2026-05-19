@@ -44,8 +44,15 @@ export default function Sidebar({
     return count > 0 ? count : undefined;
   }, [tasks]);
 
+  const agendaTodayBadge = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const count = tasks.filter(t => t.data.agendaMeta?.dayKey === today).length;
+    return count > 0 ? count : undefined;
+  }, [tasks]);
+
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutGrid size={18} className="stroke-current" /> },
+    { id: 'weeklyAgenda', label: 'Agenda Semanal', icon: <CalendarDays size={18} className="stroke-current" />, badge: agendaTodayBadge },
     { id: 'profile', label: 'Mi Perfil', icon: <User size={18} className="stroke-current" /> },
     { id: 'projects', label: 'Proyectos', icon: <Folder size={18} className="stroke-current" />, badge: projects.length },
     { id: 'tasks', label: 'Tareas', icon: <ClipboardCheck size={18} className="stroke-current" />, badge: pendingCount > 0 ? pendingCount : undefined },
@@ -67,7 +74,6 @@ export default function Sidebar({
     { id: 'team', label: 'Equipo', icon: <Users size={18} className="stroke-current" />, badge: teamUsers.length },
     { id: 'invoices', label: 'Facturas', icon: <Receipt size={18} className="stroke-current" /> },
     { id: 'calendar', label: 'Calendario', icon: <Calendar size={18} className="stroke-current" />, badge: calendarBadge },
-    { id: 'weeklyAgenda', label: 'Agenda Semanal', icon: <CalendarDays size={18} className="stroke-current" /> },
     { id: 'portal', label: 'Portal cliente', icon: <Globe size={18} className="stroke-current" /> },
     { id: 'reports', label: 'Reportes', icon: <BarChart3 size={18} className="stroke-current" /> },
     { divider: true },
@@ -76,8 +82,8 @@ export default function Sidebar({
     ...(isEmailAdmin ? [{ divider: true }, { id: 'superAdmin', label: 'Super Admin', icon: <Shield size={18} className="stroke-red-400" />, isSuperAdmin: true }] : []),
   ];
 
-  const principalItems = navItems.filter((n: any) => !n.divider).slice(0, 5);
-  const gestionItems = navItems.filter((n: any) => !n.divider).slice(5);
+  const principalItems = navItems.filter((n: any) => !n.divider).slice(0, 6);
+  const gestionItems = navItems.filter((n: any) => !n.divider).slice(6);
 
   const handleNavClick = (navId: string) => {
     navigateTo(navId, null);
