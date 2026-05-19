@@ -225,8 +225,12 @@ export default function WeeklyAgendaScreen() {
         return bDur - aDur;
       });
 
-      // Assign columns greedily
-      const columns: { endHour: number; taskIds: string[] }[] = [];
+      // Assign columns greedily — track which column each task is in
+      interface ColSlot { endHour: number; task: Task }
+      const columns: ColSlot[] = [];
+
+      // First pass: assign column indices
+      const taskColumns: Record<string, number> = {};
       sorted.forEach(task => {
         const meta = task.data.agendaMeta!;
         const startH = Math.min(...meta.hourSlots);
@@ -236,23 +240,45 @@ export default function WeeklyAgendaScreen() {
         let placed = false;
         for (let c = 0; c < columns.length; c++) {
           if (columns[c].endHour <= startH) {
-            // No overlap — place in this column
-            columns[c] = { endHour: endH, taskIds: [...columns[c].taskIds, task.id] };
+            // No overlap — reuse this column
+            columns[c] = { endHour: endH, task };
+            taskColumns[task.id] = c;
             placed = true;
             break;
           }
         }
         if (!placed) {
           // Need a new column
-          columns.push({ endHour: endH, taskIds: [task.id] });
+          taskColumns[task.id] = columns.length;
+          columns.push({ endHour: endH, task });
         }
       });
 
-      const totalCols = columns.length;
-      columns.forEach((col, colIdx) => {
-        col.taskIds.forEach(taskId => {
-          layout[taskId] = { col: colIdx, totalCols };
+      // Second pass: for each task, compute how many tasks it actually overlaps with
+      // Two tasks overlap if their hour slots intersect
+      sorted.forEach(task => {
+        const meta = task.data.agendaMeta!;
+        const taskStart = Math.min(...meta.hourSlots);
+        const taskEnd = Math.max(...meta.hourSlots) + 1;
+        const myCol = taskColumns[task.id];
+
+        // Find the max concurrent columns at any hour this task spans
+        // by checking how many other tasks overlap at each hour
+        const maxConcurrent = [myCol]; // always include own column
+        sorted.forEach(other => {
+          if (other.id === task.id) return;
+          const oMeta = other.data.agendaMeta!;
+          const oStart = Math.min(...oMeta.hourSlots);
+          const oEnd = Math.max(...oMeta.hourSlots) + 1;
+          // Check if they overlap
+          if (oStart < taskEnd && oStart >= taskStart || oEnd > taskStart && oEnd <= taskEnd || oStart <= taskStart && oEnd >= taskEnd) {
+            maxConcurrent.push(taskColumns[other.id]);
+          }
         });
+
+        // totalCols = number of unique columns that overlap with this task
+        const uniqueCols = new Set(maxConcurrent);
+        layout[task.id] = { col: myCol, totalCols: uniqueCols.size };
       });
     });
 
