@@ -62,6 +62,7 @@ export default function TopBar() {
     companies: 'Empresas', projectDetail: currentProject?.data.name || 'Proyecto',
     rfis: 'RFIs', submittals: 'Submittals', punchList: 'Punch List',
     timeTracking: 'Time Tracking', invoices: 'Facturación', reports: 'Reportes',
+    weeklyAgenda: 'Agenda Semanal',
   };
 
   return (

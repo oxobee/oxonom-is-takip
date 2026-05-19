@@ -76,6 +76,7 @@ const RFIsScreen = dynamic(() => import('@/screens/RFIsScreen'), { ssr: false })
 const SubmittalsScreen = dynamic(() => import('@/screens/SubmittalsScreen'), { ssr: false });
 const PunchListScreen = dynamic(() => import('@/screens/PunchListScreen'), { ssr: false });
 const KanbanBoardScreen = dynamic(() => import('@/screens/KanbanBoardScreen'), { ssr: false });
+const WeeklyAgendaScreen = dynamic(() => import('@/screens/WeeklyAgendaScreen'), { ssr: false });
 
 function AppContent() {
   const {
@@ -263,6 +264,7 @@ function AppContent() {
               {screen === 'team' && <TeamScreen />}
               {screen === 'companies' && <CompaniesScreen />}
               {screen === 'calendar' && <CalendarScreen />}
+              {screen === 'weeklyAgenda' && <WeeklyAgendaScreen />}
               {screen === 'portal' && <PortalScreen />}
               {screen === 'gallery' && <GalleryScreen />}
               {screen === 'inventory' && <InventoryScreen />}

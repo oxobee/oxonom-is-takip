@@ -4,7 +4,7 @@ import { getInitials, avatarColor } from '@/lib/helpers';
 import { ROLE_ICONS } from '@/lib/types';
 import { useUIStore } from '@/stores/ui-store';
 import type { FirebaseUser } from '@/lib/firebase-service';
-import { LayoutGrid, User, Folder, ClipboardCheck, MessageCircle, DollarSign, FileText, Camera, Image, Package, Settings, Store, Users, Calendar, Globe, Building2, Download, ChevronLeft, Home, Timer, Receipt, BarChart3, Shield, CircleHelp, ClipboardList, ListChecks } from 'lucide-react';
+import { LayoutGrid, User, Folder, ClipboardCheck, MessageCircle, DollarSign, FileText, Camera, Image, Package, Settings, Store, Users, Calendar, Globe, Building2, Download, ChevronLeft, Home, Timer, Receipt, BarChart3, Shield, CircleHelp, ClipboardList, ListChecks, CalendarDays } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 
 interface SidebarProps {
@@ -67,6 +67,7 @@ export default function Sidebar({
     { id: 'team', label: 'Equipo', icon: <Users size={18} className="stroke-current" />, badge: teamUsers.length },
     { id: 'invoices', label: 'Facturas', icon: <Receipt size={18} className="stroke-current" /> },
     { id: 'calendar', label: 'Calendario', icon: <Calendar size={18} className="stroke-current" />, badge: calendarBadge },
+    { id: 'weeklyAgenda', label: 'Agenda Semanal', icon: <CalendarDays size={18} className="stroke-current" /> },
     { id: 'portal', label: 'Portal cliente', icon: <Globe size={18} className="stroke-current" /> },
     { id: 'reports', label: 'Reportes', icon: <BarChart3 size={18} className="stroke-current" /> },
     { divider: true },

@@ -805,3 +805,16 @@ html {
     transform: none !important;
   }
 }
+
+/* ─── Weekly Agenda — Print & Responsive ─── */
+@media print {
+  .no-print { display: none !important; }
+  .agenda-grid { font-size: 9px; }
+  .agenda-grid .task-card { border-left-width: 2px !important; }
+  body { background: #fff !important; }
+}
+
+@media (max-width: 768px) {
+  .agenda-grid-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .agenda-grid { min-width: 900px; }
+}
