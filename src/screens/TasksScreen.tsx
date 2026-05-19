@@ -6,7 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import { useTimeTrackingContext } from '@/hooks/useTimeTracking';
 import { SkeletonTasks } from '@/components/ui/SkeletonLoaders';
 import { fmtDate, getInitials, prioColor, taskStColor, avatarColor } from '@/lib/helpers';
-import { LayoutList, KanbanSquare, Plus, GripVertical, X, Search, Filter, Download, Calendar, CalendarDays, User, Pencil, Trash2, ChevronDown, Layers, FileText, BarChart3, CheckCircle2, AlertTriangle, Clock, TrendingUp, Users, Tag, Target } from 'lucide-react';
+import { LayoutList, KanbanSquare, Plus, GripVertical, X, Search, Filter, Download, Calendar, CalendarDays, User, Pencil, Trash2, ChevronDown, Layers, FileText, BarChart3, CheckCircle2, AlertTriangle, Clock, TrendingUp, Users, Tag, Target, Eye, EyeOff, Archive, ChevronRight } from 'lucide-react';
 import { exportTasksExcel } from '@/lib/export-excel';
 import { exportTasksPDF } from '@/lib/export-pdf';
 import { FloatingActionButton } from '@/components/ui/FloatingActionButton';
@@ -123,6 +123,8 @@ export default function TasksScreen() {
   const [filterPhase, setFilterPhase] = useState('');
   const [filterDateFrom, setFilterDateFrom] = useState('');
   const [filterDateTo, setFilterDateTo] = useState('');
+  const [showCompleted, setShowCompleted] = useState(false);
+  const [kanbanCompletedCollapsed, setKanbanCompletedCollapsed] = useState(false);
 
   // Pick up incoming status/assignee filter set by navigation (e.g. from ProfileScreen)
   React.useEffect(() => {
@@ -210,6 +212,27 @@ export default function TasksScreen() {
     if (filterDateTo) result = result.filter((t: Task) => t.data.dueDate && t.data.dueDate <= filterDateTo);
     return result;
   }, [tasks, taskFilterProject, filterStatus, searchQuery, filterPriority, filterAssignee, filterPhase, filterDateFrom, filterDateTo]);
+
+  // Split filtered tasks into active and completed
+  const activeTasks = useMemo(() => filteredTasks.filter((t: Task) => t.data.status !== 'Completado'), [filteredTasks]);
+  const completedTasks = useMemo(() => {
+    const ct = filteredTasks.filter((t: Task) => t.data.status === 'Completado');
+    // Sort by completedAt descending (most recent first)
+    return ct.sort((a: Task, b: Task) => {
+      const da = a.data.completedAt ? toDate(a.data.completedAt).getTime() : 0;
+      const db = b.data.completedAt ? toDate(b.data.completedAt).getTime() : 0;
+      return db - da;
+    });
+  }, [filteredTasks]);
+
+  // Count completed older than 30 days
+  const completedOldCount = useMemo(() => {
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    return completedTasks.filter((t: Task) => {
+      const ca = t.data.completedAt ? toDate(t.data.completedAt).getTime() : 0;
+      return ca > 0 && ca < thirtyDaysAgo;
+    }).length;
+  }, [completedTasks]);
 
   // Get unique assignees for filter
   const assignees = useMemo(() => {
@@ -369,7 +392,7 @@ export default function TasksScreen() {
             <CheckCircle2 size={20} className="text-[var(--af-accent)]" />
             Tareas
           </h2>
-          <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{tasks.length} tareas registradas{filteredTasks.length !== tasks.length ? ` · ${filteredTasks.length} filtradas` : ''}</p>
+          <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{activeTasks.length} activas{completedTasks.length > 0 ? ` · ${completedTasks.length} completadas` : ''}{filteredTasks.length !== tasks.length ? ` · ${filteredTasks.length} filtradas` : ''}</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {/* Export buttons */}
@@ -391,6 +414,19 @@ export default function TasksScreen() {
           >
             <Download size={14} /> CSV
           </button>
+          {/* Historial button - quick access to completed tasks */}
+          {completedTasks.length > 0 && (
+            <button
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-medium cursor-pointer border transition-colors ${showCompleted ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] hover:bg-[var(--af-bg3)] hover:text-[var(--foreground)]'}`}
+              onClick={() => setShowCompleted(!showCompleted)}
+              title={showCompleted ? 'Ocultar completadas' : 'Ver historial de completadas'}
+            >
+              {showCompleted ? <EyeOff size={14} /> : <Archive size={14} />}
+              <span className="hidden sm:inline">Historial</span>
+              <span className="sm:hidden">{completedTasks.length}</span>
+              {!showCompleted && <span className="text-[10px] bg-emerald-500/15 text-emerald-400 px-1.5 py-0.5 rounded-full">{completedTasks.length}</span>}
+            </button>
+          )}
           {/* View toggle */}
           <div className="flex gap-1 bg-[var(--af-bg3)] rounded-lg p-1">
             <button
@@ -663,124 +699,242 @@ export default function TasksScreen() {
             </div>
           </div>
         ) : (
-          ['Alta', 'Media', 'Baja'].map(prio => {
-            const group = filteredTasks.filter((t: Task) => t.data.priority === prio);
-            if (!group.length) return null;
-            const prioColorBg = prio === 'Alta' ? 'bg-red-500/10 text-red-400' : prio === 'Media' ? 'bg-amber-500/10 text-amber-400' : 'bg-emerald-500/10 text-emerald-400';
-            const prioDot = prio === 'Alta' ? 'bg-red-400' : prio === 'Media' ? 'bg-amber-400' : 'bg-emerald-400';
-            return (
-              <div key={prio} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 sm:p-4 mb-4">
-                <div className={`inline-flex items-center gap-1.5 text-xs font-semibold mb-3 px-2.5 py-1 rounded-lg ${prioColorBg}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${prioDot}`} />
-                  Prioridad {prio}
-                  <span className="text-[var(--af-text3)] ml-1">({group.length})</span>
+          <>
+            {/* === ACTIVE TASKS (non-completed) === */}
+            {activeTasks.length === 0 && completedTasks.length > 0 && (
+              <div className="text-center py-8">
+                <div className="inline-flex items-center gap-2 text-[var(--muted-foreground)] text-sm">
+                  <CheckCircle2 size={16} className="text-emerald-400" />
+                  Todas las tareas estan completadas
                 </div>
-                {group.map((t: Task) => {
-                  const proj = projects.find((p: Project) => p.id === t.data.projectId);
-                  const isOverdue = t.data.dueDate && new Date(t.data.dueDate) < new Date() && t.data.status !== 'Completado';
-                  const tTags: string[] = Array.isArray(t.data.tags) ? t.data.tags : [];
-                  return (
-                    <div key={t.id} className="flex items-start gap-3 py-2.5 border-b border-[var(--border)] last:border-0 group">
-                      <div
-                        className={`w-4 h-4 rounded border flex-shrink-0 mt-0.5 cursor-pointer flex items-center justify-center transition-all ${t.data.status === 'Completado' ? 'bg-emerald-500 border-emerald-500' : 'border-[var(--input)] hover:border-[var(--af-accent)]'}`}
-                        onClick={() => toggleTask(t.id, t.data.status)}
-                      >
-                        {t.data.status === 'Completado' && <span className="text-white text-[10px] font-bold">✓</span>}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className={`text-[13.5px] font-medium ${t.data.status === 'Completado' ? 'line-through text-[var(--af-text3)]' : ''}`}>{t.data.title}</div>
-                        {(() => {
-                          const sts = Array.isArray(t.data.subtasks) ? t.data.subtasks as { text: string; done: boolean }[] : [];
-                          if (sts.length === 0) return null;
-                          const done = sts.filter(s => s.done).length;
-                          const pct = Math.round((done / sts.length) * 100);
-                          return (
-                            <div className="flex items-center gap-2 mt-1">
-                              <div className="flex-1 h-1 bg-[var(--af-bg4)] rounded-full overflow-hidden">
-                                <div className={`h-full rounded-full transition-all ${pct === 100 ? 'bg-emerald-500' : 'bg-[var(--af-accent)]'}`} style={{ width: pct + '%' }} />
-                              </div>
-                              <span className="text-[9px] text-[var(--af-text3)] flex-shrink-0">{done}/{sts.length} subtareas</span>
-                            </div>
-                          );
-                        })()}
-                        <div className="text-[11px] text-[var(--af-text3)] mt-1 flex items-center gap-2 flex-wrap">
-                          {proj && <span>{proj.data.name}</span>}
-                          {t.data.phaseId && (() => {
-                            const phaseName = getPhaseName(t.data.phaseId, t.data.projectId);
-                            if (!phaseName) return null;
+              </div>
+            )}
+            {['Alta', 'Media', 'Baja'].map(prio => {
+              const group = activeTasks.filter((t: Task) => t.data.priority === prio);
+              if (!group.length) return null;
+              const prioColorBg = prio === 'Alta' ? 'bg-red-500/10 text-red-400' : prio === 'Media' ? 'bg-amber-500/10 text-amber-400' : 'bg-emerald-500/10 text-emerald-400';
+              const prioDot = prio === 'Alta' ? 'bg-red-400' : prio === 'Media' ? 'bg-amber-400' : 'bg-emerald-400';
+              return (
+                <div key={prio} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 sm:p-4 mb-4">
+                  <div className={`inline-flex items-center gap-1.5 text-xs font-semibold mb-3 px-2.5 py-1 rounded-lg ${prioColorBg}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${prioDot}`} />
+                    Prioridad {prio}
+                    <span className="text-[var(--af-text3)] ml-1">({group.length})</span>
+                  </div>
+                  {group.map((t: Task) => {
+                    const proj = projects.find((p: Project) => p.id === t.data.projectId);
+                    const isOverdue = t.data.dueDate && new Date(t.data.dueDate) < new Date() && t.data.status !== 'Completado';
+                    const tTags: string[] = Array.isArray(t.data.tags) ? t.data.tags : [];
+                    return (
+                      <div key={t.id} className="flex items-start gap-3 py-2.5 border-b border-[var(--border)] last:border-0 group">
+                        <div
+                          className={`w-4 h-4 rounded border flex-shrink-0 mt-0.5 cursor-pointer flex items-center justify-center transition-all border-[var(--input)] hover:border-[var(--af-accent)]`}
+                          onClick={() => toggleTask(t.id, t.data.status)}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[13.5px] font-medium">{t.data.title}</div>
+                          {(() => {
+                            const sts = Array.isArray(t.data.subtasks) ? t.data.subtasks as { text: string; done: boolean }[] : [];
+                            if (sts.length === 0) return null;
+                            const done = sts.filter(s => s.done).length;
+                            const pct = Math.round((done / sts.length) * 100);
                             return (
-                              <span className="inline-flex items-center gap-0.5 text-violet-400">
-                                <Layers size={9} className="flex-shrink-0" />
-                                {phaseName}
-                              </span>
+                              <div className="flex items-center gap-2 mt-1">
+                                <div className="flex-1 h-1 bg-[var(--af-bg4)] rounded-full overflow-hidden">
+                                  <div className={`h-full rounded-full transition-all ${pct === 100 ? 'bg-emerald-500' : 'bg-[var(--af-accent)]'}`} style={{ width: pct + '%' }} />
+                                </div>
+                                <span className="text-[9px] text-[var(--af-text3)] flex-shrink-0">{done}/{sts.length} subtareas</span>
+                              </div>
                             );
                           })()}
-                          {t.data.dueDate && (
-                            <span className={isOverdue ? 'text-red-400' : ''}>
-                              <Calendar size={10} className="inline mr-0.5" />
-                              {fmtDate(t.data.dueDate)}
-                            </span>
-                          )}
-                          {(t.data.estimatedHours ?? 0) > 0 && (
-                            <span className="inline-flex items-center gap-0.5 text-blue-400">
-                              <Clock size={9} className="flex-shrink-0" />
-                              {t.data.estimatedHours}h
-                            </span>
-                          )}
-                          {tTags.length > 0 && (
-                            <span className="inline-flex items-center gap-0.5 text-violet-400">
-                              <Tag size={9} className="flex-shrink-0" />
-                              {tTags.slice(0, 2).join(', ')}{tTags.length > 2 ? ` +${tTags.length - 2}` : ''}
-                            </span>
-                          )}
-                          {t.data.agendaMeta && (
-                            <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] font-medium">
-                              <CalendarDays className="w-2.5 h-2.5" />
-                              Agenda
-                              {t.data.agendaMeta.hourSlots?.length > 0 && (
-                                <span className="opacity-70">{formatHourSlots(t.data.agendaMeta.hourSlots)}</span>
-                              )}
-                            </span>
-                          )}
-                          <AssigneeAvatars task={t} getUserName={getUserName} />
+                          <div className="text-[11px] text-[var(--af-text3)] mt-1 flex items-center gap-2 flex-wrap">
+                            {proj && <span>{proj.data.name}</span>}
+                            {t.data.phaseId && (() => {
+                              const phaseName = getPhaseName(t.data.phaseId, t.data.projectId);
+                              if (!phaseName) return null;
+                              return (
+                                <span className="inline-flex items-center gap-0.5 text-violet-400">
+                                  <Layers size={9} className="flex-shrink-0" />
+                                  {phaseName}
+                                </span>
+                              );
+                            })()}
+                            {t.data.dueDate && (
+                              <span className={isOverdue ? 'text-red-400' : ''}>
+                                <Calendar size={10} className="inline mr-0.5" />
+                                {fmtDate(t.data.dueDate)}
+                              </span>
+                            )}
+                            {(t.data.estimatedHours ?? 0) > 0 && (
+                              <span className="inline-flex items-center gap-0.5 text-blue-400">
+                                <Clock size={9} className="flex-shrink-0" />
+                                {t.data.estimatedHours}h
+                              </span>
+                            )}
+                            {tTags.length > 0 && (
+                              <span className="inline-flex items-center gap-0.5 text-violet-400">
+                                <Tag size={9} className="flex-shrink-0" />
+                                {tTags.slice(0, 2).join(', ')}{tTags.length > 2 ? ` +${tTags.length - 2}` : ''}
+                              </span>
+                            )}
+                            {t.data.agendaMeta && (
+                              <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] font-medium">
+                                <CalendarDays className="w-2.5 h-2.5" />
+                                Agenda
+                                {t.data.agendaMeta.hourSlots?.length > 0 && (
+                                  <span className="opacity-70">{formatHourSlots(t.data.agendaMeta.hourSlots)}</span>
+                                )}
+                              </span>
+                            )}
+                            <AssigneeAvatars task={t} getUserName={getUserName} />
+                          </div>
+                        </div>
+                        {/* Status badge - desktop only */}
+                        <span className={`hidden md:flex text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${taskStColor(t.data.status)}`}>{t.data.status}</span>
+                        {/* Desktop hover actions */}
+                        <div className="hidden md:flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button className="text-xs px-2.5 py-1.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] cursor-pointer hover:bg-[var(--af-accent)]/20" onClick={() => openEditTask(t)}>Editar</button>
+                          <button className="text-xs px-2 py-1.5 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}>
+                            <X size={12} />
+                          </button>
+                        </div>
+                        {/* Mobile overflow menu - always visible on mobile */}
+                        <div className="md:hidden flex-shrink-0">
+                          <OverflowMenu
+                            actions={[
+                              {
+                                label: 'Editar tarea',
+                                icon: <Pencil size={14} />,
+                                onClick: () => openEditTask(t),
+                              },
+                              {
+                                label: 'Eliminar tarea',
+                                icon: <Trash2 size={14} />,
+                                onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); },
+                                variant: 'danger',
+                                separator: true,
+                              },
+                            ]}
+                            side="left"
+                            align="end"
+                          />
                         </div>
                       </div>
-                      {/* Status badge - desktop only */}
-                      <span className={`hidden md:flex text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${taskStColor(t.data.status)}`}>{t.data.status}</span>
-                      {/* Desktop hover actions */}
-                      <div className="hidden md:flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="text-xs px-2.5 py-1.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] cursor-pointer hover:bg-[var(--af-accent)]/20" onClick={() => openEditTask(t)}>Editar</button>
-                        <button className="text-xs px-2 py-1.5 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}>
-                          <X size={12} />
-                        </button>
-                      </div>
-                      {/* Mobile overflow menu - always visible on mobile */}
-                      <div className="md:hidden flex-shrink-0">
-                        <OverflowMenu
-                          actions={[
-                            {
-                              label: 'Editar tarea',
-                              icon: <Pencil size={14} />,
-                              onClick: () => openEditTask(t),
-                            },
-                            {
-                              label: 'Eliminar tarea',
-                              icon: <Trash2 size={14} />,
-                              onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); },
-                              variant: 'danger',
-                              separator: true,
-                            },
-                          ]}
-                          side="left"
-                          align="end"
-                        />
-                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+
+            {/* === COMPLETED TASKS - Collapsible History Section === */}
+            {completedTasks.length > 0 && (
+              <div className="mt-2">
+                {/* Toggle header */}
+                <button
+                  className="w-full flex items-center gap-2 px-4 py-3 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:bg-[var(--af-bg3)] transition-colors cursor-pointer group/hist"
+                  onClick={() => setShowCompleted(!showCompleted)}
+                >
+                  <ChevronRight size={16} className={`text-[var(--af-text3)] transition-transform ${showCompleted ? 'rotate-90' : ''}`} />
+                  <CheckCircle2 size={16} className="text-emerald-400" />
+                  <span className="text-[13px] font-semibold flex-1 text-left">
+                    Tareas completadas
+                  </span>
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-medium">
+                    {completedTasks.length}
+                  </span>
+                  {completedOldCount > 0 && (
+                    <span className="text-[10px] text-[var(--af-text3)] hidden sm:inline">
+                      ({completedOldCount} hace mas de 30 dias)
+                    </span>
+                  )}
+                  <span className="text-[11px] text-[var(--af-text3)] group-hover/hist:text-[var(--foreground)] transition-colors">
+                    {showCompleted ? 'Ocultar' : 'Mostrar'}
+                  </span>
+                </button>
+
+                {/* Completed tasks list - collapsible */}
+                {showCompleted && (
+                  <div className="mt-2 bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 sm:p-4 animate-fadeIn">
+                    {/* Quick stats */}
+                    <div className="flex items-center gap-3 mb-3 px-1 text-[10px] text-[var(--af-text3)]">
+                      <span className="flex items-center gap-1"><Clock size={9} /> Recientes primero</span>
+                      {completedOldCount > 0 && (
+                        <span className="flex items-center gap-1 text-amber-400/70"><Archive size={9} /> {completedOldCount} archivadas (+30 dias)</span>
+                      )}
                     </div>
-                  );
-                })}
+                    {completedTasks.map((t: Task) => {
+                      const proj = projects.find((p: Project) => p.id === t.data.projectId);
+                      const completedDate = t.data.completedAt ? toDate(t.data.completedAt) : null;
+                      const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+                      const isOld = completedDate ? completedDate.getTime() < thirtyDaysAgo : false;
+                      const completedByName = t.data.updatedBy ? getUserName(t.data.updatedBy) : null;
+                      return (
+                        <div key={t.id} className={`flex items-start gap-3 py-2.5 border-b border-[var(--border)] last:border-0 group ${isOld ? 'opacity-50 hover:opacity-80 transition-opacity' : ''}`}>
+                          <div
+                            className="w-4 h-4 rounded bg-emerald-500 border-emerald-500 flex-shrink-0 mt-0.5 cursor-pointer flex items-center justify-center transition-all hover:bg-emerald-600"
+                            onClick={() => toggleTask(t.id, t.data.status)}
+                            title="Desmarcar como completada"
+                          >
+                            <span className="text-white text-[10px] font-bold">✓</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[13px] font-medium line-through text-[var(--af-text3)]">{t.data.title}</div>
+                            <div className="text-[10px] text-[var(--af-text3)] mt-1 flex items-center gap-2 flex-wrap">
+                              {proj && <span>{proj.data.name}</span>}
+                              {completedDate && (
+                                <span className="inline-flex items-center gap-0.5 text-emerald-400/70">
+                                  <CheckCircle2 size={8} className="flex-shrink-0" />
+                                  Completada {fmtDate(completedDate.toISOString().split('T')[0])}
+                                </span>
+                              )}
+                              {completedByName && (
+                                <span className="inline-flex items-center gap-0.5">
+                                  <User size={8} className="flex-shrink-0" />
+                                  {completedByName}
+                                </span>
+                              )}
+                              {isOld && (
+                                <span className="inline-flex items-center gap-0.5 text-amber-400/60">
+                                  <Archive size={8} className="flex-shrink-0" />
+                                  Archivada
+                                </span>
+                              )}
+                              {t.data.agendaMeta && (
+                                <span className="inline-flex items-center gap-1 text-[9px] px-1 py-0.5 rounded bg-[var(--af-accent)]/5 text-[var(--af-accent)]/60 font-medium">
+                                  <CalendarDays className="w-2 h-2" />
+                                  Agenda
+                                </span>
+                              )}
+                              <AssigneeAvatars task={t} getUserName={getUserName} />
+                            </div>
+                          </div>
+                          {/* Desktop hover actions */}
+                          <div className="hidden md:flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button className="text-xs px-2.5 py-1.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] cursor-pointer hover:bg-[var(--af-accent)]/20" onClick={() => openEditTask(t)}>Editar</button>
+                            <button className="text-xs px-2 py-1.5 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}>
+                              <X size={12} />
+                            </button>
+                          </div>
+                          {/* Mobile overflow */}
+                          <div className="md:hidden flex-shrink-0">
+                            <OverflowMenu
+                              actions={[
+                                { label: 'Reabrir tarea', icon: <Eye size={14} />, onClick: () => toggleTask(t.id, t.data.status) },
+                                { label: 'Editar tarea', icon: <Pencil size={14} />, onClick: () => openEditTask(t) },
+                                { label: 'Eliminar tarea', icon: <Trash2 size={14} />, onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }, variant: 'danger', separator: true },
+                              ]}
+                              side="left"
+                              align="end"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            );
-          })
+            )}
+          </>
         )
       ) : (
         /* KANBAN VIEW */
@@ -801,10 +955,14 @@ export default function TasksScreen() {
             {KANBAN_COLS.map(col => {
               const colTasks = filteredTasks.filter((t: Task) => t.data.status === col.status);
               const isDragOver = dragOverCol === col.status;
+              const isCompletedCol = col.status === 'Completado';
+              const isCollapsed = isCompletedCol && kanbanCompletedCollapsed;
               return (
                 <div
                   key={col.status}
-                  className={`flex-shrink-0 w-[270px] sm:w-[290px] rounded-xl transition-all ${
+                  className={`flex-shrink-0 rounded-xl transition-all ${
+                    isCollapsed ? 'w-[56px]' : 'w-[270px] sm:w-[290px]'
+                  } ${
                     isDragOver
                       ? `${col.bg} border-2 border-dashed ${col.border} ring-2 ring-[var(--af-accent)]/20 scale-[1.01]`
                       : 'bg-[var(--af-bg3)] border border-[var(--border)]'
@@ -817,27 +975,46 @@ export default function TasksScreen() {
                   {/* Colored top border */}
                   <div className={`h-[3px] w-full ${col.color} transition-all ${isDragOver ? 'h-[4px]' : ''}`} />
 
-                  <div className="p-3 flex flex-col flex-1">
+                  <div className={`p-3 flex flex-col flex-1 ${isCollapsed ? 'items-center' : ''}`}>
                     {/* Column Header */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className={`w-2.5 h-2.5 rounded-full ${col.dot}`} />
-                      <span className="text-[13px] font-semibold flex-1">{col.status}</span>
-                      <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
-                        col.status === 'Completado' ? 'bg-emerald-500/10 text-emerald-400' :
-                        col.status === 'En progreso' ? 'bg-blue-500/10 text-blue-400' :
-                        col.status === 'Revision' ? 'bg-amber-500/10 text-amber-400' :
-                        'bg-[var(--af-bg4)] text-[var(--muted-foreground)]'
-                      }`}>
-                        {colTasks.length}
-                      </span>
-                      <button
-                        className="w-6 h-6 rounded-md flex items-center justify-center text-[var(--af-text3)] hover:text-[var(--af-accent)] hover:bg-[var(--af-accent)]/10 cursor-pointer transition-all opacity-60 hover:opacity-100"
-                        onClick={() => handleNewTaskInColumn(col.status)}
-                        title={`Agregar tarea en ${col.status}`}
-                      >
-                        <Plus size={14} />
-                      </button>
-                    </div>
+                    {isCollapsed ? (
+                      /* Collapsed completed column - vertical label */
+                      <div className="flex flex-col items-center gap-2 py-3 cursor-pointer" onClick={() => setKanbanCompletedCollapsed(false)}>
+                        <span className={`w-2.5 h-2.5 rounded-full ${col.dot}`} />
+                        <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">{colTasks.length}</span>
+                        <span className="text-[10px] text-[var(--af-text3)] [writing-mode:vertical-lr] rotate-180">Completado</span>
+                        <Eye size={12} className="text-[var(--af-text3)]" />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className={`w-2.5 h-2.5 rounded-full ${col.dot}`} />
+                          <span className="text-[13px] font-semibold flex-1">{col.status}</span>
+                          <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
+                            col.status === 'Completado' ? 'bg-emerald-500/10 text-emerald-400' :
+                            col.status === 'En progreso' ? 'bg-blue-500/10 text-blue-400' :
+                            col.status === 'Revision' ? 'bg-amber-500/10 text-amber-400' :
+                            'bg-[var(--af-bg4)] text-[var(--muted-foreground)]'
+                          }`}>
+                            {colTasks.length}
+                          </span>
+                          {isCompletedCol && (
+                            <button
+                              className="w-6 h-6 rounded-md flex items-center justify-center text-[var(--af-text3)] hover:text-[var(--af-accent)] hover:bg-[var(--af-accent)]/10 cursor-pointer transition-all"
+                              onClick={() => setKanbanCompletedCollapsed(true)}
+                              title="Colapsar columna"
+                            >
+                              <EyeOff size={14} />
+                            </button>
+                          )}
+                          <button
+                            className="w-6 h-6 rounded-md flex items-center justify-center text-[var(--af-text3)] hover:text-[var(--af-accent)] hover:bg-[var(--af-accent)]/10 cursor-pointer transition-all opacity-60 hover:opacity-100"
+                            onClick={() => handleNewTaskInColumn(col.status)}
+                            title={`Agregar tarea en ${col.status}`}
+                          >
+                            <Plus size={14} />
+                          </button>
+                        </div>
 
                     {/* Task Cards */}
                     <div className="flex-1 space-y-2 overflow-y-auto pr-0.5" style={{ scrollbarWidth: 'thin' }}>
@@ -994,6 +1171,8 @@ export default function TasksScreen() {
                       );
                     })}
                     </div>
+                  </>
+                )}
                   </div>
                 </div>
               );

@@ -1335,3 +1335,42 @@ Stage Summary:
 - Tareas creadas desde agenda aparecen en módulo de Tareas con badge "Agenda"
 - Tareas existentes se pueden vincular a la agenda
 - Deploy automático a Vercel en curso
+
+---
+Task ID: 16
+Agent: Super Z (Main) + full-stack-developer subagent
+Task: Agenda Semanal como elemento central — integrada debajo del Dashboard
+
+Protocolo leido: LEE_PRIMERO.txt + INSTRUCTIVO_BITACORA.txt
+
+Work Log:
+- Explorado DashboardScreen (802 líneas), HomeContent (341 líneas), Sidebar (234 líneas), TopBar (219 líneas)
+- Diseñada estrategia de integración: agenda embebida debajo del dashboard + posición prominente en sidebar
+- Sidebar.tsx cambios:
+  * Agenda Semanal movida de posición #20 (Gestión) a posición #2 (Principal, después de Dashboard)
+  * Agregado badge con conteo de actividades del día de hoy (agendaTodayBadge)
+  * Eliminada entrada duplicada en sección Gestión
+  * principalItems expandido de 5 a 6 items
+- DashboardScreen.tsx cambios:
+  * Nueva ROW 6: sección Agenda Semanal completa debajo del contenido del dashboard
+  * Grid compacto con 7 columnas (Lun-Dom) y timeline 8am-5pm
+  * Bloques de actividad estilo Google Calendar (position:absolute, spanning hours)
+  * Columna 'hoy' resaltada con var(--primary) background
+  * Botón "Ver agenda completa" que navega a weeklyAgenda
+  * Celdas vacías clickeables → navegan a pantalla de agenda
+  * Header con ícono CalendarDays + rango de semana
+  * 100% dark mode compatible (CSS variables)
+  * Quick Actions: botón "Agenda" agregado antes de "+ Tarea"
+  * "Agenda de Hoy": enlace "Ver agenda completa →"
+- Build verificado: ✓ Compiled successfully in 7.2s, 0 errores
+- Commit: ac0cff7, push a main completado
+
+Stage Summary:
+- 3 archivos modificados: Sidebar.tsx, DashboardScreen.tsx (+270 líneas), worklog.md
+- Agenda Semanal ahora es un elemento central de la app:
+  1. Posición #2 en sidebar (grupo Principal)
+  2. Visible debajo del Dashboard (vista compacta)
+  3. Badge con actividades de hoy en sidebar
+  4. Accesos rápidos desde Quick Actions y Agenda de Hoy
+  5. Pantalla completa accesible desde sidebar
+- Deploy automático a Vercel en curso
