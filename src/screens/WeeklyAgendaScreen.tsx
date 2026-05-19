@@ -194,15 +194,69 @@ export default function WeeklyAgendaScreen() {
     [ctxTasks]
   );
 
-  /* Build a set of occupied slots: "dayKey:hour" => true */
-  const occupiedSlots = useMemo(() => {
-    const s = new Set<string>();
+  /* ─── Overlap layout algorithm ───
+     For each day, compute which "column" each task occupies when tasks overlap.
+     Tasks that don't overlap share the full width. Overlapping tasks split into columns.
+     Returns a map: taskId -> { col, totalCols } where col is 0-based column index
+     and totalCols is the total number of columns in that overlap group.
+  */
+  interface OverlapInfo { col: number; totalCols: number }
+  const overlapLayout = useMemo(() => {
+    const layout: Record<string, OverlapInfo> = {};
+
+    // Group tasks by dayKey
+    const tasksByDay: Record<string, Task[]> = {};
     agendaTasks.forEach(t => {
       const meta = t.data.agendaMeta;
-      if (!meta) return;
-      meta.hourSlots.forEach(h => s.add(`${meta.dayKey}:${h}`));
+      if (!meta || !meta.hourSlots.length) return;
+      if (!tasksByDay[meta.dayKey]) tasksByDay[meta.dayKey] = [];
+      tasksByDay[meta.dayKey].push(t);
     });
-    return s;
+
+    // For each day, compute columns using greedy interval scheduling
+    Object.entries(tasksByDay).forEach(([, dayTasks]) => {
+      // Sort by start hour, then by duration (longer first for stability)
+      const sorted = [...dayTasks].sort((a, b) => {
+        const aStart = Math.min(...a.data.agendaMeta!.hourSlots);
+        const bStart = Math.min(...b.data.agendaMeta!.hourSlots);
+        if (aStart !== bStart) return aStart - bStart;
+        const aDur = a.data.agendaMeta!.hourSlots.length;
+        const bDur = b.data.agendaMeta!.hourSlots.length;
+        return bDur - aDur;
+      });
+
+      // Assign columns greedily
+      const columns: { endHour: number; taskIds: string[] }[] = [];
+      sorted.forEach(task => {
+        const meta = task.data.agendaMeta!;
+        const startH = Math.min(...meta.hourSlots);
+        const endH = Math.max(...meta.hourSlots) + 1; // exclusive end
+
+        // Find first column where this task doesn't overlap
+        let placed = false;
+        for (let c = 0; c < columns.length; c++) {
+          if (columns[c].endHour <= startH) {
+            // No overlap — place in this column
+            columns[c] = { endHour: endH, taskIds: [...columns[c].taskIds, task.id] };
+            placed = true;
+            break;
+          }
+        }
+        if (!placed) {
+          // Need a new column
+          columns.push({ endHour: endH, taskIds: [task.id] });
+        }
+      });
+
+      const totalCols = columns.length;
+      columns.forEach((col, colIdx) => {
+        col.taskIds.forEach(taskId => {
+          layout[taskId] = { col: colIdx, totalCols };
+        });
+      });
+    });
+
+    return layout;
   }, [agendaTasks]);
 
   /* Group tasks by "dayKey:firstHour" for rendering tall blocks */
@@ -238,7 +292,7 @@ export default function WeeklyAgendaScreen() {
 
   /* ─── Drag selection ─── */
   const handleCellMouseDown = (dayKey: string, hour: number) => {
-    if (occupiedSlots.has(`${dayKey}:${hour}`)) return;
+    // Always allow drag to start — overlapping activities are supported
     setDrag({ dayKey, startHour: hour, currentHour: hour, active: true });
   };
 
@@ -252,17 +306,15 @@ export default function WeeklyAgendaScreen() {
     const minH = Math.min(drag.startHour, drag.currentHour);
     const maxH = Math.max(drag.startHour, drag.currentHour);
     const selectedHours = HOURS.filter(h => h >= minH && h <= maxH);
-    // Filter out already-occupied hours
-    const freeHours = selectedHours.filter(h => !occupiedSlots.has(`${drag.dayKey}:${h}`));
-    if (freeHours.length > 0) {
-      openCreateForm(drag.dayKey, freeHours);
+    // Allow all selected hours — overlapping activities are supported
+    if (selectedHours.length > 0) {
+      openCreateForm(drag.dayKey, selectedHours);
     }
     setDrag(null);
   };
 
   const handleCellClick = (dayKey: string, hour: number) => {
-    // Mobile: simple tap opens form with single hour
-    if (occupiedSlots.has(`${dayKey}:${hour}`)) return;
+    // Mobile: simple tap opens form with single hour — always allow
     openCreateForm(dayKey, [hour]);
   };
 
@@ -532,12 +584,10 @@ export default function WeeklyAgendaScreen() {
     const maxH = Math.max(drag.startHour, drag.currentHour);
     const s = new Set<string>();
     for (let h = minH; h <= maxH; h++) {
-      if (!occupiedSlots.has(`${drag.dayKey}:${h}`)) {
-        s.add(`${drag.dayKey}:${h}`);
-      }
+      s.add(`${drag.dayKey}:${h}`);
     }
     return s;
-  }, [drag, occupiedSlots]);
+  }, [drag]);
 
   /* ─── Linkable tasks (existing tasks without agendaMeta) ─── */
   const linkableTasks = useMemo(() => {
@@ -659,7 +709,6 @@ export default function WeeklyAgendaScreen() {
                   {weekDates.map((d, di) => {
                     const dk = dateKey(d);
                     const isToday = dk === todayKey;
-                    const isOccupied = occupiedSlots.has(`${dk}:${hour}`);
                     const isDragSelected = dragSelectedHours.has(`${dk}:${hour}`);
                     const isTaskStart = taskStartHoursByDay[dk]?.has(hour);
 
@@ -676,13 +725,11 @@ export default function WeeklyAgendaScreen() {
                           height: `${SLOT_H}px`,
                           background: isDragSelected
                             ? 'var(--accent)'
-                            : isOccupied
-                              ? 'var(--af-bg3)'
-                              : isToday
-                                ? 'var(--accent)'
-                                : 'var(--card)',
+                            : isToday
+                              ? 'var(--accent)'
+                              : 'var(--card)',
                           position: 'relative' as const,
-                          cursor: isOccupied ? 'default' : 'pointer',
+                          cursor: 'pointer',
                           overflow: isTaskStart ? 'visible' as const : 'hidden' as const,
                         }}
                         className="group/slot"
@@ -690,13 +737,13 @@ export default function WeeklyAgendaScreen() {
                         onMouseEnter={() => handleCellMouseEnter(dk, hour)}
                         onMouseUp={() => handleCellMouseUp()}
                         onClick={() => {
-                          // Only handle click if no drag happened (mobile support)
-                          if (!drag?.active && !isOccupied) {
+                          // Always allow click — overlapping activities supported
+                          if (!drag?.active) {
                             handleCellClick(dk, hour);
                           }
                         }}
                       >
-                        {/* Render tall activity blocks at their start hour */}
+                        {/* Render tall activity blocks at their start hour, with overlap columns */}
                         {tasksStarting.map(task => {
                           const meta = task.data.agendaMeta;
                           if (!meta) return null;
@@ -708,6 +755,17 @@ export default function WeeklyAgendaScreen() {
                           const doneSubtasks = (task.data.subtasks || []).filter(s => s.done).length;
                           const totalSubtasks = (task.data.subtasks || []).length;
 
+                          // Overlap layout: compute left/width based on column assignment
+                          const info = overlapLayout[task.id] || { col: 0, totalCols: 1 };
+                          const GAP = 2; // px between columns
+                          const cellPadding = 4; // total horizontal padding (2px each side)
+                          const availWidth = `calc((100% - ${cellPadding}px - ${(info.totalCols - 1) * GAP}px) / ${info.totalCols})`;
+                          const leftPos = `calc(2px + ${info.col} * (${availWidth} + ${GAP}px))`;
+
+                          // When overlapping, show less detail to save space
+                          const isNarrow = info.totalCols >= 3;
+                          const isMedium = info.totalCols === 2;
+
                           return (
                             <div
                               key={task.id}
@@ -715,14 +773,14 @@ export default function WeeklyAgendaScreen() {
                               style={{
                                 position: 'absolute',
                                 top: 0,
-                                left: 2,
-                                right: 2,
+                                left: leftPos,
+                                width: availWidth,
                                 height: `${blockHeight - 4}px`,
                                 borderLeftWidth: '3px',
                                 borderLeftStyle: 'solid',
                                 borderRadius: '6px',
-                                padding: '4px 6px',
-                                fontSize: '10px',
+                                padding: isNarrow ? '2px 3px' : '4px 6px',
+                                fontSize: isNarrow ? '8px' : '10px',
                                 lineHeight: 1.3,
                                 cursor: 'pointer',
                                 zIndex: 10,
@@ -738,44 +796,48 @@ export default function WeeklyAgendaScreen() {
                                 </span>
                               </div>
 
-                              {/* Time range */}
-                              <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
-                                <Clock className="w-2.5 h-2.5" />
-                                <span>{formatHourRange(meta.hourSlots)}</span>
-                              </div>
+                              {/* Time range — hide on very narrow columns */}
+                              {!isNarrow && (
+                                <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
+                                  <Clock className="w-2.5 h-2.5" />
+                                  <span>{formatHourRange(meta.hourSlots)}</span>
+                                </div>
+                              )}
 
-                              {/* Project */}
-                              {task.data.projectId && (
+                              {/* Project — hide on narrow/medium overlap */}
+                              {!isNarrow && !isMedium && task.data.projectId && (
                                 <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
                                   <FolderOpen className="w-2.5 h-2.5" />
                                   <span className="truncate">{projectMap[task.data.projectId] || '\u2014'}</span>
                                 </div>
                               )}
 
-                              {/* Responsable + participants */}
-                              <div className="flex items-center gap-1 mt-0.5" style={{ fontSize: '9px' }}>
-                                {STATUS_ICON[task.data.status]}
-                                <span className="truncate" style={{ color: 'var(--muted-foreground)' }}>
-                                  {userMap[task.data.assigneeId]?.name || ''}
-                                </span>
-                                {meta.participantIds.length > 0 && (
-                                  <span className="flex items-center gap-0.5 ml-1" style={{ color: 'var(--muted-foreground)' }}>
-                                    <Users className="w-2.5 h-2.5" />
-                                    {meta.participantIds.length}
+                              {/* Responsable + participants — hide on narrow */}
+                              {!isNarrow && (
+                                <div className="flex items-center gap-1 mt-0.5" style={{ fontSize: '9px' }}>
+                                  {STATUS_ICON[task.data.status]}
+                                  <span className="truncate" style={{ color: 'var(--muted-foreground)' }}>
+                                    {userMap[task.data.assigneeId]?.name || ''}
                                   </span>
-                                )}
-                              </div>
+                                  {!isMedium && meta.participantIds.length > 0 && (
+                                    <span className="flex items-center gap-0.5 ml-1" style={{ color: 'var(--muted-foreground)' }}>
+                                      <Users className="w-2.5 h-2.5" />
+                                      {meta.participantIds.length}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
 
-                              {/* Subtasks */}
-                              {totalSubtasks > 0 && (
+                              {/* Subtasks — hide on narrow/medium */}
+                              {!isNarrow && !isMedium && totalSubtasks > 0 && (
                                 <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
                                   <ListChecks className="w-2.5 h-2.5" />
                                   <span>{doneSubtasks}/{totalSubtasks}</span>
                                 </div>
                               )}
 
-                              {/* Agenda badge */}
-                              {meta.isAgendaItem && (
+                              {/* Agenda badge — hide on narrow */}
+                              {!isNarrow && meta.isAgendaItem && (
                                 <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[8px] font-semibold"
                                   style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}>
                                   Agenda
@@ -795,12 +857,10 @@ export default function WeeklyAgendaScreen() {
                           );
                         })}
 
-                        {/* + button on hover (empty cells only) */}
-                        {!isOccupied && tasksStarting.length === 0 && (
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/slot:opacity-60 transition-opacity pointer-events-none no-print">
-                            <Plus className="w-4 h-4 text-[var(--muted-foreground)]" />
-                          </div>
-                        )}
+                        {/* + button on hover (always show, even on occupied cells) */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/slot:opacity-60 transition-opacity pointer-events-none no-print">
+                          <Plus className="w-4 h-4 text-[var(--muted-foreground)]" />
+                        </div>
                       </div>
                     );
                   })}
