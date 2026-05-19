@@ -871,9 +871,9 @@ export default function WeeklyAgendaScreen() {
                                 </span>
                               )}
 
-                              {/* Delete on hover */}
+                              {/* Delete on hover — top-left of card to avoid + button */}
                               <button
-                                className="absolute top-1 right-1 w-5 h-5 rounded flex items-center justify-center opacity-0 group-hover/slot:opacity-100 transition-opacity"
+                                className="absolute top-1 left-1 w-5 h-5 rounded flex items-center justify-center opacity-0 hover:!opacity-100 transition-opacity z-[15]"
                                 style={{ background: 'rgba(239,68,68,0.8)', color: '#fff', fontSize: '8px' }}
                                 onMouseDown={e => e.stopPropagation()}
                                 onClick={e => { e.stopPropagation(); setConfirmDelete(task.id); }}
