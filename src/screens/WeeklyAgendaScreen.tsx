@@ -812,6 +812,7 @@ export default function WeeklyAgendaScreen() {
                                 zIndex: 10,
                                 overflow: 'hidden',
                               }}
+                              onMouseDown={e => e.stopPropagation()}
                               onClick={e => { e.stopPropagation(); openEditForm(task); }}
                             >
                               {/* Title + priority dot */}
@@ -874,6 +875,7 @@ export default function WeeklyAgendaScreen() {
                               <button
                                 className="absolute top-1 right-1 w-5 h-5 rounded flex items-center justify-center opacity-0 group-hover/slot:opacity-100 transition-opacity"
                                 style={{ background: 'rgba(239,68,68,0.8)', color: '#fff', fontSize: '8px' }}
+                                onMouseDown={e => e.stopPropagation()}
                                 onClick={e => { e.stopPropagation(); setConfirmDelete(task.id); }}
                                 aria-label="Eliminar actividad"
                               >
@@ -883,19 +885,19 @@ export default function WeeklyAgendaScreen() {
                           );
                         })}
 
-                        {/* + button on hover to create new activity (only shows when no task card is hovered) */}
-                        <div
-                          className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/slot:opacity-60 transition-opacity no-print z-[5]"
+                        {/* + button on hover to create new activity — always on top of activity cards */}
+                        <button
+                          className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover/slot:opacity-80 hover:!opacity-100 transition-opacity no-print z-[15]"
+                          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', fontSize: '10px' }}
+                          onMouseDown={e => e.stopPropagation()}
                           onClick={e => {
-                            if (!drag?.active) {
-                              e.stopPropagation();
-                              handleCellClick(dk, hour);
-                            }
+                            e.stopPropagation();
+                            handleCellClick(dk, hour);
                           }}
-                          style={{ cursor: 'pointer' }}
+                          aria-label="Crear actividad"
                         >
-                          <Plus className="w-4 h-4 text-[var(--muted-foreground)]" />
-                        </div>
+                          <Plus className="w-3 h-3" />
+                        </button>
                       </div>
                     );
                   })}
