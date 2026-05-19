@@ -569,7 +569,7 @@ export default function WeeklyAgendaScreen() {
         <button onClick={prevWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Semana anterior">
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="text-xs font-medium min-w-[180px] text-center">{weekLabel}</span>
+        <span className="text-xs font-medium min-w-[120px] sm:min-w-[180px] text-center">{weekLabel}</span>
         <button onClick={nextWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Semana siguiente">
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -596,10 +596,10 @@ export default function WeeklyAgendaScreen() {
 
       {/* ─── Main Content ─── */}
       <div className="flex-1 overflow-auto p-2 md:p-4">
-        <div className="flex gap-3" style={{ minWidth: '900px' }}>
+        <div className="flex flex-col lg:flex-row gap-3">
 
           {/* ─── Agenda Grid ─── */}
-          <div className="flex-1 agenda-grid-container">
+          <div className="flex-1 agenda-grid-container" style={{ minWidth: 0 }}>
             <div
               className="agenda-grid"
               style={{
@@ -810,18 +810,18 @@ export default function WeeklyAgendaScreen() {
           </div>
 
           {/* ─── Notes Panel ─── */}
-          <div className="w-52 flex-shrink-0 flex flex-col gap-2 no-print" style={{ minWidth: '200px' }}>
-            <div className="flex items-center gap-2 px-2">
+          <div className="lg:w-52 flex-shrink-0 flex flex-row lg:flex-col gap-2 no-print lg:min-w-[200px] overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0" style={{ minWidth: 0 }}>
+            <div className="flex items-center gap-2 px-2 flex-shrink-0 lg:flex-shrink">
               <StickyNote className="w-4 h-4 text-amber-500" />
-              <span className="text-xs font-semibold">Notas de la semana</span>
-              <div className="flex-1" />
+              <span className="text-xs font-semibold whitespace-nowrap">Notas</span>
+              <div className="flex-1 hidden lg:block" />
               <button onClick={addNote} className="w-6 h-6 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Agregar nota">
                 <Plus className="w-3.5 h-3.5" />
               </button>
             </div>
 
             {weekNotes.map(note => (
-              <div key={note.id} style={{ background: note.color }} className="rounded-lg p-2.5 relative group/note">
+              <div key={note.id} style={{ background: note.color }} className="rounded-lg p-2.5 relative group/note w-44 lg:w-auto flex-shrink-0 lg:flex-shrink">
                 <textarea
                   value={note.text}
                   onChange={e => updateNote(note.id, e.target.value)}
@@ -841,14 +841,14 @@ export default function WeeklyAgendaScreen() {
             ))}
 
             {weekNotes.length === 0 && (
-              <div className="text-center py-6 px-2">
-                <StickyNote className="w-8 h-8 text-amber-500/50 dark:text-amber-400/40 mx-auto mb-2" />
-                <p className="text-[10px] text-[var(--muted-foreground)]">Agrega notas, recordatorios o ideas para la semana</p>
+              <div className="text-center py-4 px-2 w-44 lg:w-auto flex-shrink-0 lg:flex-shrink">
+                <StickyNote className="w-6 h-6 text-amber-500/50 dark:text-amber-400/40 mx-auto mb-1" />
+                <p className="text-[10px] text-[var(--muted-foreground)]">Sin notas esta semana</p>
               </div>
             )}
 
-            {/* Legend */}
-            <div className="mt-auto border-t border-[var(--border)] pt-3 px-1">
+            {/* Legend - hidden on mobile, visible on desktop */}
+            <div className="mt-auto border-t border-[var(--border)] pt-3 px-1 hidden lg:block">
               <p className="text-[10px] font-semibold mb-2 text-[var(--muted-foreground)] uppercase tracking-wider">Prioridades</p>
               {Object.entries(PRIO_COLORS).map(([key, pc]) => (
                 <div key={key} className="flex items-center gap-2 mb-1">
@@ -874,7 +874,7 @@ export default function WeeklyAgendaScreen() {
         const meta = taskToDelete?.data.agendaMeta;
         return (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 no-print" onClick={() => setConfirmDelete(null)}>
-            <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] shadow-2xl w-full max-w-sm p-5" onClick={e => e.stopPropagation()}>
+            <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] shadow-2xl w-full max-w-sm p-5 af-modal-mobile" onClick={e => e.stopPropagation()}>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-red-500" />

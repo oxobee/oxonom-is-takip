@@ -830,5 +830,11 @@ html {
 
 @media (max-width: 768px) {
   .agenda-grid-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .agenda-grid { min-width: 700px; }
+}
+@media (min-width: 769px) and (max-width: 1023px) {
+  .agenda-grid { min-width: 800px; }
+}
+@media (min-width: 1024px) {
   .agenda-grid { min-width: 900px; }
 }
