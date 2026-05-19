@@ -1228,3 +1228,70 @@ Stage Summary:
 - 2 archivos tar.gz de backup en /home/z/my-project/download/
 - 3 archivos JSON con config de Vercel
 - Backup completo y verificado
+
+---
+Task ID: 7
+Agent: Main Agent
+Task: Construir componente WeeklyAgenda para gestión de proyectos
+
+Work Log:
+- Analicé la arquitectura existente: tipos Task/Project, AppContext, Sidebar, navegación
+- Creé WeeklyAgendaScreen.tsx con layout de 7 columnas (Lun-Dom) + panel de notas
+- Implementé timeline de 8:00 AM a 5:00 PM con franjas horarias
+- Modal de creación/edición de tareas con: proyecto, responsable, prioridad, estado, observaciones
+- Diseño de agenda física: fondo blanco, líneas grises, bordes redondeados, separadores verticales
+- Panel de notas adhesivas (sticky notes) al lado de Domingo con 6 colores
+- Navegación semanal (anterior/siguiente/hoy) con rango de fechas
+- Filtro por proyecto
+- Función de impresión con ventana dedicada y estilos @media print
+- Responsive con scroll horizontal en mobile (min-width 900px)
+- Integración completa: Sidebar (CalendarDays icon), TopBar title, HomeContent lazy load, types.ts
+- Corregidos errores TypeScript (displayName no existe en teamUsers.data)
+- Build exitoso (0 errores)
+- Push a GitHub (commit 0dfb727) para deploy automático en Vercel
+
+Stage Summary:
+- Nuevo archivo: src/screens/WeeklyAgendaScreen.tsx (619 líneas)
+- Archivos modificados: HomeContent.tsx, globals.css, Sidebar.tsx, TopBar.tsx, types.ts
+- Pantalla accesible desde Sidebar > "Agenda Semanal"
+- Build y type-check pasados sin errores
+- Push exitoso a main branch
+
+---
+Task ID: 14
+Agent: Super Z (Main)
+Task: Fix — Agenda Semanal no visible en modo oscuro, vincular al CSS global de la app
+
+Protocolo leido: LEE_PRIMERO.txt + INSTRUCTIVO_BITACORA.txt
+
+Work Log:
+- Audit completo del componente WeeklyAgendaScreen.tsx: encontrados 20+ colores hardcoded solo para modo claro
+- Audit del sistema de temas de la app: 4 temas (dark, light, pastel, pastel-dark), variables CSS en globals.css
+- Comparado con componentes que SI funcionan en dark mode (CalendarScreen, Sidebar): usan var(--card), var(--border), etc.
+- Reemplazados todos los colores hardcoded por variables CSS del sistema de temas:
+  - Encabezados de días: #f9fafb → var(--af-bg3), #d1d5db → var(--border)
+  - Fondo del grid: #ffffff → var(--card)
+  - Texto secundario: #6b7280 → var(--muted-foreground)
+  - Columna "hoy": rgba(var(--primary),0.02) → var(--accent), #fff → var(--primary-foreground)
+  - Fechas: opacity: 0.6 → color: var(--muted-foreground)
+- PRIO_COLORS corregidos para dark mode:
+  - bg-red-50 → bg-red-500/10 dark:bg-red-500/15
+  - text-red-700 → text-red-600 dark:text-red-400
+  - Mismo patrón para amber, emerald, purple
+- NOTE_COLORS: hex hardcoded → variables CSS var(--note-*)
+  - Agregadas 6 variables --note-* en :root (modo claro) y .dark (modo oscuro) en globals.css
+  - Dark: tonos profundos (#422006, #172554, #4a1942, #064e3b, #2e1065, #422006)
+- Placeholder notas: text-black/30 → text-[var(--muted-foreground)]
+- Botón agregar nota: bg-amber-100 → bg-amber-500/15, text-amber-700 → text-amber-600 dark:text-amber-400
+- Botón eliminar nota: bg-black/10 → dark:bg-white/10, text-black/50 → text-[var(--muted-foreground)]
+- Ícono nota vacía: text-amber-300 → text-amber-500/50 dark:text-amber-400/40
+- Build verificado: ✓ Compiled successfully in 7.1s, 0 errores
+- Commit: 6038af4, push a main completado
+
+Stage Summary:
+- Archivos modificados: 2 (WeeklyAgendaScreen.tsx, globals.css)
+- 20+ colores hardcoded reemplazados por variables CSS del sistema de temas
+- 6 nuevas variables CSS --note-* agregadas en ambos modos (light + dark)
+- Agenda semanal ahora se ve correctamente en modo claro Y oscuro
+- Commit: 6038af4
+- Deploy automático a Vercel en curso

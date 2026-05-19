@@ -33,6 +33,12 @@ export interface TaskData {
   updatedBy?: string;
   tenantId: string;
   createdBy?: string;
+  agendaMeta?: {
+    dayKey: string;
+    hourSlots: number[];
+    participantIds: string[];
+    isAgendaItem: boolean;
+  };
 }
 
 /* ===== PROJECT ENTITY ===== */

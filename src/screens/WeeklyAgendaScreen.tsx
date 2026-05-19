@@ -1,24 +1,19 @@
 'use client';
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
+import { getFirebase } from '@/lib/firebase-service';
+import { scrubUndefined } from '@/lib/helpers';
 import {
   ChevronLeft, ChevronRight, Plus, Printer, CalendarDays,
-  GripVertical, Trash2, Edit3, StickyNote, Clock, User,
-  Flag, FolderOpen, MessageSquare, CheckCircle2, X
+  Trash2, Edit3, StickyNote, Clock, User,
+  Flag, FolderOpen, MessageSquare, CheckCircle2, X,
+  Link2, Search, Users, ListChecks, AlertTriangle
 } from 'lucide-react';
+import type { Task } from '@/lib/types';
 
-/* ─── Types ─── */
-interface AgendaTask {
-  id: string;
-  title: string;
-  projectId: string;
-  assigneeId: string;
-  priority: 'Alta' | 'Media' | 'Baja' | 'Crítica';
-  status: 'Por hacer' | 'En progreso' | 'Revision' | 'Completado';
-  observations: string;
-  dayKey: string;   // 'YYYY-MM-DD'
-  hourSlot: number; // 8..17
-}
+/* ═══════════════════════════════════════════════════════════════
+   TYPES
+   ═══════════════════════════════════════════════════════════════ */
 
 interface WeekNote {
   id: string;
@@ -26,9 +21,33 @@ interface WeekNote {
   color: string;
 }
 
-/* ─── Constants ─── */
-const DAY_NAMES = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-const DAY_FULL = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+interface DragState {
+  dayKey: string;
+  startHour: number;
+  currentHour: number;
+  active: boolean;
+}
+
+interface ActivityForm {
+  title: string;
+  projectId: string;
+  assigneeId: string;
+  participantIds: string[];
+  priority: string;
+  status: string;
+  observations: string;
+  hours: number[];
+  subtasks: { text: string; done: boolean }[];
+}
+
+type FormTab = 'new' | 'link';
+
+/* ═══════════════════════════════════════════════════════════════
+   CONSTANTS
+   ═══════════════════════════════════════════════════════════════ */
+
+const DAY_NAMES = ['Lun', 'Mar', 'Mi\u00e9', 'Jue', 'Vie', 'S\u00e1b', 'Dom'];
+const DAY_FULL = ['Lunes', 'Martes', 'Mi\u00e9rcoles', 'Jueves', 'Viernes', 'S\u00e1bado', 'Domingo'];
 const HOURS = Array.from({ length: 10 }, (_, i) => i + 8); // 8..17
 const SLOT_H = 56; // px height per slot
 
@@ -36,7 +55,7 @@ const PRIO_COLORS: Record<string, { bg: string; border: string; text: string; do
   'Alta':    { bg: 'bg-red-500/10 dark:bg-red-500/15', border: 'border-l-red-500', text: 'text-red-600 dark:text-red-400', dot: 'bg-red-500' },
   'Media':   { bg: 'bg-amber-500/10 dark:bg-amber-500/15', border: 'border-l-amber-500', text: 'text-amber-600 dark:text-amber-400', dot: 'bg-amber-500' },
   'Baja':    { bg: 'bg-emerald-500/10 dark:bg-emerald-500/15', border: 'border-l-emerald-500', text: 'text-emerald-600 dark:text-emerald-400', dot: 'bg-emerald-500' },
-  'Crítica': { bg: 'bg-purple-500/10 dark:bg-purple-500/15', border: 'border-l-purple-500', text: 'text-purple-600 dark:text-purple-400', dot: 'bg-purple-500' },
+  'Cr\u00edtica': { bg: 'bg-purple-500/10 dark:bg-purple-500/15', border: 'border-l-purple-500', text: 'text-purple-600 dark:text-purple-400', dot: 'bg-purple-500' },
 };
 
 const STATUS_ICON: Record<string, React.ReactNode> = {
@@ -51,11 +70,17 @@ const NOTE_COLORS = [
   'var(--note-green)', 'var(--note-purple)', 'var(--note-yellow)',
 ];
 
-/* ─── Helpers ─── */
+const PRIORITIES = ['Alta', 'Media', 'Baja', 'Cr\u00edtica'];
+const STATUSES = ['Por hacer', 'En progreso', 'Revision', 'Completado'];
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════════════════ */
+
 function getWeekDates(baseDate: Date): Date[] {
   const d = new Date(baseDate);
-  const day = d.getDay(); // 0=Sun
-  const diff = day === 0 ? -6 : 1 - day; // Monday offset
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
   const monday = new Date(d);
   monday.setDate(d.getDate() + diff);
   return Array.from({ length: 7 }, (_, i) => {
@@ -77,33 +102,69 @@ function uid(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
-/* ═══════════════════════════════════════════
+function formatHour(h: number): string {
+  if (h === 0 || h === 12) return h === 0 ? '12:00 am' : '12:00 pm';
+  return h > 12 ? `${h - 12}:00 pm` : `${h}:00 am`;
+}
+
+function formatHourShort(h: number): string {
+  if (h === 0 || h === 12) return h === 0 ? '12am' : '12pm';
+  return h > 12 ? `${h - 12}pm` : `${h}am`;
+}
+
+function formatHourRange(hours: number[]): string {
+  if (!hours.length) return '';
+  const min = Math.min(...hours);
+  const max = Math.max(...hours);
+  return `${formatHour(min)} - ${formatHour(max + 1)}`;
+}
+
+const EMPTY_FORM: ActivityForm = {
+  title: '',
+  projectId: '',
+  assigneeId: '',
+  participantIds: [],
+  priority: 'Media',
+  status: 'Por hacer',
+  observations: '',
+  hours: [],
+  subtasks: [],
+};
+
+/* ═══════════════════════════════════════════════════════════════
    WEEKLY AGENDA SCREEN
-   ═══════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════════════ */
+
 export default function WeeklyAgendaScreen() {
-  const { projects, teamUsers, tasks: ctxTasks, saveTask, authUser } = useApp();
+  const { projects, teamUsers, tasks: ctxTasks, authUser, activeTenantId } = useApp();
+
+  /* ─── State ─── */
   const [baseDate, setBaseDate] = useState(new Date());
-  const [agendaTasks, setAgendaTasks] = useState<AgendaTask[]>([]);
   const [weekNotes, setWeekNotes] = useState<WeekNote[]>([]);
-  const [editingTask, setEditingTask] = useState<AgendaTask | null>(null);
-  const [creating, setCreating] = useState<{ dayKey: string; hour: number } | null>(null);
-  const [showForm, setShowForm] = useState(false);
   const [filterProject, setFilterProject] = useState<string>('all');
+  const [showForm, setShowForm] = useState(false);
+  const [formTab, setFormTab] = useState<FormTab>('new');
+  const [formDayKey, setFormDayKey] = useState('');
+  const [form, setForm] = useState<ActivityForm>({ ...EMPTY_FORM });
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [linkTaskId, setLinkTaskId] = useState<string>('');
+  const [linkSearch, setLinkSearch] = useState('');
+  const [linkFilterProject, setLinkFilterProject] = useState<string>('');
+  const [saving, setSaving] = useState(false);
+  const [drag, setDrag] = useState<DragState | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
 
-  // Form state
-  const [form, setForm] = useState({
-    title: '', projectId: '', assigneeId: '', priority: 'Media' as AgendaTask['priority'],
-    status: 'Por hacer' as AgendaTask['status'], observations: '',
-  });
-
+  /* ─── Derived data ─── */
   const weekDates = useMemo(() => getWeekDates(baseDate), [baseDate]);
   const weekLabel = useMemo(() => {
     const start = weekDates[0];
     const end = weekDates[6];
     const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' };
-    return `${start.toLocaleDateString('es-CO', opts)} — ${end.toLocaleDateString('es-CO', opts)}`;
+    return `${start.toLocaleDateString('es-CO', opts)} \u2014 ${end.toLocaleDateString('es-CO', opts)}`;
   }, [weekDates]);
+
+  const todayKey = dateKey(new Date());
 
   const projectMap = useMemo(() => {
     const m: Record<string, string> = {};
@@ -112,68 +173,310 @@ export default function WeeklyAgendaScreen() {
   }, [projects]);
 
   const userMap = useMemo(() => {
-    const m: Record<string, string> = {};
-    teamUsers.forEach(u => { m[u.id] = u.data?.name || 'Sin nombre'; });
-    if (authUser?.uid) m[authUser.uid] = authUser.displayName || authUser.email || 'Yo';
+    const m: Record<string, { name: string; photoUrl?: string }> = {};
+    teamUsers.forEach(u => { m[u.id] = { name: u.data?.name || 'Sin nombre', photoUrl: u.data?.photoURL }; });
+    if (authUser?.uid) m[authUser.uid] = { name: authUser.displayName || authUser.email || 'Yo', photoUrl: authUser.photoURL || undefined };
     return m;
   }, [teamUsers, authUser]);
+
+  const allUserOptions = useMemo(() => {
+    const opts: { id: string; name: string }[] = [];
+    teamUsers.forEach(u => opts.push({ id: u.id, name: u.data?.name || 'Usuario' }));
+    if (authUser?.uid && !opts.find(o => o.id === authUser.uid)) {
+      opts.push({ id: authUser.uid, name: authUser.displayName || authUser.email || 'Yo' });
+    }
+    return opts;
+  }, [teamUsers, authUser]);
+
+  /* ─── Agenda tasks from Firestore ─── */
+  const agendaTasks = useMemo(() =>
+    (ctxTasks || []).filter(t => t.data.agendaMeta),
+    [ctxTasks]
+  );
+
+  /* Build a set of occupied slots: "dayKey:hour" => true */
+  const occupiedSlots = useMemo(() => {
+    const s = new Set<string>();
+    agendaTasks.forEach(t => {
+      const meta = t.data.agendaMeta;
+      if (!meta) return;
+      meta.hourSlots.forEach(h => s.add(`${meta.dayKey}:${h}`));
+    });
+    return s;
+  }, [agendaTasks]);
+
+  /* Group tasks by "dayKey:firstHour" for rendering tall blocks */
+  const tasksByDayAndStartHour = useMemo(() => {
+    const map: Record<string, Task[]> = {};
+    agendaTasks.forEach(t => {
+      const meta = t.data.agendaMeta;
+      if (!meta || !meta.hourSlots.length) return;
+      const firstHour = Math.min(...meta.hourSlots);
+      const key = `${meta.dayKey}:${firstHour}`;
+      if (!map[key]) map[key] = [];
+      map[key].push(t);
+    });
+    return map;
+  }, [agendaTasks]);
+
+  /* For a given dayKey, compute which hours are the START of a task block */
+  const taskStartHoursByDay = useMemo(() => {
+    const map: Record<string, Set<number>> = {};
+    agendaTasks.forEach(t => {
+      const meta = t.data.agendaMeta;
+      if (!meta || !meta.hourSlots.length) return;
+      if (!map[meta.dayKey]) map[meta.dayKey] = new Set();
+      map[meta.dayKey].add(Math.min(...meta.hourSlots));
+    });
+    return map;
+  }, [agendaTasks]);
 
   /* ─── Navigation ─── */
   const prevWeek = () => { const d = new Date(baseDate); d.setDate(d.getDate() - 7); setBaseDate(d); };
   const nextWeek = () => { const d = new Date(baseDate); d.setDate(d.getDate() + 7); setBaseDate(d); };
   const goToday = () => setBaseDate(new Date());
 
-  /* ─── CRUD ─── */
-  const openCreate = (dayKey: string, hour: number) => {
-    setCreating({ dayKey, hour });
-    setEditingTask(null);
-    setForm({ title: '', projectId: filterProject !== 'all' ? filterProject : '', assigneeId: '', priority: 'Media', status: 'Por hacer', observations: '' });
-    setShowForm(true);
+  /* ─── Drag selection ─── */
+  const handleCellMouseDown = (dayKey: string, hour: number) => {
+    if (occupiedSlots.has(`${dayKey}:${hour}`)) return;
+    setDrag({ dayKey, startHour: hour, currentHour: hour, active: true });
   };
 
-  const openEdit = (task: AgendaTask) => {
-    setEditingTask(task);
-    setCreating(null);
-    setForm({ title: task.title, projectId: task.projectId, assigneeId: task.assigneeId, priority: task.priority, status: task.status, observations: task.observations });
-    setShowForm(true);
+  const handleCellMouseEnter = (dayKey: string, hour: number) => {
+    if (!drag || !drag.active || drag.dayKey !== dayKey) return;
+    setDrag(prev => prev ? { ...prev, currentHour: hour } : null);
   };
 
-  const handleSave = () => {
-    if (!form.title.trim()) return;
-    if (editingTask) {
-      setAgendaTasks(prev => prev.map(t => t.id === editingTask.id ? { ...t, ...form } : t));
-    } else if (creating) {
-      const newTask: AgendaTask = {
-        id: uid(), ...form, dayKey: creating.dayKey, hourSlot: creating.hour,
-      };
-      setAgendaTasks(prev => [...prev, newTask]);
+  const handleCellMouseUp = () => {
+    if (!drag || !drag.active) return;
+    const minH = Math.min(drag.startHour, drag.currentHour);
+    const maxH = Math.max(drag.startHour, drag.currentHour);
+    const selectedHours = HOURS.filter(h => h >= minH && h <= maxH);
+    // Filter out already-occupied hours
+    const freeHours = selectedHours.filter(h => !occupiedSlots.has(`${drag.dayKey}:${h}`));
+    if (freeHours.length > 0) {
+      openCreateForm(drag.dayKey, freeHours);
     }
+    setDrag(null);
+  };
+
+  const handleCellClick = (dayKey: string, hour: number) => {
+    // Mobile: simple tap opens form with single hour
+    if (occupiedSlots.has(`${dayKey}:${hour}`)) return;
+    openCreateForm(dayKey, [hour]);
+  };
+
+  /* ─── Form management ─── */
+  const openCreateForm = (dayKey: string, hours: number[]) => {
+    setEditingTask(null);
+    setFormTab('new');
+    setFormDayKey(dayKey);
+    setForm({
+      ...EMPTY_FORM,
+      hours,
+      projectId: filterProject !== 'all' ? filterProject : '',
+    });
+    setLinkTaskId('');
+    setLinkSearch('');
+    setLinkFilterProject('');
+    setShowForm(true);
+  };
+
+  const openEditForm = (task: Task) => {
+    const meta = task.data.agendaMeta;
+    setEditingTask(task);
+    setFormTab('new'); // edit always uses new tab
+    setFormDayKey(meta?.dayKey || '');
+    setForm({
+      title: task.data.title || '',
+      projectId: task.data.projectId || '',
+      assigneeId: task.data.assigneeId || '',
+      participantIds: meta?.participantIds || [],
+      priority: task.data.priority || 'Media',
+      status: task.data.status || 'Por hacer',
+      observations: task.data.description || '',
+      hours: meta?.hourSlots || [],
+      subtasks: task.data.subtasks || [],
+    });
+    setLinkTaskId('');
+    setShowForm(true);
+  };
+
+  const closeForm = () => {
     setShowForm(false);
     setEditingTask(null);
-    setCreating(null);
+    setLinkTaskId('');
+    setSaving(false);
   };
 
-  const handleDelete = (id: string) => {
-    setAgendaTasks(prev => prev.filter(t => t.id !== id));
+  /* ─── Hour slot management in form ─── */
+  const addHourToForm = (h: number) => {
+    setForm(f => {
+      if (f.hours.includes(h)) return f;
+      return { ...f, hours: [...f.hours, h].sort((a, b) => a - b) };
+    });
   };
 
+  const removeHourFromForm = (h: number) => {
+    setForm(f => ({ ...f, hours: f.hours.filter(x => x !== h) }));
+  };
+
+  /* ─── Subtask management ─── */
+  const addSubtask = () => {
+    setForm(f => ({ ...f, subtasks: [...f.subtasks, { text: '', done: false }] }));
+  };
+
+  const updateSubtask = (idx: number, field: 'text' | 'done', value: string | boolean) => {
+    setForm(f => ({
+      ...f,
+      subtasks: f.subtasks.map((s, i) => i === idx ? { ...s, [field]: value } : s),
+    }));
+  };
+
+  const removeSubtask = (idx: number) => {
+    setForm(f => ({ ...f, subtasks: f.subtasks.filter((_, i) => i !== idx) }));
+  };
+
+  /* ─── Firestore operations ─── */
+  const handleSaveNew = async () => {
+    if (!form.title.trim() || !authUser || !activeTenantId || !form.hours.length) return;
+    setSaving(true);
+    try {
+      const db = getFirebase().firestore();
+      const ts = getFirebase().firestore.FieldValue.serverTimestamp();
+      const cleanedSubtasks = form.subtasks
+        .filter(s => s.text.trim())
+        .map(s => ({ text: s.text.trim(), done: Boolean(s.done) }));
+      await db.collection('tasks').add(scrubUndefined({
+        title: form.title.trim(),
+        description: form.observations || '',
+        projectId: form.projectId || '',
+        assigneeId: form.assigneeId || '',
+        assigneeIds: [form.assigneeId, ...form.participantIds].filter(Boolean),
+        priority: form.priority,
+        status: form.status,
+        dueDate: formDayKey,
+        subtasks: cleanedSubtasks.length > 0 ? cleanedSubtasks : undefined,
+        tags: ['Agenda'],
+        tenantId: activeTenantId,
+        agendaMeta: {
+          dayKey: formDayKey,
+          hourSlots: form.hours,
+          participantIds: form.participantIds,
+          isAgendaItem: true,
+        },
+        createdAt: ts,
+        createdBy: authUser.uid,
+        updatedAt: ts,
+        updatedBy: authUser.uid,
+      }));
+      closeForm();
+    } catch (err) {
+      console.error('[Archii Agenda] Error creating task:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleLinkExisting = async () => {
+    if (!linkTaskId || !authUser || !form.hours.length) return;
+    setSaving(true);
+    try {
+      const db = getFirebase().firestore();
+      const ts = getFirebase().firestore.FieldValue.serverTimestamp();
+      const existingTask = ctxTasks.find(t => t.id === linkTaskId);
+      const existingTags = existingTask?.data.tags || [];
+      await db.collection('tasks').doc(linkTaskId).update(scrubUndefined({
+        agendaMeta: {
+          dayKey: formDayKey,
+          hourSlots: form.hours,
+          participantIds: form.participantIds,
+          isAgendaItem: false,
+        },
+        tags: [...new Set([...existingTags, 'Agenda'])],
+        updatedAt: ts,
+        updatedBy: authUser.uid,
+      }));
+      closeForm();
+    } catch (err) {
+      console.error('[Archii Agenda] Error linking task:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleUpdateTask = async () => {
+    if (!editingTask || !form.title.trim() || !authUser || !form.hours.length) return;
+    setSaving(true);
+    try {
+      const db = getFirebase().firestore();
+      const ts = getFirebase().firestore.FieldValue.serverTimestamp();
+      const cleanedSubtasks = form.subtasks
+        .filter(s => s.text.trim())
+        .map(s => ({ text: s.text.trim(), done: Boolean(s.done) }));
+      await db.collection('tasks').doc(editingTask.id).update(scrubUndefined({
+        title: form.title.trim(),
+        description: form.observations || '',
+        projectId: form.projectId || '',
+        assigneeId: form.assigneeId || '',
+        assigneeIds: [form.assigneeId, ...form.participantIds].filter(Boolean),
+        priority: form.priority,
+        status: form.status,
+        dueDate: formDayKey,
+        subtasks: cleanedSubtasks.length > 0 ? cleanedSubtasks : undefined,
+        agendaMeta: {
+          dayKey: formDayKey,
+          hourSlots: form.hours,
+          participantIds: form.participantIds,
+          isAgendaItem: editingTask.data.agendaMeta?.isAgendaItem ?? true,
+        },
+        updatedAt: ts,
+        updatedBy: authUser.uid,
+      }));
+      closeForm();
+    } catch (err) {
+      console.error('[Archii Agenda] Error updating task:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (task: Task) => {
+    if (!authUser) return;
+    const meta = task.data.agendaMeta;
+    try {
+      const db = getFirebase().firestore();
+      const ts = getFirebase().firestore.FieldValue.serverTimestamp();
+      if (meta?.isAgendaItem) {
+        // Delete the entire task
+        await db.collection('tasks').doc(task.id).delete();
+      } else {
+        // Only remove agendaMeta, keep the task
+        const existingTags = (task.data.tags || []).filter(t => t !== 'Agenda');
+        await db.collection('tasks').doc(task.id).update(scrubUndefined({
+          agendaMeta: getFirebase().firestore.FieldValue.delete(),
+          tags: existingTags.length > 0 ? existingTags : undefined,
+          updatedAt: ts,
+          updatedBy: authUser.uid,
+        }));
+      }
+      setConfirmDelete(null);
+      closeForm();
+    } catch (err) {
+      console.error('[Archii Agenda] Error deleting:', err);
+    }
+  };
+
+  /* ─── Notes ─── */
   const addNote = () => {
     setWeekNotes(prev => [...prev, { id: uid(), text: '', color: NOTE_COLORS[prev.length % NOTE_COLORS.length] }]);
   };
-
   const updateNote = (id: string, text: string) => {
     setWeekNotes(prev => prev.map(n => n.id === id ? { ...n, text } : n));
   };
-
   const deleteNote = (id: string) => {
     setWeekNotes(prev => prev.filter(n => n.id !== id));
   };
-
-  /* ─── Filtered tasks ─── */
-  const getTasksForSlot = useCallback((dayKey: string, hour: number) => {
-    return agendaTasks.filter(t => t.dayKey === dayKey && t.hourSlot === hour &&
-      (filterProject === 'all' || t.projectId === filterProject));
-  }, [agendaTasks, filterProject]);
 
   /* ─── Print ─── */
   const handlePrint = () => {
@@ -190,14 +493,14 @@ export default function WeeklyAgendaScreen() {
         .col-header .day-name { font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #374151; }
         .col-header .day-date { font-size: 10px; color: #6b7280; margin-top: 2px; }
         .time-label { background: #f9fafb; border-right: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; padding: 4px 6px; text-align: right; font-size: 10px; color: #6b7280; display: flex; align-items: flex-start; justify-content: flex-end; }
-        .slot { border-right: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; padding: 2px 3px; min-height: 44px; }
+        .slot { border-right: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; padding: 2px 3px; min-height: 44px; position: relative; }
         .task-card { border-left: 3px solid; border-radius: 4px; padding: 3px 6px; margin-bottom: 2px; font-size: 9px; line-height: 1.3; }
         .task-card .task-title { font-weight: 600; }
         .task-card .task-meta { color: #6b7280; }
         .prio-Alta { background: #fef2f2; border-color: #ef4444; }
         .prio-Media { background: #fffbeb; border-color: #f59e0b; }
         .prio-Baja { background: #ecfdf5; border-color: #10b981; }
-        .prio-Crítica { background: #faf5ff; border-color: #a855f7; }
+        .prio-Cr\u00edtica { background: #faf5ff; border-color: #a855f7; }
         .notes-section { margin-top: 16px; border: 1.5px solid #d1d5db; border-radius: 10px; padding: 12px; }
         .notes-section h3 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
         .note-block { background: #fef9c3; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 11px; white-space: pre-wrap; }
@@ -211,8 +514,49 @@ export default function WeeklyAgendaScreen() {
     setTimeout(() => w.print(), 300);
   };
 
-  /* ─── Today detection ─── */
-  const todayKey = dateKey(new Date());
+  /* ─── Global mouse up listener ─── */
+  useEffect(() => {
+    const handler = () => {
+      if (drag?.active) {
+        handleCellMouseUp();
+      }
+    };
+    window.addEventListener('mouseup', handler);
+    return () => window.removeEventListener('mouseup', handler);
+  });
+
+  /* ─── Compute drag-selected hours ─── */
+  const dragSelectedHours = useMemo(() => {
+    if (!drag?.active) return new Set<string>();
+    const minH = Math.min(drag.startHour, drag.currentHour);
+    const maxH = Math.max(drag.startHour, drag.currentHour);
+    const s = new Set<string>();
+    for (let h = minH; h <= maxH; h++) {
+      if (!occupiedSlots.has(`${drag.dayKey}:${h}`)) {
+        s.add(`${drag.dayKey}:${h}`);
+      }
+    }
+    return s;
+  }, [drag, occupiedSlots]);
+
+  /* ─── Linkable tasks (existing tasks without agendaMeta) ─── */
+  const linkableTasks = useMemo(() => {
+    return (ctxTasks || [])
+      .filter(t => !t.data.agendaMeta)
+      .filter(t => !linkFilterProject || t.data.projectId === linkFilterProject)
+      .filter(t => {
+        if (!linkSearch) return true;
+        const q = linkSearch.toLowerCase();
+        return (
+          (t.data.title || '').toLowerCase().includes(q) ||
+          (projectMap[t.data.projectId] || '').toLowerCase().includes(q)
+        );
+      });
+  }, [ctxTasks, linkFilterProject, linkSearch, projectMap]);
+
+  /* ═══════════════════════════════════════════════════════════════
+     RENDER
+     ═══════════════════════════════════════════════════════════════ */
 
   return (
     <div className="h-full flex flex-col" ref={printRef}>
@@ -237,7 +581,7 @@ export default function WeeklyAgendaScreen() {
 
         {/* Project filter */}
         <select value={filterProject} onChange={e => setFilterProject(e.target.value)}
-          className="text-xs rounded-lg border border-[var(--border)] bg-[var(--input)] px-2 py-1.5 max-w-[160px] truncate">
+          className="text-xs rounded-lg border border-[var(--border)] bg-[var(--input)] px-2 py-1.5 max-w-[160px] truncate no-print">
           <option value="all">Todos los proyectos</option>
           {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
         </select>
@@ -252,7 +596,7 @@ export default function WeeklyAgendaScreen() {
 
       {/* ─── Main Content ─── */}
       <div className="flex-1 overflow-auto p-2 md:p-4">
-        <div className="flex gap-3 min-w-max">
+        <div className="flex gap-3" style={{ minWidth: '900px' }}>
 
           {/* ─── Agenda Grid ─── */}
           <div className="flex-1 agenda-grid-container">
@@ -260,7 +604,7 @@ export default function WeeklyAgendaScreen() {
               className="agenda-grid"
               style={{
                 display: 'grid',
-                gridTemplateColumns: `54px repeat(7, minmax(130px, 1fr))`,
+                gridTemplateColumns: '54px repeat(7, minmax(130px, 1fr))',
                 border: '1.5px solid var(--border)',
                 borderRadius: '10px',
                 overflow: 'hidden',
@@ -268,12 +612,12 @@ export default function WeeklyAgendaScreen() {
               }}
             >
               {/* ─── Column Headers ─── */}
-              <div className="col-header" style={{ background: 'var(--af-bg3)', borderBottom: '1.5px solid var(--border)', borderRight: '1px solid var(--border)' }} />
+              <div style={{ background: 'var(--af-bg3)', borderBottom: '1.5px solid var(--border)', borderRight: '1px solid var(--border)' }} />
               {weekDates.map((d, i) => {
                 const dk = dateKey(d);
                 const isToday = dk === todayKey;
                 return (
-                  <div key={dk} className="col-header" style={{
+                  <div key={dk} style={{
                     background: isToday ? 'var(--primary)' : 'var(--af-bg3)',
                     borderBottom: '1.5px solid var(--border)',
                     borderRight: i < 6 ? '1px solid var(--border)' : 'none',
@@ -308,76 +652,151 @@ export default function WeeklyAgendaScreen() {
                     justifyContent: 'flex-end',
                     height: `${SLOT_H}px`,
                   }}>
-                    {hour > 12 ? `${hour - 12}:00 pm` : `${hour}:00 am`}
+                    {formatHour(hour)}
                   </div>
 
                   {/* Day cells */}
                   {weekDates.map((d, di) => {
                     const dk = dateKey(d);
                     const isToday = dk === todayKey;
-                    const slotTasks = getTasksForSlot(dk, hour);
+                    const isOccupied = occupiedSlots.has(`${dk}:${hour}`);
+                    const isDragSelected = dragSelectedHours.has(`${dk}:${hour}`);
+                    const isTaskStart = taskStartHoursByDay[dk]?.has(hour);
+
+                    // Get tasks that start at this hour on this day
+                    const tasksStarting = isTaskStart ? (tasksByDayAndStartHour[`${dk}:${hour}`] || []) : [];
+
                     return (
-                      <div key={dk} style={{
-                        borderRight: di < 6 ? '1px solid var(--border)' : 'none',
-                        borderBottom: '1px solid var(--border)',
-                        padding: '2px 3px',
-                        minHeight: `${SLOT_H}px`,
-                        background: isToday ? 'var(--accent)' : 'var(--card)',
-                        position: 'relative' as const,
-                        cursor: 'pointer',
-                      }}
+                      <div
+                        key={dk}
+                        style={{
+                          borderRight: di < 6 ? '1px solid var(--border)' : 'none',
+                          borderBottom: '1px solid var(--border)',
+                          minHeight: `${SLOT_H}px`,
+                          height: `${SLOT_H}px`,
+                          background: isDragSelected
+                            ? 'var(--accent)'
+                            : isOccupied
+                              ? 'var(--af-bg3)'
+                              : isToday
+                                ? 'var(--accent)'
+                                : 'var(--card)',
+                          position: 'relative' as const,
+                          cursor: isOccupied ? 'default' : 'pointer',
+                          overflow: isTaskStart ? 'visible' as const : 'hidden' as const,
+                        }}
                         className="group/slot"
-                        onClick={() => openCreate(dk, hour)}
+                        onMouseDown={() => handleCellMouseDown(dk, hour)}
+                        onMouseEnter={() => handleCellMouseEnter(dk, hour)}
+                        onMouseUp={() => handleCellMouseUp()}
+                        onClick={() => {
+                          // Only handle click if no drag happened (mobile support)
+                          if (!drag?.active && !isOccupied) {
+                            handleCellClick(dk, hour);
+                          }
+                        }}
                       >
-                        {/* Existing tasks */}
-                        {slotTasks.map(t => {
-                          const pc = PRIO_COLORS[t.priority] || PRIO_COLORS['Media'];
+                        {/* Render tall activity blocks at their start hour */}
+                        {tasksStarting.map(task => {
+                          const meta = task.data.agendaMeta;
+                          if (!meta) return null;
+                          const minH = Math.min(...meta.hourSlots);
+                          const maxH = Math.max(...meta.hourSlots);
+                          const spanCount = maxH - minH + 1;
+                          const blockHeight = spanCount * SLOT_H;
+                          const pc = PRIO_COLORS[task.data.priority] || PRIO_COLORS['Media'];
+                          const doneSubtasks = (task.data.subtasks || []).filter(s => s.done).length;
+                          const totalSubtasks = (task.data.subtasks || []).length;
+
                           return (
                             <div
-                              key={t.id}
-                              className={`task-card ${pc.bg} ${pc.border} no-print-hover`}
+                              key={task.id}
+                              className={`${pc.bg} ${pc.border} no-print-hover`}
                               style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 2,
+                                right: 2,
+                                height: `${blockHeight - 4}px`,
                                 borderLeftWidth: '3px',
                                 borderLeftStyle: 'solid',
-                                borderRadius: '4px',
-                                padding: '3px 6px',
-                                marginBottom: '2px',
+                                borderRadius: '6px',
+                                padding: '4px 6px',
                                 fontSize: '10px',
                                 lineHeight: 1.3,
                                 cursor: 'pointer',
-                                position: 'relative' as const,
+                                zIndex: 10,
+                                overflow: 'hidden',
                               }}
-                              onClick={e => { e.stopPropagation(); openEdit(t); }}
+                              onClick={e => { e.stopPropagation(); openEditForm(task); }}
                             >
+                              {/* Title + priority dot */}
                               <div className="flex items-center gap-1">
                                 <span className={`w-1.5 h-1.5 rounded-full ${pc.dot} flex-shrink-0`} />
-                                <span style={{ fontWeight: 600 }} className="truncate">{t.title}</span>
+                                <span style={{ fontWeight: 600, color: 'var(--foreground)' }} className="truncate text-[11px]">
+                                  {task.data.title}
+                                </span>
                               </div>
-                              {t.projectId && (
+
+                              {/* Time range */}
+                              <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
+                                <Clock className="w-2.5 h-2.5" />
+                                <span>{formatHourRange(meta.hourSlots)}</span>
+                              </div>
+
+                              {/* Project */}
+                              {task.data.projectId && (
                                 <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
                                   <FolderOpen className="w-2.5 h-2.5" />
-                                  <span className="truncate">{projectMap[t.projectId] || '—'}</span>
+                                  <span className="truncate">{projectMap[task.data.projectId] || '\u2014'}</span>
                                 </div>
                               )}
-                              <div className="flex items-center gap-1.5 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
-                                {STATUS_ICON[t.status]}
-                                <span className="truncate">{userMap[t.assigneeId] || ''}</span>
+
+                              {/* Responsable + participants */}
+                              <div className="flex items-center gap-1 mt-0.5" style={{ fontSize: '9px' }}>
+                                {STATUS_ICON[task.data.status]}
+                                <span className="truncate" style={{ color: 'var(--muted-foreground)' }}>
+                                  {userMap[task.data.assigneeId]?.name || ''}
+                                </span>
+                                {meta.participantIds.length > 0 && (
+                                  <span className="flex items-center gap-0.5 ml-1" style={{ color: 'var(--muted-foreground)' }}>
+                                    <Users className="w-2.5 h-2.5" />
+                                    {meta.participantIds.length}
+                                  </span>
+                                )}
                               </div>
+
+                              {/* Subtasks */}
+                              {totalSubtasks > 0 && (
+                                <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
+                                  <ListChecks className="w-2.5 h-2.5" />
+                                  <span>{doneSubtasks}/{totalSubtasks}</span>
+                                </div>
+                              )}
+
+                              {/* Agenda badge */}
+                              {meta.isAgendaItem && (
+                                <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[8px] font-semibold"
+                                  style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}>
+                                  Agenda
+                                </span>
+                              )}
+
                               {/* Delete on hover */}
                               <button
-                                className="absolute top-0.5 right-0.5 w-4 h-4 rounded bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover/task:opacity-100 transition-opacity"
-                                style={{ fontSize: '8px' }}
-                                onClick={e => { e.stopPropagation(); handleDelete(t.id); }}
-                                aria-label="Eliminar tarea"
+                                className="absolute top-1 right-1 w-5 h-5 rounded flex items-center justify-center opacity-0 group-hover/slot:opacity-100 transition-opacity"
+                                style={{ background: 'rgba(239,68,68,0.8)', color: '#fff', fontSize: '8px' }}
+                                onClick={e => { e.stopPropagation(); setConfirmDelete(task.id); }}
+                                aria-label="Eliminar actividad"
                               >
-                                <X className="w-2.5 h-2.5" />
+                                <X className="w-3 h-3" />
                               </button>
                             </div>
                           );
                         })}
 
-                        {/* + button on hover */}
-                        {slotTasks.length === 0 && (
+                        {/* + button on hover (empty cells only) */}
+                        {!isOccupied && tasksStarting.length === 0 && (
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/slot:opacity-60 transition-opacity pointer-events-none no-print">
                             <Plus className="w-4 h-4 text-[var(--muted-foreground)]" />
                           </div>
@@ -408,6 +827,7 @@ export default function WeeklyAgendaScreen() {
                   onChange={e => updateNote(note.id, e.target.value)}
                   placeholder="Escribe una nota..."
                   className="w-full bg-transparent text-xs resize-none outline-none placeholder:text-[var(--muted-foreground)] min-h-[60px]"
+                  style={{ color: 'var(--foreground)' }}
                   rows={3}
                 />
                 <button
@@ -437,7 +857,7 @@ export default function WeeklyAgendaScreen() {
                 </div>
               ))}
               <p className="text-[10px] font-semibold mt-3 mb-2 text-[var(--muted-foreground)] uppercase tracking-wider">Estados</p>
-              {['Por hacer', 'En progreso', 'Revision', 'Completado'].map(s => (
+              {STATUSES.map(s => (
                 <div key={s} className="flex items-center gap-2 mb-1">
                   {STATUS_ICON[s]}
                   <span className="text-[10px]">{s}</span>
@@ -448,125 +868,534 @@ export default function WeeklyAgendaScreen() {
         </div>
       </div>
 
-      {/* ─── Task Creation / Edit Modal ─── */}
+      {/* ─── Confirm Delete Dialog ─── */}
+      {confirmDelete && (() => {
+        const taskToDelete = agendaTasks.find(t => t.id === confirmDelete);
+        const meta = taskToDelete?.data.agendaMeta;
+        return (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 no-print" onClick={() => setConfirmDelete(null)}>
+            <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] shadow-2xl w-full max-w-sm p-5" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-red-500" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">Eliminar actividad</h3>
+                  <p className="text-xs text-[var(--muted-foreground)]">
+                    {meta?.isAgendaItem
+                      ? 'Se eliminara la tarea completa del sistema.'
+                      : 'Solo se quitara de la agenda. La tarea permanecera en Tareas.'}
+                  </p>
+                </div>
+              </div>
+              {taskToDelete && (
+                <p className="text-xs mb-4 px-1" style={{ color: 'var(--foreground)' }}>
+                  <strong>{taskToDelete.data.title}</strong>
+                </p>
+              )}
+              <div className="flex items-center gap-2 justify-end">
+                <button onClick={() => setConfirmDelete(null)}
+                  className="text-xs px-4 py-2 rounded-lg border border-[var(--border)] hover:bg-[var(--af-bg3)] transition-colors">
+                  Cancelar
+                </button>
+                <button onClick={() => taskToDelete && handleDelete(taskToDelete)}
+                  className="text-xs px-4 py-2 rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 active:scale-95 transition-all">
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ─── Create / Edit / Link Modal ─── */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 no-print" onClick={() => setShowForm(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 no-print af-modal-mobile" onClick={closeForm}>
           <div
-            className="bg-[var(--card)] rounded-xl border border-[var(--border)] shadow-2xl w-full max-w-md"
+            className="bg-[var(--card)] rounded-xl border border-[var(--border)] shadow-2xl w-full max-w-lg"
             onClick={e => e.stopPropagation()}
           >
             {/* Modal Header */}
             <div className="flex items-center gap-3 px-5 py-4 border-b border-[var(--border)]">
-              <div className="w-9 h-9 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center">
-                <Edit3 className="w-4 h-4 text-[var(--primary)]" />
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--primary)', opacity: 0.12 }}>
+                {editingTask ? (
+                  <Edit3 className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                ) : (
+                  <Plus className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                )}
               </div>
               <div>
-                <h3 className="text-sm font-semibold">{editingTask ? 'Editar actividad' : 'Nueva actividad'}</h3>
+                <h3 className="text-sm font-semibold">
+                  {editingTask ? 'Editar actividad' : 'Nueva actividad'}
+                </h3>
                 <p className="text-[10px] text-[var(--muted-foreground)]">
-                  {creating ? `${DAY_FULL[weekDates.findIndex(d => dateKey(d) === creating.dayKey)]} · ${creating.hour > 12 ? creating.hour - 12 : creating.hour}:00 ${creating.hour >= 12 ? 'pm' : 'am'}` : ''}
+                  {formDayKey && (() => {
+                    const dayIdx = weekDates.findIndex(d => dateKey(d) === formDayKey);
+                    const dayName = dayIdx >= 0 ? DAY_FULL[dayIdx] : formDayKey;
+                    const hours = form.hours;
+                    if (hours.length === 1) {
+                      return `${dayName} \u00b7 ${formatHour(hours[0])}`;
+                    }
+                    return `${dayName} \u00b7 ${formatHourRange(hours)}`;
+                  })()}
                 </p>
               </div>
               <div className="flex-1" />
-              <button onClick={() => setShowForm(false)} className="w-8 h-8 rounded-lg hover:bg-[var(--af-bg3)] flex items-center justify-center" aria-label="Cerrar">
+              <button onClick={closeForm} className="w-8 h-8 rounded-lg hover:bg-[var(--af-bg3)] flex items-center justify-center" aria-label="Cerrar">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
+            {/* Tabs (only when creating new, not editing) */}
+            {!editingTask && (
+              <div className="flex border-b border-[var(--border)]">
+                <button
+                  onClick={() => setFormTab('new')}
+                  className="flex-1 px-4 py-2.5 text-xs font-medium text-center transition-colors"
+                  style={{
+                    borderBottom: formTab === 'new' ? '2px solid var(--primary)' : '2px solid transparent',
+                    color: formTab === 'new' ? 'var(--primary)' : 'var(--muted-foreground)',
+                  }}
+                >
+                  <Plus className="w-3.5 h-3.5 inline mr-1.5" />
+                  Nueva tarea
+                </button>
+                <button
+                  onClick={() => setFormTab('link')}
+                  className="flex-1 px-4 py-2.5 text-xs font-medium text-center transition-colors"
+                  style={{
+                    borderBottom: formTab === 'link' ? '2px solid var(--primary)' : '2px solid transparent',
+                    color: formTab === 'link' ? 'var(--primary)' : 'var(--muted-foreground)',
+                  }}
+                >
+                  <Link2 className="w-3.5 h-3.5 inline mr-1.5" />
+                  Vincular existente
+                </button>
+              </div>
+            )}
+
             {/* Modal Body */}
             <div className="px-5 py-4 space-y-3 max-h-[60vh] overflow-y-auto">
-              {/* Title */}
-              <div>
-                <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                  <MessageSquare className="w-3 h-3" /> Título
-                </label>
-                <input
-                  type="text"
-                  value={form.title}
-                  onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                  placeholder="Nombre de la actividad"
-                  className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
-                  autoFocus
-                />
-              </div>
 
-              {/* Project */}
-              <div>
-                <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                  <FolderOpen className="w-3 h-3" /> Proyecto
-                </label>
-                <select value={form.projectId} onChange={e => setForm(f => ({ ...f, projectId: e.target.value }))}
-                  className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none">
-                  <option value="">Sin proyecto</option>
-                  {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
-                </select>
-              </div>
+              {/* ══════ TAB: Nueva tarea ══════ */}
+              {(formTab === 'new' || editingTask) && (
+                <>
+                  {/* Title */}
+                  <div>
+                    <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                      <MessageSquare className="w-3 h-3" /> Titulo *
+                    </label>
+                    <input
+                      type="text"
+                      value={form.title}
+                      onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                      placeholder="Nombre de la actividad"
+                      className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
+                      style={{ color: 'var(--foreground)' }}
+                      autoFocus
+                    />
+                  </div>
 
-              {/* Assignee */}
-              <div>
-                <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                  <User className="w-3 h-3" /> Responsable
-                </label>
-                <select value={form.assigneeId} onChange={e => setForm(f => ({ ...f, assigneeId: e.target.value }))}
-                  className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none">
-                  <option value="">Sin asignar</option>
-                  {teamUsers.map(u => <option key={u.id} value={u.id}>{u.data?.name || 'Usuario'}</option>)}
-                  {authUser && <option value={authUser.uid}>{authUser.displayName || authUser.email || 'Yo'}</option>}
-                </select>
-              </div>
+                  {/* Project */}
+                  <div>
+                    <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                      <FolderOpen className="w-3 h-3" /> Proyecto
+                    </label>
+                    <select value={form.projectId} onChange={e => setForm(f => ({ ...f, projectId: e.target.value }))}
+                      className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none"
+                      style={{ color: 'var(--foreground)' }}>
+                      <option value="">Sin proyecto</option>
+                      {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
+                    </select>
+                  </div>
 
-              {/* Priority + Status row */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                    <Flag className="w-3 h-3" /> Prioridad
-                  </label>
-                  <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value as AgendaTask['priority'] }))}
-                    className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none">
-                    {['Alta', 'Media', 'Baja', 'Crítica'].map(p => <option key={p} value={p}>{p}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                    <CheckCircle2 className="w-3 h-3" /> Estado
-                  </label>
-                  <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as AgendaTask['status'] }))}
-                    className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none">
-                    {['Por hacer', 'En progreso', 'Revision', 'Completado'].map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-              </div>
+                  {/* Responsable */}
+                  <div>
+                    <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                      <User className="w-3 h-3" /> Responsable
+                    </label>
+                    <select value={form.assigneeId} onChange={e => setForm(f => ({ ...f, assigneeId: e.target.value }))}
+                      className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none"
+                      style={{ color: 'var(--foreground)' }}>
+                      <option value="">Sin asignar</option>
+                      {allUserOptions.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                    </select>
+                  </div>
 
-              {/* Observations */}
-              <div>
-                <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                  <MessageSquare className="w-3 h-3" /> Observaciones
-                </label>
-                <textarea
-                  value={form.observations}
-                  onChange={e => setForm(f => ({ ...f, observations: e.target.value }))}
-                  placeholder="Notas adicionales..."
-                  className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--primary)]/30 resize-none"
-                  rows={3}
-                />
-              </div>
+                  {/* Participantes */}
+                  <div>
+                    <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                      <Users className="w-3 h-3" /> Participantes
+                    </label>
+                    <div className="flex flex-wrap gap-1.5 p-2 rounded-lg border border-[var(--border)] bg-[var(--input)] min-h-[36px]">
+                      {allUserOptions.map(u => {
+                        const isSelected = form.participantIds.includes(u.id);
+                        // Don't show the assignee as a separate participant option to avoid confusion
+                        // but still allow selecting them
+                        return (
+                          <button
+                            key={u.id}
+                            type="button"
+                            onClick={() => {
+                              setForm(f => ({
+                                ...f,
+                                participantIds: isSelected
+                                  ? f.participantIds.filter(id => id !== u.id)
+                                  : [...f.participantIds, u.id],
+                              }));
+                            }}
+                            className="text-[10px] px-2 py-1 rounded-md transition-colors"
+                            style={{
+                              background: isSelected ? 'var(--primary)' : 'var(--af-bg3)',
+                              color: isSelected ? 'var(--primary-foreground)' : 'var(--foreground)',
+                              border: isSelected ? 'none' : '1px solid var(--border)',
+                            }}
+                          >
+                            {u.name}
+                          </button>
+                        );
+                      })}
+                      {allUserOptions.length === 0 && (
+                        <span className="text-[10px] text-[var(--muted-foreground)]">No hay miembros en el equipo</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Priority + Status row */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                        <Flag className="w-3 h-3" /> Prioridad
+                      </label>
+                      <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}
+                        className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none"
+                        style={{ color: 'var(--foreground)' }}>
+                        {PRIORITIES.map(p => <option key={p} value={p}>{p}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                        <CheckCircle2 className="w-3 h-3" /> Estado
+                      </label>
+                      <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
+                        className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none"
+                        style={{ color: 'var(--foreground)' }}>
+                        {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Observations */}
+                  <div>
+                    <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                      <MessageSquare className="w-3 h-3" /> Observaciones
+                    </label>
+                    <textarea
+                      value={form.observations}
+                      onChange={e => setForm(f => ({ ...f, observations: e.target.value }))}
+                      placeholder="Notas adicionales..."
+                      className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--primary)]/30 resize-none"
+                      style={{ color: 'var(--foreground)' }}
+                      rows={2}
+                    />
+                  </div>
+
+                  {/* Horas programadas */}
+                  <div>
+                    <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                      <Clock className="w-3 h-3" /> Horas programadas
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {form.hours.sort((a, b) => a - b).map(h => (
+                        <span key={h} className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-md"
+                          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}>
+                          {formatHourShort(h)}
+                          <button
+                            type="button"
+                            onClick={() => removeHourFromForm(h)}
+                            className="hover:opacity-70 transition-opacity"
+                            aria-label={`Quitar ${formatHourShort(h)}`}
+                          >
+                            <X className="w-2.5 h-2.5" />
+                          </button>
+                        </span>
+                      ))}
+                      {/* Add hour button */}
+                      <div className="relative">
+                        <select
+                          value=""
+                          onChange={e => {
+                            if (e.target.value) addHourToForm(Number(e.target.value));
+                          }}
+                          className="text-[10px] px-2 py-1 rounded-md border border-dashed border-[var(--border)] bg-[var(--af-bg3)] outline-none cursor-pointer"
+                          style={{ color: 'var(--muted-foreground)' }}
+                        >
+                          <option value="">+ Agregar hora</option>
+                          {HOURS.filter(h => !form.hours.includes(h)).map(h => (
+                            <option key={h} value={h}>{formatHourShort(h)}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    {form.hours.length === 0 && (
+                      <p className="text-[10px] text-red-400 mt-1">Selecciona al menos una hora</p>
+                    )}
+                  </div>
+
+                  {/* Subtareas */}
+                  <div>
+                    <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                      <ListChecks className="w-3 h-3" /> Subtareas {form.subtasks.length > 0 ? `(${form.subtasks.filter(s => s.done).length}/${form.subtasks.length})` : ''}
+                    </label>
+                    <div className="space-y-2">
+                      {form.subtasks.map((st, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={st.done}
+                            onChange={e => updateSubtask(idx, 'done', e.target.checked)}
+                            className="w-3.5 h-3.5 rounded flex-shrink-0 accent-[var(--af-accent)]"
+                            style={{ accentColor: 'var(--af-accent)' }}
+                          />
+                          <input
+                            type="text"
+                            value={st.text}
+                            onChange={e => updateSubtask(idx, 'text', e.target.value)}
+                            placeholder={`Subtarea ${idx + 1}`}
+                            className={`flex-1 text-[12px] bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 outline-none focus:border-[var(--af-accent)]/50 ${st.done ? 'line-through' : ''}`}
+                            style={{ color: st.done ? 'var(--muted-foreground)' : 'var(--foreground)' }}
+                          />
+                          <button
+                            type="button"
+                            className="text-[var(--muted-foreground)] hover:text-red-400 cursor-pointer bg-transparent border-none p-0 flex-shrink-0"
+                            onClick={() => removeSubtask(idx)}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        className="flex items-center gap-1.5 text-[11px] cursor-pointer hover:underline bg-transparent border-none p-0 font-medium"
+                        style={{ color: 'var(--af-accent)' }}
+                        onClick={addSubtask}
+                      >
+                        <Plus className="w-3 h-3" /> Agregar subtarea
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* ══════ TAB: Vincular existente ══════ */}
+              {formTab === 'link' && !editingTask && (
+                <>
+                  {/* Project filter */}
+                  <div>
+                    <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                      <FolderOpen className="w-3 h-3" /> Filtrar por proyecto
+                    </label>
+                    <select value={linkFilterProject} onChange={e => setLinkFilterProject(e.target.value)}
+                      className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none"
+                      style={{ color: 'var(--foreground)' }}>
+                      <option value="">Todos los proyectos</option>
+                      {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
+                    </select>
+                  </div>
+
+                  {/* Search */}
+                  <div>
+                    <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                      <Search className="w-3 h-3" /> Buscar tarea
+                    </label>
+                    <input
+                      type="text"
+                      value={linkSearch}
+                      onChange={e => setLinkSearch(e.target.value)}
+                      placeholder="Buscar por titulo o proyecto..."
+                      className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
+                      style={{ color: 'var(--foreground)' }}
+                    />
+                  </div>
+
+                  {/* Task list */}
+                  <div className="max-h-40 overflow-y-auto rounded-lg border border-[var(--border)]" style={{ background: 'var(--af-bg3)' }}>
+                    {linkableTasks.length === 0 ? (
+                      <div className="text-center py-4">
+                        <p className="text-[10px] text-[var(--muted-foreground)]">No hay tareas disponibles para vincular</p>
+                      </div>
+                    ) : (
+                      linkableTasks.slice(0, 20).map(t => {
+                        const isSelected = linkTaskId === t.id;
+                        const pc = PRIO_COLORS[t.data.priority] || PRIO_COLORS['Media'];
+                        return (
+                          <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => {
+                              setLinkTaskId(isSelected ? '' : t.id);
+                              if (!isSelected) {
+                                setForm(f => ({
+                                  ...f,
+                                  title: t.data.title,
+                                  projectId: t.data.projectId || '',
+                                  assigneeId: t.data.assigneeId || '',
+                                  priority: t.data.priority || 'Media',
+                                  status: t.data.status || 'Por hacer',
+                                  observations: t.data.description || '',
+                                  subtasks: t.data.subtasks || [],
+                                }));
+                              }
+                            }}
+                            className="w-full text-left px-3 py-2 flex items-center gap-2 transition-colors border-b border-[var(--border)] last:border-b-0"
+                            style={{
+                              background: isSelected ? 'var(--accent)' : 'transparent',
+                            }}
+                          >
+                            <span className={`w-2 h-2 rounded-full ${pc.dot} flex-shrink-0`} />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium truncate" style={{ color: 'var(--foreground)' }}>{t.data.title}</p>
+                              <p className="text-[9px] truncate" style={{ color: 'var(--muted-foreground)' }}>
+                                {projectMap[t.data.projectId] || 'Sin proyecto'} &middot; {userMap[t.data.assigneeId]?.name || 'Sin asignar'}
+                              </p>
+                            </div>
+                            {isSelected && (
+                              <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--primary)' }} />
+                            )}
+                          </button>
+                        );
+                      })
+                    )}
+                    {linkableTasks.length > 20 && (
+                      <p className="text-[9px] text-center py-1" style={{ color: 'var(--muted-foreground)' }}>
+                        Mostrando 20 de {linkableTasks.length} tareas
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Selected task info */}
+                  {linkTaskId && (() => {
+                    const selTask = ctxTasks.find(t => t.id === linkTaskId);
+                    if (!selTask) return null;
+                    const pc = PRIO_COLORS[selTask.data.priority] || PRIO_COLORS['Media'];
+                    return (
+                      <div className={`rounded-lg p-3 ${pc.bg} border-l-4 ${pc.border}`}>
+                        <p className="text-xs font-semibold mb-1" style={{ color: 'var(--foreground)' }}>{selTask.data.title}</p>
+                        <div className="flex items-center gap-3 text-[10px]" style={{ color: 'var(--muted-foreground)' }}>
+                          <span className="flex items-center gap-1"><FolderOpen className="w-2.5 h-2.5" />{projectMap[selTask.data.projectId] || 'Sin proyecto'}</span>
+                          <span className="flex items-center gap-1"><User className="w-2.5 h-2.5" />{userMap[selTask.data.assigneeId]?.name || 'Sin asignar'}</span>
+                          <span className={pc.text}>{selTask.data.priority}</span>
+                        </div>
+                        {((selTask.data.subtasks || [])).length > 0 && (
+                          <p className="text-[9px] mt-1" style={{ color: 'var(--muted-foreground)' }}>
+                            Subtareas: {(selTask.data.subtasks || []).filter(s => s.done).length}/{(selTask.data.subtasks || []).length}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })()}
+
+                  {/* Participantes adicionales (link) */}
+                  <div>
+                    <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                      <Users className="w-3 h-3" /> Participantes adicionales
+                    </label>
+                    <div className="flex flex-wrap gap-1.5 p-2 rounded-lg border border-[var(--border)] bg-[var(--input)] min-h-[36px]">
+                      {allUserOptions.map(u => {
+                        const isSelected = form.participantIds.includes(u.id);
+                        return (
+                          <button
+                            key={u.id}
+                            type="button"
+                            onClick={() => {
+                              setForm(f => ({
+                                ...f,
+                                participantIds: isSelected
+                                  ? f.participantIds.filter(id => id !== u.id)
+                                  : [...f.participantIds, u.id],
+                              }));
+                            }}
+                            className="text-[10px] px-2 py-1 rounded-md transition-colors"
+                            style={{
+                              background: isSelected ? 'var(--primary)' : 'var(--af-bg3)',
+                              color: isSelected ? 'var(--primary-foreground)' : 'var(--foreground)',
+                              border: isSelected ? 'none' : '1px solid var(--border)',
+                            }}
+                          >
+                            {u.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Horas programadas (link) */}
+                  <div>
+                    <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
+                      <Clock className="w-3 h-3" /> Horas programadas
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {form.hours.sort((a, b) => a - b).map(h => (
+                        <span key={h} className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-md"
+                          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}>
+                          {formatHourShort(h)}
+                          <button type="button" onClick={() => removeHourFromForm(h)} className="hover:opacity-70 transition-opacity">
+                            <X className="w-2.5 h-2.5" />
+                          </button>
+                        </span>
+                      ))}
+                      <select
+                        value=""
+                        onChange={e => {
+                          if (e.target.value) addHourToForm(Number(e.target.value));
+                        }}
+                        className="text-[10px] px-2 py-1 rounded-md border border-dashed border-[var(--border)] bg-[var(--af-bg3)] outline-none cursor-pointer"
+                        style={{ color: 'var(--muted-foreground)' }}
+                      >
+                        <option value="">+ Agregar hora</option>
+                        {HOURS.filter(h => !form.hours.includes(h)).map(h => (
+                          <option key={h} value={h}>{formatHourShort(h)}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {form.hours.length === 0 && (
+                      <p className="text-[10px] text-red-400 mt-1">Selecciona al menos una hora</p>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Modal Footer */}
             <div className="flex items-center gap-2 px-5 py-3 border-t border-[var(--border)]">
               {editingTask && (
-                <button onClick={() => { handleDelete(editingTask.id); setShowForm(false); }}
-                  className="flex items-center gap-1.5 text-xs text-red-500 hover:text-red-400 transition-colors mr-auto">
+                <button
+                  onClick={() => setConfirmDelete(editingTask.id)}
+                  className="flex items-center gap-1.5 text-xs text-red-500 hover:text-red-400 transition-colors mr-auto"
+                >
                   <Trash2 className="w-3.5 h-3.5" /> Eliminar
                 </button>
               )}
               <div className="flex-1" />
-              <button onClick={() => setShowForm(false)}
+              <button onClick={closeForm}
                 className="text-xs px-4 py-2 rounded-lg border border-[var(--border)] hover:bg-[var(--af-bg3)] transition-colors">
                 Cancelar
               </button>
-              <button onClick={handleSave}
-                className="text-xs px-4 py-2 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-medium hover:opacity-90 active:scale-95 transition-all">
-                {editingTask ? 'Guardar' : 'Crear'}
+              <button
+                onClick={() => {
+                  if (editingTask) {
+                    handleUpdateTask();
+                  } else if (formTab === 'new') {
+                    handleSaveNew();
+                  } else {
+                    handleLinkExisting();
+                  }
+                }}
+                disabled={saving || !form.title.trim() || form.hours.length === 0 || (formTab === 'link' && !linkTaskId)}
+                className="text-xs px-4 py-2 rounded-lg font-medium hover:opacity-90 active:scale-95 transition-all disabled:opacity-50"
+                style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
+              >
+                {saving ? 'Guardando...' : editingTask ? 'Guardar' : formTab === 'new' ? 'Crear' : 'Vincular'}
               </button>
             </div>
           </div>

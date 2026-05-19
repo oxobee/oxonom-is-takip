@@ -82,6 +82,12 @@ export interface Task {
     createdBy?: string;
     updatedAt?: FirestoreTimestamp;
     updatedBy?: string;
+    agendaMeta?: {
+      dayKey: string;
+      hourSlots: number[];
+      participantIds: string[];
+      isAgendaItem: boolean;
+    };
   };
 }
 

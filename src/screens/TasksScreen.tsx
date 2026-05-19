@@ -6,7 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import { useTimeTrackingContext } from '@/hooks/useTimeTracking';
 import { SkeletonTasks } from '@/components/ui/SkeletonLoaders';
 import { fmtDate, getInitials, prioColor, taskStColor, avatarColor } from '@/lib/helpers';
-import { LayoutList, KanbanSquare, Plus, GripVertical, X, Search, Filter, Download, Calendar, User, Pencil, Trash2, ChevronDown, Layers, FileText, BarChart3, CheckCircle2, AlertTriangle, Clock, TrendingUp, Users, Tag, Target } from 'lucide-react';
+import { LayoutList, KanbanSquare, Plus, GripVertical, X, Search, Filter, Download, Calendar, CalendarDays, User, Pencil, Trash2, ChevronDown, Layers, FileText, BarChart3, CheckCircle2, AlertTriangle, Clock, TrendingUp, Users, Tag, Target } from 'lucide-react';
 import { exportTasksExcel } from '@/lib/export-excel';
 import { exportTasksPDF } from '@/lib/export-pdf';
 import { FloatingActionButton } from '@/components/ui/FloatingActionButton';
@@ -55,6 +55,14 @@ function getAssigneeIds(t: Task): string[] {
   if (Array.isArray(t.data.assigneeIds) && t.data.assigneeIds.length > 0) return t.data.assigneeIds;
   if (t.data.assigneeId) return [t.data.assigneeId];
   return [];
+}
+
+function formatHourSlots(slots: number[]): string {
+  if (!slots || slots.length === 0) return '';
+  const min = Math.min(...slots);
+  const max = Math.max(...slots);
+  const fmt = (h: number) => `${h > 12 ? h - 12 : h}${h >= 12 ? 'pm' : 'am'}`;
+  return slots.length === 1 ? fmt(min) : `${fmt(min)}-${fmt(max)}`;
 }
 
 function AssigneeAvatars({ task, getUserName, size = 'sm' }: { task: Task; getUserName: (uid: string) => string; size?: 'sm' | 'md' }) {
@@ -725,6 +733,15 @@ export default function TasksScreen() {
                               {tTags.slice(0, 2).join(', ')}{tTags.length > 2 ? ` +${tTags.length - 2}` : ''}
                             </span>
                           )}
+                          {t.data.agendaMeta && (
+                            <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] font-medium">
+                              <CalendarDays className="w-2.5 h-2.5" />
+                              Agenda
+                              {t.data.agendaMeta.hourSlots?.length > 0 && (
+                                <span className="opacity-70">{formatHourSlots(t.data.agendaMeta.hourSlots)}</span>
+                              )}
+                            </span>
+                          )}
                           <AssigneeAvatars task={t} getUserName={getUserName} />
                         </div>
                       </div>
@@ -939,6 +956,18 @@ export default function TasksScreen() {
                                 {tTags.length > 2 && (
                                   <span className="text-[9px] px-1 py-0.5 rounded-full bg-[var(--af-bg4)] text-[var(--muted-foreground)]">+{tTags.length - 2}</span>
                                 )}
+                              </div>
+                            )}
+                            {/* Agenda badge */}
+                            {t.data.agendaMeta && (
+                              <div className="mt-1.5">
+                                <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] font-medium">
+                                  <CalendarDays className="w-2.5 h-2.5" />
+                                  Agenda
+                                  {t.data.agendaMeta.hourSlots?.length > 0 && (
+                                    <span className="opacity-70">{formatHourSlots(t.data.agendaMeta.hourSlots)}</span>
+                                  )}
+                                </span>
                               </div>
                             )}
                           </div>
