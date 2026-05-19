@@ -87,6 +87,13 @@
   --af-text3: #a3a3a3;
   --af-accent: #9e7c3e;
   --af-accent2: #b8933f;
+  /* Agenda note colors — light mode */
+  --note-amber: #fef3c7;
+  --note-blue: #dbeafe;
+  --note-pink: #fce7f3;
+  --note-green: #d1fae5;
+  --note-purple: #ede9fe;
+  --note-yellow: #fef9c3;
 }
 
 .dark {
@@ -132,6 +139,13 @@
   --af-text3: #5e5f63;
   --af-accent: #c8a96e;
   --af-accent2: #e2c898;
+  /* Agenda note colors — dark mode */
+  --note-amber: #422006;
+  --note-blue: #172554;
+  --note-pink: #4a1942;
+  --note-green: #064e3b;
+  --note-purple: #2e1065;
+  --note-yellow: #422006;
 }
 
 @layer base {

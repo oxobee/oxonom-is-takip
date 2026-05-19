@@ -33,10 +33,10 @@ const HOURS = Array.from({ length: 10 }, (_, i) => i + 8); // 8..17
 const SLOT_H = 56; // px height per slot
 
 const PRIO_COLORS: Record<string, { bg: string; border: string; text: string; dot: string }> = {
-  'Alta':    { bg: 'bg-red-50', border: 'border-l-red-500', text: 'text-red-700', dot: 'bg-red-500' },
-  'Media':   { bg: 'bg-amber-50', border: 'border-l-amber-500', text: 'text-amber-700', dot: 'bg-amber-500' },
-  'Baja':    { bg: 'bg-emerald-50', border: 'border-l-emerald-500', text: 'text-emerald-700', dot: 'bg-emerald-500' },
-  'Crítica': { bg: 'bg-purple-50', border: 'border-l-purple-500', text: 'text-purple-700', dot: 'bg-purple-500' },
+  'Alta':    { bg: 'bg-red-500/10 dark:bg-red-500/15', border: 'border-l-red-500', text: 'text-red-600 dark:text-red-400', dot: 'bg-red-500' },
+  'Media':   { bg: 'bg-amber-500/10 dark:bg-amber-500/15', border: 'border-l-amber-500', text: 'text-amber-600 dark:text-amber-400', dot: 'bg-amber-500' },
+  'Baja':    { bg: 'bg-emerald-500/10 dark:bg-emerald-500/15', border: 'border-l-emerald-500', text: 'text-emerald-600 dark:text-emerald-400', dot: 'bg-emerald-500' },
+  'Crítica': { bg: 'bg-purple-500/10 dark:bg-purple-500/15', border: 'border-l-purple-500', text: 'text-purple-600 dark:text-purple-400', dot: 'bg-purple-500' },
 };
 
 const STATUS_ICON: Record<string, React.ReactNode> = {
@@ -46,7 +46,10 @@ const STATUS_ICON: Record<string, React.ReactNode> = {
   'Completado': <CheckCircle2 className="w-3 h-3 text-emerald-500" />,
 };
 
-const NOTE_COLORS = ['#fef3c7', '#dbeafe', '#fce7f3', '#d1fae5', '#ede9fe', '#fef9c3'];
+const NOTE_COLORS = [
+  'var(--note-amber)', 'var(--note-blue)', 'var(--note-pink)',
+  'var(--note-green)', 'var(--note-purple)', 'var(--note-yellow)',
+];
 
 /* ─── Helpers ─── */
 function getWeekDates(baseDate: Date): Date[] {
@@ -258,30 +261,30 @@ export default function WeeklyAgendaScreen() {
               style={{
                 display: 'grid',
                 gridTemplateColumns: `54px repeat(7, minmax(130px, 1fr))`,
-                border: '1.5px solid #d1d5db',
+                border: '1.5px solid var(--border)',
                 borderRadius: '10px',
                 overflow: 'hidden',
-                background: '#ffffff',
+                background: 'var(--card)',
               }}
             >
               {/* ─── Column Headers ─── */}
-              <div className="col-header" style={{ background: '#f9fafb', borderBottom: '1.5px solid #d1d5db', borderRight: '1px solid #e5e7eb' }} />
+              <div className="col-header" style={{ background: 'var(--af-bg3)', borderBottom: '1.5px solid var(--border)', borderRight: '1px solid var(--border)' }} />
               {weekDates.map((d, i) => {
                 const dk = dateKey(d);
                 const isToday = dk === todayKey;
                 return (
                   <div key={dk} className="col-header" style={{
-                    background: isToday ? 'var(--primary)' : '#f9fafb',
-                    borderBottom: '1.5px solid #d1d5db',
-                    borderRight: i < 6 ? '1px solid #e5e7eb' : 'none',
-                    color: isToday ? '#fff' : undefined,
+                    background: isToday ? 'var(--primary)' : 'var(--af-bg3)',
+                    borderBottom: '1.5px solid var(--border)',
+                    borderRight: i < 6 ? '1px solid var(--border)' : 'none',
+                    color: isToday ? 'var(--primary-foreground)' : 'var(--foreground)',
                     padding: '8px 4px',
                     textAlign: 'center',
                   }}>
                     <div style={{ fontWeight: 700, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       {DAY_NAMES[i]}
                     </div>
-                    <div style={{ fontSize: '10px', marginTop: 2, opacity: isToday ? 0.9 : 0.6 }}>
+                    <div style={{ fontSize: '10px', marginTop: 2, color: isToday ? 'var(--primary-foreground)' : 'var(--muted-foreground)' }}>
                       {fmtDay(d)}
                     </div>
                   </div>
@@ -293,13 +296,13 @@ export default function WeeklyAgendaScreen() {
                 <React.Fragment key={hour}>
                   {/* Time label */}
                   <div style={{
-                    background: '#f9fafb',
-                    borderRight: '1px solid #e5e7eb',
-                    borderBottom: '1px solid #e5e7eb',
+                    background: 'var(--af-bg3)',
+                    borderRight: '1px solid var(--border)',
+                    borderBottom: '1px solid var(--border)',
                     padding: '4px 6px',
                     textAlign: 'right',
                     fontSize: '10px',
-                    color: '#6b7280',
+                    color: 'var(--muted-foreground)',
                     display: 'flex',
                     alignItems: 'flex-start',
                     justifyContent: 'flex-end',
@@ -315,11 +318,11 @@ export default function WeeklyAgendaScreen() {
                     const slotTasks = getTasksForSlot(dk, hour);
                     return (
                       <div key={dk} style={{
-                        borderRight: di < 6 ? '1px solid #e5e7eb' : 'none',
-                        borderBottom: '1px solid #e5e7eb',
+                        borderRight: di < 6 ? '1px solid var(--border)' : 'none',
+                        borderBottom: '1px solid var(--border)',
                         padding: '2px 3px',
                         minHeight: `${SLOT_H}px`,
-                        background: isToday ? 'rgba(var(--primary), 0.02)' : '#ffffff',
+                        background: isToday ? 'var(--accent)' : 'var(--card)',
                         position: 'relative' as const,
                         cursor: 'pointer',
                       }}
@@ -351,12 +354,12 @@ export default function WeeklyAgendaScreen() {
                                 <span style={{ fontWeight: 600 }} className="truncate">{t.title}</span>
                               </div>
                               {t.projectId && (
-                                <div className="flex items-center gap-1 mt-0.5" style={{ color: '#6b7280', fontSize: '9px' }}>
+                                <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
                                   <FolderOpen className="w-2.5 h-2.5" />
                                   <span className="truncate">{projectMap[t.projectId] || '—'}</span>
                                 </div>
                               )}
-                              <div className="flex items-center gap-1.5 mt-0.5" style={{ color: '#6b7280', fontSize: '9px' }}>
+                              <div className="flex items-center gap-1.5 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
                                 {STATUS_ICON[t.status]}
                                 <span className="truncate">{userMap[t.assigneeId] || ''}</span>
                               </div>
@@ -393,7 +396,7 @@ export default function WeeklyAgendaScreen() {
               <StickyNote className="w-4 h-4 text-amber-500" />
               <span className="text-xs font-semibold">Notas de la semana</span>
               <div className="flex-1" />
-              <button onClick={addNote} className="w-6 h-6 rounded-md bg-amber-100 text-amber-700 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Agregar nota">
+              <button onClick={addNote} className="w-6 h-6 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Agregar nota">
                 <Plus className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -404,12 +407,12 @@ export default function WeeklyAgendaScreen() {
                   value={note.text}
                   onChange={e => updateNote(note.id, e.target.value)}
                   placeholder="Escribe una nota..."
-                  className="w-full bg-transparent text-xs resize-none outline-none placeholder:text-black/30 min-h-[60px]"
+                  className="w-full bg-transparent text-xs resize-none outline-none placeholder:text-[var(--muted-foreground)] min-h-[60px]"
                   rows={3}
                 />
                 <button
                   onClick={() => deleteNote(note.id)}
-                  className="absolute top-1 right-1 w-5 h-5 rounded bg-black/10 text-black/50 flex items-center justify-center opacity-0 group-hover/note:opacity-100 transition-opacity hover:bg-red-200"
+                  className="absolute top-1 right-1 w-5 h-5 rounded bg-black/10 dark:bg-white/10 text-[var(--muted-foreground)] flex items-center justify-center opacity-0 group-hover/note:opacity-100 transition-opacity hover:bg-red-200 dark:hover:bg-red-800"
                   aria-label="Eliminar nota"
                 >
                   <Trash2 className="w-3 h-3" />
@@ -419,7 +422,7 @@ export default function WeeklyAgendaScreen() {
 
             {weekNotes.length === 0 && (
               <div className="text-center py-6 px-2">
-                <StickyNote className="w-8 h-8 text-amber-300 mx-auto mb-2" />
+                <StickyNote className="w-8 h-8 text-amber-500/50 dark:text-amber-400/40 mx-auto mb-2" />
                 <p className="text-[10px] text-[var(--muted-foreground)]">Agrega notas, recordatorios o ideas para la semana</p>
               </div>
             )}
