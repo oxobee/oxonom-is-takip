@@ -10,6 +10,7 @@ import React, {
 } from 'react';
 import { toast } from 'sonner';
 import type { NotifEntry } from '@/lib/types';
+import { getAuthHeaders } from '@/lib/firebase-service';
 
 /* ===== Context value interface ===== */
 export interface NotificationContextValue {
@@ -184,6 +185,57 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     [notifSound],
   );
 
+  /* ---------- Firestore persistence helpers ---------- */
+  const persistNotifToFirestore = useCallback(async (entry: NotifEntry) => {
+    try {
+      const authHeaders = await getAuthHeaders();
+      if (!authHeaders['Authorization']) return; // Not authenticated
+      await fetch('/api/notifications/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        body: JSON.stringify({
+          title: entry.title,
+          body: entry.body,
+          icon: entry.icon,
+          type: entry.type,
+          screen: entry.screen,
+          itemId: entry.itemId,
+        }),
+      });
+    } catch (err) {
+      // Silently fail — don't block the notification
+      console.warn('[Archii Notif] Firestore persist failed:', err);
+    }
+  }, []);
+
+  const loadNotifHistoryFromFirestore = useCallback(async () => {
+    try {
+      const authHeaders = await getAuthHeaders();
+      if (!authHeaders['Authorization']) return;
+      const res = await fetch('/api/notifications/history?limit=50', {
+        headers: authHeaders,
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.notifications && Array.isArray(data.notifications)) {
+        const entries: NotifEntry[] = data.notifications.map((n: any) => ({
+          id: n.id,
+          title: n.title,
+          body: n.body || '',
+          icon: n.icon || '🔔',
+          type: n.type || 'info',
+          read: n.read || false,
+          timestamp: new Date(n.timestamp),
+          screen: n.screen || null,
+          itemId: n.itemId || null,
+        }));
+        setNotifHistory(entries);
+      }
+    } catch (err) {
+      console.warn('[Archii Notif] Firestore load failed:', err);
+    }
+  }, []);
+
   /* ---------- sendNotif: UNIFIED notification ---------- */
   const sendNotif = useCallback(
     (title: string, body: string, icon?: string, tag?: string, data?: any) => {
@@ -200,8 +252,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         itemId: data?.itemId || null,
       };
 
-      // ALWAYS add to history
+      // ALWAYS add to history (local state)
       setNotifHistory((prev) => [notifEntry, ...prev].slice(0, 100));
+
+      // Persist to Firestore (async, non-blocking)
+      persistNotifToFirestore(notifEntry);
 
       // ALWAYS show in-app toast (even when tab is active)
       setInAppNotifs((prev) => [...prev, { ...notifEntry, ts: Date.now() }]);
@@ -240,7 +295,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         }
       }
     },
-    [playNotifSound, vibrateNotif],
+    [playNotifSound, vibrateNotif, persistNotifToFirestore],
   );
 
   /* ---------- toggleNotifPref ---------- */
@@ -253,11 +308,35 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     setNotifHistory((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
+    // Persist to Firestore
+    (async () => {
+      try {
+        const authHeaders = await getAuthHeaders();
+        if (!authHeaders['Authorization']) return;
+        await fetch('/api/notifications/history', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', ...authHeaders },
+          body: JSON.stringify({ ids: [id] }),
+        });
+      } catch {}
+    })();
   }, []);
 
   /* ---------- markAllNotifRead ---------- */
   const markAllNotifRead = useCallback(() => {
     setNotifHistory((prev) => prev.map((n) => ({ ...n, read: true })));
+    // Persist to Firestore
+    (async () => {
+      try {
+        const authHeaders = await getAuthHeaders();
+        if (!authHeaders['Authorization']) return;
+        await fetch('/api/notifications/history', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', ...authHeaders },
+          body: JSON.stringify({ markAll: true }),
+        });
+      } catch {}
+    })();
   }, []);
 
   /* ---------- clearNotifHistory ---------- */
@@ -266,6 +345,17 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     setInAppNotifs([]);
     setUnreadCount(0);
     showToast('Historial de notificaciones limpiado');
+    // Clear from Firestore
+    (async () => {
+      try {
+        const authHeaders = await getAuthHeaders();
+        if (!authHeaders['Authorization']) return;
+        await fetch('/api/notifications/history', {
+          method: 'DELETE',
+          headers: authHeaders,
+        });
+      } catch {}
+    })();
   }, [showToast]);
 
   /* ---------- resetNotifOnTenantSwitch: clear history + banners silently ---------- */
@@ -281,7 +371,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
      EFFECTS
      ======================================== */
 
-  /* 1. Init notification permission + restore prefs + auto-show banner after 5s (3-day dismiss cooldown) */
+  /* 1. Init notification permission + restore prefs + load history from Firestore + auto-show banner after 5s (3-day dismiss cooldown) */
   useEffect(() => {
     if (!('Notification' in window)) return;
     setNotifPermission(Notification.permission);
@@ -294,6 +384,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     } catch (err) {
       console.error('[Archii]', err);
     }
+    // Load persisted notification history from Firestore
+    loadNotifHistoryFromFirestore();
     // Auto-show permission banner after 5 seconds if not granted and not recently dismissed
     if (Notification.permission === 'default') {
       const dismissed = localStorage.getItem('archii-notif-dismissed');
@@ -306,7 +398,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [loadNotifHistoryFromFirestore]);
 
   /* 2. Persist sound pref to localStorage */
   useEffect(() => {
