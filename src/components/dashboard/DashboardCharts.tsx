@@ -37,7 +37,7 @@ export default function DashboardCharts({
           <div className="text-[14px] font-semibold flex items-center gap-2">
             <TrendingUp size={14} className="text-[var(--af-accent)]" aria-hidden="true"/> Tendencia de Ingresos
           </div>
-          <span className="text-[9px] text-[var(--af-text3)] px-2 py-0.5 rounded-full bg-[var(--af-bg4)]">6 meses</span>
+          <span className="text-[10px] text-[var(--af-text3)] px-2 py-0.5 rounded-full bg-[var(--af-bg4)]">6 meses</span>
         </div>
         {revenueTrend.some(d => d.facturado > 0 || d.cobrado > 0) ? (
           <ResponsiveContainer width="100%" height={170}>

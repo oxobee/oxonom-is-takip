@@ -59,7 +59,7 @@ export default function DashboardSprintProgress({
       {taskStatusData.length > 0 && (
         <div className="flex flex-wrap gap-x-2.5 gap-y-1 mt-3 pt-3 border-t border-[var(--border)] justify-center">
           {taskStatusData.map((d: { name: string; value: number }, i: number) => (
-            <div key={i} className="flex items-center gap-1 text-[9px]">
+            <div key={i} className="flex items-center gap-1 text-[10px]">
               <div className="w-1.5 h-1.5 rounded-full" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
               <span className="text-[var(--muted-foreground)]">{d.name}</span>
               <span className="font-semibold">{d.value}</span>

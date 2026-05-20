@@ -99,7 +99,7 @@ export default function FeedbackWidget() {
           title="Enviar feedback"
         >
           <MessageSquarePlus size={20} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
-          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[var(--af-accent)] text-[8px] font-bold text-background flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[var(--af-accent)] text-[9px] font-bold text-background flex items-center justify-center">
             BETA
           </span>
         </motion.button>

@@ -145,7 +145,7 @@ export default function ProjectCards({
                       style={{ width: `${(h.val / h.max) * 100}%` }}
                     />
                   </div>
-                  <span className="text-[8px] text-[var(--muted-foreground)]">{h.label}</span>
+                  <span className="text-[9px] text-[var(--muted-foreground)]">{h.label}</span>
                 </div>
               ))}
             </div>

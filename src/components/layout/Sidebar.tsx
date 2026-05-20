@@ -149,7 +149,7 @@ export default function Sidebar({
             <div>
               <div style={{ fontFamily: "'DM Serif Display', serif" }} className="text-lg flex items-center gap-1.5">
                 Archii
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--af-accent)]/15 text-[var(--af-accent)]" style={{ fontFamily: 'system-ui, sans-serif' }}>2.0</span>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--af-accent)]/15 text-[var(--af-accent)]" style={{ fontFamily: 'system-ui, sans-serif' }}>2.0</span>
               </div>
               <div className="text-[10px] text-[var(--af-text3)]">Premium</div>
             </div>
@@ -220,7 +220,7 @@ export default function Sidebar({
                 <div className="text-[14px] font-medium truncate flex items-center gap-1.5">
                   {activeTenantName || 'Espacio'}
                   {activeTenantRole === 'Super Admin' && (
-                    <span className="inline-flex items-center text-[9px] font-bold bg-gradient-to-r from-[var(--af-accent)] to-amber-500 text-background px-1 py-0.5 rounded-md">ADMIN</span>
+                    <span className="inline-flex items-center text-[10px] font-bold bg-gradient-to-r from-[var(--af-accent)] to-amber-500 text-background px-1 py-0.5 rounded-md">ADMIN</span>
                   )}
                 </div>
                 <div className="text-[11px] text-[var(--af-accent)]">Cambiar espacio</div>
@@ -249,7 +249,7 @@ export default function Sidebar({
           <div className="w-8 h-8 bg-gradient-to-br from-[var(--af-accent)] to-[var(--af-accent2)] rounded-xl shadow-sm flex items-center justify-center flex-shrink-0">
             <Home size={20} strokeWidth={2} className="stroke-background" />
           </div>
-          <div className={`transition-all duration-200 overflow-hidden ${sidebarCollapsed ? 'md:hidden md:w-0' : 'md:block'}`}><div style={{ fontFamily: "'DM Serif Display', serif" }} className="text-lg flex items-center gap-1.5">Archii <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--af-accent)]/15 text-[var(--af-accent)]" style={{ fontFamily: 'system-ui, sans-serif' }}>2.0</span></div><div className="text-[10px] text-[var(--af-text3)]">Premium</div></div>
+          <div className={`transition-all duration-200 overflow-hidden ${sidebarCollapsed ? 'md:hidden md:w-0' : 'md:block'}`}><div style={{ fontFamily: "'DM Serif Display', serif" }} className="text-lg flex items-center gap-1.5">Archii <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--af-accent)]/15 text-[var(--af-accent)]" style={{ fontFamily: 'system-ui, sans-serif' }}>2.0</span></div><div className="text-[10px] text-[var(--af-text3)]">Premium</div></div>
         </div>
         <div className="flex-1 overflow-y-auto py-3 px-3" id="onboarding-sidebar-trigger">
           {/* Desktop nav search — only when expanded */}

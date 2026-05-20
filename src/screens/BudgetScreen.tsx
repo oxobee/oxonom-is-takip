@@ -453,7 +453,7 @@ export default function BudgetScreen() {
                         <span>{e.data.category}</span>
                         {e.data.date && <span> · {e.data.date}</span>}
                         {e.data.vendor && <span> · {e.data.vendor}</span>}
-                        {e.data.paymentMethod && e.data.paymentMethod !== 'Efectivo' && <span className="text-[9px] px-1 py-0.5 rounded bg-[var(--af-bg4)]">{e.data.paymentMethod}</span>}
+                        {e.data.paymentMethod && e.data.paymentMethod !== 'Efectivo' && <span className="text-[10px] px-1 py-0.5 rounded bg-[var(--af-bg4)]">{e.data.paymentMethod}</span>}
                       </div>
                     </div>
                     <div className="text-sm font-semibold">{fmtCOP(Number(e.data.amount))}</div>
