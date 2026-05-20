@@ -9,6 +9,32 @@ import { getFirebase, getFirebaseIdToken, type FirebaseUser, type FirestoreDB } 
 import { fileToBase64, scrubUndefined } from '@/lib/helpers';
 import { DEFAULT_PHASES, PROJECT_TYPE_PHASES, PhaseTemplate } from '@/lib/types';
 
+/**
+ * Deduplication guard: prevents double-creation when offline writes are queued
+ * but the user sees an error and retries. Key = "action:identifier", value = timestamp.
+ * Entries auto-expire after 30 seconds.
+ */
+const _pendingWrites = new Map<string, number>();
+const DEDUP_TTL_MS = 30_000;
+
+function dedupStart(key: string): boolean {
+  const now = Date.now();
+  // Clean expired entries
+  for (const [k, t] of _pendingWrites) {
+    if (now - t > DEDUP_TTL_MS) _pendingWrites.delete(k);
+  }
+  if (_pendingWrites.has(key)) {
+    console.warn('[Archii] Dedup: blocking duplicate write for', key);
+    return false; // Already in progress
+  }
+  _pendingWrites.set(key, now);
+  return true; // OK to proceed
+}
+
+function dedupEnd(key: string) {
+  _pendingWrites.delete(key);
+}
+
 type ToastFn = (msg: string, type?: string) => void;
 
 /** Guard: verifica que el usuario esté autenticado antes de cualquier write */
@@ -135,13 +161,21 @@ async function serverUpdateProject(projectId: string, data: Record<string, any>,
 export function saveProject(data: Record<string, any>, editingId: string | null, showToast: ToastFn, authUser: FirebaseUser | null, tenantId: string | null) {
   return fbAction('guardar proyecto', async () => {
     requireAuth(authUser, 'guardar proyecto');
-    const fb = getFirebase();
-    const db = fb.firestore();
-    const ts = fb.firestore.FieldValue.serverTimestamp();
 
-    if (editingId) {
-      // UPDATE existing project
-      try {
+    // Dedup guard: prevent double-creation (e.g., offline write queued + user retries)
+    const dedupKey = `project:${editingId || 'new'}:${(data.projName || '').trim().toLowerCase()}:${tenantId}`;
+    if (!dedupStart(dedupKey)) {
+      showToast('Proyecto ya se está creando, espera un momento', 'error');
+      return;
+    }
+
+    try {
+      const fb = getFirebase();
+      const db = fb.firestore();
+      const ts = fb.firestore.FieldValue.serverTimestamp();
+
+      if (editingId) {
+        // UPDATE existing project
         const projData: Record<string, any> = scrubUndefined({
           name: data.projName,
           status: data.projStatus || 'Concepto',
@@ -161,45 +195,44 @@ export function saveProject(data: Record<string, any>, editingId: string | null,
           await initPhasesForProject(db, editingId, data.projType, data.enabledPhases || [], ts, tenantId);
         }
         showToast('Proyecto actualizado');
-      } catch (err: any) {
-        // If permission denied, the error will be caught by fbAction and shown to user
-        throw err;
-      }
-    } else {
-      // CREATE new project — try direct Firestore first, fallback to Admin SDK API
-      try {
-        const projData: Record<string, any> = scrubUndefined({
-          name: data.projName,
-          status: data.projStatus || 'Concepto',
-          client: data.projClient || '',
-          location: data.projLocation || '',
-          budget: Number(data.projBudget) || 0,
-          description: data.projDesc || '',
-          startDate: data.projStart || '',
-          endDate: data.projEnd || '',
-          companyId: data.projCompany || '',
-          projectType: data.projType || 'Ejecución',
-          progress: 0,
-          tenantId: tenantId || '',
-          createdAt: ts,
-          createdBy: authUser?.uid || '',
-          updatedAt: ts,
-          updatedBy: authUser?.uid || '',
-        });
-        const ref = await db.collection('projects').add(projData);
-        await initPhasesForProject(db, ref.id, data.projType || 'Ejecución', data.enabledPhases || [], ts, tenantId);
-        showToast('✅ Proyecto creado');
-      } catch (directErr: any) {
-        const msg = directErr?.message || '';
-        if (msg.includes('PERMISSION_DENIED') || msg.includes('Missing or insufficient permissions')) {
-          // Fallback: create via Admin SDK API (bypasses Firestore rules)
-          console.warn('[Archii] Firestore direct write blocked, falling back to Admin SDK API');
-          const result = await serverCreateProject(data, tenantId);
+      } else {
+        // CREATE new project — try direct Firestore first, fallback to Admin SDK API
+        try {
+          const projData: Record<string, any> = scrubUndefined({
+            name: data.projName,
+            status: data.projStatus || 'Concepto',
+            client: data.projClient || '',
+            location: data.projLocation || '',
+            budget: Number(data.projBudget) || 0,
+            description: data.projDesc || '',
+            startDate: data.projStart || '',
+            endDate: data.projEnd || '',
+            companyId: data.projCompany || '',
+            projectType: data.projType || 'Ejecución',
+            progress: 0,
+            tenantId: tenantId || '',
+            createdAt: ts,
+            createdBy: authUser?.uid || '',
+            updatedAt: ts,
+            updatedBy: authUser?.uid || '',
+          });
+          const ref = await db.collection('projects').add(projData);
+          await initPhasesForProject(db, ref.id, data.projType || 'Ejecución', data.enabledPhases || [], ts, tenantId);
           showToast('✅ Proyecto creado');
-          return result;
+        } catch (directErr: any) {
+          const msg = directErr?.message || '';
+          if (msg.includes('PERMISSION_DENIED') || msg.includes('Missing or insufficient permissions')) {
+            // Fallback: create via Admin SDK API (bypasses Firestore rules)
+            console.warn('[Archii] Firestore direct write blocked, falling back to Admin SDK API');
+            const result = await serverCreateProject(data, tenantId);
+            showToast('✅ Proyecto creado');
+            return result;
+          }
+          throw directErr;
         }
-        throw directErr;
       }
+    } finally {
+      dedupEnd(dedupKey);
     }
   }, showToast);
 }
@@ -216,57 +249,69 @@ export async function deleteProject(projectId: string, showToast: ToastFn, tenan
 export function saveTask(data: Record<string, any>, editingId: string | null, showToast: ToastFn, authUser: FirebaseUser | null, tenantId: string | null) {
   return fbAction('guardar tarea', async () => {
     requireAuth(authUser, 'guardar tarea');
-    const fb = getFirebase();
-    const db = fb.firestore();
-    const ts = fb.firestore.FieldValue.serverTimestamp();
-    const assignees: string[] = Array.isArray(data.taskAssignees) ? data.taskAssignees : (data.taskAssignee ? [data.taskAssignee] : []);
-    const subtasks = Array.isArray(data.taskSubtasks) ? data.taskSubtasks.filter((s: any) => s.text?.trim()).map((s: any) => ({ text: String(s.text || ''), done: Boolean(s.done) })) : [];
-    const newStatus = data.taskStatus || 'Por hacer';
-    const isCompleting = editingId && newStatus === 'Completado';
-    const isUncompleting = editingId && newStatus !== 'Completado';
-    if (editingId) {
-      const updateData: Record<string, any> = {
-        title: data.taskTitle,
-        description: data.taskDescription || '',
-        projectId: data.taskProject || '',
-        assigneeId: assignees[0] || '',
-        assigneeIds: assignees,
-        priority: data.taskPriority || 'Media',
-        status: newStatus,
-        dueDate: data.taskDue || '',
-        phaseId: data.taskPhase || '',
-        subtasks,
-        estimatedHours: data.taskEstimatedHours || null,
-        tags: Array.isArray(data.taskTags) && data.taskTags.length > 0 ? data.taskTags : null,
-        updatedAt: ts,
-        updatedBy: authUser?.uid,
-      };
-      if (isCompleting) updateData.completedAt = ts;
-      if (isUncompleting) updateData.completedAt = fb.firestore.FieldValue.delete();
-      await db.collection('tasks').doc(editingId).update(scrubUndefined(updateData));
-      showToast('Tarea actualizada');
-    } else {
-      const createData: Record<string, any> = {
-        title: data.taskTitle,
-        description: data.taskDescription || '',
-        projectId: data.taskProject || '',
-        assigneeId: assignees[0] || '',
-        assigneeIds: assignees,
-        priority: data.taskPriority || 'Media',
-        status: newStatus,
-        dueDate: data.taskDue || '',
-        phaseId: data.taskPhase || '',
-        subtasks,
-        estimatedHours: data.taskEstimatedHours || null,
-        tags: Array.isArray(data.taskTags) && data.taskTags.length > 0 ? data.taskTags : null,
-        createdAt: ts,
-        createdBy: authUser?.uid || '',
-        tenantId: tenantId || '',
-        updatedAt: ts,
-      };
-      if (newStatus === 'Completado') createData.completedAt = ts;
-      await db.collection('tasks').add(scrubUndefined(createData));
-      showToast('✅ Tarea creada');
+
+    // Dedup guard for new tasks
+    const dedupKey = `task:${editingId || 'new'}:${(data.taskTitle || '').trim().toLowerCase()}:${tenantId}`;
+    if (!dedupStart(dedupKey)) {
+      showToast('Tarea ya se está creando, espera un momento', 'error');
+      return;
+    }
+
+    try {
+      const fb = getFirebase();
+      const db = fb.firestore();
+      const ts = fb.firestore.FieldValue.serverTimestamp();
+      const assignees: string[] = Array.isArray(data.taskAssignees) ? data.taskAssignees : (data.taskAssignee ? [data.taskAssignee] : []);
+      const subtasks = Array.isArray(data.taskSubtasks) ? data.taskSubtasks.filter((s: any) => s.text?.trim()).map((s: any) => ({ text: String(s.text || ''), done: Boolean(s.done) })) : [];
+      const newStatus = data.taskStatus || 'Por hacer';
+      const isCompleting = editingId && newStatus === 'Completado';
+      const isUncompleting = editingId && newStatus !== 'Completado';
+      if (editingId) {
+        const updateData: Record<string, any> = {
+          title: data.taskTitle,
+          description: data.taskDescription || '',
+          projectId: data.taskProject || '',
+          assigneeId: assignees[0] || '',
+          assigneeIds: assignees,
+          priority: data.taskPriority || 'Media',
+          status: newStatus,
+          dueDate: data.taskDue || '',
+          phaseId: data.taskPhase || '',
+          subtasks,
+          estimatedHours: data.taskEstimatedHours || null,
+          tags: Array.isArray(data.taskTags) && data.taskTags.length > 0 ? data.taskTags : null,
+          updatedAt: ts,
+          updatedBy: authUser?.uid,
+        };
+        if (isCompleting) updateData.completedAt = ts;
+        if (isUncompleting) updateData.completedAt = fb.firestore.FieldValue.delete();
+        await db.collection('tasks').doc(editingId).update(scrubUndefined(updateData));
+        showToast('Tarea actualizada');
+      } else {
+        const createData: Record<string, any> = {
+          title: data.taskTitle,
+          description: data.taskDescription || '',
+          projectId: data.taskProject || '',
+          assigneeId: assignees[0] || '',
+          assigneeIds: assignees,
+          priority: data.taskPriority || 'Media',
+          status: newStatus,
+          dueDate: data.taskDue || '',
+          phaseId: data.taskPhase || '',
+          subtasks,
+          estimatedHours: data.taskEstimatedHours || null,
+          tags: Array.isArray(data.taskTags) && data.taskTags.length > 0 ? data.taskTags : null,
+          createdAt: ts,
+          createdBy: authUser?.uid || '',
+          tenantId: tenantId || '',
+          updatedAt: ts,
+        };
+        if (newStatus === 'Completado') createData.completedAt = ts;
+        await db.collection('tasks').add(scrubUndefined(createData));
+        showToast('✅ Tarea creada');
+      }
+    } finally {
+      dedupEnd(dedupKey);
     }
   }, showToast);
 }
