@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb, getAdminAuth } from '@/lib/firebase-admin';
+import { getAdminDb, getAdminAuth, isAdminInitialized } from '@/lib/firebase-admin';
 
 /**
  * POST /api/create-entity
@@ -9,6 +9,13 @@ import { getAdminDb, getAdminAuth } from '@/lib/firebase-admin';
  */
 export async function POST(request: NextRequest) {
   try {
+    // Check Admin SDK is properly initialized first
+    const adminStatus = isAdminInitialized();
+    if (!adminStatus.ok) {
+      console.error('[Archii] create-entity: Admin SDK not configured —', adminStatus.reason);
+      return NextResponse.json({ error: `Admin SDK no configurado: ${adminStatus.reason}` }, { status: 500 });
+    }
+
     // Verify auth
     const authHeader = request.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
@@ -20,11 +27,18 @@ export async function POST(request: NextRequest) {
     try {
       const decoded = await auth.verifyIdToken(token);
       uid = decoded.uid;
-    } catch {
-      return NextResponse.json({ error: 'Token inválido' }, { status: 401 });
+    } catch (tokenErr: any) {
+      console.error('[Archii] create-entity: Token verification failed —', tokenErr?.message || String(tokenErr));
+      return NextResponse.json({ error: 'Token inválido o expirado. Recarga la página e intenta de nuevo.' }, { status: 401 });
     }
 
-    const body = await request.json();
+    let body: any;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Body JSON inválido' }, { status: 400 });
+    }
+
     const { type, data, tenantId } = body;
 
     if (!type) {
@@ -38,7 +52,14 @@ export async function POST(request: NextRequest) {
     const db = getAdminDb();
 
     // Verify tenant exists and user is a member
-    const tenantDoc = await db.collection('tenants').doc(tenantId).get();
+    let tenantDoc: any;
+    try {
+      tenantDoc = await db.collection('tenants').doc(tenantId).get();
+    } catch (dbErr: any) {
+      console.error('[Archii] create-entity: Error accessing Firestore (tenant lookup) —', dbErr?.message || String(dbErr));
+      return NextResponse.json({ error: 'Error de conexión con la base de datos. Intenta de nuevo.' }, { status: 503 });
+    }
+
     if (!tenantDoc.exists) {
       return NextResponse.json({ error: 'Espacio de trabajo no encontrado' }, { status: 404 });
     }
@@ -80,7 +101,13 @@ export async function POST(request: NextRequest) {
       // Remove undefined values
       Object.keys(projData).forEach(k => projData[k] === undefined && delete projData[k]);
 
-      const ref = await db.collection('projects').add(projData);
+      let ref: any;
+      try {
+        ref = await db.collection('projects').add(projData);
+      } catch (writeErr: any) {
+        console.error('[Archii] create-entity: Error writing project to Firestore —', writeErr?.message || String(writeErr));
+        return NextResponse.json({ error: 'Error al crear el proyecto en la base de datos' }, { status: 500 });
+      }
 
       // Initialize work phases based on project type
       const PROJECT_TYPE_PHASES: Record<string, { key: string; name: string; description: string }[]> = {
@@ -127,7 +154,13 @@ export async function POST(request: NextRequest) {
           order++;
         }
       }
-      await batch.commit();
+
+      try {
+        await batch.commit();
+      } catch (batchErr: any) {
+        // Project was created but phases failed — still return success
+        console.error('[Archii] create-entity: Error writing phases (project created) —', batchErr?.message || String(batchErr));
+      }
 
       return NextResponse.json({ success: true, id: ref.id }, { status: 201 });
     }
@@ -160,13 +193,21 @@ export async function POST(request: NextRequest) {
 
       Object.keys(taskData).forEach(k => taskData[k] === undefined && delete taskData[k]);
 
-      const ref = await db.collection('tasks').add(taskData);
-      return NextResponse.json({ success: true, id: ref.id }, { status: 201 });
+      try {
+        const ref = await db.collection('tasks').add(taskData);
+        return NextResponse.json({ success: true, id: ref.id }, { status: 201 });
+      } catch (writeErr: any) {
+        console.error('[Archii] create-entity: Error writing task to Firestore —', writeErr?.message || String(writeErr));
+        return NextResponse.json({ error: 'Error al crear la tarea en la base de datos' }, { status: 500 });
+      }
     }
 
     return NextResponse.json({ error: `Tipo no soportado: ${type}` }, { status: 400 });
   } catch (err: any) {
-    console.error('[Archii] create-entity error:', err);
-    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
+    console.error('[Archii] create-entity UNEXPECTED error:', err?.message || String(err), err?.stack || '');
+    return NextResponse.json({
+      error: 'Error interno del servidor',
+      detail: process.env.NODE_ENV === 'development' ? (err?.message || String(err)) : undefined,
+    }, { status: 500 });
   }
 }
