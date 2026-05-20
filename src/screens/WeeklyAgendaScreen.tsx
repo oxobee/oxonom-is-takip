@@ -648,9 +648,9 @@ export default function WeeklyAgendaScreen() {
      ═══════════════════════════════════════════════════════════════ */
 
   return (
-    <div className={`h-full flex flex-col ${isMobile ? '-mx-3 md:mx-0' : ''}`} ref={printRef}>
+    <div className="h-full flex flex-col" ref={printRef}>
       {/* ─── Header Toolbar ─── */}
-      <div className="flex-shrink-0 flex flex-wrap items-center gap-1.5 md:gap-2 px-2 md:px-6 py-1.5 md:py-3 border-b border-[var(--border)] bg-[var(--card)]">
+      <div className="flex-shrink-0 flex flex-wrap items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 border-b border-[var(--border)] bg-[var(--card)]">
         <CalendarDays className="w-5 h-5 text-[var(--primary)] flex-shrink-0" />
         <h2 className="text-sm font-semibold mr-2 hidden sm:block">Agenda Semanal</h2>
 
@@ -658,7 +658,7 @@ export default function WeeklyAgendaScreen() {
         <button onClick={prevWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Semana anterior">
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="text-[10px] sm:text-xs font-medium min-w-[70px] sm:min-w-[180px] text-center">{weekLabel}</span>
+        <span className="text-[10px] sm:text-xs font-medium min-w-[100px] sm:min-w-[180px] text-center">{weekLabel}</span>
         <button onClick={nextWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Semana siguiente">
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -683,40 +683,202 @@ export default function WeeklyAgendaScreen() {
         </button>
       </div>
 
-      {/* ─── Main Content ─── */}
-      <div className="flex-1 overflow-auto p-0 md:p-4">
-        <div className="flex flex-col lg:flex-row gap-3">
+      {/* ═══════════════════════════════════════════════════════════════
+          MOBILE VIEW — Card Timeline (completely different from desktop)
+          ═══════════════════════════════════════════════════════════════ */}
+      {isMobile && (
+        <div className="flex-1 overflow-auto">
+          {/* Day Selector */}
+          <div className="flex items-center gap-1 px-3 py-2 overflow-x-auto no-print" style={{ scrollbarWidth: 'none' }}>
+            {weekDates.map((d, i) => {
+              const dk = dateKey(d);
+              const isToday = dk === todayKey;
+              const isActive = i === mobileDayIdx;
+              const dayTasks = agendaTasks.filter(t => t.data.agendaMeta?.dayKey === dk);
+              return (
+                <button
+                  key={dk}
+                  onClick={() => setMobileDayIdx(i)}
+                  className="flex flex-col items-center px-3 py-1.5 rounded-xl transition-all flex-shrink-0"
+                  style={{
+                    background: isActive ? 'var(--primary)' : isToday ? 'var(--accent)' : 'var(--af-bg3)',
+                    color: isActive ? 'var(--primary-foreground)' : 'var(--foreground)',
+                    border: isActive ? 'none' : '1px solid var(--border)',
+                    minWidth: '46px',
+                  }}
+                >
+                  <span className="text-[9px] font-semibold uppercase">{DAY_NAMES[i]}</span>
+                  <span className="text-sm font-bold">{d.getDate()}</span>
+                  {dayTasks.length > 0 && (
+                    <span className="w-1.5 h-1.5 rounded-full mt-0.5" style={{ background: isActive ? 'var(--primary-foreground)' : 'var(--primary)' }} />
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
-          {/* ─── Mobile Day Selector ─── */}
-          {isMobile && (
-            <div className="flex items-center gap-1 mb-1 px-2 overflow-x-auto no-print pb-1" style={{ scrollbarWidth: 'none' }}>
-              {weekDates.map((d, i) => {
-                const dk = dateKey(d);
-                const isToday = dk === todayKey;
-                const isActive = i === mobileDayIdx;
-                const dayTasks = agendaTasks.filter(t => t.data.agendaMeta?.dayKey === dk);
-                return (
+          {/* Day title */}
+          {(() => {
+            const d = weekDates[mobileDayIdx];
+            const dk = dateKey(d);
+            const isToday = dk === todayKey;
+            const dayTasks = agendaTasks
+              .filter(t => t.data.agendaMeta?.dayKey === dk)
+              .sort((a, b) => {
+                const aMin = a.data.agendaMeta?.hourSlots.length ? Math.min(...a.data.agendaMeta.hourSlots) : 99;
+                const bMin = b.data.agendaMeta?.hourSlots.length ? Math.min(...b.data.agendaMeta.hourSlots) : 99;
+                return aMin - bMin;
+              });
+            return (
+              <div className="px-3 pb-3">
+                {/* Day header */}
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <div className="text-base font-bold" style={{ color: 'var(--foreground)' }}>
+                      {DAY_FULL[mobileDayIdx]}
+                    </div>
+                    <div className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
+                      {fmtDay(d)} {isToday && <span className="ml-1 px-1.5 py-0.5 rounded text-[9px] font-semibold" style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}>Hoy</span>}
+                    </div>
+                  </div>
                   <button
-                    key={dk}
-                    onClick={() => setMobileDayIdx(i)}
-                    className="flex flex-col items-center px-2.5 py-1 rounded-lg transition-all flex-shrink-0"
-                    style={{
-                      background: isActive ? 'var(--primary)' : isToday ? 'var(--accent)' : 'var(--af-bg3)',
-                      color: isActive ? 'var(--primary-foreground)' : 'var(--foreground)',
-                      border: isActive ? 'none' : '1px solid var(--border)',
-                      minWidth: '42px',
-                    }}
+                    onClick={() => openCreateForm(dk, [new Date().getHours() >= 8 && new Date().getHours() <= 17 ? new Date().getHours() : 8])}
+                    className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-medium no-print"
+                    style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
                   >
-                    <span className="text-[9px] font-semibold uppercase">{DAY_NAMES[i]}</span>
-                    <span className="text-sm font-bold">{d.getDate()}</span>
-                    {dayTasks.length > 0 && (
-                      <span className="w-1.5 h-1.5 rounded-full mt-0.5" style={{ background: isActive ? 'var(--primary-foreground)' : 'var(--primary)' }} />
-                    )}
+                    <Plus className="w-3.5 h-3.5" />
+                    Actividad
                   </button>
-                );
-              })}
-            </div>
-          )}
+                </div>
+
+                {/* Empty state */}
+                {dayTasks.length === 0 && (
+                  <div className="text-center py-12">
+                    <CalendarDays className="w-10 h-10 mx-auto mb-2" style={{ color: 'var(--muted-foreground)', opacity: 0.4 }} />
+                    <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>Sin actividades este d\u00eda</p>
+                    <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)', opacity: 0.7 }}>Toca el bot\u00f3n + para crear una</p>
+                  </div>
+                )}
+
+                {/* Activity cards — sorted by time */}
+                <div className="space-y-2">
+                  {dayTasks.map(task => {
+                    const meta = task.data.agendaMeta;
+                    if (!meta) return null;
+                    const pc = PRIO_COLORS[task.data.priority] || PRIO_COLORS['Media'];
+                    const doneSubtasks = (task.data.subtasks || []).filter(s => s.done).length;
+                    const totalSubtasks = (task.data.subtasks || []).length;
+
+                    return (
+                      <div
+                        key={task.id}
+                        className={`rounded-xl overflow-hidden ${pc.bg}`}
+                        style={{ borderLeft: `4px solid`, borderLeftColor: task.data.priority === 'Alta' ? '#ef4444' : task.data.priority === 'Cr\u00edtica' ? '#a855f7' : task.data.priority === 'Baja' ? '#10b981' : '#f59e0b' }}
+                      >
+                        {/* Card header — tappable */}
+                        <button
+                          className="w-full text-left px-3 py-2.5 no-print"
+                          onClick={() => openEditForm(task)}
+                          style={{ background: 'transparent' }}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              {/* Title row */}
+                              <div className="flex items-center gap-1.5 mb-1">
+                                {STATUS_ICON[task.data.status]}
+                                <span className="text-sm font-semibold truncate" style={{ color: 'var(--foreground)' }}>
+                                  {task.data.title}
+                                </span>
+                              </div>
+                              {/* Time + priority */}
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="flex items-center gap-1 text-[11px]" style={{ color: 'var(--muted-foreground)' }}>
+                                  <Clock className="w-3 h-3" />
+                                  {formatHourRange(meta.hourSlots)}
+                                </span>
+                                <span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${pc.text}`} style={{ background: 'var(--af-bg3)' }}>
+                                  {task.data.priority}
+                                </span>
+                              </div>
+                            </div>
+                            {/* Delete button */}
+                            <button
+                              className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                              style={{ background: 'rgba(239,68,68,0.1)' }}
+                              onClick={e => { e.stopPropagation(); setConfirmDelete(task.id); }}
+                              aria-label="Eliminar"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                            </button>
+                          </div>
+                        </button>
+
+                        {/* Card details (project, assignee, subtasks) */}
+                        {(task.data.projectId || task.data.assigneeId || totalSubtasks > 0 || meta.participantIds.length > 0) && (
+                          <div className="px-3 pb-2.5 pt-0 flex flex-wrap gap-x-3 gap-y-1 text-[11px]" style={{ color: 'var(--muted-foreground)' }}>
+                            {task.data.projectId && (
+                              <span className="flex items-center gap-1">
+                                <FolderOpen className="w-3 h-3" />
+                                <span className="truncate max-w-[140px]">{projectMap[task.data.projectId] || '\u2014'}</span>
+                              </span>
+                            )}
+                            {task.data.assigneeId && (
+                              <span className="flex items-center gap-1">
+                                <User className="w-3 h-3" />
+                                <span className="truncate max-w-[100px]">{userMap[task.data.assigneeId]?.name || ''}</span>
+                              </span>
+                            )}
+                            {meta.participantIds.length > 0 && (
+                              <span className="flex items-center gap-1">
+                                <Users className="w-3 h-3" />
+                                {meta.participantIds.length}
+                              </span>
+                            )}
+                            {totalSubtasks > 0 && (
+                              <span className="flex items-center gap-1">
+                                <ListChecks className="w-3 h-3" />
+                                {doneSubtasks}/{totalSubtasks}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Quick hour slots — tap to create at specific time */}
+                {dayTasks.length > 0 && (
+                  <div className="mt-4 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider mb-2 no-print" style={{ color: 'var(--muted-foreground)' }}>
+                      Crear en hora...
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 no-print">
+                      {HOURS.map(h => (
+                        <button
+                          key={h}
+                          onClick={() => openCreateForm(dk, [h])}
+                          className="px-2.5 py-1.5 rounded-lg text-[11px] font-medium"
+                          style={{ background: 'var(--af-bg3)', color: 'var(--muted-foreground)', border: '1px solid var(--border)' }}
+                        >
+                          {formatHourShort(h)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════
+          DESKTOP VIEW — Grid Layout (unchanged)
+          ═══════════════════════════════════════════════════════════════ */}
+      {!isMobile && (
+      <div className="flex-1 overflow-auto p-4">
+        <div className="flex flex-col lg:flex-row gap-3">
 
           {/* ─── Agenda Grid ─── */}
           <div className="flex-1 agenda-grid-container" style={{ minWidth: 0 }}>
@@ -724,39 +886,16 @@ export default function WeeklyAgendaScreen() {
               className="agenda-grid"
               style={{
                 display: 'grid',
-                gridTemplateColumns: isMobile
-                  ? '32px 1fr'
-                  : '54px repeat(7, minmax(130px, 1fr))',
-                border: isMobile ? 'none' : '1.5px solid var(--border)',
-                borderRadius: isMobile ? '0' : '10px',
+                gridTemplateColumns: '54px repeat(7, minmax(130px, 1fr))',
+                border: '1.5px solid var(--border)',
+                borderRadius: '10px',
                 overflow: 'hidden',
                 background: 'var(--card)',
               }}
             >
               {/* ─── Column Headers ─── */}
-              {!isMobile && <div style={{ background: 'var(--af-bg3)', borderBottom: '1.5px solid var(--border)', borderRight: '1px solid var(--border)' }} />}
-              {isMobile && (() => {
-                const d = weekDates[mobileDayIdx];
-                const dk = dateKey(d);
-                const isToday = dk === todayKey;
-                return (
-                  <div key={dk} style={{
-                    background: isToday ? 'var(--primary)' : 'var(--af-bg3)',
-                    borderBottom: '1.5px solid var(--border)',
-                    color: isToday ? 'var(--primary-foreground)' : 'var(--foreground)',
-                    padding: '8px 4px',
-                    textAlign: 'center',
-                  }}>
-                    <div style={{ fontWeight: 700, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      {DAY_FULL[mobileDayIdx]}
-                    </div>
-                    <div style={{ fontSize: '11px', marginTop: 2, color: isToday ? 'var(--primary-foreground)' : 'var(--muted-foreground)' }}>
-                      {fmtDay(d)}
-                    </div>
-                  </div>
-                );
-              })()}
-              {!isMobile && weekDates.map((d, i) => {
+              <div style={{ background: 'var(--af-bg3)', borderBottom: '1.5px solid var(--border)', borderRight: '1px solid var(--border)' }} />
+              {weekDates.map((d, i) => {
                 const dk = dateKey(d);
                 const isToday = dk === todayKey;
                 return (
@@ -784,22 +923,22 @@ export default function WeeklyAgendaScreen() {
                   {/* Time label */}
                   <div style={{
                     background: 'var(--af-bg3)',
-                    borderRight: isMobile ? 'none' : '1px solid var(--border)',
+                    borderRight: '1px solid var(--border)',
                     borderBottom: '1px solid var(--border)',
-                    padding: isMobile ? '2px 2px' : '4px 6px',
+                    padding: '4px 6px',
                     textAlign: 'right',
-                    fontSize: isMobile ? '8px' : '10px',
+                    fontSize: '10px',
                     color: 'var(--muted-foreground)',
                     display: 'flex',
                     alignItems: 'flex-start',
                     justifyContent: 'flex-end',
-                    height: `${isMobile ? 48 : SLOT_H}px`,
+                    height: `${SLOT_H}px`,
                   }}>
-                    {isMobile ? formatHourShort(hour) : formatHour(hour)}
+                    {formatHour(hour)}
                   </div>
 
-                  {/* Day cells — mobile: single day, desktop: all 7 */}
-                  {(isMobile ? [weekDates[mobileDayIdx]] : weekDates).map((d, di) => {
+                  {/* Day cells — all 7 days */}
+                  {weekDates.map((d, di) => {
                     const dk = dateKey(d);
                     const isToday = dk === todayKey;
                     const isDragSelected = dragSelectedHours.has(`${dk}:${hour}`);
@@ -812,10 +951,10 @@ export default function WeeklyAgendaScreen() {
                       <div
                         key={dk}
                         style={{
-                          borderRight: !isMobile && di < 6 ? '1px solid var(--border)' : 'none',
+                          borderRight: di < 6 ? '1px solid var(--border)' : 'none',
                           borderBottom: '1px solid var(--border)',
-                          minHeight: `${isMobile ? 48 : SLOT_H}px`,
-                          height: `${isMobile ? 48 : SLOT_H}px`,
+                          minHeight: `${SLOT_H}px`,
+                          height: `${SLOT_H}px`,
                           background: isDragSelected
                             ? 'var(--accent)'
                             : isToday
@@ -830,7 +969,6 @@ export default function WeeklyAgendaScreen() {
                         onMouseEnter={() => handleCellMouseEnter(dk, hour)}
                         onMouseUp={() => handleCellMouseUp()}
                         onClick={() => {
-                          // Always allow click — overlapping activities supported
                           if (!drag?.active) {
                             handleCellClick(dk, hour);
                           }
@@ -843,8 +981,7 @@ export default function WeeklyAgendaScreen() {
                           const minH = Math.min(...meta.hourSlots);
                           const maxH = Math.max(...meta.hourSlots);
                           const spanCount = maxH - minH + 1;
-                          const mobileSlotH = 48;
-                          const blockHeight = spanCount * (isMobile ? mobileSlotH : SLOT_H);
+                          const blockHeight = spanCount * SLOT_H;
                           const pc = PRIO_COLORS[task.data.priority] || PRIO_COLORS['Media'];
                           const doneSubtasks = (task.data.subtasks || []).filter(s => s.done).length;
                           const totalSubtasks = (task.data.subtasks || []).length;
@@ -869,12 +1006,12 @@ export default function WeeklyAgendaScreen() {
                                 top: 0,
                                 left: leftPos,
                                 width: availWidth,
-                                height: `${blockHeight - (isMobile ? 2 : 4)}px`,
-                                borderLeftWidth: isMobile ? '2.5px' : '3px',
+                                height: `${blockHeight - 4}px`,
+                                borderLeftWidth: '3px',
                                 borderLeftStyle: 'solid',
-                                borderRadius: isMobile ? '4px' : '6px',
-                                padding: isMobile ? '3px 5px' : (isNarrow ? '2px 3px' : '4px 6px'),
-                                fontSize: isMobile ? '11px' : (isNarrow ? '8px' : '10px'),
+                                borderRadius: '6px',
+                                padding: isNarrow ? '2px 3px' : '4px 6px',
+                                fontSize: isNarrow ? '8px' : '10px',
                                 lineHeight: 1.3,
                                 cursor: 'pointer',
                                 zIndex: 10,
@@ -886,28 +1023,28 @@ export default function WeeklyAgendaScreen() {
                               {/* Title + priority dot */}
                               <div className="flex items-center gap-1">
                                 <span className={`w-1.5 h-1.5 rounded-full ${pc.dot} flex-shrink-0`} />
-                                <span style={{ fontWeight: 600, color: 'var(--foreground)' }} className={`truncate ${isMobile ? 'text-[12px]' : 'text-[11px]'}`}>
+                                <span style={{ fontWeight: 600, color: 'var(--foreground)' }} className="truncate text-[11px]">
                                   {task.data.title}
                                 </span>
                               </div>
 
-                              {/* Time range — hide on very narrow columns or mobile single-col */}
-                              {!isNarrow && !isMobile && (
+                              {/* Time range */}
+                              {!isNarrow && (
                                 <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
                                   <Clock className="w-2.5 h-2.5" />
                                   <span>{formatHourRange(meta.hourSlots)}</span>
                                 </div>
                               )}
 
-                              {/* Project — hide on narrow/medium overlap or mobile */}
-                              {!isNarrow && !isMedium && !isMobile && task.data.projectId && (
+                              {/* Project */}
+                              {!isNarrow && !isMedium && task.data.projectId && (
                                 <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
                                   <FolderOpen className="w-2.5 h-2.5" />
                                   <span className="truncate">{projectMap[task.data.projectId] || '\u2014'}</span>
                                 </div>
                               )}
 
-                              {/* Responsable + participants — hide on narrow */}
+                              {/* Responsable + participants */}
                               {!isNarrow && (
                                 <div className="flex items-center gap-1 mt-0.5" style={{ fontSize: '9px' }}>
                                   {STATUS_ICON[task.data.status]}
@@ -923,7 +1060,7 @@ export default function WeeklyAgendaScreen() {
                                 </div>
                               )}
 
-                              {/* Subtasks — hide on narrow/medium */}
+                              {/* Subtasks */}
                               {!isNarrow && !isMedium && totalSubtasks > 0 && (
                                 <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
                                   <ListChecks className="w-2.5 h-2.5" />
@@ -931,7 +1068,7 @@ export default function WeeklyAgendaScreen() {
                                 </div>
                               )}
 
-                              {/* Agenda badge — hide on narrow */}
+                              {/* Agenda badge */}
                               {!isNarrow && meta.isAgendaItem && (
                                 <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[8px] font-semibold"
                                   style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}>
@@ -939,24 +1076,24 @@ export default function WeeklyAgendaScreen() {
                                 </span>
                               )}
 
-                              {/* Delete button — top-left of card, always visible on mobile touch */}
+                              {/* Delete button */}
                               <button
-                                className={`absolute rounded flex items-center justify-center transition-opacity z-[15] ${isMobile ? 'top-0.5 right-0.5 w-6 h-6 opacity-60 hover:!opacity-100' : 'top-1 left-1 w-5 h-5 opacity-0 hover:!opacity-100'}`}
-                                style={{ background: 'rgba(239,68,68,0.8)', color: '#fff', fontSize: isMobile ? '9px' : '8px' }}
+                                className="absolute top-1 left-1 w-5 h-5 rounded flex items-center justify-center opacity-0 hover:!opacity-100 transition-opacity z-[15]"
+                                style={{ background: 'rgba(239,68,68,0.8)', color: '#fff', fontSize: '8px' }}
                                 onMouseDown={e => e.stopPropagation()}
                                 onClick={e => { e.stopPropagation(); setConfirmDelete(task.id); }}
                                 aria-label="Eliminar actividad"
                               >
-                                <X className={isMobile ? 'w-3.5 h-3.5' : 'w-3 h-3'} />
+                                <X className="w-3 h-3" />
                               </button>
                             </div>
                           );
                         })}
 
-                        {/* + button to create new activity — always visible on mobile touch */}
+                        {/* + button to create new activity */}
                         <button
-                          className={`absolute right-0.5 rounded-full flex items-center justify-center transition-opacity no-print z-[15] ${isMobile ? 'top-0.5 w-7 h-7 opacity-40 hover:!opacity-100' : 'top-0.5 w-5 h-5 opacity-0 group-hover/slot:opacity-80 hover:!opacity-100'}`}
-                          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', fontSize: isMobile ? '11px' : '10px' }}
+                          className="absolute right-0.5 top-0.5 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover/slot:opacity-80 hover:!opacity-100 transition-opacity no-print z-[15]"
+                          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', fontSize: '10px' }}
                           onMouseDown={e => e.stopPropagation()}
                           onClick={e => {
                             e.stopPropagation();
@@ -964,7 +1101,7 @@ export default function WeeklyAgendaScreen() {
                           }}
                           aria-label="Crear actividad"
                         >
-                          <Plus className={isMobile ? 'w-3.5 h-3.5' : 'w-3 h-3'} />
+                          <Plus className="w-3 h-3" />
                         </button>
                       </div>
                     );
@@ -1032,6 +1169,7 @@ export default function WeeklyAgendaScreen() {
           </div>
         </div>
       </div>
+      )}
 
       {/* ─── Confirm Delete Dialog ─── */}
       {confirmDelete && (() => {
