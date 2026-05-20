@@ -41,9 +41,19 @@ function getAdminConfig() {
   if (credJson) {
     try {
       const parsed = JSON.parse(credJson);
-      // Fix private_key newlines: sometimes env vars have literal '\n' instead of actual newlines
-      if (parsed.private_key && !parsed.private_key.includes('-----BEGIN PRIVATE KEY-----')) {
-        parsed.private_key = parsed.private_key.replace(/\\n/g, '\n');
+      // Fix private_key newlines: env vars sometimes have literal '\n' instead of actual newlines.
+      // After JSON.parse, '\n' becomes real newlines, but '\\n' stays as literal \n strings.
+      // Always normalize: replace literal \n strings with actual newlines if the key looks wrong.
+      if (parsed.private_key && typeof parsed.private_key === 'string') {
+        // If the key has literal backslash-n (\\n after JSON.parse → \n in JS string) instead of real newlines
+        if (parsed.private_key.includes('\\n')) {
+          parsed.private_key = parsed.private_key.replace(/\\n/g, '\n');
+        }
+        // Also handle case where the key was double-escaped in the env var
+        if (!parsed.private_key.includes('\n') && parsed.private_key.length > 100) {
+          // Key has no newlines at all but is long enough to be a real key — try replacing
+          parsed.private_key = parsed.private_key.replace(/\\n/g, '\n');
+        }
       }
       return cert(parsed);
     } catch (e: any) {
