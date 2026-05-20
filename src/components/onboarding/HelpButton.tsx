@@ -35,10 +35,11 @@ const HELP_SECTIONS = [
 ];
 
 const SHORTCUTS = [
-  { keys: ['Ctrl', 'K'], action: 'Buscar' },
-  { keys: ['Ctrl', 'N'], action: 'Nuevo proyecto' },
-  { keys: ['Ctrl', '.'], action: 'Toggle tema' },
-  { keys: ['Ctrl', '/'], action: 'Atajos de teclado' },
+  { keys: ['Ctrl', 'K'], action: 'Buscar (Command palette)' },
+  { keys: ['Alt', 'A'], action: 'Abrir chat IA' },
+  { keys: ['Alt', 'Q'], action: 'Acciones rápidas' },
+  { keys: ['Alt', 'S'], action: 'Toggle sidebar' },
+  { keys: ['Alt', 'T'], action: 'Toggle tema' },
   { keys: ['?'], action: 'Centro de ayuda' },
 ];
 

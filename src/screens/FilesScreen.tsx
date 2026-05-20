@@ -21,6 +21,7 @@ function FileBrowser({
   connectLabel,
   isTenantAdmin,
   tenantEmail,
+  onDeleteFile,
 }: {
   od: ReturnType<typeof useTenantOneDrive> | ReturnType<typeof usePersonalOneDrive>;
   title: string;
@@ -32,6 +33,7 @@ function FileBrowser({
   connectLabel?: string;
   isTenantAdmin?: boolean;
   tenantEmail?: string | null;
+  onDeleteFile?: (itemId: string, itemName: string) => void;
 }) {
   if (!isConnected) {
     return (
@@ -294,7 +296,7 @@ function FileBrowser({
                       <Pencil className="w-3 h-3" />
                     </button>
                     <button
-                      onClick={e => { e.stopPropagation(); od.deleteFile(item.id, item.name); }}
+                      onClick={e => { e.stopPropagation(); onDeleteFile ? onDeleteFile(item.id, item.name) : od.deleteFile(item.id, item.name); }}
                       className="p-1 rounded bg-[var(--af-bg4)] hover:bg-red-500/20 text-[var(--muted-foreground)] hover:text-red-400 transition-colors"
                       title="Eliminar"
                     >
@@ -405,7 +407,7 @@ function FileBrowser({
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={e => { e.stopPropagation(); od.deleteFile(item.id, item.name); }}
+                        onClick={e => { e.stopPropagation(); onDeleteFile ? onDeleteFile(item.id, item.name) : od.deleteFile(item.id, item.name); }}
                         className="p-1.5 rounded-lg hover:bg-red-500/10 text-[var(--muted-foreground)] hover:text-red-400 transition-colors"
                         title="Eliminar"
                       >
@@ -439,6 +441,18 @@ export default function FilesScreen() {
   const personal = usePersonalOneDrive();
 
   const isTenantAdmin = activeTenantRole === 'Super Admin';
+
+  // Delete file with confirmation dialog (replaces native confirm())
+  const handleDeleteFile = async (itemId: string, itemName: string, od: typeof tenant | typeof personal) => {
+    const confirmed = await confirmDialog.confirm({
+      title: `¿Eliminar "${itemName}"?`,
+      description: 'Este archivo se eliminará permanentemente de OneDrive.',
+      confirmLabel: 'Eliminar',
+    });
+    if (confirmed) {
+      od.deleteFile(itemId, itemName);
+    }
+  };
 
   // Connect tenant MS account
   const handleTenantConnect = async () => {
@@ -614,6 +628,7 @@ export default function FilesScreen() {
             connectLabel={tenantConnecting ? 'Conectando...' : 'Conectar Microsoft del Equipo'}
             isTenantAdmin={isTenantAdmin}
             tenantEmail={tenant.connectedEmail}
+            onDeleteFile={(itemId, itemName) => handleDeleteFile(itemId, itemName, tenant)}
           />
         </div>
       )}
@@ -638,6 +653,7 @@ export default function FilesScreen() {
             isConnected={msConnected}
             onConnect={doMicrosoftLogin}
             connectLabel="Conectar con Microsoft"
+            onDeleteFile={(itemId, itemName) => handleDeleteFile(itemId, itemName, personal)}
           />
         </div>
       )}

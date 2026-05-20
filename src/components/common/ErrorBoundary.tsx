@@ -49,34 +49,19 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       if (this.props.fallback) return this.props.fallback;
 
       return (
-        <div style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', padding: '40px 20px', textAlign: 'center',
-          minHeight: '200px',
-        }}>
-          <div style={{
-            width: '48px', height: '48px', borderRadius: '12px',
-            background: 'rgba(220, 53, 69, 0.1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            marginBottom: '16px', fontSize: '24px',
-          }}>
+        <div className="flex flex-col items-center justify-center p-10 text-center min-h-[200px]">
+          <div className="w-12 h-12 rounded-xl bg-destructive/10 flex items-center justify-center mb-4 text-2xl">
             ⚠️
           </div>
-          <h3 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '8px', color: 'var(--foreground, #f0f0ee)' }}>
+          <h3 className="text-[15px] font-semibold mb-2 text-foreground">
             Error al cargar
           </h3>
-          <p style={{ fontSize: '12px', color: 'var(--muted-foreground, #9a9b9e)', maxWidth: '300px', marginBottom: '16px' }}>
+          <p className="text-xs text-muted-foreground max-w-[300px] mb-4">
             {this.state.error?.message || 'Algo salió mal. Intenta de nuevo.'}
           </p>
           <button
             onClick={this.handleRetry}
-            style={{
-              padding: '8px 20px', borderRadius: '10px',
-              border: '1px solid rgba(200,169,110,0.3)',
-              background: 'rgba(200,169,110,0.1)',
-              color: '#c8a96e', fontSize: '13px', fontWeight: 500,
-              cursor: 'pointer',
-            }}
+            className="px-5 py-2 rounded-[10px] border border-[var(--af-accent)]/30 bg-[var(--af-accent)]/10 text-[var(--af-accent)] text-[13px] font-medium cursor-pointer hover:bg-[var(--af-accent)]/20 transition-colors"
           >
             Reintentar
           </button>

@@ -238,9 +238,8 @@ export function useTenantOneDrive(tenantId: string | null) {
     }
   };
 
-  // Delete file
+  // Delete file (callers should confirm before invoking)
   const deleteFile = async (itemId: string, itemName: string) => {
-    if (!confirm(`¿Eliminar "${itemName}"?`)) return;
     if (!tenantId) return;
     try {
       const token = await getFirebaseIdToken();
@@ -518,8 +517,8 @@ export function usePersonalOneDrive() {
     }
   };
 
+  // Delete file (callers should confirm before invoking)
   const deleteFile = async (itemId: string, itemName: string) => {
-    if (!confirm(`¿Eliminar "${itemName}"?`)) return;
     if (!msConnected) return;
     try {
       const fbToken = await getFirebaseIdToken();
