@@ -6,6 +6,8 @@ import { getFirebaseIdToken } from '@/lib/firebase-service';
 import { fmtSize } from '@/lib/helpers';
 import { useTenantOneDrive, usePersonalOneDrive, getFileIcon, formatTimeAgo, type ODItem, type TabKey } from '@/lib/onedrive-hooks';
 import { FolderOpen, Search, X, LayoutGrid, List, Plus, Upload, ChevronRight, Loader2, Download, Pencil, Trash2 } from 'lucide-react';
+import { useConfirmDialog } from '@/lib/useConfirmDialog';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 
 /* ===== File Browser Component (shared) ===== */
 function FileBrowser({
@@ -428,6 +430,7 @@ export default function FilesScreen() {
     navigateTo, projects, setForms, setSelectedProjectId, loading,
   } = useApp();
 
+  const confirmDialog = useConfirmDialog();
   const [activeTab, setActiveTab] = useState<TabKey>('team');
   const [connectTenantMs, setConnectTenantMs] = useState(false);
   const [tenantConnecting, setTenantConnecting] = useState(false);
@@ -500,7 +503,7 @@ export default function FilesScreen() {
 
   // Disconnect tenant MS account
   const handleTenantDisconnect = async () => {
-    if (!confirm('¿Desconectar la cuenta de Microsoft del equipo? Los archivos permanecerán en OneDrive.')) return;
+    if (!await confirmDialog.confirm({ title: 'Desconectar Microsoft', description: '¿Desconectar la cuenta de Microsoft del equipo? Los archivos permanecerán en OneDrive.' })) return;
     if (!activeTenantId) return;
     try {
       const token = await getFirebaseIdToken();
@@ -677,6 +680,7 @@ export default function FilesScreen() {
           </div>
         )}
       </div>
+      <ConfirmDialog {...confirmDialog} />
     </div>
   );
 }

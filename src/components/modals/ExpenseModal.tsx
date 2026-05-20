@@ -2,22 +2,30 @@
 import React from 'react';
 import CenterModal from '@/components/common/CenterModal';
 import { useApp } from '@/contexts/AppContext';
-import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter } from '@/components/common/FormField';
+import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter, useFormValidation } from '@/components/common/FormField';
 import { EXPENSE_CATS, PAYMENT_METHODS } from '@/lib/types';
 
 export default function ExpenseModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, closeModal, saveExpense, editingId, projects } = useApp();
   const isEditing = !!editingId;
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
+
+  const handleSubmit = () => {
+    if (!validateRequired('expConcept', forms.expConcept || '', 'Concepto')) return;
+    saveExpense();
+  };
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={500}>
       <h2 className="text-lg font-semibold mb-4">{isEditing ? 'Editar gasto' : 'Registrar gasto'}</h2>
 
       <div className="space-y-3">
-        <FormField label="Concepto" required>
+        <FormField label="Concepto" required error={errors.expConcept}>
           <FormInput
             value={forms.expConcept || ''}
-            onChange={(e) => setForms(p => ({ ...p, expConcept: e.target.value }))}
+            onChange={(e) => { clearError('expConcept'); setForms(p => ({ ...p, expConcept: e.target.value })); }}
+            onBlur={() => onBlurRequired('expConcept', forms.expConcept || '', 'Concepto')}
+            error={errors.expConcept}
             placeholder="Ej: Compra de cemento, Alquiler de excavadora"
           />
         </FormField>
@@ -97,7 +105,7 @@ export default function ExpenseModal({ open, onClose }: { open: boolean; onClose
 
       <ModalFooter
         onCancel={() => closeModal('expense')}
-        onSubmit={saveExpense}
+        onSubmit={handleSubmit}
         submitLabel={isEditing ? 'Actualizar' : 'Registrar'}
       />
     </CenterModal>

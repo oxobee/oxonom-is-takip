@@ -4,6 +4,8 @@ import { getFirebaseIdToken } from '@/lib/firebase-service';
 import { getInitials } from '@/lib/helpers';
 import { SkeletonListItem } from '@/components/ui/SkeletonLoaders';
 import { Trash2, Copy } from 'lucide-react';
+import { useConfirmDialog } from '@/lib/useConfirmDialog';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 
 interface ManageMembersModalProps {
   tenantId: string;
@@ -13,6 +15,7 @@ interface ManageMembersModalProps {
 }
 
 export default function ManageMembersModal({ tenantId, tenantName, onClose, canRemove }: ManageMembersModalProps) {
+  const confirmDialog = useConfirmDialog();
   const [members, setMembers] = useState<any[]>([]);
   const [availableUsers, setAvailableUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +66,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
   useEffect(() => { loadMembers(); }, [loadMembers]);
 
   const handleAddAllUsers = async () => {
-    if (!confirm('Se agregaran TODOS los usuarios registrados al tenant. Continuar?')) return;
+    if (!(await confirmDialog.confirm({ title: 'Agregar todos los usuarios', description: 'Se agregarán TODOS los usuarios registrados al tenant. ¿Continuar?' }))) return;
     setActionLoading(true);
     try {
       const data = await apiCall({ action: 'add-all-users', tenantId });
@@ -117,7 +120,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
   };
 
   const handleRemoveMember = async (uid: string, name: string) => {
-    if (!confirm(`Eliminar a ${name} del tenant?`)) return;
+    if (!(await confirmDialog.confirm({ title: 'Eliminar miembro', description: `¿Eliminar a ${name} del tenant?` }))) return;
     setActionLoading(true);
     try {
       const data = await apiCall({ action: 'remove-member', tenantId, memberUid: uid });
@@ -353,6 +356,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
           </div>
         )}
       </div>
+      <ConfirmDialog {...confirmDialog} />
     </div>
   );
 }

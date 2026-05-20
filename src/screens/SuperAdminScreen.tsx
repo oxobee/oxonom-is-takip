@@ -12,6 +12,8 @@ import {
   Loader2, MoreVertical
 } from 'lucide-react';
 import { SkeletonKPI, SkeletonChart, SkeletonTenantDetail } from '@/components/ui/SkeletonLoaders';
+import { useConfirmDialog } from '@/lib/useConfirmDialog';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 
 type SuperAdminTab = 'dashboard' | 'tenants' | 'users' | 'tools';
 
@@ -258,6 +260,8 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
   const [editName, setEditName] = useState('');
   const [editCode, setEditCode] = useState('');
 
+  const confirmDialog = useConfirmDialog();
+
   const loadTenants = useCallback(async () => {
     setLoading(true);
     try {
@@ -292,8 +296,9 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
   };
 
   const deleteTenant = async (tenantId: string, tenantName: string) => {
-    if (!confirm(`¿Eliminar el tenant "${tenantName}"?\n\nEsto eliminará el tenant de la lista. Los datos del tenant NO se eliminarán a menos que selecciones esa opción.`)) return;
-    const deleteData = confirm(`¿También eliminar TODOS los datos asociados (proyectos, tareas, gastos, etc.)?\n\nOK = Eliminar todo\nCancelar = Solo eliminar el tenant`);
+    const ok1 = await confirmDialog.confirm({ title: 'Eliminar tenant', description: `¿Eliminar el tenant "${tenantName}"?\n\nEsto eliminará el tenant de la lista. Los datos del tenant NO se eliminarán a menos que selecciones esa opción.` });
+    if (!ok1) return;
+    const deleteData = await confirmDialog.confirm({ title: 'Eliminar datos asociados', description: '¿También eliminar TODOS los datos asociados (proyectos, tareas, gastos, etc.)?\n\nConfirmar = Eliminar todo\nCancelar = Solo eliminar el tenant', confirmLabel: 'Eliminar todo' });
     const result = await handleAction('delete-tenant', { tenantId, deleteData }, `Tenant "${tenantName}" eliminado`);
     if (result) loadTenants();
   };
@@ -554,6 +559,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
           </div>
         </div>
       )}
+      <ConfirmDialog {...confirmDialog} />
     </div>
   );
 }
@@ -565,6 +571,8 @@ function UsersTab({ handleAction, showToast, setLoading }: { handleAction: any; 
   const [filterRole, setFilterRole] = useState('all');
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [bulkAction, setBulkAction] = useState('');
+
+  const confirmDialog = useConfirmDialog();
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -590,7 +598,7 @@ function UsersTab({ handleAction, showToast, setLoading }: { handleAction: any; 
   };
 
   const deleteUser = async (uid: string, name: string) => {
-    if (!confirm(`¿Eliminar al usuario "${name}"?\n\nEsto lo removerá de TODOS los tenants y deshabilitará su cuenta.`)) return;
+    if (!await confirmDialog.confirm({ title: 'Eliminar usuario', description: `¿Eliminar al usuario "${name}"?\n\nEsto lo removerá de TODOS los tenants y deshabilitará su cuenta.` })) return;
     await handleAction('delete-user', { targetUid: uid }, `Usuario "${name}" eliminado`);
     loadUsers();
   };
@@ -616,7 +624,7 @@ function UsersTab({ handleAction, showToast, setLoading }: { handleAction: any; 
     const targetIds = Array.from(selectedUsers);
 
     if (bulkAction === 'delete') {
-      if (!confirm(`¿Eliminar ${targetIds.length} usuarios? Esta acción no se puede deshacer.`)) return;
+      if (!await confirmDialog.confirm({ title: 'Eliminar usuarios', description: `¿Eliminar ${targetIds.length} usuarios? Esta acción no se puede deshacer.` })) return;
       await handleAction('bulk-action', { type: 'bulk-delete', targetIds }, `${targetIds.length} usuarios eliminados`);
     } else {
       await handleAction('bulk-action', { type: 'change-roles', targetIds, newRole: bulkAction }, `${targetIds.length} roles cambiados a ${bulkAction}`);
@@ -734,6 +742,7 @@ function UsersTab({ handleAction, showToast, setLoading }: { handleAction: any; 
           </div>
         ))}
       </div>
+      <ConfirmDialog {...confirmDialog} />
     </div>
   );
 }

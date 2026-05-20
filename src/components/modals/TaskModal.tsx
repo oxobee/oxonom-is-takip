@@ -1,12 +1,13 @@
 'use client';
 import React, { useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter } from '@/components/common/FormField';
+import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter, useFormValidation } from '@/components/common/FormField';
 import CenterModal from '@/components/common/CenterModal';
 import { X, Users, Plus, Trash2, Tag, Clock } from 'lucide-react';
 
 export default function TaskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, editingId, closeModal, saveTask, isSavingTask, projects, teamUsers, authUser, getPhasesForProject, loadPhasesForProject, projectPhasesCache } = useApp() as any;
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
 
   const assignees: string[] = Array.isArray(forms.taskAssignees) ? forms.taskAssignees : [];
   const subtasks: { text: string; done: boolean }[] = Array.isArray(forms.taskSubtasks) ? forms.taskSubtasks : [];
@@ -86,16 +87,24 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
 
   const doneSubtasks = subtasks.filter(s => s.done).length;
 
+  const handleSubmit = () => {
+    const titleValid = validateRequired('taskTitle', forms.taskTitle || '', 'Titulo');
+    if (!titleValid) return;
+    saveTask();
+  };
+
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={520}>
       <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar tarea' : 'Nueva tarea'}</h2>
 
       <div className="space-y-3">
-        <FormField label="Titulo" required>
+        <FormField label="Titulo" required error={errors.taskTitle}>
           <FormInput
             value={forms.taskTitle || ''}
-            onChange={(e) => setForms((p: Record<string, any>) => ({ ...p, taskTitle: e.target.value }))}
+            onChange={(e) => { setForms((p: Record<string, any>) => ({ ...p, taskTitle: e.target.value })); clearError('taskTitle'); }}
+            onBlur={() => onBlurRequired('taskTitle', forms.taskTitle || '', 'Titulo')}
             placeholder="Titulo de la tarea"
+            error={errors.taskTitle}
           />
         </FormField>
 
@@ -326,7 +335,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
 
       <ModalFooter
         onCancel={() => closeModal('task')}
-        onSubmit={saveTask}
+        onSubmit={handleSubmit}
         submitLabel={isSavingTask ? 'Guardando...' : editingId ? 'Actualizar' : 'Crear tarea'}
         submitDisabled={isSavingTask}
       />

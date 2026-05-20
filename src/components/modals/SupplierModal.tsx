@@ -2,23 +2,31 @@
 import React from 'react';
 import CenterModal from '@/components/common/CenterModal';
 import { useApp } from '@/contexts/AppContext';
-import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter } from '@/components/common/FormField';
+import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter, useFormValidation } from '@/components/common/FormField';
 import { SUPPLIER_CATS } from '@/lib/types';
 import { Star } from 'lucide-react';
 
 export default function SupplierModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, editingId, closeModal, saveSupplier } = useApp();
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
   const rating = Number(forms.supRating) || 5;
+
+  const handleSubmit = () => {
+    if (!validateRequired('supName', forms.supName || '', 'Nombre')) return;
+    saveSupplier();
+  };
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={480}>
       <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar proveedor' : 'Nuevo proveedor'}</h2>
 
       <div className="space-y-3">
-        <FormField label="Nombre" required>
+        <FormField label="Nombre" required error={errors.supName}>
           <FormInput
             value={forms.supName || ''}
-            onChange={(e) => setForms(p => ({ ...p, supName: e.target.value }))}
+            onChange={(e) => { clearError('supName'); setForms(p => ({ ...p, supName: e.target.value })); }}
+            onBlur={() => onBlurRequired('supName', forms.supName || '', 'Nombre')}
+            error={errors.supName}
             placeholder="Nombre del proveedor"
           />
         </FormField>
@@ -106,7 +114,7 @@ export default function SupplierModal({ open, onClose }: { open: boolean; onClos
 
       <ModalFooter
         onCancel={() => closeModal('supplier')}
-        onSubmit={saveSupplier}
+        onSubmit={handleSubmit}
         submitLabel={editingId ? 'Actualizar' : 'Crear proveedor'}
       />
     </CenterModal>

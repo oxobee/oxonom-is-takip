@@ -299,7 +299,6 @@ export function OneDriveProvider({
 
   // ---- Delete from OneDrive ----
   const deleteFromOneDrive = useCallback(async (fileId: string, folderId: string) => {
-    if (!confirm('¿Eliminar archivo de OneDrive?')) return;
     setMsLoading(true);
     try {
       const res = await fetch(`https://graph.microsoft.com/v1.0/me/drive/items/${fileId}`, {

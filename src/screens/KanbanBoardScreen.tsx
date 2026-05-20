@@ -19,8 +19,11 @@ import type { KanbanBoard as KanbanBoardType, KanbanFilters } from '@/lib/types'
 import { getFirebase, FieldValue as FV } from '@/lib/firebase-service';
 import { Plus, Trash2, Settings, ChevronRight } from 'lucide-react';
 import { SkeletonKanbanBoard } from '@/components/ui/SkeletonLoaders';
+import { useConfirmDialog } from '@/lib/useConfirmDialog';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 
 export default function KanbanBoardScreen() {
+  const confirmDialog = useConfirmDialog();
   const {
     tasks,
     projects,
@@ -463,7 +466,7 @@ export default function KanbanBoardScreen() {
           </button>
           <button
             onClick={async () => {
-              if (!kanbanBoardId || !confirm('Eliminar este tablero?')) return;
+              if (!kanbanBoardId || !(await confirmDialog.confirm({ title: 'Eliminar tablero', description: '¿Eliminar este tablero?' }))) return;
               try {
                 await getFirebase().firestore().collection('kanbanBoards').doc(kanbanBoardId).delete();
                 setKanbanBoardId(null);
@@ -508,6 +511,7 @@ export default function KanbanBoardScreen() {
         comments={cardComments}
         onAddComment={kanbanEntityType === 'tasks' ? handleAddComment : undefined}
       />
+      <ConfirmDialog {...confirmDialog} />
     </div>
   );
 }

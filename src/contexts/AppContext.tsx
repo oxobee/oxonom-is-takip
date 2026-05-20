@@ -1810,7 +1810,26 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       showToast('Error: proyecto no pertenece a tu espacio', 'error');
       return;
     }
-    try { await fbActions.deleteProject(id, showToast, activeTenantId); } catch (err) { console.error('[Archii]', err); showToast('Error', 'error'); }
+    const projectData = proj ? { ...proj.data } : null;
+    try {
+      await getFirebase().firestore().collection('projects').doc(id).delete();
+      if (projectData) {
+        toast.success('Proyecto eliminado', {
+          duration: 5000,
+          action: {
+            label: 'Deshacer',
+            onClick: async () => {
+              try {
+                await getFirebase().firestore().collection('projects').doc(id).set(scrubUndefined({ ...projectData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                toast.success('Proyecto restaurado');
+              } catch (err) { console.error('[Archii] undo deleteProject:', err); toast.error('Error al restaurar'); }
+            },
+          },
+        });
+      } else {
+        showToast('Proyecto eliminado');
+      }
+    } catch (err) { console.error('[Archii]', err); showToast('Error', 'error'); }
   };
 
   const openEditProject = (p: Project) => {
@@ -2017,6 +2036,8 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   };
 
   const deleteSupplier = async (id: string) => {
+    const supplier = suppliers.find(s => s.id === id);
+    const supplierData = supplier ? { ...supplier.data } : null;
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar proveedor',
@@ -2025,7 +2046,22 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('suppliers').doc(id).delete();
-          showToast('Proveedor eliminado');
+          if (supplierData) {
+            toast.success('Proveedor eliminado', {
+              duration: 5000,
+              action: {
+                label: 'Deshacer',
+                onClick: async () => {
+                  try {
+                    await getFirebase().firestore().collection('suppliers').doc(id).set(scrubUndefined({ ...supplierData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                    toast.success('Proveedor restaurado');
+                  } catch (err) { console.error('[Archii] undo deleteSupplier:', err); toast.error('Error al restaurar'); }
+                },
+              },
+            });
+          } else {
+            showToast('Eliminado');
+          }
         } catch (err) { console.error("[Archii]", err); showToast('Error al eliminar', 'error'); }
       },
     });
@@ -2047,15 +2083,32 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   };
 
   const deleteCompany = (id: string) => {
+    const company = companies.find(c => c.id === id);
+    const companyData = company ? { ...company.data } : null;
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar empresa',
-      description: '¿Estás seguro de que deseas eliminar esta empresa? Esta acción no se puede deshacer.',
+      description: '¿Estás seguro de que deseas eliminar esta empresa?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('companies').doc(id).delete();
-          showToast('Empresa eliminada');
+          if (companyData) {
+            toast.success('Empresa eliminada', {
+              duration: 5000,
+              action: {
+                label: 'Deshacer',
+                onClick: async () => {
+                  try {
+                    await getFirebase().firestore().collection('companies').doc(id).set(scrubUndefined({ ...companyData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                    toast.success('Empresa restaurada');
+                  } catch (err) { console.error('[Archii] undo deleteCompany:', err); toast.error('Error al restaurar'); }
+                },
+              },
+            });
+          } else {
+            showToast('Empresa eliminada');
+          }
         } catch (err) {
           console.error("[Archii]", err);
           showToast('Error', 'error');
@@ -2081,6 +2134,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   };
 
   const deleteFile = async (file: ProjectFile) => {
+    const { id: fileId, name: fileName, ...fileRest } = file;
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar archivo',
@@ -2089,7 +2143,18 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('files').doc(file.id).delete();
-          showToast('Archivo eliminado');
+          toast.success('Archivo eliminado', {
+            duration: 5000,
+            action: {
+              label: 'Deshacer',
+              onClick: async () => {
+                try {
+                  await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('files').doc(file.id).set(scrubUndefined({ ...fileRest, name: fileName, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                  toast.success('Archivo restaurado');
+                } catch (err) { console.error('[Archii] undo deleteFile:', err); toast.error('Error al restaurar'); }
+              },
+            },
+          });
         } catch (err) { console.error('[Archii] deleteFile error:', err); showToast('Error al eliminar', 'error'); }
       },
     });
@@ -2250,6 +2315,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   };
 
   const deleteApproval = async (id: string) => {
+    const approval = (selectedProjectId ? (await getFirebase().firestore().collection('projects').doc(selectedProjectId).collection('approvals').doc(id).get()).data() : null) as any;
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar aprobación',
@@ -2258,7 +2324,22 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('approvals').doc(id).delete();
-          showToast('Eliminada');
+          if (approval) {
+            toast.success('Aprobación eliminada', {
+              duration: 5000,
+              action: {
+                label: 'Deshacer',
+                onClick: async () => {
+                  try {
+                    await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('approvals').doc(id).set(scrubUndefined({ ...approval, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                    toast.success('Aprobación restaurada');
+                  } catch (err) { console.error('[Archii] undo deleteApproval:', err); toast.error('Error al restaurar'); }
+                },
+              },
+            });
+          } else {
+            showToast('Eliminada');
+          }
         } catch (err) { console.error("[Archii]", err); showToast('Error al eliminar', 'error'); }
       },
     });
@@ -2302,9 +2383,25 @@ export default function AppProvider({ children }: { children: React.ReactNode })
 
   const deleteDailyLog = async (logId: string) => {
     if (!selectedProjectId) return;
+    const logData = (await getFirebase().firestore().collection('projects').doc(selectedProjectId).collection('dailyLogs').doc(logId).get()).data();
     try {
       await getFirebase().firestore().collection('projects').doc(selectedProjectId).collection('dailyLogs').doc(logId).delete();
-      showToast('Bitácora eliminada');
+      if (logData) {
+        toast.success('Bitácora eliminada', {
+          duration: 5000,
+          action: {
+            label: 'Deshacer',
+            onClick: async () => {
+              try {
+                await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('dailyLogs').doc(logId).set(scrubUndefined({ ...logData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                toast.success('Bitácora restaurada');
+              } catch (err) { console.error('[Archii] undo deleteDailyLog:', err); toast.error('Error al restaurar'); }
+            },
+          },
+        });
+      } else {
+        showToast('Bitácora eliminada');
+      }
       if (selectedLogId === logId) {
         setDailyLogTab('list');
         setSelectedLogId(null);
@@ -2545,6 +2642,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     const isRecurring = meetingData?.data?.recurring === 'weekly' && meetingData?.data?.recurringGroupId;
     const groupId = meetingData?.data?.recurringGroupId;
     const meetingDate = meetingData?.data?.date;
+    const mData = meetingData ? { ...meetingData.data } : null;
     if (isRecurring) {
       // For recurring meetings, ask which scope to delete
       setPendingDeleteAction({
@@ -2564,7 +2662,24 @@ export default function AppProvider({ children }: { children: React.ReactNode })
             const batch = db.batch();
             snap.docs.forEach((d: any) => batch.delete(d.ref));
             await batch.commit();
-            showToast(`${snap.size} reuniones recurrentes eliminadas`);
+            toast.success(`${snap.size} reuniones recurrentes eliminadas`, {
+              duration: 5000,
+              action: {
+                label: 'Deshacer',
+                onClick: async () => {
+                  try {
+                    // Restore all deleted meetings from the snapshot
+                    const db = getFirebase().firestore();
+                    const batch = db.batch();
+                    snap.docs.forEach((d: any) => {
+                      batch.set(db.collection('meetings').doc(d.id), scrubUndefined({ ...d.data(), updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                    });
+                    await batch.commit();
+                    toast.success('Reuniones recurrentes restauradas');
+                  } catch (err) { console.error('[Archii] undo deleteMeeting recurring:', err); toast.error('Error al restaurar'); }
+                },
+              },
+            });
           } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
         },
       });
@@ -2577,7 +2692,22 @@ export default function AppProvider({ children }: { children: React.ReactNode })
           setPendingDeleteAction(null);
           try {
             await getFirebase().firestore().collection('meetings').doc(id).delete();
-            showToast('Reunión eliminada');
+            if (mData) {
+              toast.success('Reunión eliminada', {
+                duration: 5000,
+                action: {
+                  label: 'Deshacer',
+                  onClick: async () => {
+                    try {
+                      await getFirebase().firestore().collection('meetings').doc(id).set(scrubUndefined({ ...mData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                      toast.success('Reunión restaurada');
+                    } catch (err) { console.error('[Archii] undo deleteMeeting:', err); toast.error('Error al restaurar'); }
+                  },
+                },
+              });
+            } else {
+              showToast('Reunión eliminada');
+            }
           } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
         },
       });
@@ -2615,6 +2745,8 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   };
 
   const deleteGalleryPhoto = async (id: string) => {
+    const photo = galleryPhotos.find(p => p.id === id);
+    const photoData = photo ? { ...photo.data } : null;
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar foto',
@@ -2623,7 +2755,22 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('galleryPhotos').doc(id).delete();
-          showToast('Foto eliminada');
+          if (photoData) {
+            toast.success('Foto eliminada', {
+              duration: 5000,
+              action: {
+                label: 'Deshacer',
+                onClick: async () => {
+                  try {
+                    await getFirebase().firestore().collection('galleryPhotos').doc(id).set(scrubUndefined({ ...photoData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                    toast.success('Foto restaurada');
+                  } catch (err) { console.error('[Archii] undo deleteGalleryPhoto:', err); toast.error('Error al restaurar'); }
+                },
+              },
+            });
+          } else {
+            showToast('Foto eliminada');
+          }
         } catch (err) { console.error("[Archii]", err); showToast('Error al eliminar', 'error'); }
       },
     });

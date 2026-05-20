@@ -8,11 +8,14 @@ import { fmtCOP, fmtDate, fmtSize, statusColor, prioColor, taskStColor } from '@
 import { Plus, Layers, MessageSquare, BarChart3, Calendar, Send, ChevronLeft, X, Pencil, Eye, Trash2 } from 'lucide-react';
 import { PROJECT_TYPE_COLORS, EXPENSE_CATS, type Task, type WorkPhase, type Expense, type Comment, type TimeEntry, type RFI, type Submittal, type PunchItem, type TeamUser, type DailyLog } from '@/lib/types';
 import { SkeletonFileList } from '@/components/ui/SkeletonLoaders';
+import { useConfirmDialog } from '@/lib/useConfirmDialog';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 
 
 
 export default function ProjectDetailScreen() {
   const od = useOneDrive();
+  const confirmDialog = useConfirmDialog();
   const {
     approvals, calcGanttDays, calcGanttOffset, currentProject, dailyLogs, dailyLogTab,
     deleteApproval, deleteDailyLog, deleteExpense, deleteFile, deleteTask,
@@ -154,7 +157,7 @@ export default function ProjectDetailScreen() {
   if (!currentProject) return null;
 
   return (
-<div className="animate-fadeIn space-y-4">
+<><div className="animate-fadeIn space-y-4">
             {/* 1. HEADER */}
             <div className="bg-gradient-to-br from-[var(--card)] to-[var(--af-bg3)] border border-[var(--border)] rounded-xl p-5 md:p-6 relative overflow-hidden">
               <div className="absolute -right-8 -top-8 w-44 h-44 border-[40px] border-[var(--af-accent)]/5 rounded-full" />
@@ -685,7 +688,7 @@ export default function ProjectDetailScreen() {
                                       <div className="flex items-center gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                                         <button onClick={() => od.downloadOneDriveFile(f.id, f.name)} className="text-[10px] px-1.5 py-0.5 rounded hover:bg-[var(--card)] cursor-pointer bg-transparent border-none">⬇️</button>
                                         <button onClick={() => { od.setOdRenaming(f.id); od.setOdRenameName(f.name); }} className="text-[10px] px-1.5 py-0.5 rounded hover:bg-[var(--card)] cursor-pointer bg-transparent border-none">✏️</button>
-                                        <button onClick={() => { if (confirm('¿Eliminar archivo de OneDrive?')) { od.deleteFromOneDrive(f.id, od.odCurrentFolder); } }} className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 cursor-pointer border-none hover:bg-red-500/20">✕</button>
+                                        <button onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar archivo de OneDrive', description: '¿Estás seguro de que deseas eliminar este archivo de OneDrive?' })) { od.deleteFromOneDrive(f.id, od.odCurrentFolder); } }} className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 cursor-pointer border-none hover:bg-red-500/20">✕</button>
                                       </div>
                                     )}
                                   </div>
@@ -729,7 +732,7 @@ export default function ProjectDetailScreen() {
                                           <button onClick={() => { od.setOdRenaming(f.id); od.setOdRenameName(f.name); }} className="text-[10px] px-1 py-0.5 rounded hover:bg-[var(--af-bg4)] cursor-pointer bg-transparent border-none" title="Renombrar">✏️</button>
                                         </>
                                       )}
-                                      <button onClick={() => { if (confirm('¿Eliminar de OneDrive?')) { od.deleteFromOneDrive(f.id, od.odCurrentFolder); } }} className="text-[10px] px-1 py-0.5 rounded bg-red-500/10 text-red-400 cursor-pointer border-none hover:bg-red-500/20" title="Eliminar">✕</button>
+                                      <button onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar de OneDrive', description: '¿Estás seguro de que deseas eliminar este archivo de OneDrive?' })) { od.deleteFromOneDrive(f.id, od.odCurrentFolder); } }} className="text-[10px] px-1 py-0.5 rounded bg-red-500/10 text-red-400 cursor-pointer border-none hover:bg-red-500/20" title="Eliminar">✕</button>
                                     </div>
                                   </div>
                                 ))}
@@ -1169,7 +1172,7 @@ export default function ProjectDetailScreen() {
                                 <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--af-bg3)] text-[var(--muted-foreground)] cursor-pointer border-none bg-transparent transition-colors" onClick={() => openEditLog(log)} title="Editar">
                                   <Pencil className="w-3.5 h-3.5" />
                                 </button>
-                                <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-500/10 text-[var(--muted-foreground)] hover:text-red-400 cursor-pointer border-none bg-transparent transition-colors" onClick={() => { if (confirm('¿Eliminar este registro de bitácora?')) deleteDailyLog(log.id); }} title="Eliminar">
+                                <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-500/10 text-[var(--muted-foreground)] hover:text-red-400 cursor-pointer border-none bg-transparent transition-colors" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar bitácora', description: '¿Eliminar este registro de bitácora?' })) deleteDailyLog(log.id); }} title="Eliminar">
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
                               </div>
@@ -1635,5 +1638,6 @@ export default function ProjectDetailScreen() {
               );
             })()}
           </div>
-  );
+          <ConfirmDialog {...confirmDialog} />
+</>);
 }

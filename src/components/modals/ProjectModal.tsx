@@ -1,12 +1,13 @@
 'use client';
 import React, { useMemo } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter } from '@/components/common/FormField';
+import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter, useFormValidation } from '@/components/common/FormField';
 import CenterModal from '@/components/common/CenterModal';
 import { PROJECT_TYPE_PHASES, PROJECT_TYPE_COLORS, type Company } from '@/lib/types';
 
 export default function ProjectModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, editingId, closeModal, saveProject, companies } = useApp();
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
 
   const projectType = forms.projType || 'Ejecución';
 
@@ -39,16 +40,24 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
     setForms((p: any) => ({ ...p, enabledPhases: [] }));
   };
 
+  const handleSubmit = () => {
+    const nameValid = validateRequired('projName', forms.projName || '', 'Nombre');
+    if (!nameValid) return;
+    saveProject();
+  };
+
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={580}>
       <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar proyecto' : 'Nuevo proyecto'}</h2>
 
       <div className="space-y-3">
-        <FormField label="Nombre" required>
+        <FormField label="Nombre" required error={errors.projName}>
           <FormInput
             value={forms.projName || ''}
-            onChange={(e) => setForms(p => ({ ...p, projName: e.target.value }))}
+            onChange={(e) => { setForms(p => ({ ...p, projName: e.target.value })); clearError('projName'); }}
+            onBlur={() => onBlurRequired('projName', forms.projName || '', 'Nombre')}
             placeholder="Nombre del proyecto"
+            error={errors.projName}
           />
         </FormField>
 
@@ -206,7 +215,7 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
 
       <ModalFooter
         onCancel={() => closeModal('project')}
-        onSubmit={saveProject}
+        onSubmit={handleSubmit}
         submitLabel={editingId ? 'Actualizar' : 'Crear proyecto'}
       />
     </CenterModal>

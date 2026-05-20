@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { Puzzle, Search } from 'lucide-react';
+import { useConfirmDialog } from '@/lib/useConfirmDialog';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 
 /* ================================================================
    TYPES (local to screen)
@@ -69,6 +71,7 @@ const CATEGORIES: { id: string; label: string; icon: string }[] = [
    ================================================================ */
 
 export default function IntegrationsScreen() {
+  const confirmDialog = useConfirmDialog();
   const { authUser, activeTenantId } = useApp();
 
   const [providers, setProviders] = useState<ProviderInfo[]>([]);
@@ -198,7 +201,7 @@ export default function IntegrationsScreen() {
 
   const handleUninstall = async (instanceId: string) => {
     if (!activeTenantId || !authUser) return;
-    if (!confirm('¿Desinstalar esta integración? Los logs asociados serán eliminados.')) return;
+    if (!(await confirmDialog.confirm({ title: 'Desinstalar integración', description: '¿Desinstalar esta integración? Los logs asociados serán eliminados.' }))) return;
     setError('');
     try {
       const token = await authUser.getIdToken();
@@ -706,6 +709,7 @@ export default function IntegrationsScreen() {
           </div>
         </div>
       )}
+      <ConfirmDialog {...confirmDialog} />
     </div>
   );
 }

@@ -5,10 +5,13 @@ import { fmtDate, getInitials, statusColor, avatarColor } from '@/lib/helpers';
 import { ShieldCheck, Loader2, Trash2, Shield } from 'lucide-react';
 import { ADMIN_EMAILS, USER_ROLES, ROLE_COLORS, ROLE_ICONS } from '@/lib/types';
 import { getFirebase, getAuthHeaders } from '@/lib/firebase-service';
+import { useConfirmDialog } from '@/lib/useConfirmDialog';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 
 export default function AdminScreen() {
   // Track deleting state per user ID (outside of .map to avoid hooks violation)
   const [deletingIds, setDeletingIds] = React.useState<Set<string>>(new Set());
+  const confirmDialog = useConfirmDialog();
   const setDeleting = (uid: string, val: boolean) => {
     setDeletingIds(prev => {
       const next = new Set(prev);
@@ -379,7 +382,7 @@ export default function AdminScreen() {
                 const isSelf = m.id === authUser?.uid;
                 const deleting = deletingIds.has(m.id);
                 const handleDeleteMember = async () => {
-                  if (!confirm(`¿Eliminar a ${m.data?.name || m.data?.email} del equipo? Esta acción no se puede deshacer.`)) return;
+                  if (!await confirmDialog.confirm({ title: 'Eliminar miembro', description: `¿Eliminar a ${m.data?.name || m.data?.email} del equipo? Esta acción no se puede deshacer.` })) return;
                   if (!activeTenantId) { showToast('No hay tenant activo', 'error'); return; }
                   setDeleting(m.id, true);
                   try {
@@ -449,6 +452,7 @@ export default function AdminScreen() {
           </div>)}
         </div>
       )}
+      <ConfirmDialog {...confirmDialog} />
     </>
   );
 }

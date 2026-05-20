@@ -2,7 +2,7 @@
 import React from 'react';
 import CenterModal from '@/components/common/CenterModal';
 import { useApp } from '@/contexts/AppContext';
-import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter } from '@/components/common/FormField';
+import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter, useFormValidation } from '@/components/common/FormField';
 import { UserPlus, Repeat, Check } from 'lucide-react';
 
 const DIAS_SEMANA_RECURRENTE = [
@@ -17,6 +17,7 @@ const DIAS_SEMANA_RECURRENTE = [
 
 export default function MeetingModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, editingId, editingMeeting, closeModal, saveMeeting, projects, teamUsers, authUser } = useApp();
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
 
   const isRecurring = forms.meetRecurring === 'weekly';
   const selectedDate = forms.meetDate || '';
@@ -49,15 +50,22 @@ export default function MeetingModal({ open, onClose }: { open: boolean; onClose
     }
   };
 
+  const handleSubmit = () => {
+    if (!validateRequired('meetTitle', forms.meetTitle || '', 'Título')) return;
+    saveMeeting();
+  };
+
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={480}>
       <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar reunión' : 'Nueva reunión'}</h2>
 
       <div className="space-y-3">
-        <FormField label="Título" required>
+        <FormField label="Título" required error={errors.meetTitle}>
           <FormInput
             value={forms.meetTitle || ''}
-            onChange={(e) => setForms(p => ({ ...p, meetTitle: e.target.value }))}
+            onChange={(e) => { clearError('meetTitle'); setForms(p => ({ ...p, meetTitle: e.target.value })); }}
+            onBlur={() => onBlurRequired('meetTitle', forms.meetTitle || '', 'Título')}
+            error={errors.meetTitle}
             placeholder="Título de la reunión"
           />
         </FormField>
@@ -216,7 +224,7 @@ export default function MeetingModal({ open, onClose }: { open: boolean; onClose
 
       <ModalFooter
         onCancel={() => closeModal('meeting')}
-        onSubmit={saveMeeting}
+        onSubmit={handleSubmit}
         submitLabel={editingId ? 'Actualizar' : 'Crear reunión'}
       />
     </CenterModal>

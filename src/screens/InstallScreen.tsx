@@ -2,6 +2,8 @@
 import React from 'react';
 import { Check, Download, Info, RefreshCw, Trash2 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
+import { useConfirmDialog } from '@/lib/useConfirmDialog';
+import ConfirmDialog from '@/components/common/ConfirmDialog';
 
 export default function InstallScreen() {
   const {
@@ -9,7 +11,10 @@ export default function InstallScreen() {
     setShowInstallBanner, showToast,
   } = useApp();
 
+  const confirmDialog = useConfirmDialog();
+
   return (
+<>
 <div className="animate-fadeIn space-y-5">
             {/* Status Banner */}
             {isStandalone ? (
@@ -174,8 +179,8 @@ export default function InstallScreen() {
                   <Download size={16} className="stroke-current" />
                   Mostrar prompt
                 </button>
-                <button className="px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-[13px] text-red-400 cursor-pointer hover:bg-red-500/20 transition-colors flex items-center gap-2" onClick={() => {
-                  if (confirm('¿Borrar todo el caché offline? Esto recargará la app completamente.')) {
+                <button className="px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-[13px] text-red-400 cursor-pointer hover:bg-red-500/20 transition-colors flex items-center gap-2" onClick={async () => {
+                  if (await confirmDialog.confirm({ title: 'Borrar caché', description: '¿Borrar todo el caché offline? Esto recargará la app completamente.' })) {
                     if ('serviceWorker' in navigator) {
                       navigator.serviceWorker.controller?.postMessage({ type: 'CLEAR_CACHE' });
                     }
@@ -190,5 +195,7 @@ export default function InstallScreen() {
               </div>
             </div>
           </div>
+      <ConfirmDialog {...confirmDialog} />
+    </>
   );
 }

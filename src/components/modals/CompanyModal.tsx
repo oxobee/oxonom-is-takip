@@ -2,10 +2,16 @@
 import React from 'react';
 import CenterModal from '@/components/common/CenterModal';
 import { useApp } from '@/contexts/AppContext';
-import { FormField, FormInput, ModalFooter } from '@/components/common/FormField';
+import { FormField, FormInput, useFormValidation } from '@/components/common/FormField';
 
 export default function CompanyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, editingId, saveCompany, closeModal } = useApp();
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
+
+  const handleSubmit = () => {
+    if (!validateRequired('compName', forms.compName || '', 'Nombre comercial')) return;
+    saveCompany();
+  };
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={500}>
@@ -14,8 +20,8 @@ export default function CompanyModal({ open, onClose }: { open: boolean; onClose
       </div>
 
       <div className="space-y-3">
-        <FormField label="Nombre comercial" required>
-          <FormInput placeholder="Ej: Arquitectura Pérez SAS" value={forms.compName || ''} onChange={e => setForms(p => ({ ...p, compName: e.target.value }))} />
+        <FormField label="Nombre comercial" required error={errors.compName}>
+          <FormInput placeholder="Ej: Arquitectura Pérez SAS" value={forms.compName || ''} onChange={e => { clearError('compName'); setForms(p => ({ ...p, compName: e.target.value })); }} onBlur={() => onBlurRequired('compName', forms.compName || '', 'Nombre comercial')} error={errors.compName} />
         </FormField>
 
         <FormField label="Razón legal">
@@ -49,7 +55,7 @@ export default function CompanyModal({ open, onClose }: { open: boolean; onClose
         </button>
         <button
           className="flex-1 px-4 py-2.5 rounded-lg text-[13px] font-semibold cursor-pointer bg-[var(--af-accent)] text-background border-none hover:bg-[var(--af-accent2)] transition-colors"
-          onClick={saveCompany}
+          onClick={handleSubmit}
         >
           {editingId ? 'Guardar cambios' : 'Crear empresa'}
         </button>

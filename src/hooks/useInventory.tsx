@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { useNotificationsContext } from '@/hooks/useNotifications';
+import { toast } from 'sonner';
 import type { InvProduct, InvCategory, InvMovement, InvTransfer } from '@/lib/types';
 import { INV_WAREHOUSES, CAT_COLORS } from '@/lib/types';
 import { fileToBase64, scrubUndefined } from '@/lib/helpers';
@@ -240,6 +241,8 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteInvProduct = async (id: string) => {
+    const product = invProducts.find(p => p.id === id);
+    const productData = product ? { ...product.data } : null;
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar producto',
@@ -248,7 +251,22 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('invProducts').doc(id).delete();
-          showToast('Producto eliminado');
+          if (productData) {
+            toast.success('Producto eliminado', {
+              duration: 5000,
+              action: {
+                label: 'Deshacer',
+                onClick: async () => {
+                  try {
+                    await getFirebase().firestore().collection('invProducts').doc(id).set(scrubUndefined({ ...productData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                    toast.success('Producto restaurado');
+                  } catch (err) { console.error('[Archii] undo deleteInvProduct:', err); toast.error('Error al restaurar'); }
+                },
+              },
+            });
+          } else {
+            showToast('Producto eliminado');
+          }
         } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
       },
     });
@@ -277,6 +295,8 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteInvCategory = async (id: string) => {
+    const category = invCategories.find(c => c.id === id);
+    const categoryData = category ? { ...category.data } : null;
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar categoría',
@@ -285,7 +305,22 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('invCategories').doc(id).delete();
-          showToast('Categoría eliminada');
+          if (categoryData) {
+            toast.success('Categoría eliminada', {
+              duration: 5000,
+              action: {
+                label: 'Deshacer',
+                onClick: async () => {
+                  try {
+                    await getFirebase().firestore().collection('invCategories').doc(id).set(scrubUndefined({ ...categoryData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                    toast.success('Categoría restaurada');
+                  } catch (err) { console.error('[Archii] undo deleteInvCategory:', err); toast.error('Error al restaurar'); }
+                },
+              },
+            });
+          } else {
+            showToast('Categoría eliminada');
+          }
         } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
       },
     });
@@ -320,6 +355,8 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteInvMovement = async (id: string) => {
+    const movement = invMovements.find(m => m.id === id);
+    const movementData = movement ? { ...movement.data } : null;
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar movimiento',
@@ -328,7 +365,22 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('invMovements').doc(id).delete();
-          showToast('Movimiento eliminado');
+          if (movementData) {
+            toast.success('Movimiento eliminado', {
+              duration: 5000,
+              action: {
+                label: 'Deshacer',
+                onClick: async () => {
+                  try {
+                    await getFirebase().firestore().collection('invMovements').doc(id).set(scrubUndefined({ ...movementData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                    toast.success('Movimiento restaurado');
+                  } catch (err) { console.error('[Archii] undo deleteInvMovement:', err); toast.error('Error al restaurar'); }
+                },
+              },
+            });
+          } else {
+            showToast('Movimiento eliminado');
+          }
         } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
       },
     });
@@ -370,6 +422,8 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteInvTransfer = async (id: string) => {
+    const transfer = invTransfers.find(t => t.id === id);
+    const transferData = transfer ? { ...transfer.data } : null;
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar transferencia',
@@ -378,7 +432,22 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('invTransfers').doc(id).delete();
-          showToast('Transferencia eliminada');
+          if (transferData) {
+            toast.success('Transferencia eliminada', {
+              duration: 5000,
+              action: {
+                label: 'Deshacer',
+                onClick: async () => {
+                  try {
+                    await getFirebase().firestore().collection('invTransfers').doc(id).set(scrubUndefined({ ...transferData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                    toast.success('Transferencia restaurada');
+                  } catch (err) { console.error('[Archii] undo deleteInvTransfer:', err); toast.error('Error al restaurar'); }
+                },
+              },
+            });
+          } else {
+            showToast('Transferencia eliminada');
+          }
         } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
       },
     });
