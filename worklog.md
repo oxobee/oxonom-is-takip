@@ -1419,3 +1419,38 @@ Stage Summary:
 - Centralizada lógica de vencimiento en una sola función isOverdue()
 - 17 archivos, +64 lineas, -42 lineas
 - Deploy automático a Vercel en curso
+
+---
+Task ID: 13
+Agent: Super Z (Main)
+Task: Sprint 2 completo + Sprint 3 parcial — aria-hidden, aria-label, prefers-reduced-motion
+
+Protocolo leido: LEE_PRIMERO.txt + INSTRUCTIVO_BITACORA.txt
+
+Work Log:
+- Leído LEE_PRIMERO.txt + worklog.md + git pull
+- Audit completo de accesibilidad: 57 archivos con iconos lucide-react, ~190+ iconos sin aria-hidden
+- PASO 1: aria-hidden="true" en iconos decorativos
+  - Script automatizado procesó 86 archivos, 577 iconos corregidos
+  - Directorios: layout/, modals/, dashboard/, projects/, reports/, onboarding/, archii/, beta/, inventory/, features/, kanban/, screens/
+  - UI components base corregidos manualmente: command.tsx, dropdown-menu.tsx, resizable.tsx, calendar.tsx, pagination.tsx, ConfirmDialog.tsx, EmptyState.tsx
+- PASO 2: aria-label en botones solo-icono (49 instancias en 23 archivos)
+  - Close buttons (X): 21 instancias — "Cerrar", "Quitar imagen", "Quitar asignado", "Quitar etiqueta", "Limpiar búsqueda", "Cancelar", "Descartar selección", etc.
+  - Delete buttons (Trash2): 9 instancias — "Eliminar", "Eliminar subtarea"
+  - Edit buttons (Pencil): 5 instancias — "Editar"
+  - Navigation buttons: 8 instancias — "Mes anterior", "Mes siguiente", "Imagen anterior", "Imagen siguiente"
+  - Other: 5 instancias — "Abrir menú", "Volver a conversaciones", "Paso anterior", "Descargar PDF", "Más opciones del mensaje"
+  - Migración title→aria-label: 11 instancias (mejor soporte screen readers)
+- PASO 3: prefers-reduced-motion mejorado en globals.css
+  - Agregadas clases faltantes: .animate-fadeInUp, .animate-scaleIn, .animate-spin, .animate-float
+  - Framer Motion residual transforms deshabilitados ([style*="transform"])
+  - Ambient/glow effects deshabilitados (.af-ambient-glow)
+  - Skeleton consolidado (.af-skeleton, .shimmer)
+- TypeScript check: 0 errores
+- Commit: bc2261a, push a main completado
+
+Stage Summary:
+- 96 archivos modificados, +696 lineas, -606 lineas
+- Sprint 2 COMPLETO (7/7 items)
+- Sprint 3 parcial: prefers-reduced-motion mejorado
+- Deploy automático a Vercel en curso

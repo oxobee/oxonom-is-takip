@@ -634,7 +634,7 @@ export default function TasksScreen() {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--af-bg4)" vertical={false} />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} />
-                <Tooltip content={<ChartTooltipContent />} cursor={{ fill: 'rgba(200,169,110,0.06)' }} />
+                <Tooltip content={<ChartTooltipContent />} cursor={{ fill: 'rgba(212,184,122,0.06)' }} />
                 <Bar dataKey="creadas" name="Creadas" fill="#3b82f6" radius={[3, 3, 0, 0]} barSize={16} />
                 <Bar dataKey="completadas" name="Completadas" fill="#10b981" radius={[3, 3, 0, 0]} barSize={16} />
               </BarChart>

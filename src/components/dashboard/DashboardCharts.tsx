@@ -46,7 +46,7 @@ export default function DashboardCharts({
               <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} tickFormatter={(v: number) => v >= 1000000 ? `${(v/1000000).toFixed(0)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}K` : String(v)} />
               <Tooltip content={<ChartTooltip />} />
-              <Area type="monotone" dataKey="facturado" name="Facturado" stroke="#c8a96e" fill="rgba(200,169,110,0.1)" strokeWidth={2} />
+              <Area type="monotone" dataKey="facturado" name="Facturado" stroke="#d4b87a" fill="rgba(212,184,122,0.1)" strokeWidth={2} />
               <Area type="monotone" dataKey="cobrado" name="Cobrado" stroke="#10b981" fill="rgba(16,185,129,0.08)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
@@ -76,7 +76,7 @@ export default function DashboardCharts({
               <Tooltip content={<ChartTooltip />} />
               <Bar dataKey="activas" name="Activas" fill="#3b82f6" radius={[2, 2, 0, 0]} stackId="a" barSize={14} />
               <Bar dataKey="completadas" name="Completadas" fill="#10b981" radius={[0, 0, 0, 0]} stackId="a" barSize={14} />
-              <Bar dataKey="pendientes" name="Pendientes" fill="rgba(200,169,110,0.4)" radius={[2, 2, 0, 0]} stackId="a" barSize={14} />
+              <Bar dataKey="pendientes" name="Pendientes" fill="rgba(212,184,122,0.4)" radius={[2, 2, 0, 0]} stackId="a" barSize={14} />
             </BarChart>
           </ResponsiveContainer>
         )}

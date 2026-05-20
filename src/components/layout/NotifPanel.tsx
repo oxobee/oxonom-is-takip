@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { useNotificationsContext } from '@/hooks/useNotifications';
 import { Bell, MessageCircle, ClipboardList, Calendar, Package, Folder, CheckCircle, Clock, Volume2, Check, Loader, XCircle, CircleHelp, FileCheck, ListChecks, Mail, Smartphone, Radio, Settings } from 'lucide-react';
@@ -43,12 +43,41 @@ export default function NotifPanel() {
     setPushRegistering(false);
   }, [toggleChannel]);
 
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Focus trap + Escape close
+  useEffect(() => {
+    if (!showNotifPanel) return;
+    const el = panelRef.current;
+    if (!el) return;
+    const focusable = el.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (focusable.length > 0) {
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') { setShowNotifPanel(false); return; }
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last.focus(); } }
+        else { if (document.activeElement === last) { e.preventDefault(); first.focus(); } }
+      };
+      el.addEventListener('keydown', handleKeyDown);
+      first.focus();
+      return () => el.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [showNotifPanel, setShowNotifPanel]);
+
   if (!showNotifPanel) return null;
 
   return (
     <>
-      <div className="fixed inset-0 z-40" onClick={() => setShowNotifPanel(false)} />
-      <div className="absolute right-2 sm:right-4 z-[60] w-[calc(100vw-16px)] sm:w-[400px] max-h-[85dvh] bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-2xl overflow-hidden animate-fadeIn flex flex-col" style={{ top: 'calc(60px + env(safe-area-inset-top, 0px))', animation: 'fadeIn 0.2s ease' }}>
+      <div className="fixed inset-0 z-40" onClick={() => setShowNotifPanel(false)} aria-hidden="true" />
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Notificaciones"
+        className="absolute right-2 sm:right-4 z-[60] w-[calc(100vw-16px)] sm:w-[400px] max-h-[85dvh] bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-2xl overflow-hidden animate-fadeIn flex flex-col" style={{ top: 'calc(60px + env(safe-area-inset-top, 0px))', animation: 'fadeIn 0.2s ease' }}
+      >
         {/* Header */}
         <div className="p-4 border-b border-[var(--border)] flex-shrink-0">
           <div className="flex items-center justify-between mb-3">

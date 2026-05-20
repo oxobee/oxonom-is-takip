@@ -6,7 +6,7 @@ import { useOneDrive } from '@/hooks/useOneDrive';
 import { fmtCOP, fmtDate, prioColor, taskStColor, avatarColor } from '@/lib/helpers';
 import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
 import { ROLE_COLORS, ROLE_ICONS, MESES, DIAS_SEMANA, USER_ROLES, toDate } from '@/lib/types';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 
 type ProfileTab = 'resumen' | 'calendario' | 'actividad' | 'integraciones';
 
@@ -377,7 +377,7 @@ export default function ProfileScreen() {
             ) : (
               <div className="flex items-center gap-1.5">
                 <div style={{ fontFamily: "'DM Serif Display', serif" }} className="text-base sm:text-xl cursor-pointer hover:text-[var(--af-accent)] transition-colors" onClick={startEditName}>{userName}</div>
-                <button className="w-5 h-5 rounded flex items-center justify-center text-[10px] text-[var(--muted-foreground)] hover:text-[var(--af-accent)] hover:bg-[var(--af-accent)]/10 cursor-pointer transition-colors" onClick={startEditName} title="Editar nombre">✏️</button>
+                <button aria-label="Editar nombre" className="w-5 h-5 rounded flex items-center justify-center text-[10px] text-[var(--muted-foreground)] hover:text-[var(--af-accent)] hover:bg-[var(--af-accent)]/10 cursor-pointer transition-colors" onClick={startEditName} title="Editar nombre"><Pencil size={10} aria-hidden="true"/></button>
               </div>
             )}
             <div className="text-[11px] sm:text-sm text-[var(--muted-foreground)] truncate">{authUser?.email}</div>
@@ -468,7 +468,7 @@ export default function ProfileScreen() {
               <div className="relative w-20 h-20 sm:w-28 sm:h-28">
                 <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                   <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--af-bg4)" strokeWidth="3" />
-                  <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke={computed.totalRate >= 80 ? '#4caf7d' : computed.totalRate >= 50 ? '#c8a96e' : '#e05555'} strokeWidth="3" strokeDasharray={`${computed.totalRate}, 100`} strokeLinecap="round" className="transition-all duration-700" />
+                  <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke={computed.totalRate >= 80 ? '#4caf7d' : computed.totalRate >= 50 ? '#d4b87a' : '#e05555'} strokeWidth="3" strokeDasharray={`${computed.totalRate}, 100`} strokeLinecap="round" className="transition-all duration-700" />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-lg sm:text-2xl font-bold">{computed.totalRate}%</span>
