@@ -62,7 +62,7 @@ const InventoryContext = createContext<InventoryContextValue>(null!);
 
 /* ===== PROVIDER ===== */
 export function InventoryProvider({ children }: { children: React.ReactNode }) {
-  const { authUser, activeTenantId, ready, forms, setForms, editingId, setEditingId, showToast, openModal, closeModal } = useApp();
+  const { authUser, activeTenantId, ready, forms, setForms, editingId, setEditingId, showToast, openModal, closeModal, setPendingDeleteAction } = useApp();
   const { sendNotif, notifPrefs } = useNotificationsContext();
 
   // ===== INVENTORY STATE =====
@@ -239,7 +239,20 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     } catch (err) { console.error('[Archii] saveInvProduct error:', err); showToast('Error al guardar', 'error'); }
   };
 
-  const deleteInvProduct = async (id: string) => { if (!confirm('¿Eliminar este producto del inventario?')) return; try { await getFirebase().firestore().collection('invProducts').doc(id).delete(); showToast('Producto eliminado'); } catch (err) { console.error("[Archii]", err); } };
+  const deleteInvProduct = async (id: string) => {
+    setPendingDeleteAction({
+      open: true,
+      title: 'Eliminar producto',
+      description: '¿Estás seguro de que deseas eliminar este producto del inventario?',
+      onConfirm: async () => {
+        setPendingDeleteAction(null);
+        try {
+          await getFirebase().firestore().collection('invProducts').doc(id).delete();
+          showToast('Producto eliminado');
+        } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
+      },
+    });
+  };
 
   const openEditInvProduct = (p: InvProduct) => {
     setEditingId(p.id);
@@ -263,7 +276,20 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     } catch (err) { console.error('[Archii] saveInvCategory error:', err); showToast('Error al guardar', 'error'); }
   };
 
-  const deleteInvCategory = async (id: string) => { if (!confirm('¿Eliminar categoría?')) return; try { await getFirebase().firestore().collection('invCategories').doc(id).delete(); showToast('Categoría eliminada'); } catch (err) { console.error("[Archii]", err); } };
+  const deleteInvCategory = async (id: string) => {
+    setPendingDeleteAction({
+      open: true,
+      title: 'Eliminar categoría',
+      description: '¿Estás seguro de que deseas eliminar esta categoría?',
+      onConfirm: async () => {
+        setPendingDeleteAction(null);
+        try {
+          await getFirebase().firestore().collection('invCategories').doc(id).delete();
+          showToast('Categoría eliminada');
+        } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
+      },
+    });
+  };
   const openEditInvCategory = (c: InvCategory) => { setEditingId(c.id); setForms(f => ({ ...f, invCatName: c.data.name, invCatColor: c.data.color || '', invCatDesc: c.data.description || '' })); openModal('invCategory'); };
 
   const saveInvMovement = async () => {
@@ -293,7 +319,20 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     } catch (err: any) { showToast(err.message || 'Error al registrar movimiento', 'error'); }
   };
 
-  const deleteInvMovement = async (id: string) => { if (!confirm('¿Eliminar movimiento?')) return; try { await getFirebase().firestore().collection('invMovements').doc(id).delete(); showToast('Movimiento eliminado'); } catch (err) { console.error("[Archii]", err); } };
+  const deleteInvMovement = async (id: string) => {
+    setPendingDeleteAction({
+      open: true,
+      title: 'Eliminar movimiento',
+      description: '¿Estás seguro de que deseas eliminar este movimiento de inventario?',
+      onConfirm: async () => {
+        setPendingDeleteAction(null);
+        try {
+          await getFirebase().firestore().collection('invMovements').doc(id).delete();
+          showToast('Movimiento eliminado');
+        } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
+      },
+    });
+  };
 
   const saveInvTransfer = async () => {
     const productId = forms.invTrProduct || '';
@@ -330,7 +369,20 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     } catch (err: any) { showToast(err.message || 'Error en transferencia', 'error'); }
   };
 
-  const deleteInvTransfer = async (id: string) => { if (!confirm('¿Eliminar registro de transferencia?')) return; try { await getFirebase().firestore().collection('invTransfers').doc(id).delete(); showToast('Transferencia eliminada'); } catch (err) { console.error("[Archii]", err); } };
+  const deleteInvTransfer = async (id: string) => {
+    setPendingDeleteAction({
+      open: true,
+      title: 'Eliminar transferencia',
+      description: '¿Estás seguro de que deseas eliminar este registro de transferencia?',
+      onConfirm: async () => {
+        setPendingDeleteAction(null);
+        try {
+          await getFirebase().firestore().collection('invTransfers').doc(id).delete();
+          showToast('Transferencia eliminada');
+        } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
+      },
+    });
+  };
 
   const getInvCategoryName = (catId: string) => { const c = invCategories.find(x => x.id === catId); return c ? c.data.name : 'Sin categoría'; };
   const getInvCategoryColor = (catId: string) => { const c = invCategories.find(x => x.id === catId); return c ? c.data.color : '#6b7280'; };

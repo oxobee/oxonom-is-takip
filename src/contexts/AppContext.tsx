@@ -407,6 +407,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     open: boolean;
     title: string;
     description: string;
+    confirmLabel?: string;
     onConfirm: () => void;
   } | null>(null);
   const openModal = useCallback((n: string) => setModals(p => ({ ...p, [n]: true })), []);
@@ -1770,7 +1771,14 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     return projects; // Si no tiene empresa, ve todo
   };
 
-  const doLogout = () => { if (!confirm('¿Cerrar sesión?')) return; getFirebase().auth().signOut(); };
+  const doLogout = () => {
+    setPendingDeleteAction({
+      open: true,
+      title: 'Cerrar sesión',
+      description: '¿Estás seguro de que deseas cerrar sesión?',
+      onConfirm: () => { setPendingDeleteAction(null); getFirebase().auth().signOut(); },
+    });
+  };
 
   // scrubUndefined imported from @/lib/helpers (canonical version)
 
@@ -1883,7 +1891,32 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     } catch (err) { console.error("[Archii]", err); }
   };
 
-  const deleteTask = async (id: string) => { try { await getFirebase().firestore().collection('tasks').doc(id).delete(); showToast('Tarea eliminada'); } catch (err: any) { console.error("[Archii]", err); showToast('Error al eliminar: ' + (err?.message || err?.code || 'sin permiso'), 'error'); } };
+  const deleteTask = async (id: string) => {
+    // Find task data for undo
+    const task = tasks.find(t => t.id === id);
+    const taskData = task ? { ...task.data } : null;
+    try {
+      await getFirebase().firestore().collection('tasks').doc(id).delete();
+      // Show toast with undo option
+      if (taskData) {
+        const undoId = toast.success('Tarea eliminada', {
+          duration: 5000,
+          action: {
+            label: 'Deshacer',
+            onClick: async () => {
+              try {
+                const db = getFirebase().firestore();
+                await db.collection('tasks').doc(id).set(scrubUndefined({ ...taskData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                toast.success('Tarea restaurada');
+              } catch (err) { console.error('[Archii] undo deleteTask:', err); toast.error('Error al restaurar'); }
+            },
+          },
+        });
+      } else {
+        showToast('Tarea eliminada');
+      }
+    } catch (err: any) { console.error("[Archii]", err); showToast('Error al eliminar: ' + (err?.message || err?.code || 'sin permiso'), 'error'); }
+  };
 
   const saveExpense = async () => {
     const concept = forms.expConcept || '';
@@ -1937,7 +1970,37 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     openModal('expense');
   };
 
-  const deleteExpense = async (id: string) => { if (!confirm('¿Eliminar gasto?')) return; try { await getFirebase().firestore().collection('expenses').doc(id).delete(); showToast('Eliminado'); } catch (err) { console.error("[Archii]", err); } };
+  const deleteExpense = async (id: string) => {
+    const expense = expenses.find(e => e.id === id);
+    const expenseData = expense ? { ...expense.data } : null;
+    setPendingDeleteAction({
+      open: true,
+      title: 'Eliminar gasto',
+      description: '¿Estás seguro de que deseas eliminar este gasto?',
+      onConfirm: async () => {
+        setPendingDeleteAction(null);
+        try {
+          await getFirebase().firestore().collection('expenses').doc(id).delete();
+          if (expenseData) {
+            toast.success('Gasto eliminado', {
+              duration: 5000,
+              action: {
+                label: 'Deshacer',
+                onClick: async () => {
+                  try {
+                    await getFirebase().firestore().collection('expenses').doc(id).set(scrubUndefined({ ...expenseData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
+                    toast.success('Gasto restaurado');
+                  } catch (err) { console.error('[Archii] undo deleteExpense:', err); toast.error('Error al restaurar'); }
+                },
+              },
+            });
+          } else {
+            showToast('Eliminado');
+          }
+        } catch (err) { console.error("[Archii]", err); showToast('Error al eliminar', 'error'); }
+      },
+    });
+  };
 
   const saveSupplier = async () => {
     const name = forms.supName || '';
@@ -1953,7 +2016,20 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     } catch (err) { console.error('[Archii]', err); showToast('Error', 'error'); }
   };
 
-  const deleteSupplier = async (id: string) => { if (!confirm('¿Eliminar proveedor?')) return; try { await getFirebase().firestore().collection('suppliers').doc(id).delete(); showToast('Eliminado'); } catch (err) { console.error("[Archii]", err); } };
+  const deleteSupplier = async (id: string) => {
+    setPendingDeleteAction({
+      open: true,
+      title: 'Eliminar proveedor',
+      description: '¿Estás seguro de que deseas eliminar este proveedor?',
+      onConfirm: async () => {
+        setPendingDeleteAction(null);
+        try {
+          await getFirebase().firestore().collection('suppliers').doc(id).delete();
+          showToast('Proveedor eliminado');
+        } catch (err) { console.error("[Archii]", err); showToast('Error al eliminar', 'error'); }
+      },
+    });
+  };
 
   // Company CRUD
   const saveCompany = async () => {
@@ -2005,11 +2081,18 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   };
 
   const deleteFile = async (file: ProjectFile) => {
-    if (!confirm('¿Eliminar archivo?')) return;
-    try {
-      await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('files').doc(file.id).delete();
-      showToast('Archivo eliminado');
-    } catch (err) { console.error('[Archii] deleteFile error:', err); showToast('Error al eliminar', 'error'); }
+    setPendingDeleteAction({
+      open: true,
+      title: 'Eliminar archivo',
+      description: `¿Estás seguro de que deseas eliminar "${file.name || 'este archivo'}"?`,
+      onConfirm: async () => {
+        setPendingDeleteAction(null);
+        try {
+          await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('files').doc(file.id).delete();
+          showToast('Archivo eliminado');
+        } catch (err) { console.error('[Archii] deleteFile error:', err); showToast('Error al eliminar', 'error'); }
+      },
+    });
   };
 
   const initDefaultPhases = async () => {
@@ -2166,7 +2249,20 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     } catch (err) { console.error("[Archii]", err); }
   };
 
-  const deleteApproval = async (id: string) => { if (!confirm('¿Eliminar aprobación?')) return; try { await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('approvals').doc(id).delete(); showToast('Eliminada'); } catch (err) { console.error("[Archii]", err); } };
+  const deleteApproval = async (id: string) => {
+    setPendingDeleteAction({
+      open: true,
+      title: 'Eliminar aprobación',
+      description: '¿Estás seguro de que deseas eliminar esta solicitud de aprobación?',
+      onConfirm: async () => {
+        setPendingDeleteAction(null);
+        try {
+          await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('approvals').doc(id).delete();
+          showToast('Eliminada');
+        } catch (err) { console.error("[Archii]", err); showToast('Error al eliminar', 'error'); }
+      },
+    });
+  };
 
   // Daily Log CRUD
   const saveDailyLog = async () => {
@@ -2449,30 +2545,43 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     const isRecurring = meetingData?.data?.recurring === 'weekly' && meetingData?.data?.recurringGroupId;
     const groupId = meetingData?.data?.recurringGroupId;
     const meetingDate = meetingData?.data?.date;
-    let deleteFuture = false;
     if (isRecurring) {
-      deleteFuture = confirm('¿Esta reunión es recurrente. ¿Eliminar solo esta instancia o todas las futuras?\n\nAceptar = Eliminar todas las futuras\nCancelar = Eliminar solo esta');
+      // For recurring meetings, ask which scope to delete
+      setPendingDeleteAction({
+        open: true,
+        title: 'Eliminar reunión recurrente',
+        description: '¿Eliminar todas las instancias futuras de esta reunión recurrente? Cancela para eliminar solo esta instancia.',
+        confirmLabel: 'Eliminar todas',
+        onConfirm: async () => {
+          setPendingDeleteAction(null);
+          try {
+            const db = getFirebase().firestore();
+            const snap = await db.collection('meetings')
+              .where('tenantId', '==', activeTenantId)
+              .where('recurringGroupId', '==', groupId)
+              .where('date', '>=', meetingDate || '')
+              .get();
+            const batch = db.batch();
+            snap.docs.forEach((d: any) => batch.delete(d.ref));
+            await batch.commit();
+            showToast(`${snap.size} reuniones recurrentes eliminadas`);
+          } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
+        },
+      });
     } else {
-      if (!confirm('¿Eliminar reunión?')) return;
+      setPendingDeleteAction({
+        open: true,
+        title: 'Eliminar reunión',
+        description: '¿Estás seguro de que deseas eliminar esta reunión?',
+        onConfirm: async () => {
+          setPendingDeleteAction(null);
+          try {
+            await getFirebase().firestore().collection('meetings').doc(id).delete();
+            showToast('Reunión eliminada');
+          } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
+        },
+      });
     }
-    try {
-      const db = getFirebase().firestore();
-      if (deleteFuture && groupId) {
-        // Delete all future instances in the series (including this one)
-        const snap = await db.collection('meetings')
-          .where('tenantId', '==', activeTenantId)
-          .where('recurringGroupId', '==', groupId)
-          .where('date', '>=', meetingDate || '')
-          .get();
-        const batch = db.batch();
-        snap.docs.forEach((d: any) => batch.delete(d.ref));
-        await batch.commit();
-        showToast(`${snap.size} reuniones recurrentes eliminadas`);
-      } else {
-        await db.collection('meetings').doc(id).delete();
-        showToast('Reunión eliminada');
-      }
-    } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar reunión', 'error'); }
   };
   const openEditMeeting = (m: Meeting) => {
     setEditingId(m.id);
@@ -2505,7 +2614,20 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     } catch (err) { console.error('[Archii] saveGalleryPhoto error:', err); showToast('Error al guardar foto', 'error'); }
   };
 
-  const deleteGalleryPhoto = async (id: string) => { if (!confirm('¿Eliminar foto de la galería?')) return; try { await getFirebase().firestore().collection('galleryPhotos').doc(id).delete(); showToast('Foto eliminada'); } catch (err) { console.error("[Archii]", err); } };
+  const deleteGalleryPhoto = async (id: string) => {
+    setPendingDeleteAction({
+      open: true,
+      title: 'Eliminar foto',
+      description: '¿Estás seguro de que deseas eliminar esta foto de la galería?',
+      onConfirm: async () => {
+        setPendingDeleteAction(null);
+        try {
+          await getFirebase().firestore().collection('galleryPhotos').doc(id).delete();
+          showToast('Foto eliminada');
+        } catch (err) { console.error("[Archii]", err); showToast('Error al eliminar', 'error'); }
+      },
+    });
+  };
 
   const handleGalleryImageSelect = async (e: any) => {
     const file = e.target?.files?.[0];
