@@ -6,6 +6,7 @@ import { fmtCOP, getInitials, avatarColor, fmtDuration, fmtTimer, getWeekStart }
 import { Clock } from 'lucide-react';
 import { DEFAULT_PHASES } from '@/lib/types';
 import * as fbActions from '@/lib/firestore-actions';
+import { showUndoToast } from '@/lib/undo-helpers';
 
 export default function TimeTrackingScreen() {
   const {
@@ -256,7 +257,11 @@ export default function TimeTrackingScreen() {
                             <td className="px-4 py-2.5 text-[var(--muted-foreground)]">{e.data.startTime} - {e.data.endTime}</td>
                             <td className="px-4 py-2.5 text-right font-semibold">{fmtDuration(e.data.duration)}</td>
                             <td className="px-4 py-2.5 text-center">{e.data.billable ? '✅' : '—'}</td>
-                            <td className="px-4 py-2.5"><button className="text-xs text-red-400 cursor-pointer hover:text-red-300" onClick={() => fbActions.deleteTimeEntry(e.id, showToast, activeTenantId)}>🗑</button></td>
+                            <td className="px-4 py-2.5"><button className="text-xs text-red-400 cursor-pointer hover:text-red-300" onClick={async () => {
+                              const snapshot = { ...e.data };
+                              await fbActions.deleteTimeEntry(e.id, showToast, activeTenantId);
+                              showUndoToast({ collection: 'timeEntries', docId: e.id, snapshot, label: 'Registro', gender: 'o' });
+                            }}>🗑</button></td>
                           </tr>);
                         })}
                       </tbody>

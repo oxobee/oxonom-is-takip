@@ -11,6 +11,7 @@ import { Pencil, Trash2, MessageCircleQuestion, Plus } from 'lucide-react';
 import { OverflowMenu } from '@/components/ui/OverflowMenu';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import { useConfirmDialog } from '@/lib/useConfirmDialog';
+import { showUndoToast } from '@/lib/undo-helpers';
 import FilterBar from '@/components/common/FilterBar';
 import EmptyState from '@/components/common/EmptyState';
 
@@ -153,7 +154,9 @@ export default function RFIsScreen() {
                     <button className="px-1.5 py-0.5 rounded bg-red-500/10 text-xs cursor-pointer" onClick={async () => {
                       const ok = await confirmDialog.confirm({ title: 'Eliminar RFI', description: '¿Estás seguro de eliminar este RFI?' });
                       if (!ok) return;
-                      fbActions.deleteRFI(r.id, showToast, activeTenantId);
+                      const snapshot = { ...r.data };
+                      await fbActions.deleteRFI(r.id, showToast, activeTenantId);
+                      showUndoToast({ collection: 'rfis', docId: r.id, snapshot, label: 'RFI' });
                     }}><Trash2 size={12} /></button>
                   </div>
                   <div className="md:hidden flex-shrink-0">
@@ -163,7 +166,9 @@ export default function RFIsScreen() {
                         { label: 'Eliminar RFI', icon: <Trash2 size={14} />, variant: 'danger', separator: true, onClick: async () => {
                           const ok = await confirmDialog.confirm({ title: 'Eliminar RFI', description: '¿Estás seguro de eliminar este RFI?' });
                           if (!ok) return;
-                          fbActions.deleteRFI(r.id, showToast, activeTenantId);
+                          const snapshot = { ...r.data };
+                          await fbActions.deleteRFI(r.id, showToast, activeTenantId);
+                          showUndoToast({ collection: 'rfis', docId: r.id, snapshot, label: 'RFI' });
                         }},
                       ]}
                     />

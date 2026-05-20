@@ -2,26 +2,38 @@
 import React from 'react';
 import CenterModal from '@/components/common/CenterModal';
 import { useApp } from '@/contexts/AppContext';
-import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter } from '@/components/common/FormField';
+import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter, useFormValidation } from '@/components/common/FormField';
 import { PUNCH_LOCATIONS } from '@/lib/types';
 
 export default function PunchItemModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, editingId, closeModal, savePunchItem, projects, teamUsers } = useApp();
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
+
+  const handleSubmit = () => {
+    const fields = [
+      validateRequired('punchTitle', forms.punchTitle || '', 'Título'),
+    ];
+    if (!editingId) {
+      fields.push(validateRequired('punchProject', forms.punchProject || '', 'Proyecto'));
+    }
+    if (fields.some(v => !v)) return;
+    savePunchItem();
+  };
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={560}>
       <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar item' : 'Nuevo item punch list'}</h2>
       <div className="space-y-3">
         {!editingId && (
-          <FormField label="Proyecto" required>
-            <FormSelect value={forms.punchProject || ''} onChange={(e) => setForms(p => ({ ...p, punchProject: e.target.value }))}>
+          <FormField label="Proyecto" required error={errors.punchProject}>
+            <FormSelect value={forms.punchProject || ''} onChange={(e) => { setForms(p => ({ ...p, punchProject: e.target.value })); clearError('punchProject'); }} onBlur={() => onBlurRequired('punchProject', forms.punchProject || '', 'Proyecto')} error={errors.punchProject}>
               <option value="">Seleccionar proyecto</option>
               {projects.filter((p: any) => p.data.status !== 'Terminado').map((p: any) => <option key={p.id} value={p.id}>{p.data.name}</option>)}
             </FormSelect>
           </FormField>
         )}
-        <FormField label="Título" required>
-          <FormInput value={forms.punchTitle || ''} onChange={(e) => setForms(p => ({ ...p, punchTitle: e.target.value }))} placeholder="Título del item" />
+        <FormField label="Título" required error={errors.punchTitle}>
+          <FormInput value={forms.punchTitle || ''} onChange={(e) => { setForms(p => ({ ...p, punchTitle: e.target.value })); clearError('punchTitle'); }} onBlur={() => onBlurRequired('punchTitle', forms.punchTitle || '', 'Título')} placeholder="Título del item" error={errors.punchTitle} />
         </FormField>
         <FormField label="Descripción">
           <FormTextarea value={forms.punchDescription || ''} onChange={(e) => setForms(p => ({ ...p, punchDescription: e.target.value }))} placeholder="Describe el defecto o item a corregir" rows={3} />
@@ -55,7 +67,7 @@ export default function PunchItemModal({ open, onClose }: { open: boolean; onClo
           </FormField>
         </div>
       </div>
-      <ModalFooter onCancel={() => closeModal('punchItem')} onSubmit={savePunchItem} submitLabel={editingId ? 'Actualizar' : 'Agregar item'} />
+      <ModalFooter onCancel={() => closeModal('punchItem')} onSubmit={handleSubmit} submitLabel={editingId ? 'Actualizar' : 'Agregar item'} />
     </CenterModal>
   );
 }

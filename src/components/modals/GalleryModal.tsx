@@ -3,11 +3,18 @@ import React from 'react';
 import CenterModal from '@/components/common/CenterModal';
 import { Camera, X, Image as ImageIcon } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
-import { FormField, FormInput, FormSelect, ModalFooter } from '@/components/common/FormField';
+import { FormField, FormInput, FormSelect, ModalFooter, useFormValidation } from '@/components/common/FormField';
 import { PHOTO_CATS } from '@/lib/types';
 
 export default function GalleryModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, projects, editingId, saveGalleryPhoto, handleGalleryImageSelect, closeModal } = useApp();
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
+
+  const handleSubmit = () => {
+    const projectValid = validateRequired('galleryProject', forms.galleryProject || '', 'Proyecto');
+    if (!projectValid) return;
+    saveGalleryPhoto();
+  };
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={480}>
@@ -38,8 +45,8 @@ export default function GalleryModal({ open, onClose }: { open: boolean; onClose
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-        <FormField label="Proyecto">
-          <FormSelect value={forms.galleryProject || ''} onChange={e => setForms(p => ({ ...p, galleryProject: e.target.value }))}>
+        <FormField label="Proyecto" required error={errors.galleryProject}>
+          <FormSelect value={forms.galleryProject || ''} onChange={e => { setForms(p => ({ ...p, galleryProject: e.target.value })); clearError('galleryProject'); }} onBlur={() => onBlurRequired('galleryProject', forms.galleryProject || '', 'Proyecto')} error={errors.galleryProject}>
             <option value="">Sin proyecto</option>
             {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
           </FormSelect>
@@ -55,7 +62,7 @@ export default function GalleryModal({ open, onClose }: { open: boolean; onClose
         <FormInput placeholder="Ej: Vista frontal del proyecto" value={forms.galleryCaption || ''} onChange={e => setForms(p => ({ ...p, galleryCaption: e.target.value }))} />
       </FormField>
 
-      <ModalFooter onCancel={() => closeModal('gallery')} onSubmit={saveGalleryPhoto} submitLabel={editingId ? 'Guardar' : 'Subir foto'} />
+      <ModalFooter onCancel={() => closeModal('gallery')} onSubmit={handleSubmit} submitLabel={editingId ? 'Guardar' : 'Subir foto'} />
     </CenterModal>
   );
 }

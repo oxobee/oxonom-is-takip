@@ -4,12 +4,22 @@ import CenterModal from '@/components/common/CenterModal';
 import { ClipboardList, AlertTriangle } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { useInventoryContext } from '@/hooks/useInventory';
-import { FormField, FormInput, FormSelect, ModalFooter } from '@/components/common/FormField';
+import { FormField, FormInput, FormSelect, ModalFooter, useFormValidation } from '@/components/common/FormField';
 import { INV_WAREHOUSES } from '@/lib/types';
 
 export default function InvMovementModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, closeModal } = useApp();
   const { invProducts, saveInvMovement, getWarehouseStock, getTotalStock } = useInventoryContext();
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
+
+  const handleSubmit = () => {
+    const typeOk = validateRequired('invMovType', forms.invMovType || '', 'Tipo');
+    const prodOk = validateRequired('invMovProduct', forms.invMovProduct || '', 'Producto');
+    const whOk = validateRequired('invMovWarehouse', forms.invMovWarehouse || '', 'Almacén');
+    const qtyOk = validateRequired('invMovQty', forms.invMovQty || '', 'Cantidad');
+    if (!typeOk || !prodOk || !whOk || !qtyOk) return;
+    saveInvMovement();
+  };
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={480}>
@@ -20,17 +30,17 @@ export default function InvMovementModal({ open, onClose }: { open: boolean; onC
 
       {/* Tipo toggle */}
       <div className="mb-3">
-        <FormField label="Tipo" required>
+        <FormField label="Tipo" required error={errors.invMovType}>
           <div className="grid grid-cols-2 gap-2">
             <button
               className={`py-2.5 rounded-lg text-sm font-medium cursor-pointer border transition-all ${forms.invMovType === 'Entrada' ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-400' : 'bg-[var(--af-bg3)] border-[var(--border)] text-[var(--muted-foreground)]'}`}
-              onClick={() => setForms(p => ({ ...p, invMovType: 'Entrada' }))}
+              onClick={() => { setForms(p => ({ ...p, invMovType: 'Entrada' })); clearError('invMovType'); }}
             >
               ↓ Entrada
             </button>
             <button
               className={`py-2.5 rounded-lg text-sm font-medium cursor-pointer border transition-all ${forms.invMovType === 'Salida' ? 'bg-red-500/15 border-red-500/50 text-red-400' : 'bg-[var(--af-bg3)] border-[var(--border)] text-[var(--muted-foreground)]'}`}
-              onClick={() => setForms(p => ({ ...p, invMovType: 'Salida' }))}
+              onClick={() => { setForms(p => ({ ...p, invMovType: 'Salida' })); clearError('invMovType'); }}
             >
               ↑ Salida
             </button>
@@ -40,8 +50,13 @@ export default function InvMovementModal({ open, onClose }: { open: boolean; onC
 
       {/* Producto */}
       <div className="mb-3">
-        <FormField label="Producto" required>
-          <FormSelect value={forms.invMovProduct || ''} onChange={e => setForms(p => ({ ...p, invMovProduct: e.target.value }))}>
+        <FormField label="Producto" required error={errors.invMovProduct}>
+          <FormSelect
+            value={forms.invMovProduct || ''}
+            onChange={e => { setForms(p => ({ ...p, invMovProduct: e.target.value })); clearError('invMovProduct'); }}
+            onBlur={() => onBlurRequired('invMovProduct', forms.invMovProduct || '', 'Producto')}
+            error={errors.invMovProduct}
+          >
             <option value="">Seleccionar producto</option>
             {invProducts.map(p => (
               <option key={p.id} value={p.id}>{p.data.name} (Total: {getTotalStock(p)})</option>
@@ -51,13 +66,26 @@ export default function InvMovementModal({ open, onClose }: { open: boolean; onC
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-3">
-        <FormField label="Almacén" required>
-          <FormSelect value={forms.invMovWarehouse || 'Almacén Principal'} onChange={e => setForms(p => ({ ...p, invMovWarehouse: e.target.value }))}>
+        <FormField label="Almacén" required error={errors.invMovWarehouse}>
+          <FormSelect
+            value={forms.invMovWarehouse || 'Almacén Principal'}
+            onChange={e => { setForms(p => ({ ...p, invMovWarehouse: e.target.value })); clearError('invMovWarehouse'); }}
+            onBlur={() => onBlurRequired('invMovWarehouse', forms.invMovWarehouse || '', 'Almacén')}
+            error={errors.invMovWarehouse}
+          >
             {INV_WAREHOUSES.map(w => <option key={w} value={w}>{w}</option>)}
           </FormSelect>
         </FormField>
-        <FormField label="Cantidad" required>
-          <FormInput type="number" placeholder="10" min="1" value={forms.invMovQty || ''} onChange={e => setForms(p => ({ ...p, invMovQty: e.target.value }))} />
+        <FormField label="Cantidad" required error={errors.invMovQty}>
+          <FormInput
+            type="number"
+            placeholder="10"
+            min="1"
+            value={forms.invMovQty || ''}
+            onChange={e => { setForms(p => ({ ...p, invMovQty: e.target.value })); clearError('invMovQty'); }}
+            onBlur={() => onBlurRequired('invMovQty', forms.invMovQty || '', 'Cantidad')}
+            error={errors.invMovQty}
+          />
         </FormField>
       </div>
 
@@ -107,7 +135,7 @@ export default function InvMovementModal({ open, onClose }: { open: boolean; onC
 
       <ModalFooter
         onCancel={() => closeModal('invMovement')}
-        onSubmit={saveInvMovement}
+        onSubmit={handleSubmit}
         submitLabel="Registrar"
         submitColor="bg-emerald-600 text-white border-none hover:bg-emerald-700"
       />

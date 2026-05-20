@@ -21,6 +21,7 @@ import { Plus, Trash2, Settings, ChevronRight } from 'lucide-react';
 import { SkeletonKanbanBoard } from '@/components/ui/SkeletonLoaders';
 import { useConfirmDialog } from '@/lib/useConfirmDialog';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
+import { toast } from 'sonner';
 
 export default function KanbanBoardScreen() {
   const confirmDialog = useConfirmDialog();
@@ -466,12 +467,31 @@ export default function KanbanBoardScreen() {
           </button>
           <button
             onClick={async () => {
-              if (!kanbanBoardId || !(await confirmDialog.confirm({ title: 'Eliminar tablero', description: '¿Eliminar este tablero?' }))) return;
+              if (!kanbanBoardId || !board || !(await confirmDialog.confirm({ title: 'Eliminar tablero', description: '¿Eliminar este tablero?' }))) return;
               try {
-                await getFirebase().firestore().collection('kanbanBoards').doc(kanbanBoardId).delete();
+                const boardId = kanbanBoardId;
+                const boardData = { ...board.data };
+                await getFirebase().firestore().collection('kanbanBoards').doc(boardId).delete();
                 setKanbanBoardId(null);
                 setBoard(null);
-                showToast('Tablero eliminado');
+                toast.success('Tablero eliminado', {
+                  duration: 5000,
+                  action: {
+                    label: 'Deshacer',
+                    onClick: async () => {
+                      try {
+                        const db = getFirebase().firestore();
+                        await db.collection('kanbanBoards').doc(boardId).set({
+                          tenantId: activeTenantId,
+                          data: boardData,
+                        });
+                        setKanbanBoardId(boardId);
+                        setBoard({ id: boardId, data: boardData });
+                        toast.success('Tablero restaurado');
+                      } catch (err) { console.error('[Kanban] undo delete:', err); toast.error('Error al restaurar'); }
+                    },
+                  },
+                });
               } catch (err) {
                 showToast('Error al eliminar', 'error');
               }

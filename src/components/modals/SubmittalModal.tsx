@@ -2,25 +2,37 @@
 import React from 'react';
 import CenterModal from '@/components/common/CenterModal';
 import { useApp } from '@/contexts/AppContext';
-import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter } from '@/components/common/FormField';
+import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter, useFormValidation } from '@/components/common/FormField';
 
 export default function SubmittalModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, editingId, closeModal, saveSubmittal, projects, teamUsers } = useApp();
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
+
+  const handleSubmit = () => {
+    const fields = [
+      validateRequired('subTitle', forms.subTitle || '', 'Título'),
+    ];
+    if (!editingId) {
+      fields.push(validateRequired('subProject', forms.subProject || '', 'Proyecto'));
+    }
+    if (fields.some(v => !v)) return;
+    saveSubmittal();
+  };
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={560}>
       <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar submittal' : 'Nuevo submittal'}</h2>
       <div className="space-y-3">
         {!editingId && (
-          <FormField label="Proyecto" required>
-            <FormSelect value={forms.subProject || ''} onChange={(e) => setForms(p => ({ ...p, subProject: e.target.value }))}>
+          <FormField label="Proyecto" required error={errors.subProject}>
+            <FormSelect value={forms.subProject || ''} onChange={(e) => { setForms(p => ({ ...p, subProject: e.target.value })); clearError('subProject'); }} onBlur={() => onBlurRequired('subProject', forms.subProject || '', 'Proyecto')} error={errors.subProject}>
               <option value="">Seleccionar proyecto</option>
               {projects.filter((p: any) => p.data.status === 'Ejecucion').map((p: any) => <option key={p.id} value={p.id}>{p.data.name}</option>)}
             </FormSelect>
           </FormField>
         )}
-        <FormField label="Título" required>
-          <FormInput value={forms.subTitle || ''} onChange={(e) => setForms(p => ({ ...p, subTitle: e.target.value }))} placeholder="Título del submittal" />
+        <FormField label="Título" required error={errors.subTitle}>
+          <FormInput value={forms.subTitle || ''} onChange={(e) => { setForms(p => ({ ...p, subTitle: e.target.value })); clearError('subTitle'); }} onBlur={() => onBlurRequired('subTitle', forms.subTitle || '', 'Título')} placeholder="Título del submittal" error={errors.subTitle} />
         </FormField>
         <FormField label="Descripción">
           <FormTextarea value={forms.subDescription || ''} onChange={(e) => setForms(p => ({ ...p, subDescription: e.target.value }))} placeholder="Descripción del submittal" rows={3} />
@@ -52,7 +64,7 @@ export default function SubmittalModal({ open, onClose }: { open: boolean; onClo
           </FormField>
         )}
       </div>
-      <ModalFooter onCancel={() => closeModal('submittal')} onSubmit={saveSubmittal} submitLabel={editingId ? 'Actualizar' : 'Crear submittal'} />
+      <ModalFooter onCancel={() => closeModal('submittal')} onSubmit={handleSubmit} submitLabel={editingId ? 'Actualizar' : 'Crear submittal'} />
     </CenterModal>
   );
 }

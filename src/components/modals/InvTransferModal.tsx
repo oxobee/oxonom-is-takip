@@ -4,12 +4,22 @@ import CenterModal from '@/components/common/CenterModal';
 import { ArrowLeftRight } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { useInventoryContext } from '@/hooks/useInventory';
-import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter } from '@/components/common/FormField';
+import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter, useFormValidation } from '@/components/common/FormField';
 import { INV_WAREHOUSES } from '@/lib/types';
 
 export default function InvTransferModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, closeModal } = useApp();
   const { invProducts, saveInvTransfer, getWarehouseStock } = useInventoryContext();
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
+
+  const handleSubmit = () => {
+    const prodOk = validateRequired('invTrProduct', forms.invTrProduct || '', 'Producto');
+    const fromOk = validateRequired('invTrFrom', forms.invTrFrom || '', 'Origen');
+    const toOk = validateRequired('invTrTo', forms.invTrTo || '', 'Destino');
+    const qtyOk = validateRequired('invTrQty', forms.invTrQty || '', 'Cantidad');
+    if (!prodOk || !fromOk || !toOk || !qtyOk) return;
+    saveInvTransfer();
+  };
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={480}>
@@ -19,8 +29,13 @@ export default function InvTransferModal({ open, onClose }: { open: boolean; onC
       </div>
 
       <div className="mb-3">
-        <FormField label="Producto" required>
-          <FormSelect value={forms.invTrProduct || ''} onChange={e => setForms(p => ({ ...p, invTrProduct: e.target.value }))}>
+        <FormField label="Producto" required error={errors.invTrProduct}>
+          <FormSelect
+            value={forms.invTrProduct || ''}
+            onChange={e => { setForms(p => ({ ...p, invTrProduct: e.target.value })); clearError('invTrProduct'); }}
+            onBlur={() => onBlurRequired('invTrProduct', forms.invTrProduct || '', 'Producto')}
+            error={errors.invTrProduct}
+          >
             <option value="">Seleccionar producto</option>
             {invProducts.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
           </FormSelect>
@@ -28,16 +43,26 @@ export default function InvTransferModal({ open, onClose }: { open: boolean; onC
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-3">
-        <FormField label="Desde" required>
-          <FormSelect value={forms.invTrFrom || ''} onChange={e => setForms(p => ({ ...p, invTrFrom: e.target.value }))}>
+        <FormField label="Desde" required error={errors.invTrFrom}>
+          <FormSelect
+            value={forms.invTrFrom || ''}
+            onChange={e => { setForms(p => ({ ...p, invTrFrom: e.target.value })); clearError('invTrFrom'); }}
+            onBlur={() => onBlurRequired('invTrFrom', forms.invTrFrom || '', 'Origen')}
+            error={errors.invTrFrom}
+          >
             <option value="">Seleccionar</option>
             {INV_WAREHOUSES.map(w => (
               <option key={w} value={w} disabled={w === forms.invTrTo}>{w}</option>
             ))}
           </FormSelect>
         </FormField>
-        <FormField label="Hasta" required>
-          <FormSelect value={forms.invTrTo || ''} onChange={e => setForms(p => ({ ...p, invTrTo: e.target.value }))}>
+        <FormField label="Hasta" required error={errors.invTrTo}>
+          <FormSelect
+            value={forms.invTrTo || ''}
+            onChange={e => { setForms(p => ({ ...p, invTrTo: e.target.value })); clearError('invTrTo'); }}
+            onBlur={() => onBlurRequired('invTrTo', forms.invTrTo || '', 'Destino')}
+            error={errors.invTrTo}
+          >
             <option value="">Seleccionar</option>
             {INV_WAREHOUSES.map(w => (
               <option key={w} value={w} disabled={w === forms.invTrFrom}>{w}</option>
@@ -47,8 +72,16 @@ export default function InvTransferModal({ open, onClose }: { open: boolean; onC
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-3">
-        <FormField label="Cantidad" required>
-          <FormInput type="number" placeholder="10" min="1" value={forms.invTrQty || ''} onChange={e => setForms(p => ({ ...p, invTrQty: e.target.value }))} />
+        <FormField label="Cantidad" required error={errors.invTrQty}>
+          <FormInput
+            type="number"
+            placeholder="10"
+            min="1"
+            value={forms.invTrQty || ''}
+            onChange={e => { setForms(p => ({ ...p, invTrQty: e.target.value })); clearError('invTrQty'); }}
+            onBlur={() => onBlurRequired('invTrQty', forms.invTrQty || '', 'Cantidad')}
+            error={errors.invTrQty}
+          />
         </FormField>
         <FormField label="Fecha">
           <FormInput type="date" value={forms.invTrDate || new Date().toISOString().split('T')[0]} onChange={e => setForms(p => ({ ...p, invTrDate: e.target.value }))} />
@@ -85,7 +118,7 @@ export default function InvTransferModal({ open, onClose }: { open: boolean; onC
 
       <ModalFooter
         onCancel={() => closeModal('invTransfer')}
-        onSubmit={saveInvTransfer}
+        onSubmit={handleSubmit}
         submitLabel="Transferir"
         submitColor="bg-blue-600 text-white border-none hover:bg-blue-700"
       />

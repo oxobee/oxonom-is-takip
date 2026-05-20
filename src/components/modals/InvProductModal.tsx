@@ -4,12 +4,19 @@ import CenterModal from '@/components/common/CenterModal';
 import { Package, X, Image as ImageIcon } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { useInventoryContext } from '@/hooks/useInventory';
-import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter } from '@/components/common/FormField';
+import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter, useFormValidation } from '@/components/common/FormField';
 import { INV_UNITS, INV_WAREHOUSES } from '@/lib/types';
 
 export default function InvProductModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, editingId, closeModal } = useApp();
   const { invCategories, saveInvProduct, handleInvProductImageSelect } = useInventoryContext();
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
+
+  const handleSubmit = () => {
+    const nameValid = validateRequired('invProdName', forms.invProdName || '', 'Nombre');
+    if (!nameValid) return;
+    saveInvProduct();
+  };
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={520}>
@@ -20,8 +27,8 @@ export default function InvProductModal({ open, onClose }: { open: boolean; onCl
 
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div className="col-span-2">
-          <FormField label="Nombre" required>
-            <FormInput placeholder="Ej: Cemento Portland" value={forms.invProdName || ''} onChange={e => setForms(p => ({ ...p, invProdName: e.target.value }))} />
+          <FormField label="Nombre" required error={errors.invProdName}>
+            <FormInput placeholder="Ej: Cemento Portland" value={forms.invProdName || ''} onChange={e => { setForms(p => ({ ...p, invProdName: e.target.value })); clearError('invProdName'); }} onBlur={() => onBlurRequired('invProdName', forms.invProdName || '', 'Nombre')} error={errors.invProdName} />
           </FormField>
         </div>
         <FormField label="SKU">
@@ -103,7 +110,7 @@ export default function InvProductModal({ open, onClose }: { open: boolean; onCl
         <FormTextarea rows={2} placeholder="Descripción..." value={forms.invProdDesc || ''} onChange={e => setForms(p => ({ ...p, invProdDesc: e.target.value }))} />
       </FormField>
 
-      <ModalFooter onCancel={() => closeModal('invProduct')} onSubmit={saveInvProduct} submitLabel={editingId ? 'Guardar' : 'Crear producto'} />
+      <ModalFooter onCancel={() => closeModal('invProduct')} onSubmit={handleSubmit} submitLabel={editingId ? 'Guardar' : 'Crear producto'} />
     </CenterModal>
   );
 }

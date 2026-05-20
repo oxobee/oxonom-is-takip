@@ -3,6 +3,7 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { useApp } from '@/contexts/AppContext';
 import { getFirebase } from '@/lib/firebase-service';
 import { scrubUndefined } from '@/lib/helpers';
+import { toast } from 'sonner';
 import {
   ChevronLeft, ChevronRight, Plus, Printer, CalendarDays,
   Trash2, Edit3, StickyNote, Clock, User,
@@ -136,7 +137,7 @@ const EMPTY_FORM: ActivityForm = {
    ═══════════════════════════════════════════════════════════════ */
 
 export default function WeeklyAgendaScreen() {
-  const { projects, teamUsers, tasks: ctxTasks, authUser, activeTenantId } = useApp();
+  const { projects, teamUsers, tasks: ctxTasks, authUser, activeTenantId, deleteTask } = useApp();
 
   /* ─── State ─── */
   const [baseDate, setBaseDate] = useState(new Date());
@@ -536,13 +537,15 @@ export default function WeeklyAgendaScreen() {
     if (!authUser) return;
     const meta = task.data.agendaMeta;
     try {
-      const db = getFirebase().firestore();
-      const ts = getFirebase().firestore.FieldValue.serverTimestamp();
       if (meta?.isAgendaItem) {
-        // Delete the entire task
-        await db.collection('tasks').doc(task.id).delete();
+        // Delete entire task — use AppContext's deleteTask which has undo toast
+        await deleteTask(task.id);
       } else {
-        // Only remove agendaMeta, keep the task
+        // Only remove agendaMeta, keep the task — with undo
+        const prevAgendaMeta = task.data.agendaMeta;
+        const prevTags = task.data.tags ? [...task.data.tags] : [];
+        const db = getFirebase().firestore();
+        const ts = getFirebase().firestore.FieldValue.serverTimestamp();
         const existingTags = (task.data.tags || []).filter(t => t !== 'Agenda');
         await db.collection('tasks').doc(task.id).update(scrubUndefined({
           agendaMeta: getFirebase().firestore.FieldValue.delete(),
@@ -550,6 +553,22 @@ export default function WeeklyAgendaScreen() {
           updatedAt: ts,
           updatedBy: authUser.uid,
         }));
+        toast.success('Eliminado de la agenda', {
+          duration: 5000,
+          action: {
+            label: 'Deshacer',
+            onClick: async () => {
+              try {
+                await db.collection('tasks').doc(task.id).update(scrubUndefined({
+                  agendaMeta: prevAgendaMeta,
+                  tags: prevTags.length > 0 ? prevTags : undefined,
+                  updatedAt: getFirebase().firestore.FieldValue.serverTimestamp(),
+                }));
+                toast.success('Tarea restaurada en la agenda');
+              } catch (err) { console.error('[Archii Agenda] undo remove:', err); toast.error('Error al restaurar'); }
+            },
+          },
+        });
       }
       setConfirmDelete(null);
       closeForm();

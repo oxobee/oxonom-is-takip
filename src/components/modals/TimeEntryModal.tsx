@@ -3,35 +3,41 @@ import React from 'react';
 import CenterModal from '@/components/common/CenterModal';
 import { useApp } from '@/contexts/AppContext';
 import { useTimeTrackingContext } from '@/hooks/useTimeTracking';
+import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter, useFormValidation } from '@/components/common/FormField';
 import { DEFAULT_PHASES } from '@/lib/types';
 
 export default function TimeEntryModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { forms, setForms, closeModal, projects } = useApp();
   const { saveManualTimeEntry } = useTimeTrackingContext();
+  const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
+
+  const handleSubmit = () => {
+    const projectValid = validateRequired('teProject', forms.teProject || '', 'Proyecto');
+    if (!projectValid) return;
+    saveManualTimeEntry();
+  };
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={480}>
       <h2 className="text-lg font-semibold mb-4">Registro Manual de Tiempo</h2>
 
       <div className="space-y-3">
-        <div>
-          <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Proyecto</label>
-          <select
-            className="w-full bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none"
+        <FormField label="Proyecto" required error={errors.teProject}>
+          <FormSelect
             value={forms.teProject || ''}
-            onChange={(e) => setForms(p => ({ ...p, teProject: e.target.value }))}
+            onChange={(e) => { setForms(p => ({ ...p, teProject: e.target.value })); clearError('teProject'); }}
+            onBlur={() => onBlurRequired('teProject', forms.teProject || '', 'Proyecto')}
+            error={errors.teProject}
           >
             <option value="">— Seleccionar —</option>
             {projects.map((p: any) => (
               <option key={p.id} value={p.id}>{p.data?.name || p.name}</option>
             ))}
-          </select>
-        </div>
+          </FormSelect>
+        </FormField>
 
-        <div>
-          <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Fase</label>
-          <select
-            className="w-full bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none"
+        <FormField label="Fase">
+          <FormSelect
             value={forms.tePhase || ''}
             onChange={(e) => setForms(p => ({ ...p, tePhase: e.target.value }))}
           >
@@ -39,73 +45,61 @@ export default function TimeEntryModal({ open, onClose }: { open: boolean; onClo
             {DEFAULT_PHASES.map(ph => (
               <option key={ph} value={ph}>{ph}</option>
             ))}
-          </select>
-        </div>
+          </FormSelect>
+        </FormField>
 
-        <div>
-          <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Descripción</label>
-          <textarea
-            className="w-full bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)] resize-none"
+        <FormField label="Descripción">
+          <FormTextarea
             value={forms.teDescription || ''}
             onChange={(e) => setForms(p => ({ ...p, teDescription: e.target.value }))}
             placeholder="¿Qué hiciste?"
             rows={2}
           />
-        </div>
+        </FormField>
 
-        <div>
-          <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Fecha</label>
-          <input
+        <FormField label="Fecha">
+          <FormInput
             type="date"
-            className="w-full bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]"
             value={forms.teDate || ''}
             onChange={(e) => setForms(p => ({ ...p, teDate: e.target.value }))}
           />
-        </div>
+        </FormField>
 
-        <div>
-          <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Duración (min)</label>
-          <input
+        <FormField label="Duración (min)">
+          <FormInput
             type="number"
-            className="w-full bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]"
             value={forms.teManualDuration || ''}
             onChange={(e) => setForms(p => ({ ...p, teManualDuration: e.target.value }))}
             placeholder="60"
           />
-        </div>
+        </FormField>
 
         <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Hora inicio</label>
-            <input
+          <FormField label="Hora inicio">
+            <FormInput
               type="time"
-              className="w-full bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]"
               value={forms.teStartTime || ''}
               onChange={(e) => setForms(p => ({ ...p, teStartTime: e.target.value }))}
             />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Hora fin</label>
-            <input
+          </FormField>
+          <FormField label="Hora fin">
+            <FormInput
               type="time"
-              className="w-full bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]"
               value={forms.teEndTime || ''}
               onChange={(e) => setForms(p => ({ ...p, teEndTime: e.target.value }))}
             />
-          </div>
+          </FormField>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Tarifa/h (COP)</label>
-            <input
+          <FormField label="Tarifa/h (COP)">
+            <FormInput
               type="number"
-              className="w-full bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]"
               value={forms.teRate || 50000}
               onChange={(e) => setForms(p => ({ ...p, teRate: e.target.value }))}
               placeholder="50000"
             />
-          </div>
+          </FormField>
           <div className="flex items-end pb-2">
             <label className="flex items-center gap-2 cursor-pointer text-sm text-[var(--foreground)]">
               <input
@@ -120,20 +114,11 @@ export default function TimeEntryModal({ open, onClose }: { open: boolean; onClo
         </div>
       </div>
 
-      <div className="flex gap-2 justify-end mt-5 pt-4 border-t border-[var(--border)]">
-        <button
-          className="px-4 py-2 rounded-lg text-[13px] font-medium cursor-pointer bg-transparent text-[var(--muted-foreground)] border border-[var(--input)] hover:bg-[var(--af-bg3)] hover:text-[var(--foreground)] transition-all"
-          onClick={() => closeModal('timeEntry')}
-        >
-          Cancelar
-        </button>
-        <button
-          className="px-4 py-2 rounded-lg text-[13px] font-semibold cursor-pointer transition-colors bg-[var(--af-accent)] text-background border-none hover:bg-[var(--af-accent2)]"
-          onClick={saveManualTimeEntry}
-        >
-          Guardar
-        </button>
-      </div>
+      <ModalFooter
+        onCancel={() => closeModal('timeEntry')}
+        onSubmit={handleSubmit}
+        submitLabel="Guardar"
+      />
     </CenterModal>
   );
 }

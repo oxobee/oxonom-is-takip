@@ -10,6 +10,7 @@ import { Pencil, Trash2, FileCheck, Plus } from 'lucide-react';
 import { OverflowMenu } from '@/components/ui/OverflowMenu';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import { useConfirmDialog } from '@/lib/useConfirmDialog';
+import { showUndoToast } from '@/lib/undo-helpers';
 import FilterBar from '@/components/common/FilterBar';
 import EmptyState from '@/components/common/EmptyState';
 
@@ -146,7 +147,9 @@ export default function SubmittalsScreen() {
                     <button className="px-1.5 py-0.5 rounded bg-red-500/10 text-xs cursor-pointer" onClick={async () => {
                       const ok = await confirmDialog.confirm({ title: 'Eliminar submittal', description: '¿Estás seguro de eliminar este submittal?' });
                       if (!ok) return;
-                      fbActions.deleteSubmittal(s.id, showToast, activeTenantId);
+                      const snapshot = { ...s.data };
+                      await fbActions.deleteSubmittal(s.id, showToast, activeTenantId);
+                      showUndoToast({ collection: 'submittals', docId: s.id, snapshot, label: 'Submittal' });
                     }}><Trash2 size={12} /></button>
                   </div>
                   <div className="md:hidden flex-shrink-0">
@@ -156,7 +159,9 @@ export default function SubmittalsScreen() {
                         { label: 'Eliminar submittal', icon: <Trash2 size={14} />, variant: 'danger', separator: true, onClick: async () => {
                           const ok = await confirmDialog.confirm({ title: 'Eliminar submittal', description: '¿Estás seguro de eliminar este submittal?' });
                           if (!ok) return;
-                          fbActions.deleteSubmittal(s.id, showToast, activeTenantId);
+                          const snapshot = { ...s.data };
+                          await fbActions.deleteSubmittal(s.id, showToast, activeTenantId);
+                          showUndoToast({ collection: 'submittals', docId: s.id, snapshot, label: 'Submittal' });
                         }},
                       ]}
                     />

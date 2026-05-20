@@ -11,6 +11,7 @@ import { useEntityResolvers } from '@/lib/useEntityResolvers';
 import { OverflowMenu } from '@/components/ui/OverflowMenu';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import { useConfirmDialog } from '@/lib/useConfirmDialog';
+import { showUndoToast } from '@/lib/undo-helpers';
 import FilterBar from '@/components/common/FilterBar';
 import EmptyState from '@/components/common/EmptyState';
 
@@ -212,7 +213,9 @@ export default function PunchListScreen() {
                   <button className="hidden md:block px-1.5 py-1.5 rounded bg-red-500/10 text-xs cursor-pointer" onClick={async () => {
                     const ok = await confirmDialog.confirm({ title: 'Eliminar item', description: '¿Estás seguro de eliminar este item?' });
                     if (!ok) return;
-                    fbActions.deletePunchItem(p.id, showToast, activeTenantId);
+                    const snapshot = { ...p.data };
+                    await fbActions.deletePunchItem(p.id, showToast, activeTenantId);
+                    showUndoToast({ collection: 'punchItems', docId: p.id, snapshot, label: 'Item', gender: 'o' });
                   }}><Trash2 size={12} /></button>
                   <div className="md:hidden">
                     <OverflowMenu
@@ -221,7 +224,9 @@ export default function PunchListScreen() {
                         { label: 'Eliminar item', icon: <Trash2 size={14} />, variant: 'danger', separator: true, onClick: async () => {
                           const ok = await confirmDialog.confirm({ title: 'Eliminar item', description: '¿Estás seguro de eliminar este item?' });
                           if (!ok) return;
-                          fbActions.deletePunchItem(p.id, showToast, activeTenantId);
+                          const snapshot = { ...p.data };
+                          await fbActions.deletePunchItem(p.id, showToast, activeTenantId);
+                          showUndoToast({ collection: 'punchItems', docId: p.id, snapshot, label: 'Item', gender: 'o' });
                         }},
                       ]}
                     />

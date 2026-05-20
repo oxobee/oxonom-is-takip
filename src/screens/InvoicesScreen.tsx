@@ -12,6 +12,7 @@ import { OverflowMenu } from '@/components/ui/OverflowMenu';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
 import EmptyState from '@/components/common/EmptyState';
 import { useConfirmDialog } from '@/lib/useConfirmDialog';
+import { showUndoToast } from '@/lib/undo-helpers';
 
 export default function InvoicesScreen() {
   const {
@@ -111,7 +112,9 @@ export default function InvoicesScreen() {
                       <button className="px-2 py-1.5 rounded text-xs cursor-pointer bg-red-500/10 text-red-400 hover:bg-red-500/20" onClick={async () => {
                         const ok = await confirm({ title: 'Eliminar factura', description: '¿Estás seguro de eliminar esta factura?' });
                         if (!ok) return;
-                        fbActions.deleteInvoice(inv.id, showToast, activeTenantId);
+                        const snapshot = { ...inv.data };
+                        await fbActions.deleteInvoice(inv.id, showToast, activeTenantId);
+                        showUndoToast({ collection: 'invoices', docId: inv.id, snapshot, label: 'Factura', gender: 'a' });
                       }}><Trash2 size={14} /></button>
                     </div>
                     <div className="md:hidden shrink-0" onClick={e => e.stopPropagation()}>
@@ -126,7 +129,9 @@ export default function InvoicesScreen() {
                           { label: 'Eliminar factura', icon: <Trash2 size={14} />, variant: 'danger' as const, separator: true, onClick: async () => {
                             const ok = await confirm({ title: 'Eliminar factura', description: '¿Estás seguro de eliminar esta factura?' });
                             if (!ok) return;
-                            fbActions.deleteInvoice(inv.id, showToast, activeTenantId);
+                            const snapshot = { ...inv.data };
+                            await fbActions.deleteInvoice(inv.id, showToast, activeTenantId);
+                            showUndoToast({ collection: 'invoices', docId: inv.id, snapshot, label: 'Factura', gender: 'a' });
                           }},
                         ]}
                       />
