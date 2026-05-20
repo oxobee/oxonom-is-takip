@@ -2,6 +2,7 @@
 import React, { useMemo } from 'react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { COLORS, ChartTooltip, ChartLegend } from './ChartComponents';
+import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
 import { FileText, Download } from 'lucide-react';
 import { exportObraExcel } from '@/lib/export-excel';
 import { exportObraPDF } from '@/lib/export-pdf';
@@ -20,7 +21,7 @@ export default function ReportsObra({ projects, rfis, submittals, punchItems, da
     const rfiReview = rfis.filter(r => r.data.status === 'En revisión').length;
     const rfiResponded = rfis.filter(r => r.data.status === 'Respondido').length;
     const rfiClosed = rfis.filter(r => r.data.status === 'Cerrado').length;
-    const rfiOverdue = rfis.filter(r => r.data.dueDate && r.data.status !== 'Cerrado' && r.data.status !== 'Respondido' && new Date(r.data.dueDate) < new Date()).length;
+    const rfiOverdue = rfis.filter(r => r.data.dueDate && r.data.status !== 'Cerrado' && r.data.status !== 'Respondido' && checkOverdue(r.data.dueDate)).length;
 
     const rfiStatusData = [
       { name: 'Abierto', value: rfiOpen },

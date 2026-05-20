@@ -2,6 +2,7 @@
 import React, { useMemo } from 'react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import { getInitials, avatarColor, fmtDuration } from '@/lib/helpers';
+import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
 import { COLORS, ChartTooltip, ChartLegend } from './ChartComponents';
 import { FileText, Download } from 'lucide-react';
 import { exportTeamExcel } from '@/lib/export-excel';
@@ -19,7 +20,7 @@ export default function ReportsEquipo({ teamUsers, tasks, timeEntries, showToast
   teamUsers.forEach(u => { const r = u.data.role || 'Miembro'; membersByRole[r] = (membersByRole[r] || 0) + 1; });
   const tasksPerMember: Record<string, { total: number; done: number; overdue: number }> = {};
   teamUsers.forEach(u => { tasksPerMember[u.id] = { total: 0, done: 0, overdue: 0 }; });
-  tasks.forEach(t => { if (t.data.assigneeId && tasksPerMember[t.data.assigneeId]) { tasksPerMember[t.data.assigneeId].total++; if (t.data.status === 'Completado') tasksPerMember[t.data.assigneeId].done++; if (t.data.status !== 'Completado' && t.data.dueDate && new Date(t.data.dueDate) < new Date()) tasksPerMember[t.data.assigneeId].overdue++; } });
+  tasks.forEach(t => { if (t.data.assigneeId && tasksPerMember[t.data.assigneeId]) { tasksPerMember[t.data.assigneeId].total++; if (t.data.status === 'Completado') tasksPerMember[t.data.assigneeId].done++; if (t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)) tasksPerMember[t.data.assigneeId].overdue++; } });
   const hoursPerMember: Record<string, number> = {};
   timeEntries.forEach(e => { hoursPerMember[e.data.userId] = (hoursPerMember[e.data.userId] || 0) + (e.data.duration || 0); });
 

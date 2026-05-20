@@ -8,6 +8,7 @@ import { useInventoryContext } from '@/hooks/useInventory';
 import type { Task, Expense, Invoice, TimeEntry, RFI, Submittal, PunchItem, Meeting, Approval, TeamUser, NotifEntry, Project, FirestoreTimestamp } from '@/lib/types';
 import { toDate } from '@/lib/types';
 import { getWeekDates, agendaDateKey } from './agenda-helpers';
+import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
 
 export const CHART_COLORS = ['#c8a96e', '#10b981', '#f59e0b', '#ef4444', '#6366f1', '#8b5cf6', '#ec4899'];
 
@@ -79,7 +80,7 @@ export function useDashboardData() {
   const openRFIs = useMemo(() => rfis.filter((r: RFI) => (r.data.status === 'Abierto' || r.data.status === 'En revisión') && inRange(r.data.dueDate)).length, [rfis, startDate, endDate]);
   const pendingSubmittals = useMemo(() => submittals.filter((s: Submittal) => s.data.status === 'En revisión' && s.data.createdAt && inRange(toDate(s.data.createdAt).toISOString().split('T')[0])).length, [submittals, startDate, endDate]);
   const openPunchItems = useMemo(() => punchItems.filter((p: PunchItem) => p.data.status === 'Pendiente' && p.data.createdAt && inRange(toDate(p.data.createdAt).toISOString().split('T')[0])).length, [punchItems, startDate, endDate]);
-  const overdueRFIs = useMemo(() => rfis.filter((r: RFI) => r.data.dueDate && r.data.status !== 'Cerrado' && r.data.status !== 'Respondido' && new Date(r.data.dueDate) < new Date() && inRange(r.data.dueDate)).length, [rfis, startDate, endDate]);
+  const overdueRFIs = useMemo(() => rfis.filter((r: RFI) => r.data.dueDate && r.data.status !== 'Cerrado' && r.data.status !== 'Respondido' && checkOverdue(r.data.dueDate) && inRange(r.data.dueDate)).length, [rfis, startDate, endDate]);
   const execProjects = useMemo(() => projects.filter((p: Project) => p.data.status === 'Ejecucion').length, [projects]);
 
   // Today's meetings
@@ -106,7 +107,7 @@ export function useDashboardData() {
   // Overdue invoices count
   const overdueInvoices = useMemo(() => invoices.filter((inv: Invoice) => {
     if (inv.data.status !== 'Enviada' || !inv.data.dueDate) return false;
-    return new Date(inv.data.dueDate) < new Date();
+    return checkOverdue(inv.data.dueDate);
   }).length, [invoices]);
 
   // Total budget across all projects

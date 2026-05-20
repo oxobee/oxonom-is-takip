@@ -5,6 +5,7 @@ import { useTimeTrackingContext } from '@/hooks/useTimeTracking';
 import { useOneDrive, formatFileSize, getFileIcon } from '@/hooks/useOneDrive';
 import { getFirebase } from '@/lib/firebase-service';
 import { fmtCOP, fmtDate, fmtSize, statusColor, prioColor, taskStColor } from '@/lib/helpers';
+import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
 import { Plus, Layers, MessageSquare, BarChart3, Calendar, Send, ChevronLeft, X, Pencil, Eye, Trash2 } from 'lucide-react';
 import { PROJECT_TYPE_COLORS, EXPENSE_CATS, type Task, type WorkPhase, type Expense, type Comment, type TimeEntry, type RFI, type Submittal, type PunchItem, type TeamUser, type DailyLog } from '@/lib/types';
 import { SkeletonFileList } from '@/components/ui/SkeletonLoaders';
@@ -44,7 +45,7 @@ export default function ProjectDetailScreen() {
   // Computed values
   const today = new Date().toISOString().split('T')[0];
   const pendingTasks = projectTasks.filter((t: Task) => t.data.status !== 'Completado');
-  const overdueCount = pendingTasks.filter((t: Task) => t.data.dueDate && t.data.dueDate < today).length;
+  const overdueCount = pendingTasks.filter((t: Task) => t.data.dueDate && checkOverdue(t.data.dueDate)).length;
   const pendingCount = pendingTasks.length;
   const projRFIs = rfis.filter((r: RFI) => r.data.projectId === selectedProjectId);
   const projSubs = submittals.filter((s: Submittal) => s.data.projectId === selectedProjectId);
@@ -316,8 +317,8 @@ export default function ProjectDetailScreen() {
                 ) : (
                   <div className="space-y-2">
                     {[...pendingTasks].sort((a: Task, b: Task) => {
-                      const aOverdue = a.data.dueDate && a.data.dueDate < today;
-                      const bOverdue = b.data.dueDate && b.data.dueDate < today;
+                      const aOverdue = a.data.dueDate && checkOverdue(a.data.dueDate);
+                      const bOverdue = b.data.dueDate && checkOverdue(b.data.dueDate);
                       if (aOverdue && !bOverdue) return -1;
                       if (!aOverdue && bOverdue) return 1;
                       return 0;
@@ -327,7 +328,7 @@ export default function ProjectDetailScreen() {
                         <div className="flex-1 text-sm truncate">{t.data.title}</div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           {t.data.dueDate && (
-                            <span className={`text-[10px] ${t.data.dueDate < today ? 'text-red-400 font-medium' : 'text-[var(--af-text3)]'}`}>
+                            <span className={`text-[10px] ${checkOverdue(t.data.dueDate) ? 'text-red-400 font-medium' : 'text-[var(--af-text3)]'}`}>
                               {fmtDate(t.data.dueDate)}
                             </span>
                           )}

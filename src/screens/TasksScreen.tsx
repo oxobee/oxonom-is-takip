@@ -6,6 +6,7 @@ import { useApp } from '@/contexts/AppContext';
 import { useTimeTrackingContext } from '@/hooks/useTimeTracking';
 import { SkeletonTasks } from '@/components/ui/SkeletonLoaders';
 import { fmtDate, getInitials, prioColor, taskStColor, avatarColor } from '@/lib/helpers';
+import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
 import { LayoutList, KanbanSquare, Plus, GripVertical, X, Search, Filter, Download, Calendar, CalendarDays, User, Pencil, Trash2, ChevronDown, Layers, FileText, BarChart3, CheckCircle2, AlertTriangle, Clock, TrendingUp, Users, Tag, Target, Eye, EyeOff, Archive, ChevronRight } from 'lucide-react';
 import { exportTasksExcel } from '@/lib/export-excel';
 import { exportTasksPDF } from '@/lib/export-pdf';
@@ -266,7 +267,7 @@ export default function TasksScreen() {
     const total = tasks.length;
     const completed = tasks.filter((t: Task) => t.data.status === 'Completado').length;
     const inProgress = tasks.filter((t: Task) => t.data.status === 'En progreso').length;
-    const overdue = tasks.filter((t: Task) => t.data.status !== 'Completado' && t.data.dueDate && new Date(t.data.dueDate) < new Date()).length;
+    const overdue = tasks.filter((t: Task) => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)).length;
     const highPrioActive = tasks.filter((t: Task) => t.data.priority === 'Alta' && t.data.status !== 'Completado').length;
     const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
@@ -325,7 +326,7 @@ export default function TasksScreen() {
         if (!map[uid]) map[uid] = { total: 0, done: 0, overdue: 0, highPrio: 0 };
         map[uid].total++;
         if (t.data.status === 'Completado') map[uid].done++;
-        if (t.data.status !== 'Completado' && t.data.dueDate && new Date(t.data.dueDate) < new Date()) map[uid].overdue++;
+        if (t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)) map[uid].overdue++;
         if (t.data.priority === 'Alta' && t.data.status !== 'Completado') map[uid].highPrio++;
       });
     });
@@ -723,7 +724,7 @@ export default function TasksScreen() {
                   </div>
                   {group.map((t: Task) => {
                     const proj = projects.find((p: Project) => p.id === t.data.projectId);
-                    const isOverdue = t.data.dueDate && new Date(t.data.dueDate) < new Date() && t.data.status !== 'Completado';
+                    const isOverdue = t.data.dueDate && checkOverdue(t.data.dueDate) && t.data.status !== 'Completado';
                     const tTags: string[] = Array.isArray(t.data.tags) ? t.data.tags : [];
                     return (
                       <div key={t.id} className="flex items-start gap-3 py-2.5 border-b border-[var(--border)] last:border-0 group">
@@ -1038,7 +1039,7 @@ export default function TasksScreen() {
                       {colTasks.map((t: Task) => {
                         const proj = projects.find((p: Project) => p.id === t.data.projectId);
                         const isDragging = dragTaskId === t.id;
-                        const isOverdue = t.data.dueDate && new Date(t.data.dueDate) < new Date() && t.data.status !== 'Completado';
+                        const isOverdue = t.data.dueDate && checkOverdue(t.data.dueDate) && t.data.status !== 'Completado';
                         const tTags: string[] = Array.isArray(t.data.tags) ? t.data.tags : [];
                         return (
                           <div

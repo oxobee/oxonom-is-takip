@@ -2,6 +2,7 @@
 import React from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { prioColor, taskStColor } from '@/lib/helpers';
+import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
 import { MESES, DIAS_SEMANA } from '@/lib/types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -16,7 +17,6 @@ export default function CalendarScreen() {
   return (
 (() => {
             const today = new Date();
-            const todayOnly = new Date(new Date().toDateString()); // midnight today for correct overdue check
             const firstDay = new Date(calYear, calMonth, 1);
             const lastDay = new Date(calYear, calMonth + 1, 0);
             const startDow = (firstDay.getDay() + 6) % 7; // Monday = 0
@@ -87,7 +87,7 @@ export default function CalendarScreen() {
                   <div className="text-[9px] text-red-400/70">Urgentes</div>
                 </div>
                 <div className="bg-amber-500/10 rounded-lg p-2.5 text-center">
-                  <div className="text-base font-bold text-amber-400">{calTasks.filter(t => { const d = t.data.dueDate; return d && new Date(d) < todayOnly; }).length}</div>
+                  <div className="text-base font-bold text-amber-400">{calTasks.filter(t => { const d = t.data.dueDate; return d && checkOverdue(d); }).length}</div>
                   <div className="text-[9px] text-amber-400/70">Vencidas</div>
                 </div>
                 <div className="bg-blue-500/10 rounded-lg p-2.5 text-center">
@@ -121,7 +121,7 @@ export default function CalendarScreen() {
                         <div className="space-y-0.5">
                           {dayTasks.slice(0, 3).map(t => {
                             const proj = projects.find(p => p.id === t.data.projectId);
-                            const isOverdue = new Date(t.data.dueDate) < todayOnly;
+                            const isOverdue = checkOverdue(t.data.dueDate);
                             return (
                               <div key={t.id} className={`text-[8px] sm:text-[9px] leading-tight px-1 py-0.5 rounded truncate ${t.data.priority === 'Alta' ? 'bg-red-500/15 text-red-400' : t.data.priority === 'Media' ? 'bg-amber-500/15 text-amber-400' : 'bg-emerald-500/15 text-emerald-400'}`} title={t.data.title}>
                                 {isOverdue ? '⚡ ' : ''}{t.data.title}
@@ -160,7 +160,7 @@ export default function CalendarScreen() {
                         return (pOrder[a.data.priority as keyof typeof pOrder] || 1) - (pOrder[b.data.priority as keyof typeof pOrder] || 1);
                       }).map(t => {
                         const proj = projects.find(p => p.id === t.data.projectId);
-                        const isOverdue = new Date(t.data.dueDate) < todayOnly;
+                        const isOverdue = checkOverdue(t.data.dueDate);
                         return (
                           <div key={t.id} className={`border rounded-lg p-3 ${isOverdue ? 'border-red-500/20 bg-red-500/5' : 'border-[var(--border)] bg-[var(--af-bg3)]'}`}>
                             <div className="flex items-start justify-between gap-2 mb-1">
@@ -185,7 +185,7 @@ export default function CalendarScreen() {
                       <div className="space-y-2">
                         {selectedDayRFIs.map(r => {
                           const rfiProj = projects.find(p => p.id === r.data.projectId);
-                          const isOverdue = new Date(r.data.dueDate) < todayOnly;
+                          const isOverdue = checkOverdue(r.data.dueDate);
                           return (
                             <div key={r.id} className={`border rounded-lg p-3 ${isOverdue ? 'border-red-500/20 bg-red-500/5' : 'border-blue-500/20 bg-blue-500/5'}`}>
                               <div className="flex items-start justify-between gap-2 mb-1">

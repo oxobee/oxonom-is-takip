@@ -5,6 +5,7 @@
  */
 
 import * as XLSX from 'xlsx';
+import { isOverdue as checkOverdue } from './kanban-helpers';
 
 function fmtCOPFull(n: number): string {
   if (!n || n === 0) return '$0';
@@ -110,7 +111,7 @@ export function exportTasksExcel(tasks: any[], projects: any[], teamUsers: any[]
       if (!assigneeSummary[name]) assigneeSummary[name] = { total: 0, done: 0, overdue: 0 };
       assigneeSummary[name].total++;
       if (t.data.status === 'Completado') assigneeSummary[name].done++;
-      if (t.data.status !== 'Completado' && t.data.dueDate && new Date(t.data.dueDate) < new Date()) assigneeSummary[name].overdue++;
+      if (t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)) assigneeSummary[name].overdue++;
     });
   });
 
@@ -357,7 +358,7 @@ export function exportTeamExcel(teamUsers: any[], tasks: any[], timeEntries: any
   const memberData = teamUsers.map(u => {
     const userTasks = tasks.filter(t => t.data.assigneeId === u.id);
     const done = userTasks.filter(t => t.data.status === 'Completado').length;
-    const overdue = userTasks.filter(t => t.data.status !== 'Completado' && t.data.dueDate && new Date(t.data.dueDate) < new Date()).length;
+    const overdue = userTasks.filter(t => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)).length;
     const mins = timeEntries.filter(e => e.data.userId === u.id).reduce((s, e) => s + (e.data.duration || 0), 0);
     const role = u.data.role || 'Miembro';
     return {

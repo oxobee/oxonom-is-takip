@@ -8,6 +8,7 @@ import type { TeamUser, Project, Task, Expense, Supplier, Approval, WorkPhase, P
 import { DEFAULT_PHASES, EXPENSE_CATS, SUPPLIER_CATS, PHOTO_CATS, ADMIN_EMAILS, USER_ROLES, ROLE_COLORS, ROLE_ICONS, MESES, DIAS_SEMANA, NAV_ITEMS, SCREEN_TITLES, DEFAULT_ROLE_PERMS } from '@/lib/types';
 
 import { fmtCOP, fmtDate, fmtDateTime, fmtSize, getInitials, statusColor, prioColor, taskStColor, avatarColor, fmtRecTime, fmtDuration, fmtTimer, getWeekStart, fileToBase64, getPlatform, uniqueId, scrubUndefined } from '@/lib/helpers';
+import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
 
 import { getFirebase, getFirebaseIdToken, type FirebaseUser } from '@/lib/firebase-service';
 import * as fbActions from '@/lib/firestore-actions';
@@ -1294,7 +1295,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       const checkKey = `overdue-${today}`;
       if (overdueCheckedRef.current === checkKey) return;
       overdueCheckedRef.current = checkKey;
-      const myOverdue = tasks.filter(t => t.data.assigneeId === authUser?.uid && t.data.status !== 'Completado' && t.data.dueDate && t.data.dueDate < today);
+      const myOverdue = tasks.filter(t => t.data.assigneeId === authUser?.uid && t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate));
       if (myOverdue.length > 0) {
         sendNotif(`⚠️ ${myOverdue.length} tarea${myOverdue.length > 1 ? 's' : ''} vencida${myOverdue.length > 1 ? 's' : ''}`, myOverdue.slice(0, 3).map(t => `"${t.data.title}"`).join(', '), undefined, 'overdue-daily', { type: 'reminder', screen: 'tasks' });
       }
@@ -2532,7 +2533,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
 
   const activeTasks = tasks.filter(t => t.data.status !== 'Completado');
   const completedTasks = tasks.filter(t => t.data.status === 'Completado');
-  const overdueTasks = activeTasks.filter(t => t.data.dueDate && new Date(t.data.dueDate) < new Date(new Date().toDateString()));
+  const overdueTasks = activeTasks.filter(t => t.data.dueDate && checkOverdue(t.data.dueDate));
   const urgentTasks = activeTasks.filter(t => t.data.priority === 'Alta');
 
   const adminFilteredTasks = activeTasks.filter(t => {

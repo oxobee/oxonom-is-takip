@@ -4,6 +4,7 @@ import { useApp } from '@/contexts/AppContext';
 import { useTimeTrackingContext } from '@/hooks/useTimeTracking';
 import { useOneDrive } from '@/hooks/useOneDrive';
 import { fmtCOP, fmtDate, prioColor, taskStColor, avatarColor } from '@/lib/helpers';
+import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
 import { ROLE_COLORS, ROLE_ICONS, MESES, DIAS_SEMANA, USER_ROLES, toDate } from '@/lib/types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -122,7 +123,7 @@ export default function ProfileScreen() {
     const myInProgress = allMyTasks.filter(t => t.data.status === 'En progreso');
     const myReview = allMyTasks.filter(t => t.data.status === 'Revision');
     const myHighPrio = myPending.filter(t => t.data.priority === 'Alta');
-    const myOverdue = myPending.filter(t => t.data.dueDate && new Date(t.data.dueDate) < new Date());
+    const myOverdue = myPending.filter(t => t.data.dueDate && checkOverdue(t.data.dueDate));
     const totalRate = allMyTasks.length > 0 ? Math.round((myCompleted.length / allMyTasks.length) * 100) : 0;
 
     const myProjects = projects.filter(p => p.data.createdBy === uid || allMyTasks.some(t => t.data.projectId === p.id));
@@ -240,7 +241,6 @@ export default function ProfileScreen() {
   const saveName = () => { if (editNameVal.trim() && editNameVal !== userName) { updateUserName(editNameVal.trim()); } setEditingName(false); };
 
   // Calendar helpers
-  const pcTodayOnly = new Date(new Date().toDateString());
   const pcTodayStr = today.toISOString().split('T')[0];
   const pcFirstDay = new Date(pcYear, pcMonth, 1);
   const pcLastDay = new Date(pcYear, pcMonth + 1, 0);
@@ -274,7 +274,7 @@ export default function ProfileScreen() {
   const selTotal = selTasks.length + selRFIs.length + selSubs.length + selPunch.length + selMeetings.length;
 
   const pcUrgent = computed?.myCalTasks.filter(t => t.data.priority === 'Alta').length || 0;
-  const pcOverdue = computed?.myCalTasks.filter(t => t.data.dueDate && new Date(t.data.dueDate) < pcTodayOnly).length || 0;
+  const pcOverdue = computed?.myCalTasks.filter(t => t.data.dueDate && checkOverdue(t.data.dueDate)).length || 0;
   const pcThisWeek = computed?.myCalTasks.filter(t => { const d = t.data.dueDate; if (!d) return false; const diff = Math.ceil((new Date(d).getTime() - today.getTime()) / 86400000); return diff >= 0 && diff <= 7; }).length || 0;
   const pcMonthMeetings = computed?.myCalMeetings.filter(m => m.data.date && m.data.date.startsWith(`${pcYear}-${String(pcMonth + 1).padStart(2, '0')}`)).length || 0;
 
@@ -649,7 +649,7 @@ export default function ProfileScreen() {
               ) : (
                 <div className="space-y-3 max-h-[400px] overflow-y-auto">
                   {selMeetings.length > 0 && <div><div className="text-[11px] font-semibold text-purple-400 mb-1.5">📅 Reuniones ({selMeetings.length})</div><div className="space-y-1.5">{selMeetings.sort((a, b) => (a.data.time || '').localeCompare(b.data.time || '')).map(m => { const proj = projects.find(p => p.id === m.data.projectId); return (<div key={m.id} className="border border-purple-500/20 rounded-lg p-2.5 bg-purple-500/5"><div className="flex items-start justify-between gap-2"><div className="text-[12px] font-medium">{m.data.title}</div><span className="text-[10px] text-purple-400 flex-shrink-0">{m.data.time || '09:00'} · {m.data.duration || 60}min</span></div>{proj && <div className="text-[10px] text-[var(--af-text3)] mt-1">📁 {proj.data.name}</div>}</div>); })}</div></div>}
-                  {selTasks.length > 0 && <div><div className="text-[11px] font-semibold mb-1.5">✅ Tareas ({selTasks.length})</div><div className="space-y-1.5">{selTasks.sort((a, b) => { const o: Record<string, number> = { Alta: 0, Media: 1, Baja: 2 }; return (o[a.data.priority] || 1) - (o[b.data.priority] || 1); }).map(t => { const proj = projects.find(p => p.id === t.data.projectId); const od = new Date(t.data.dueDate) < pcTodayOnly; return (<div key={t.id} className={`border rounded-lg p-2.5 ${od ? 'border-red-500/20 bg-red-500/5' : 'border-[var(--border)] bg-[var(--af-bg3)]'}`}><div className="flex items-start justify-between gap-2"><div className="text-[12px] font-medium leading-snug">{od ? '⚡ ' : ''}{t.data.title}</div><span className={`text-[9px] px-1.5 py-0.5 rounded-full flex-shrink-0 ${prioColor(t.data.priority)}`}>{t.data.priority}</span></div><div className="flex items-center gap-2 text-[10px] text-[var(--af-text3)] mt-1">{proj && <span>📁 {proj.data.name}</span>}<span className={`px-1.5 py-0.5 rounded-full ${taskStColor(t.data.status)}`}>{t.data.status}</span></div></div>); })}</div></div>}
+                  {selTasks.length > 0 && <div><div className="text-[11px] font-semibold mb-1.5">✅ Tareas ({selTasks.length})</div><div className="space-y-1.5">{selTasks.sort((a, b) => { const o: Record<string, number> = { Alta: 0, Media: 1, Baja: 2 }; return (o[a.data.priority] || 1) - (o[b.data.priority] || 1); }).map(t => { const proj = projects.find(p => p.id === t.data.projectId); const od = checkOverdue(t.data.dueDate); return (<div key={t.id} className={`border rounded-lg p-2.5 ${od ? 'border-red-500/20 bg-red-500/5' : 'border-[var(--border)] bg-[var(--af-bg3)]'}`}><div className="flex items-start justify-between gap-2"><div className="text-[12px] font-medium leading-snug">{od ? '⚡ ' : ''}{t.data.title}</div><span className={`text-[9px] px-1.5 py-0.5 rounded-full flex-shrink-0 ${prioColor(t.data.priority)}`}>{t.data.priority}</span></div><div className="flex items-center gap-2 text-[10px] text-[var(--af-text3)] mt-1">{proj && <span>📁 {proj.data.name}</span>}<span className={`px-1.5 py-0.5 rounded-full ${taskStColor(t.data.status)}`}>{t.data.status}</span></div></div>); })}</div></div>}
                   {selRFIs.length > 0 && <div><div className="text-[11px] font-semibold text-blue-400 mb-1.5">❓ RFIs ({selRFIs.length})</div><div className="space-y-1.5">{selRFIs.map(r => { const proj = projects.find(p => p.id === r.data.projectId); return (<div key={r.id} className="border border-blue-500/20 rounded-lg p-2.5 bg-blue-500/5"><div className="text-[12px] font-medium">{r.data.number}: {r.data.subject}</div><div className="flex items-center gap-2 text-[10px] text-[var(--af-text3)] mt-1">{proj && <span>📁 {proj.data.name}</span>}<span className="text-blue-400">{r.data.status}</span></div></div>); })}</div></div>}
                   {selSubs.length > 0 && <div><div className="text-[11px] font-semibold text-fuchsia-400 mb-1.5">📋 Submittals ({selSubs.length})</div><div className="space-y-1.5">{selSubs.map(s => { const proj = projects.find(p => p.id === s.data.projectId); return (<div key={s.id} className="border border-fuchsia-500/20 rounded-lg p-2.5 bg-fuchsia-500/5"><div className="text-[12px] font-medium">{s.data.number}: {s.data.title}</div><div className="flex items-center gap-2 text-[10px] text-[var(--af-text3)] mt-1">{proj && <span>📁 {proj.data.name}</span>}<span className="text-fuchsia-400">{s.data.status}</span></div></div>); })}</div></div>}
                   {selPunch.length > 0 && <div><div className="text-[11px] font-semibold text-teal-400 mb-1.5">✅ Punch List ({selPunch.length})</div><div className="space-y-1.5">{selPunch.map(p => { const proj = projects.find(pr => pr.id === p.data.projectId); return (<div key={p.id} className="border border-teal-500/20 rounded-lg p-2.5 bg-teal-500/5"><div className="text-[12px] font-medium">{p.data.title}</div><div className="flex items-center gap-2 text-[10px] text-[var(--af-text3)] mt-1">{proj && <span>📁 {proj.data.name}</span>}<span className="text-teal-400">{p.data.status}</span></div></div>); })}</div></div>}

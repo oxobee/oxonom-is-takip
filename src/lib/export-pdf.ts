@@ -7,6 +7,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { fmtCOP, fmtDate, fmtDuration } from './helpers';
+import { isOverdue as checkOverdue } from './kanban-helpers';
 
 // Colores de marca Archii
 const BRAND = {
@@ -747,7 +748,7 @@ export function exportTeamPDF(data: { teamUsers: any[]; tasks: any[]; timeEntrie
   const totalTasks = data.tasks.length;
   const completedTasks = data.tasks.filter(t => t.data.status === 'Completado').length;
   const totalMins = data.timeEntries.reduce((s, e) => s + (e.data.duration || 0), 0);
-  const overdueTasks = data.tasks.filter(t => t.data.status !== 'Completado' && t.data.dueDate && new Date(t.data.dueDate) < new Date()).length;
+  const overdueTasks = data.tasks.filter(t => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)).length;
 
   const stats = [
     { label: 'Miembros', value: String(data.teamUsers.length), color: BRAND.blue },
@@ -811,7 +812,7 @@ export function exportTeamPDF(data: { teamUsers: any[]; tasks: any[]; timeEntrie
   const memberRows = data.teamUsers.map(u => {
     const userTasks = data.tasks.filter(t => t.data.assigneeId === u.id);
     const done = userTasks.filter(t => t.data.status === 'Completado').length;
-    const overdue = userTasks.filter(t => t.data.status !== 'Completado' && t.data.dueDate && new Date(t.data.dueDate) < new Date()).length;
+    const overdue = userTasks.filter(t => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)).length;
     const mins = data.timeEntries.filter(e => e.data.userId === u.id).reduce((s, e) => s + (e.data.duration || 0), 0);
     return [u.data.name, u.data.role || 'Miembro', String(userTasks.length), String(done), String(overdue), fmtDuration(mins)];
   });
@@ -854,7 +855,7 @@ export function exportTasksPDF(data: {
   const totalTasks = data.tasks.length;
   const completed = data.tasks.filter(t => t.data.status === 'Completado').length;
   const inProgress = data.tasks.filter(t => t.data.status === 'En progreso').length;
-  const overdue = data.tasks.filter(t => t.data.status !== 'Completado' && t.data.dueDate && new Date(t.data.dueDate) < new Date()).length;
+  const overdue = data.tasks.filter(t => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)).length;
   const highPrio = data.tasks.filter(t => t.data.priority === 'Alta' && t.data.status !== 'Completado').length;
   const completionRate = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
 
@@ -951,7 +952,7 @@ export function exportTasksPDF(data: {
       if (!assigneeSummary[name]) assigneeSummary[name] = { total: 0, done: 0, overdue: 0 };
       assigneeSummary[name].total++;
       if (t.data.status === 'Completado') assigneeSummary[name].done++;
-      if (t.data.status !== 'Completado' && t.data.dueDate && new Date(t.data.dueDate) < new Date()) assigneeSummary[name].overdue++;
+      if (t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)) assigneeSummary[name].overdue++;
     });
   });
 

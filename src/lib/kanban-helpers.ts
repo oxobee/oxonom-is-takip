@@ -130,12 +130,21 @@ export function getDefaultColumns(entityType: KanbanEntityType): KanbanColumn[] 
   return KANBAN_DEFAULT_COLUMNS[entityType] || KANBAN_DEFAULT_COLUMNS.tasks;
 }
 
-/** Check if a date string is overdue */
+/**
+ * Check if a date string is overdue.
+ * The due date is the LAST productive day — the task is NOT overdue on that day,
+ * only from the day AFTER. Also normalizes to local timezone to avoid UTC offset bugs.
+ */
 export function isOverdue(dateStr: string): boolean {
   if (!dateStr) return false;
-  const dueDate = new Date(dateStr);
+  // Parse as local date (not UTC) to avoid timezone offset issues
+  // "2026-05-21" → new Date(2026, 4, 21) at midnight local
+  const parts = dateStr.split('T')[0].split('-').map(Number);
+  const dueDate = new Date(parts[0], parts[1] - 1, parts[2]);
+  dueDate.setHours(0, 0, 0, 0);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  // Strictly less than: the due date itself is NOT overdue
   return dueDate < today;
 }
 

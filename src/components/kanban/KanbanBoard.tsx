@@ -14,7 +14,7 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import type { KanbanColumn as KanbanColumnType, KanbanCardData } from '@/lib/kanban-helpers';
-import { getCardStatusFromColumn } from '@/lib/kanban-helpers';
+import { getCardStatusFromColumn, isOverdue } from '@/lib/kanban-helpers';
 import KanbanColumn from './KanbanColumn';
 import KanbanCard from './KanbanCard';
 import { useUIStore } from '@/stores/ui-store';
@@ -142,7 +142,7 @@ export default function KanbanBoard({
                   </span>
                   <span className="text-[12px] text-[var(--muted-foreground)] truncate">{userName}</span>
                   <span className={`text-[12px] ${
-                    card.dueDate && new Date(card.dueDate) < new Date(new Date().toDateString())
+                    card.dueDate && isOverdue(card.dueDate)
                       ? 'text-red-400'
                       : 'text-[var(--muted-foreground)]'
                   }`}>
@@ -173,7 +173,7 @@ export default function KanbanBoard({
                       <>
                         <span className="text-[var(--border)]">·</span>
                         <span className={`text-[12px] ${
-                          new Date(card.dueDate) < new Date(new Date().toDateString())
+                          isOverdue(card.dueDate)
                             ? 'text-red-400'
                             : 'text-[var(--muted-foreground)]'
                         }`}>

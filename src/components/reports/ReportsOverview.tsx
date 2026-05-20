@@ -4,6 +4,7 @@ import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend, LineChart, L
 import { FileText } from 'lucide-react';
 import { exportBudgetPDF } from '@/lib/export-pdf';
 import { fmtCOP, getInitials, avatarColor } from '@/lib/helpers';
+import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
 import { COLORS, ChartTooltip, ChartLegend } from './ChartComponents';
 import type { ReportsTabProps } from './types';
 
@@ -52,7 +53,7 @@ export default function ReportsOverview({ projects, tasks, expenses, timeEntries
   const taskCompleted = tasks.filter(t => t.data.status === 'Completado').length;
   const taskInProgress = tasks.filter(t => t.data.status === 'En progreso').length;
   const taskPending = tasks.filter(t => t.data.status === 'Pendiente' || t.data.status === 'Por hacer').length;
-  const taskOverdue = tasks.filter(t => t.data.status !== 'Completado' && t.data.dueDate && new Date(t.data.dueDate) < new Date()).length;
+  const taskOverdue = tasks.filter(t => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)).length;
   const budgetPct = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
   const membersByRole: Record<string, number> = {};
   teamUsers.forEach(u => { const r = u.data.role || 'Miembro'; membersByRole[r] = (membersByRole[r] || 0) + 1; });

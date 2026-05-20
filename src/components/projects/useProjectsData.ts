@@ -4,6 +4,7 @@ import { useApp } from '@/contexts/AppContext';
 import { useConfirmDialog } from '@/lib/useConfirmDialog';
 import { exportProjectsPDF } from '@/lib/export-pdf';
 import { exportProjectsExcel } from '@/lib/export-excel';
+import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
 import type { Project, Task, Expense } from '@/lib/types';
 import {
   computeHealth,
@@ -74,7 +75,7 @@ export function useProjectsData() {
   const projectsWithOverdue = useMemo(() => {
     return filteredProjects.filter((p: Project) => {
       const projTasks = tasks.filter((t: Task) => t.data.projectId === p.id);
-      return projTasks.some((t: Task) => t.data.status !== 'Completado' && t.data.dueDate && t.data.dueDate < today);
+      return projTasks.some((t: Task) => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate));
     }).length;
   }, [filteredProjects, tasks, today]);
   const overBudgetCount = useMemo(() => {
@@ -175,7 +176,7 @@ export function useProjectsData() {
   const getProjectStats = useCallback((projectId: string) => {
     const projTasks = tasks.filter((t: Task) => t.data.projectId === projectId);
     const pending = projTasks.filter((t: Task) => t.data.status !== 'Completado').length;
-    const overdue = projTasks.filter((t: Task) => t.data.status !== 'Completado' && t.data.dueDate && t.data.dueDate < today).length;
+    const overdue = projTasks.filter((t: Task) => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)).length;
     const completed = projTasks.filter((t: Task) => t.data.status === 'Completado').length;
     return { pending, overdue, completed, total: projTasks.length };
   }, [tasks, today]);

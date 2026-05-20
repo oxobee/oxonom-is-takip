@@ -17,6 +17,7 @@
 import { getAdminDb } from './firebase-admin';
 import { isFlagEnabled } from './feature-flags';
 import type { Timestamp } from 'firebase-admin/firestore';
+import { isOverdue as checkOverdue } from './kanban-helpers';
 
 /* ---- Types ---- */
 
@@ -395,7 +396,7 @@ export async function calculateAllTenantScores(
         overdueTasks: tasks.filter((t) => {
           if (t.status === 'Completado') return false;
           if (!t.dueDate) return false;
-          return new Date(t.dueDate).getTime() < now;
+          return checkOverdue(t.dueDate as string);
         }).length,
         inProgressTasks: tasks.filter((t) => t.status === 'En progreso').length,
         budget: projectData.budget || 0,

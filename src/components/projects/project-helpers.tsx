@@ -1,5 +1,6 @@
 import React from 'react';
 import { fmtCOP } from '@/lib/helpers';
+import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
 import { HeartPulse, Heart, AlertTriangle } from 'lucide-react';
 import type { Project, Task, Expense } from '@/lib/types';
 
@@ -71,7 +72,7 @@ export function computeHealth(
   const projTasks = tasks.filter((t: Task) => t.data.projectId === p.id);
   const totalTasks = projTasks.length;
   const overdueTasks = projTasks.filter(
-    (t: Task) => t.data.status !== 'Completado' && t.data.dueDate && t.data.dueDate < today
+    (t: Task) => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)
   ).length;
   if (totalTasks > 0) {
     const overdueRatio = overdueTasks / totalTasks;
