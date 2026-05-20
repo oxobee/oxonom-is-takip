@@ -153,6 +153,11 @@ export default function WeeklyAgendaScreen() {
   const [saving, setSaving] = useState(false);
   const [drag, setDrag] = useState<DragState | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [mobileDayIdx, setMobileDayIdx] = useState(() => {
+    const today = new Date().getDay();
+    return today === 0 ? 6 : today - 1; // 0=Mon..6=Sun
+  });
+  const [isMobile, setIsMobile] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
   /* ─── Derived data ─── */
@@ -311,10 +316,18 @@ export default function WeeklyAgendaScreen() {
     return map;
   }, [agendaTasks]);
 
+  /* ─── Responsive detection ─── */
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   /* ─── Navigation ─── */
   const prevWeek = () => { const d = new Date(baseDate); d.setDate(d.getDate() - 7); setBaseDate(d); };
   const nextWeek = () => { const d = new Date(baseDate); d.setDate(d.getDate() + 7); setBaseDate(d); };
-  const goToday = () => setBaseDate(new Date());
+  const goToday = () => { setBaseDate(new Date()); const today = new Date().getDay(); setMobileDayIdx(today === 0 ? 6 : today - 1); };
 
   /* ─── Drag selection ─── */
   const handleCellMouseDown = (dayKey: string, hour: number) => {
@@ -637,19 +650,19 @@ export default function WeeklyAgendaScreen() {
   return (
     <div className="h-full flex flex-col" ref={printRef}>
       {/* ─── Header Toolbar ─── */}
-      <div className="flex-shrink-0 flex flex-wrap items-center gap-2 px-4 md:px-6 py-3 border-b border-[var(--border)] bg-[var(--card)]">
-        <CalendarDays className="w-5 h-5 text-[var(--primary)]" />
+      <div className="flex-shrink-0 flex flex-wrap items-center gap-2 px-3 md:px-6 py-2 md:py-3 border-b border-[var(--border)] bg-[var(--card)]">
+        <CalendarDays className="w-5 h-5 text-[var(--primary)] flex-shrink-0" />
         <h2 className="text-sm font-semibold mr-2 hidden sm:block">Agenda Semanal</h2>
 
         {/* Week nav */}
         <button onClick={prevWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Semana anterior">
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="text-xs font-medium min-w-[120px] sm:min-w-[180px] text-center">{weekLabel}</span>
+        <span className="text-[10px] sm:text-xs font-medium min-w-[100px] sm:min-w-[180px] text-center">{weekLabel}</span>
         <button onClick={nextWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Semana siguiente">
           <ChevronRight className="w-4 h-4" />
         </button>
-        <button onClick={goToday} className="text-xs px-3 py-1.5 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-medium hover:opacity-90 active:scale-95 transition-transform">
+        <button onClick={goToday} className="text-[10px] sm:text-xs px-2 sm:px-3 py-1.5 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-medium hover:opacity-90 active:scale-95 transition-transform">
           Hoy
         </button>
 
@@ -657,14 +670,14 @@ export default function WeeklyAgendaScreen() {
 
         {/* Project filter */}
         <select value={filterProject} onChange={e => setFilterProject(e.target.value)}
-          className="text-xs rounded-lg border border-[var(--border)] bg-[var(--input)] px-2 py-1.5 max-w-[160px] truncate no-print">
+          className="text-[10px] sm:text-xs rounded-lg border border-[var(--border)] bg-[var(--input)] px-2 py-1.5 max-w-[120px] sm:max-w-[160px] truncate no-print">
           <option value="all">Todos los proyectos</option>
           {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
         </select>
 
-        {/* Print */}
+        {/* Print — hidden on mobile */}
         <button onClick={handlePrint}
-          className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform no-print"
+          className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] items-center justify-center hover:scale-105 active:scale-95 transition-transform no-print hidden sm:flex"
           aria-label="Imprimir agenda">
           <Printer className="w-4 h-4" />
         </button>
@@ -674,13 +687,46 @@ export default function WeeklyAgendaScreen() {
       <div className="flex-1 overflow-auto p-2 md:p-4">
         <div className="flex flex-col lg:flex-row gap-3">
 
+          {/* ─── Mobile Day Selector ─── */}
+          {isMobile && (
+            <div className="flex items-center gap-1 mb-2 overflow-x-auto no-print pb-1" style={{ scrollbarWidth: 'none' }}>
+              {weekDates.map((d, i) => {
+                const dk = dateKey(d);
+                const isToday = dk === todayKey;
+                const isActive = i === mobileDayIdx;
+                const dayTasks = agendaTasks.filter(t => t.data.agendaMeta?.dayKey === dk);
+                return (
+                  <button
+                    key={dk}
+                    onClick={() => setMobileDayIdx(i)}
+                    className="flex flex-col items-center px-3 py-1.5 rounded-lg transition-all flex-shrink-0"
+                    style={{
+                      background: isActive ? 'var(--primary)' : isToday ? 'var(--accent)' : 'var(--af-bg3)',
+                      color: isActive ? 'var(--primary-foreground)' : 'var(--foreground)',
+                      border: isActive ? 'none' : '1px solid var(--border)',
+                      minWidth: '48px',
+                    }}
+                  >
+                    <span className="text-[9px] font-semibold uppercase">{DAY_NAMES[i]}</span>
+                    <span className="text-sm font-bold">{d.getDate()}</span>
+                    {dayTasks.length > 0 && (
+                      <span className="w-1.5 h-1.5 rounded-full mt-0.5" style={{ background: isActive ? 'var(--primary-foreground)' : 'var(--primary)' }} />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           {/* ─── Agenda Grid ─── */}
           <div className="flex-1 agenda-grid-container" style={{ minWidth: 0 }}>
             <div
               className="agenda-grid"
               style={{
                 display: 'grid',
-                gridTemplateColumns: '54px repeat(7, minmax(130px, 1fr))',
+                gridTemplateColumns: isMobile
+                  ? '48px 1fr'
+                  : '54px repeat(7, minmax(130px, 1fr))',
                 border: '1.5px solid var(--border)',
                 borderRadius: '10px',
                 overflow: 'hidden',
@@ -688,8 +734,29 @@ export default function WeeklyAgendaScreen() {
               }}
             >
               {/* ─── Column Headers ─── */}
-              <div style={{ background: 'var(--af-bg3)', borderBottom: '1.5px solid var(--border)', borderRight: '1px solid var(--border)' }} />
-              {weekDates.map((d, i) => {
+              {!isMobile && <div style={{ background: 'var(--af-bg3)', borderBottom: '1.5px solid var(--border)', borderRight: '1px solid var(--border)' }} />}
+              {isMobile && (() => {
+                const d = weekDates[mobileDayIdx];
+                const dk = dateKey(d);
+                const isToday = dk === todayKey;
+                return (
+                  <div key={dk} style={{
+                    background: isToday ? 'var(--primary)' : 'var(--af-bg3)',
+                    borderBottom: '1.5px solid var(--border)',
+                    color: isToday ? 'var(--primary-foreground)' : 'var(--foreground)',
+                    padding: '8px 4px',
+                    textAlign: 'center',
+                  }}>
+                    <div style={{ fontWeight: 700, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      {DAY_FULL[mobileDayIdx]}
+                    </div>
+                    <div style={{ fontSize: '11px', marginTop: 2, color: isToday ? 'var(--primary-foreground)' : 'var(--muted-foreground)' }}>
+                      {fmtDay(d)}
+                    </div>
+                  </div>
+                );
+              })()}
+              {!isMobile && weekDates.map((d, i) => {
                 const dk = dateKey(d);
                 const isToday = dk === todayKey;
                 return (
@@ -719,20 +786,20 @@ export default function WeeklyAgendaScreen() {
                     background: 'var(--af-bg3)',
                     borderRight: '1px solid var(--border)',
                     borderBottom: '1px solid var(--border)',
-                    padding: '4px 6px',
+                    padding: isMobile ? '4px 4px' : '4px 6px',
                     textAlign: 'right',
-                    fontSize: '10px',
+                    fontSize: isMobile ? '9px' : '10px',
                     color: 'var(--muted-foreground)',
                     display: 'flex',
                     alignItems: 'flex-start',
                     justifyContent: 'flex-end',
                     height: `${SLOT_H}px`,
                   }}>
-                    {formatHour(hour)}
+                    {isMobile ? formatHourShort(hour) : formatHour(hour)}
                   </div>
 
-                  {/* Day cells */}
-                  {weekDates.map((d, di) => {
+                  {/* Day cells — mobile: single day, desktop: all 7 */}
+                  {(isMobile ? [weekDates[mobileDayIdx]] : weekDates).map((d, di) => {
                     const dk = dateKey(d);
                     const isToday = dk === todayKey;
                     const isDragSelected = dragSelectedHours.has(`${dk}:${hour}`);
@@ -745,7 +812,7 @@ export default function WeeklyAgendaScreen() {
                       <div
                         key={dk}
                         style={{
-                          borderRight: di < 6 ? '1px solid var(--border)' : 'none',
+                          borderRight: !isMobile && di < 6 ? '1px solid var(--border)' : 'none',
                           borderBottom: '1px solid var(--border)',
                           minHeight: `${SLOT_H}px`,
                           height: `${SLOT_H}px`,
@@ -871,24 +938,24 @@ export default function WeeklyAgendaScreen() {
                                 </span>
                               )}
 
-                              {/* Delete on hover — top-left of card to avoid + button */}
+                              {/* Delete button — top-left of card, larger on mobile */}
                               <button
-                                className="absolute top-1 left-1 w-5 h-5 rounded flex items-center justify-center opacity-0 hover:!opacity-100 transition-opacity z-[15]"
-                                style={{ background: 'rgba(239,68,68,0.8)', color: '#fff', fontSize: '8px' }}
+                                className={`absolute rounded flex items-center justify-center opacity-0 hover:!opacity-100 transition-opacity z-[15] ${isMobile ? 'top-0.5 left-0.5 w-7 h-7' : 'top-1 left-1 w-5 h-5'}`}
+                                style={{ background: 'rgba(239,68,68,0.8)', color: '#fff', fontSize: isMobile ? '10px' : '8px' }}
                                 onMouseDown={e => e.stopPropagation()}
                                 onClick={e => { e.stopPropagation(); setConfirmDelete(task.id); }}
                                 aria-label="Eliminar actividad"
                               >
-                                <X className="w-3 h-3" />
+                                <X className={isMobile ? 'w-4 h-4' : 'w-3 h-3'} />
                               </button>
                             </div>
                           );
                         })}
 
-                        {/* + button on hover to create new activity — always on top of activity cards */}
+                        {/* + button to create new activity — larger on mobile for touch */}
                         <button
-                          className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover/slot:opacity-80 hover:!opacity-100 transition-opacity no-print z-[15]"
-                          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', fontSize: '10px' }}
+                          className={`absolute right-0.5 rounded-full flex items-center justify-center opacity-0 group-hover/slot:opacity-80 hover:!opacity-100 transition-opacity no-print z-[15] ${isMobile ? 'top-0.5 w-8 h-8' : 'top-0.5 w-5 h-5'}`}
+                          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', fontSize: isMobile ? '12px' : '10px' }}
                           onMouseDown={e => e.stopPropagation()}
                           onClick={e => {
                             e.stopPropagation();
@@ -896,7 +963,7 @@ export default function WeeklyAgendaScreen() {
                           }}
                           aria-label="Crear actividad"
                         >
-                          <Plus className="w-3 h-3" />
+                          <Plus className={isMobile ? 'w-4 h-4' : 'w-3 h-3'} />
                         </button>
                       </div>
                     );
@@ -906,8 +973,8 @@ export default function WeeklyAgendaScreen() {
             </div>
           </div>
 
-          {/* ─── Notes Panel ─── */}
-          <div className="lg:w-52 flex-shrink-0 flex flex-row lg:flex-col gap-2 no-print lg:min-w-[200px] overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0" style={{ minWidth: 0 }}>
+          {/* ─── Notes Panel — hidden on mobile ─── */}
+          <div className="lg:w-52 flex-shrink-0 flex-col gap-2 no-print lg:min-w-[200px] hidden md:flex" style={{ minWidth: 0 }}>
             <div className="flex items-center gap-2 px-2 flex-shrink-0 lg:flex-shrink">
               <StickyNote className="w-4 h-4 text-amber-500" />
               <span className="text-xs font-semibold whitespace-nowrap">Notas</span>
@@ -1007,11 +1074,17 @@ export default function WeeklyAgendaScreen() {
 
       {/* ─── Create / Edit / Link Modal ─── */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 no-print af-modal-mobile" onClick={closeForm}>
+        <div className={`fixed inset-0 z-50 flex no-print ${isMobile ? 'items-end' : 'items-center justify-center p-4'} bg-black/40`} onClick={closeForm}>
           <div
-            className="bg-[var(--card)] rounded-xl border border-[var(--border)] shadow-2xl w-full max-w-lg"
+            className={`bg-[var(--card)] border border-[var(--border)] shadow-2xl w-full ${isMobile ? 'rounded-t-2xl border-b-0 max-h-[92vh] flex flex-col' : 'rounded-xl max-w-lg'}`}
             onClick={e => e.stopPropagation()}
           >
+            {/* Mobile drag handle */}
+            {isMobile && (
+              <div className="flex justify-center pt-2 pb-1 cursor-grab" onClick={e => e.stopPropagation()}>
+                <div className="w-10 h-1 rounded-full" style={{ background: 'var(--muted-foreground)', opacity: 0.3 }} />
+              </div>
+            )}
             {/* Modal Header */}
             <div className="flex items-center gap-3 px-5 py-4 border-b border-[var(--border)]">
               <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--primary)', opacity: 0.12 }}>
