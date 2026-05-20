@@ -157,7 +157,7 @@ export default function WeeklyAgendaScreen() {
     const today = new Date().getDay();
     return today === 0 ? 6 : today - 1; // 0=Mon..6=Sun
   });
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
   const printRef = useRef<HTMLDivElement>(null);
 
   /* ─── Derived data ─── */
@@ -648,9 +648,9 @@ export default function WeeklyAgendaScreen() {
      ═══════════════════════════════════════════════════════════════ */
 
   return (
-    <div className="h-full flex flex-col" ref={printRef}>
+    <div className={`h-full flex flex-col ${isMobile ? '-mx-3 md:mx-0' : ''}`} ref={printRef}>
       {/* ─── Header Toolbar ─── */}
-      <div className="flex-shrink-0 flex flex-wrap items-center gap-2 px-3 md:px-6 py-2 md:py-3 border-b border-[var(--border)] bg-[var(--card)]">
+      <div className="flex-shrink-0 flex flex-wrap items-center gap-1.5 md:gap-2 px-2 md:px-6 py-1.5 md:py-3 border-b border-[var(--border)] bg-[var(--card)]">
         <CalendarDays className="w-5 h-5 text-[var(--primary)] flex-shrink-0" />
         <h2 className="text-sm font-semibold mr-2 hidden sm:block">Agenda Semanal</h2>
 
@@ -658,7 +658,7 @@ export default function WeeklyAgendaScreen() {
         <button onClick={prevWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Semana anterior">
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="text-[10px] sm:text-xs font-medium min-w-[100px] sm:min-w-[180px] text-center">{weekLabel}</span>
+        <span className="text-[10px] sm:text-xs font-medium min-w-[70px] sm:min-w-[180px] text-center">{weekLabel}</span>
         <button onClick={nextWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Semana siguiente">
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -684,12 +684,12 @@ export default function WeeklyAgendaScreen() {
       </div>
 
       {/* ─── Main Content ─── */}
-      <div className="flex-1 overflow-auto p-2 md:p-4">
+      <div className="flex-1 overflow-auto p-0 md:p-4">
         <div className="flex flex-col lg:flex-row gap-3">
 
           {/* ─── Mobile Day Selector ─── */}
           {isMobile && (
-            <div className="flex items-center gap-1 mb-2 overflow-x-auto no-print pb-1" style={{ scrollbarWidth: 'none' }}>
+            <div className="flex items-center gap-1 mb-1 px-2 overflow-x-auto no-print pb-1" style={{ scrollbarWidth: 'none' }}>
               {weekDates.map((d, i) => {
                 const dk = dateKey(d);
                 const isToday = dk === todayKey;
@@ -699,12 +699,12 @@ export default function WeeklyAgendaScreen() {
                   <button
                     key={dk}
                     onClick={() => setMobileDayIdx(i)}
-                    className="flex flex-col items-center px-3 py-1.5 rounded-lg transition-all flex-shrink-0"
+                    className="flex flex-col items-center px-2.5 py-1 rounded-lg transition-all flex-shrink-0"
                     style={{
                       background: isActive ? 'var(--primary)' : isToday ? 'var(--accent)' : 'var(--af-bg3)',
                       color: isActive ? 'var(--primary-foreground)' : 'var(--foreground)',
                       border: isActive ? 'none' : '1px solid var(--border)',
-                      minWidth: '48px',
+                      minWidth: '42px',
                     }}
                   >
                     <span className="text-[9px] font-semibold uppercase">{DAY_NAMES[i]}</span>
@@ -725,10 +725,10 @@ export default function WeeklyAgendaScreen() {
               style={{
                 display: 'grid',
                 gridTemplateColumns: isMobile
-                  ? '48px 1fr'
+                  ? '32px 1fr'
                   : '54px repeat(7, minmax(130px, 1fr))',
-                border: '1.5px solid var(--border)',
-                borderRadius: '10px',
+                border: isMobile ? 'none' : '1.5px solid var(--border)',
+                borderRadius: isMobile ? '0' : '10px',
                 overflow: 'hidden',
                 background: 'var(--card)',
               }}
@@ -784,16 +784,16 @@ export default function WeeklyAgendaScreen() {
                   {/* Time label */}
                   <div style={{
                     background: 'var(--af-bg3)',
-                    borderRight: '1px solid var(--border)',
+                    borderRight: isMobile ? 'none' : '1px solid var(--border)',
                     borderBottom: '1px solid var(--border)',
-                    padding: isMobile ? '4px 4px' : '4px 6px',
+                    padding: isMobile ? '2px 2px' : '4px 6px',
                     textAlign: 'right',
-                    fontSize: isMobile ? '9px' : '10px',
+                    fontSize: isMobile ? '8px' : '10px',
                     color: 'var(--muted-foreground)',
                     display: 'flex',
                     alignItems: 'flex-start',
                     justifyContent: 'flex-end',
-                    height: `${SLOT_H}px`,
+                    height: `${isMobile ? 48 : SLOT_H}px`,
                   }}>
                     {isMobile ? formatHourShort(hour) : formatHour(hour)}
                   </div>
@@ -814,8 +814,8 @@ export default function WeeklyAgendaScreen() {
                         style={{
                           borderRight: !isMobile && di < 6 ? '1px solid var(--border)' : 'none',
                           borderBottom: '1px solid var(--border)',
-                          minHeight: `${SLOT_H}px`,
-                          height: `${SLOT_H}px`,
+                          minHeight: `${isMobile ? 48 : SLOT_H}px`,
+                          height: `${isMobile ? 48 : SLOT_H}px`,
                           background: isDragSelected
                             ? 'var(--accent)'
                             : isToday
@@ -843,7 +843,8 @@ export default function WeeklyAgendaScreen() {
                           const minH = Math.min(...meta.hourSlots);
                           const maxH = Math.max(...meta.hourSlots);
                           const spanCount = maxH - minH + 1;
-                          const blockHeight = spanCount * SLOT_H;
+                          const mobileSlotH = 48;
+                          const blockHeight = spanCount * (isMobile ? mobileSlotH : SLOT_H);
                           const pc = PRIO_COLORS[task.data.priority] || PRIO_COLORS['Media'];
                           const doneSubtasks = (task.data.subtasks || []).filter(s => s.done).length;
                           const totalSubtasks = (task.data.subtasks || []).length;
@@ -868,12 +869,12 @@ export default function WeeklyAgendaScreen() {
                                 top: 0,
                                 left: leftPos,
                                 width: availWidth,
-                                height: `${blockHeight - 4}px`,
-                                borderLeftWidth: '3px',
+                                height: `${blockHeight - (isMobile ? 2 : 4)}px`,
+                                borderLeftWidth: isMobile ? '2.5px' : '3px',
                                 borderLeftStyle: 'solid',
-                                borderRadius: '6px',
-                                padding: isNarrow ? '2px 3px' : '4px 6px',
-                                fontSize: isNarrow ? '8px' : '10px',
+                                borderRadius: isMobile ? '4px' : '6px',
+                                padding: isMobile ? '3px 5px' : (isNarrow ? '2px 3px' : '4px 6px'),
+                                fontSize: isMobile ? '11px' : (isNarrow ? '8px' : '10px'),
                                 lineHeight: 1.3,
                                 cursor: 'pointer',
                                 zIndex: 10,
@@ -885,21 +886,21 @@ export default function WeeklyAgendaScreen() {
                               {/* Title + priority dot */}
                               <div className="flex items-center gap-1">
                                 <span className={`w-1.5 h-1.5 rounded-full ${pc.dot} flex-shrink-0`} />
-                                <span style={{ fontWeight: 600, color: 'var(--foreground)' }} className="truncate text-[11px]">
+                                <span style={{ fontWeight: 600, color: 'var(--foreground)' }} className={`truncate ${isMobile ? 'text-[12px]' : 'text-[11px]'}`}>
                                   {task.data.title}
                                 </span>
                               </div>
 
-                              {/* Time range — hide on very narrow columns */}
-                              {!isNarrow && (
+                              {/* Time range — hide on very narrow columns or mobile single-col */}
+                              {!isNarrow && !isMobile && (
                                 <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
                                   <Clock className="w-2.5 h-2.5" />
                                   <span>{formatHourRange(meta.hourSlots)}</span>
                                 </div>
                               )}
 
-                              {/* Project — hide on narrow/medium overlap */}
-                              {!isNarrow && !isMedium && task.data.projectId && (
+                              {/* Project — hide on narrow/medium overlap or mobile */}
+                              {!isNarrow && !isMedium && !isMobile && task.data.projectId && (
                                 <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
                                   <FolderOpen className="w-2.5 h-2.5" />
                                   <span className="truncate">{projectMap[task.data.projectId] || '\u2014'}</span>
@@ -938,24 +939,24 @@ export default function WeeklyAgendaScreen() {
                                 </span>
                               )}
 
-                              {/* Delete button — top-left of card, larger on mobile */}
+                              {/* Delete button — top-left of card, always visible on mobile touch */}
                               <button
-                                className={`absolute rounded flex items-center justify-center opacity-0 hover:!opacity-100 transition-opacity z-[15] ${isMobile ? 'top-0.5 left-0.5 w-7 h-7' : 'top-1 left-1 w-5 h-5'}`}
-                                style={{ background: 'rgba(239,68,68,0.8)', color: '#fff', fontSize: isMobile ? '10px' : '8px' }}
+                                className={`absolute rounded flex items-center justify-center transition-opacity z-[15] ${isMobile ? 'top-0.5 right-0.5 w-6 h-6 opacity-60 hover:!opacity-100' : 'top-1 left-1 w-5 h-5 opacity-0 hover:!opacity-100'}`}
+                                style={{ background: 'rgba(239,68,68,0.8)', color: '#fff', fontSize: isMobile ? '9px' : '8px' }}
                                 onMouseDown={e => e.stopPropagation()}
                                 onClick={e => { e.stopPropagation(); setConfirmDelete(task.id); }}
                                 aria-label="Eliminar actividad"
                               >
-                                <X className={isMobile ? 'w-4 h-4' : 'w-3 h-3'} />
+                                <X className={isMobile ? 'w-3.5 h-3.5' : 'w-3 h-3'} />
                               </button>
                             </div>
                           );
                         })}
 
-                        {/* + button to create new activity — larger on mobile for touch */}
+                        {/* + button to create new activity — always visible on mobile touch */}
                         <button
-                          className={`absolute right-0.5 rounded-full flex items-center justify-center opacity-0 group-hover/slot:opacity-80 hover:!opacity-100 transition-opacity no-print z-[15] ${isMobile ? 'top-0.5 w-8 h-8' : 'top-0.5 w-5 h-5'}`}
-                          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', fontSize: isMobile ? '12px' : '10px' }}
+                          className={`absolute right-0.5 rounded-full flex items-center justify-center transition-opacity no-print z-[15] ${isMobile ? 'top-0.5 w-7 h-7 opacity-40 hover:!opacity-100' : 'top-0.5 w-5 h-5 opacity-0 group-hover/slot:opacity-80 hover:!opacity-100'}`}
+                          style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', fontSize: isMobile ? '11px' : '10px' }}
                           onMouseDown={e => e.stopPropagation()}
                           onClick={e => {
                             e.stopPropagation();
@@ -963,7 +964,7 @@ export default function WeeklyAgendaScreen() {
                           }}
                           aria-label="Crear actividad"
                         >
-                          <Plus className={isMobile ? 'w-4 h-4' : 'w-3 h-3'} />
+                          <Plus className={isMobile ? 'w-3.5 h-3.5' : 'w-3 h-3'} />
                         </button>
                       </div>
                     );
