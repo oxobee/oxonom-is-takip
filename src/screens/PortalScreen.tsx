@@ -84,7 +84,7 @@ export default function PortalScreen() {
         <div className="flex items-center gap-3 mb-1">
           <div>
             <h2 className="text-lg font-semibold flex items-center gap-2">
-              <Globe size={20} className="text-blue-400" />
+              <Globe size={20} className="text-blue-400" aria-hidden="true"/>
               Portal del cliente
             </h2>
             <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Accede al progreso y documentos de cada proyecto</p>
@@ -98,7 +98,7 @@ export default function PortalScreen() {
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 hover:border-[var(--af-accent)]/30 transition-all">
           <div className="flex items-center justify-between mb-2">
             <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-              <FolderKanban size={15} className="text-blue-400" />
+              <FolderKanban size={15} className="text-blue-400" aria-hidden="true"/>
             </div>
           </div>
           <div className="text-lg font-bold">{kpiSummary.total}</div>
@@ -109,7 +109,7 @@ export default function PortalScreen() {
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 hover:border-amber-500/30 transition-all">
           <div className="flex items-center justify-between mb-2">
             <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
-              <ArrowRight size={15} className="text-amber-400" />
+              <ArrowRight size={15} className="text-amber-400" aria-hidden="true"/>
             </div>
           </div>
           <div className="text-lg font-bold text-amber-400">{kpiSummary.inExecution}</div>
@@ -120,7 +120,7 @@ export default function PortalScreen() {
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 hover:border-emerald-500/30 transition-all">
           <div className="flex items-center justify-between mb-2">
             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-              <CheckCircle2 size={15} className="text-emerald-400" />
+              <CheckCircle2 size={15} className="text-emerald-400" aria-hidden="true"/>
             </div>
           </div>
           <div className="text-lg font-bold text-emerald-400">{kpiSummary.completed}</div>
@@ -131,7 +131,7 @@ export default function PortalScreen() {
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 hover:border-[var(--af-accent)]/30 transition-all">
           <div className="flex items-center justify-between mb-2">
             <div className="w-8 h-8 rounded-lg bg-[var(--af-accent)]/10 flex items-center justify-center">
-              <DollarSign size={15} className="text-[var(--af-accent)]" />
+              <DollarSign size={15} className="text-[var(--af-accent)]" aria-hidden="true"/>
             </div>
           </div>
           <div className="text-lg font-bold text-[var(--af-accent)]">{fmtCOP(kpiSummary.totalBudget)}</div>
@@ -142,7 +142,7 @@ export default function PortalScreen() {
       {/* ════════════ SEARCH BAR ════════════ */}
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" aria-hidden="true"/>
           <input
             type="text"
             value={search}
@@ -155,7 +155,7 @@ export default function PortalScreen() {
               className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer transition-colors"
               onClick={() => setSearch('')}
             >
-              <X size={14} />
+              <X size={14} aria-hidden="true"/>
             </button>
           )}
         </div>
@@ -172,7 +172,7 @@ export default function PortalScreen() {
             }
           }}
         >
-          <Filter size={14} />
+          <Filter size={14} aria-hidden="true"/>
           {hasFilters ? 'Limpiar' : 'Filtros'}
           {hasFilters && <span className="w-1.5 h-1.5 rounded-full bg-[var(--af-accent)]" />}
         </button>
@@ -239,7 +239,7 @@ export default function PortalScreen() {
                     )}
                   </div>
                   <div className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] flex items-center justify-center text-[var(--af-text3)] group-hover:bg-[var(--af-accent)]/10 group-hover:text-[var(--af-accent)] transition-all flex-shrink-0 ml-2">
-                    <ChevronRight size={16} className="stroke-current" />
+                    <ChevronRight size={16} className="stroke-current" aria-hidden="true"/>
                   </div>
                 </div>
                 {/* Progress bar */}
@@ -320,7 +320,7 @@ export default function PortalScreen() {
                     )}
                   </div>
                   <div className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] flex items-center justify-center text-[var(--af-text3)] group-hover:bg-[var(--af-accent)]/10 group-hover:text-[var(--af-accent)] transition-all flex-shrink-0 ml-2">
-                <ChevronRight size={16} className="stroke-current" />
+                <ChevronRight size={16} className="stroke-current" aria-hidden="true"/>
                   </div>
                 </div>
                 {/* Progress bar for non-active projects too */}
@@ -380,7 +380,7 @@ export default function PortalScreen() {
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-8 text-center">
           {hasFilters ? (
             <>
-              <div className="text-3xl mb-2"><Filter size={32} className="mx-auto text-[var(--muted-foreground)] opacity-40" /></div>
+              <div className="text-3xl mb-2"><Filter size={32} className="mx-auto text-[var(--muted-foreground)] opacity-40" aria-hidden="true"/></div>
               <div className="text-[14px] font-medium text-[var(--muted-foreground)] mb-1">Sin resultados</div>
               <div className="text-[11px] text-[var(--af-text3)] mb-3">No se encontraron proyectos con los filtros aplicados</div>
               <button

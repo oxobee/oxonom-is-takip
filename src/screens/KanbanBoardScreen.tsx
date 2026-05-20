@@ -414,7 +414,7 @@ export default function KanbanBoardScreen() {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-[var(--af-accent)]/10 flex items-center justify-center">
-                    <Plus size={18} className="text-[var(--af-accent)]" />
+                    <Plus size={18} className="text-[var(--af-accent)]" aria-hidden="true"/>
                   </div>
                   <div className="text-left">
                     <div className="text-[14px] font-medium text-[var(--foreground)]">
@@ -425,7 +425,7 @@ export default function KanbanBoardScreen() {
                     </div>
                   </div>
                 </div>
-                <ChevronRight size={16} className="text-[var(--muted-foreground)] group-hover:text-[var(--af-accent)] transition-colors" />
+                <ChevronRight size={16} className="text-[var(--muted-foreground)] group-hover:text-[var(--af-accent)] transition-colors" aria-hidden="true"/>
               </button>
             </div>
           </div>
@@ -462,7 +462,7 @@ export default function KanbanBoardScreen() {
             className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-lg bg-[var(--af-bg3)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] border border-[var(--border)] hover:border-[var(--af-accent)]/30 transition-all cursor-pointer"
             title="Recrear tablero"
           >
-            <Settings size={13} />
+            <Settings size={13} aria-hidden="true"/>
             Reiniciar
           </button>
           <button
@@ -499,7 +499,7 @@ export default function KanbanBoardScreen() {
             className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all cursor-pointer border-none"
             title="Eliminar tablero"
           >
-            <Trash2 size={13} />
+            <Trash2 size={13} aria-hidden="true"/>
             Eliminar
           </button>
         </div>

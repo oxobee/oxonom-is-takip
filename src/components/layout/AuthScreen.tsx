@@ -248,7 +248,7 @@ export default function AuthScreen({ forms, setForms, doLogin, doRegister, doGoo
       <div className="relative bg-[var(--card)] border border-[var(--input)] rounded-2xl p-8 w-full max-w-[400px] af-card shadow-2xl">
         <div className="flex items-center gap-3 mb-7">
           <div className="w-10 h-10 bg-gradient-to-br from-[var(--af-accent)] to-[var(--af-accent2)] rounded-xl shadow-lg af-glow-accent flex items-center justify-center">
-            <Home size={20} className="stroke-background" />
+            <Home size={20} className="stroke-background" aria-hidden="true"/>
           </div>
           <span style={{ fontFamily: "'DM Serif Display', serif" }} className="text-2xl">Archii</span>
         </div>

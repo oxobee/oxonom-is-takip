@@ -61,15 +61,16 @@ export default function SettingsPanel() {
           <div className="flex items-center justify-between px-5 pb-3 border-b border-[var(--border)]">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-[var(--af-accent)]/15 flex items-center justify-center">
-                <Settings size={16} className="stroke-[var(--af-accent)]" />
+                <Settings size={16} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
               </div>
               <span className="text-base font-semibold">Configuración</span>
             </div>
             <button
+              aria-label="Cerrar"
               className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-all cursor-pointer border-none bg-transparent"
               onClick={onClose}
             >
-              <X size={18} />
+              <X size={18} aria-hidden="true"/>
             </button>
           </div>
 
@@ -110,7 +111,7 @@ export default function SettingsPanel() {
           <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-[var(--af-accent)]/15 flex items-center justify-center">
-                <Settings size={16} className="stroke-[var(--af-accent)]" />
+                <Settings size={16} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
               </div>
               <div>
                 <h2 className="text-lg font-bold">Configuración</h2>
@@ -118,10 +119,11 @@ export default function SettingsPanel() {
               </div>
             </div>
             <button
+              aria-label="Cerrar"
               className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-all cursor-pointer border-none bg-transparent"
               onClick={onClose}
             >
-              <X size={18} />
+              <X size={18} aria-hidden="true"/>
             </button>
           </div>
 
@@ -173,7 +175,7 @@ function AppearanceTab({ onThemeChange }: { onThemeChange?: () => void }) {
           className="w-full flex items-center justify-between p-4 rounded-xl border border-[var(--border)] bg-[var(--af-bg3)] cursor-pointer hover:bg-[var(--af-bg4)] transition-all active:scale-[0.98]"
         >
           <div className="flex items-center gap-3">
-            {isDark ? <Sun size={20} className="text-amber-400" /> : <Moon size={20} className="text-blue-400" />}
+            {isDark ? <Sun size={20} className="text-amber-400" aria-hidden="true"/> : <Moon size={20} className="text-blue-400" aria-hidden="true"/>}
             <div>
               <div className="text-sm font-medium">{isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}</div>
               <div className="text-[11px] text-[var(--muted-foreground)]">Tema actual: {THEME_REGISTRY.find(t => t.id === theme)?.label || theme}</div>
@@ -267,7 +269,7 @@ function ThemeCard({ themeDef, isActive, onSelect }: {
       {/* Check */}
       {isActive && (
         <div className="w-6 h-6 rounded-full bg-[var(--af-accent)] flex items-center justify-center flex-shrink-0">
-          <Check size={14} strokeWidth={3} className="text-background" />
+          <Check size={14} strokeWidth={3} className="text-background" aria-hidden="true"/>
         </div>
       )}
     </button>
@@ -324,7 +326,7 @@ function NotificationsTab() {
         <div className="p-4 bg-amber-500/5 border border-amber-500/20 rounded-xl">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-              <Bell size={18} className="text-amber-400" />
+              <Bell size={18} className="text-amber-400" aria-hidden="true"/>
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-[13px] font-medium">Notificaciones del sistema</div>
@@ -352,7 +354,7 @@ function NotificationsTab() {
           }`}
         >
           <div className="flex items-center gap-3">
-            {notifSound ? <Volume2 size={18} className="text-[var(--af-accent)]" /> : <VolumeX size={18} className="text-[var(--muted-foreground)]" />}
+            {notifSound ? <Volume2 size={18} className="text-[var(--af-accent)]" aria-hidden="true"/> : <VolumeX size={18} className="text-[var(--muted-foreground)]" aria-hidden="true"/>}
             <div className="text-sm font-medium">Sonido de notificaciones</div>
           </div>
           <div className={`w-12 h-7 rounded-full p-0.5 transition-colors ${notifSound ? 'bg-[var(--af-accent)]' : 'bg-[var(--af-bg4)]'}`}>
@@ -381,7 +383,7 @@ function NotificationsTab() {
                 <cat.Icon size={14} className={notifPrefs[cat.key] ? 'stroke-[var(--af-accent)]' : 'stroke-[var(--muted-foreground)]'} />
               </div>
               <span className="flex-1 text-left text-[13px] font-medium">{cat.label}</span>
-              {notifPrefs[cat.key] && <Check size={16} className="stroke-[var(--af-accent)]" strokeWidth={3} />}
+              {notifPrefs[cat.key] && <Check size={16} className="stroke-[var(--af-accent)]" strokeWidth={3} aria-hidden="true"/>}
             </button>
           ))}
         </div>
@@ -403,10 +405,10 @@ function NotificationsTab() {
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
               channelPrefs.whatsapp ? 'bg-green-500/15' : 'bg-[var(--af-bg4)]'
             }`}>
-              <MessageCircle size={14} className={channelPrefs.whatsapp ? 'stroke-green-400' : 'stroke-[var(--muted-foreground)]'} />
+              <MessageCircle size={14} className={channelPrefs.whatsapp ? 'stroke-green-400' : 'stroke-[var(--muted-foreground)]'} aria-hidden="true"/>
             </div>
             <span className="flex-1 text-left text-[13px] font-medium">WhatsApp</span>
-            {channelPrefs.whatsapp && <Check size={16} className="stroke-green-400" strokeWidth={3} />}
+            {channelPrefs.whatsapp && <Check size={16} className="stroke-green-400" strokeWidth={3} aria-hidden="true"/>}
           </button>
 
           <button
@@ -420,10 +422,10 @@ function NotificationsTab() {
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
               channelPrefs.email ? 'bg-blue-500/15' : 'bg-[var(--af-bg4)]'
             }`}>
-              <Mail size={14} className={channelPrefs.email ? 'stroke-blue-400' : 'stroke-[var(--muted-foreground)]'} />
+              <Mail size={14} className={channelPrefs.email ? 'stroke-blue-400' : 'stroke-[var(--muted-foreground)]'} aria-hidden="true"/>
             </div>
             <span className="flex-1 text-left text-[13px] font-medium">Correo electronico</span>
-            {channelPrefs.email && <Check size={16} className="stroke-blue-400" strokeWidth={3} />}
+            {channelPrefs.email && <Check size={16} className="stroke-blue-400" strokeWidth={3} aria-hidden="true"/>}
           </button>
 
           <button
@@ -441,12 +443,12 @@ function NotificationsTab() {
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
               channelPrefs.push ? 'bg-purple-500/15' : 'bg-[var(--af-bg4)]'
             }`}>
-              {pushRegistering ? <Loader size={14} className="animate-spin stroke-[var(--muted-foreground)]" /> : <Smartphone size={14} className={channelPrefs.push ? 'stroke-purple-400' : 'stroke-[var(--muted-foreground)]'} />}
+              {pushRegistering ? <Loader size={14} className="animate-spin stroke-[var(--muted-foreground)]" aria-hidden="true"/> : <Smartphone size={14} className={channelPrefs.push ? 'stroke-purple-400' : 'stroke-[var(--muted-foreground)]'} aria-hidden="true"/>}
             </div>
             <span className="flex-1 text-left text-[13px] font-medium">
               {pushRegistering ? 'Activando...' : 'Push notifications'}
             </span>
-            {channelPrefs.push && !pushRegistering && <Check size={16} className="stroke-purple-400" strokeWidth={3} />}
+            {channelPrefs.push && !pushRegistering && <Check size={16} className="stroke-purple-400" strokeWidth={3} aria-hidden="true"/>}
           </button>
 
           {!pushSupported && (
@@ -462,17 +464,17 @@ function NotificationsTab() {
       <div className="flex items-center gap-2 p-3 bg-[var(--af-bg3)] rounded-xl">
         {notifPermission === 'granted' ? (
           <>
-            <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0" />
+            <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0" aria-hidden="true"/>
             <span className="text-[12px] text-[var(--muted-foreground)]">Notificaciones del sistema activas</span>
           </>
         ) : notifPermission === 'denied' ? (
           <>
-            <XCircle size={16} className="text-red-400 flex-shrink-0" />
+            <XCircle size={16} className="text-red-400 flex-shrink-0" aria-hidden="true"/>
             <span className="text-[12px] text-[var(--muted-foreground)]">Notificaciones del sistema bloqueadas por el navegador</span>
           </>
         ) : (
           <>
-            <Bell size={16} className="text-amber-400 flex-shrink-0" />
+            <Bell size={16} className="text-amber-400 flex-shrink-0" aria-hidden="true"/>
             <span className="text-[12px] text-[var(--muted-foreground)]">Notificaciones del sistema sin activar</span>
           </>
         )}
@@ -509,14 +511,14 @@ function AccountTab({ onClose }: { onClose: () => void }) {
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[var(--af-accent)]/15 text-[var(--af-accent)]">{activeTenantRole || 'Miembro'}</span>
               {isEmailAdmin && (
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-red-500/15 text-red-400 flex items-center gap-0.5">
-                  <Crown size={8} /> SA
+                  <Crown size={8} aria-hidden="true"/> SA
                 </span>
               )}
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--border)]">
-          <Building2 size={12} className="text-[var(--muted-foreground)]" />
+          <Building2 size={12} className="text-[var(--muted-foreground)]" aria-hidden="true"/>
           <span className="text-[11px] text-[var(--muted-foreground)] truncate">{activeTenantName || 'Sin espacio'}</span>
         </div>
       </div>
@@ -530,13 +532,13 @@ function AccountTab({ onClose }: { onClose: () => void }) {
             className="w-full flex items-center gap-3 p-3 rounded-xl bg-[var(--af-bg3)] hover:bg-[var(--af-bg4)] cursor-pointer transition-all active:scale-[0.98] min-h-[48px] border-none text-left"
           >
             <div className="w-8 h-8 rounded-lg bg-[var(--af-accent)]/10 flex items-center justify-center flex-shrink-0">
-              <User size={14} className="stroke-[var(--af-accent)]" />
+              <User size={14} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-[13px] font-medium">Mi Perfil</div>
               <div className="text-[11px] text-[var(--muted-foreground)]">Nombre, foto, informacion personal</div>
             </div>
-            <ChevronRight size={16} className="text-[var(--muted-foreground)] flex-shrink-0" />
+            <ChevronRight size={16} className="text-[var(--muted-foreground)] flex-shrink-0" aria-hidden="true"/>
           </button>
 
           <button
@@ -544,13 +546,13 @@ function AccountTab({ onClose }: { onClose: () => void }) {
             className="w-full flex items-center gap-3 p-3 rounded-xl bg-[var(--af-bg3)] hover:bg-[var(--af-bg4)] cursor-pointer transition-all active:scale-[0.98] min-h-[48px] border-none text-left"
           >
             <div className="w-8 h-8 rounded-lg bg-[var(--af-accent)]/10 flex items-center justify-center flex-shrink-0">
-              <Shield size={14} className="stroke-[var(--af-accent)]" />
+              <Shield size={14} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-[13px] font-medium">Permisos y Roles</div>
               <div className="text-[11px] text-[var(--muted-foreground)]">Gestionar permisos del equipo</div>
             </div>
-            <ChevronRight size={16} className="text-[var(--muted-foreground)] flex-shrink-0" />
+            <ChevronRight size={16} className="text-[var(--muted-foreground)] flex-shrink-0" aria-hidden="true"/>
           </button>
 
           <button
@@ -558,13 +560,13 @@ function AccountTab({ onClose }: { onClose: () => void }) {
             className="w-full flex items-center gap-3 p-3 rounded-xl bg-[var(--af-bg3)] hover:bg-[var(--af-bg4)] cursor-pointer transition-all active:scale-[0.98] min-h-[48px] border-none text-left"
           >
             <div className="w-8 h-8 rounded-lg bg-[var(--af-accent)]/10 flex items-center justify-center flex-shrink-0">
-              <Building2 size={14} className="stroke-[var(--af-accent)]" />
+              <Building2 size={14} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-[13px] font-medium">Cambiar espacio</div>
               <div className="text-[11px] text-[var(--muted-foreground)]">Seleccionar otro workspace</div>
             </div>
-            <ChevronRight size={16} className="text-[var(--muted-foreground)] flex-shrink-0" />
+            <ChevronRight size={16} className="text-[var(--muted-foreground)] flex-shrink-0" aria-hidden="true"/>
           </button>
         </div>
       </div>
@@ -575,7 +577,7 @@ function AccountTab({ onClose }: { onClose: () => void }) {
           onClick={() => { doLogout(); onClose(); }}
           className="w-full flex items-center justify-center gap-2 p-3.5 rounded-xl bg-red-500/5 border border-red-500/20 hover:bg-red-500/10 cursor-pointer transition-all active:scale-[0.98] min-h-[48px]"
         >
-          <LogOut size={16} className="text-red-400" />
+          <LogOut size={16} className="text-red-400" aria-hidden="true"/>
           <span className="text-[13px] font-medium text-red-400">Cerrar sesion</span>
         </button>
       </div>

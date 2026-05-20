@@ -26,7 +26,7 @@ export default function DashboardWeeklyAgenda({
       {/* Header */}
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="flex items-center gap-2">
-          <CalendarDays size={18} className="text-[var(--af-accent)]" />
+          <CalendarDays size={18} className="text-[var(--af-accent)]" aria-hidden="true"/>
           <h3 className="text-[14px] sm:text-[15px] font-semibold">Agenda Semanal</h3>
           <span className="text-[11px] text-[var(--muted-foreground)] hidden sm:inline">{agendaWeekLabel}</span>
         </div>
@@ -34,7 +34,7 @@ export default function DashboardWeeklyAgenda({
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer border border-[var(--border)] bg-[var(--af-bg3)] text-[var(--foreground)] hover:bg-[var(--accent)] transition-colors"
           onClick={() => navigateTo('weeklyAgenda')}
         >
-          Ver agenda completa <ChevronRight size={12} />
+          Ver agenda completa <ChevronRight size={12} aria-hidden="true"/>
         </button>
       </div>
 
@@ -163,14 +163,14 @@ export default function DashboardWeeklyAgenda({
 
                           {/* Time range */}
                           <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
-                            <Clock className="w-2.5 h-2.5" />
+                            <Clock className="w-2.5 h-2.5" aria-hidden="true"/>
                             <span>{agendaFormatHourRange(meta.hourSlots)}</span>
                           </div>
 
                           {/* Project */}
                           {task.data.projectId && (
                             <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
-                              <FolderKanban className="w-2.5 h-2.5" />
+                              <FolderKanban className="w-2.5 h-2.5" aria-hidden="true"/>
                               <span className="truncate">{agendaProjectMap[task.data.projectId] || '—'}</span>
                             </div>
                           )}
@@ -188,7 +188,7 @@ export default function DashboardWeeklyAgenda({
       {/* Empty state */}
       {agendaTasks.length === 0 && (
         <div className="text-center py-6 text-[var(--af-text3)]">
-          <CalendarDays className="w-8 h-8 mx-auto mb-2 opacity-30" />
+          <CalendarDays className="w-8 h-8 mx-auto mb-2 opacity-30" aria-hidden="true"/>
           <div className="text-sm">Sin actividades en la agenda</div>
           <div className="text-[11px] text-[var(--muted-foreground)] mt-1">Ve a la agenda semanal para crear actividades</div>
         </div>

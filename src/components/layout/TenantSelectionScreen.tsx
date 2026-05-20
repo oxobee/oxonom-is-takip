@@ -193,7 +193,7 @@ export default function TenantSelectionScreen() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-14 h-14 bg-gradient-to-br from-[var(--af-accent)] to-[var(--af-accent2)] rounded-2xl shadow-lg af-glow-accent flex items-center justify-center mx-auto mb-4">
-            <Building2 size={28} className="stroke-background" />
+            <Building2 size={28} className="stroke-background" aria-hidden="true"/>
           </div>
           <h1 className="text-2xl font-bold af-heading">Bienvenido, {userName.split(' ')[0]}</h1>
           <p className="text-sm text-[var(--muted-foreground)] mt-2">
@@ -220,14 +220,14 @@ export default function TenantSelectionScreen() {
                   className="w-full af-card bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 flex items-center gap-4 cursor-pointer hover:border-[var(--af-accent)]/40 transition-all group text-left"
                 >
                   <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-all ${isSuperAdmin ? 'bg-gradient-to-br from-[var(--af-accent)]/30 to-amber-500/20' : 'bg-gradient-to-br from-[var(--af-accent)]/20 to-[var(--af-accent2)]/10'} group-hover:from-[var(--af-accent)]/30 group-hover:to-[var(--af-accent2)]/20`}>
-                    <Building2 size={20} className="stroke-[var(--af-accent)]" />
+                    <Building2 size={20} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-sm truncate flex items-center gap-2">
                       {t.name}
                       {isSuperAdmin && (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-gradient-to-r from-[var(--af-accent)] to-amber-500 text-background px-1.5 py-0.5 rounded-md flex-shrink-0">
-                          <Crown size={10} />
+                          <Crown size={10} aria-hidden="true"/>
                           SUPER ADMIN
                         </span>
                       )}
@@ -235,7 +235,7 @@ export default function TenantSelectionScreen() {
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[11px] text-[var(--muted-foreground)] font-mono bg-[var(--af-bg3)] px-2 py-0.5 rounded-md">{t.code}</span>
                       <span className="text-[11px] text-[var(--muted-foreground)] flex items-center gap-1">
-                        <Users size={10} />
+                        <Users size={10} aria-hidden="true"/>
                         {t.members?.length || 1} miembro{(t.members?.length || 1) !== 1 ? 's' : ''}
                       </span>
                     </div>
@@ -247,12 +247,12 @@ export default function TenantSelectionScreen() {
                       title="Copiar código de invitación"
                     >
                       {copiedCode === t.code ? (
-                        <Check size={14} className="stroke-emerald-400" />
+                        <Check size={14} className="stroke-emerald-400" aria-hidden="true"/>
                       ) : (
-                        <Copy size={14} className="stroke-[var(--muted-foreground)]" />
+                        <Copy size={14} className="stroke-[var(--muted-foreground)]" aria-hidden="true"/>
                       )}
                     </button>
-                    <ArrowRight size={18} className="stroke-[var(--muted-foreground)] group-hover:stroke-[var(--af-accent)] group-hover:translate-x-0.5 transition-all" />
+                    <ArrowRight size={18} className="stroke-[var(--muted-foreground)] group-hover:stroke-[var(--af-accent)] group-hover:translate-x-0.5 transition-all" aria-hidden="true"/>
                   </div>
                 </button>
               );
@@ -267,14 +267,14 @@ export default function TenantSelectionScreen() {
               onClick={() => setShowCreate(true)}
               className="w-full af-btn-primary flex items-center justify-center gap-2.5 py-3 rounded-xl text-sm font-semibold cursor-pointer transition-all border-none"
             >
-              <Plus size={18} className="stroke-current" strokeWidth={2.5} />
+              <Plus size={18} className="stroke-current" strokeWidth={2.5} aria-hidden="true"/>
               {tenants.length === 0 ? 'Crear mi espacio de trabajo' : 'Crear nuevo espacio'}
             </button>
             <button
               onClick={() => setShowJoin(true)}
               className="w-full af-btn-secondary flex items-center justify-center gap-2.5 py-3 rounded-xl text-sm font-semibold cursor-pointer transition-all"
             >
-              <Sparkles size={16} className="stroke-current" />
+              <Sparkles size={16} className="stroke-current" aria-hidden="true"/>
               Unirme con un código
             </button>
           </div>
@@ -295,7 +295,7 @@ export default function TenantSelectionScreen() {
 
             {/* Super Admin info */}
             <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-gradient-to-r from-[var(--af-accent)]/10 via-amber-500/5 to-transparent border border-[var(--af-accent)]/20 mb-4">
-              <Crown size={16} className="stroke-[var(--af-accent)] flex-shrink-0" />
+              <Crown size={16} className="stroke-[var(--af-accent)] flex-shrink-0" aria-hidden="true"/>
               <div>
                 <div className="text-xs font-semibold">Serás Super Admin</div>
                 <div className="text-[11px] text-[var(--muted-foreground)]">Tendrás control total del espacio. Comparte el código para invitar miembros.</div>
@@ -310,11 +310,11 @@ export default function TenantSelectionScreen() {
                   className={`w-full flex items-start gap-3 px-3.5 py-3 rounded-lg border transition-all text-left cursor-pointer ${migrateExisting ? 'bg-[var(--af-accent)]/10 border-[var(--af-accent)]/30' : 'bg-[var(--af-bg3)] border-[var(--border)]'}`}
                 >
                   <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${migrateExisting ? 'bg-[var(--af-accent)] border-[var(--af-accent)]' : 'border-[var(--muted-foreground)]'}`}>
-                    {migrateExisting && <Check size={12} className="stroke-background" strokeWidth={3} />}
+                    {migrateExisting && <Check size={12} className="stroke-background" strokeWidth={3} aria-hidden="true"/>}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <Database size={14} className={`flex-shrink-0 ${migrateExisting ? 'stroke-[var(--af-accent)]' : 'stroke-[var(--muted-foreground)]'}`} />
+                      <Database size={14} className={`flex-shrink-0 ${migrateExisting ? 'stroke-[var(--af-accent)]' : 'stroke-[var(--muted-foreground)]'}`} aria-hidden="true"/>
                       <span className="text-xs font-semibold">Migrar datos existentes</span>
                     </div>
                     <p className="text-[11px] text-[var(--muted-foreground)] mt-1 leading-relaxed">
@@ -344,7 +344,7 @@ export default function TenantSelectionScreen() {
               {creating ? (
                 <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
               ) : (
-                <Shield size={16} className="stroke-current" />
+                <Shield size={16} className="stroke-current" aria-hidden="true"/>
               )}
               {creating ? 'Creando...' : 'Crear espacio como Super Admin'}
             </button>
@@ -366,7 +366,7 @@ export default function TenantSelectionScreen() {
 
             {/* Member info */}
             <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] mb-4">
-              <UserCheck size={16} className="stroke-[var(--af-accent)] flex-shrink-0" />
+              <UserCheck size={16} className="stroke-[var(--af-accent)] flex-shrink-0" aria-hidden="true"/>
               <div>
                 <div className="text-xs font-semibold">Entrarás como Miembro</div>
                 <div className="text-[11px] text-[var(--muted-foreground)]">Podrás ver y colaborar en los proyectos del espacio.</div>
@@ -397,7 +397,7 @@ export default function TenantSelectionScreen() {
               {joining ? (
                 <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
               ) : (
-                <Sparkles size={16} className="stroke-current" />
+                <Sparkles size={16} className="stroke-current" aria-hidden="true"/>
               )}
               {joining ? 'Uniéndome...' : 'Unirme al espacio'}
             </button>

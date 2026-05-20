@@ -47,7 +47,7 @@ export default function ProjectTimelineView({ projects, getHealth, onOpenProject
   if (projects.length === 0) {
     return (
       <div className="text-center py-12 text-[var(--af-text3)] text-sm">
-        <GanttChart size={32} className="mx-auto mb-2 opacity-30" />
+        <GanttChart size={32} className="mx-auto mb-2 opacity-30" aria-hidden="true"/>
         No hay proyectos con fechas para mostrar en el timeline
       </div>
     );
@@ -58,7 +58,7 @@ export default function ProjectTimelineView({ projects, getHealth, onOpenProject
       {/* Timeline header */}
       <div className="border-b border-[var(--border)] px-4 py-3">
         <div className="text-[15px] font-semibold flex items-center gap-2">
-          <GanttChart size={16} className="text-[var(--af-accent)]" />
+          <GanttChart size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
           Timeline de Proyectos
         </div>
       </div>

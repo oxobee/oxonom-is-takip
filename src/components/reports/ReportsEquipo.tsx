@@ -28,10 +28,10 @@ export default function ReportsEquipo({ teamUsers, tasks, timeEntries, showToast
     {/* Export buttons */}
     <div className="flex items-center gap-2 justify-end">
       <button className="flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer border border-[var(--border)] hover:border-[var(--af-accent)]/30 transition-colors" onClick={() => { try { exportTeamPDF({ teamUsers, tasks, timeEntries }); showToast('Reporte PDF descargado'); } catch { showToast('Error al generar PDF', 'error'); } }}>
-        <FileText size={12} /> PDF
+        <FileText size={12} aria-hidden="true"/> PDF
       </button>
       <button className="flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer border border-[var(--border)] hover:border-[var(--af-accent)]/30 transition-colors" onClick={() => { try { exportTeamExcel(teamUsers, tasks, timeEntries); showToast('Reporte Excel descargado'); } catch { showToast('Error al generar Excel', 'error'); } }}>
-        <Download size={12} /> Excel
+        <Download size={12} aria-hidden="true"/> Excel
       </button>
     </div>
 

@@ -21,12 +21,12 @@ export default function DashboardAgendaToday({
     <div className="lg:col-span-3 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5">
       <div className="flex items-center justify-between mb-3">
         <div className="text-[14px] sm:text-[15px] font-semibold flex items-center gap-2">
-          <CalendarDays size={16} className="text-[var(--af-accent)]" />
+          <CalendarDays size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
           Agenda de Hoy
           <button className="text-[10px] text-[var(--af-accent)] cursor-pointer hover:underline ml-1" onClick={() => navigateTo('weeklyAgenda')}>Ver agenda completa →</button>
         </div>
         <button className="text-[10px] text-[var(--af-accent)] cursor-pointer hover:underline flex items-center gap-1" onClick={() => navigateTo('calendar')}>
-          Calendario <ChevronRight size={12} />
+          Calendario <ChevronRight size={12} aria-hidden="true"/>
         </button>
       </div>
 
@@ -42,7 +42,7 @@ export default function DashboardAgendaToday({
           {overdueCount > 0 && (
             <div className="mb-1">
               <div className="text-[10px] font-semibold text-red-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                <AlertTriangle size={10} /> {overdueCount} vencida{overdueCount !== 1 ? 's' : ''}
+                <AlertTriangle size={10} aria-hidden="true"/> {overdueCount} vencida{overdueCount !== 1 ? 's' : ''}
               </div>
               <div className="space-y-1">
                 {overdueTasks.slice(0, 4).map((t: Task) => {
@@ -68,7 +68,7 @@ export default function DashboardAgendaToday({
           {todayMeetings.length > 0 && (
             <div className="mb-1">
               <div className="text-[10px] font-semibold text-purple-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                <CalendarDays size={10} /> {todayMeetings.length} reunión{todayMeetings.length !== 1 ? 'es' : ''}
+                <CalendarDays size={10} aria-hidden="true"/> {todayMeetings.length} reunión{todayMeetings.length !== 1 ? 'es' : ''}
               </div>
               <div className="space-y-1">
                 {todayMeetings.map((m: Meeting) => {
@@ -94,7 +94,7 @@ export default function DashboardAgendaToday({
           {todayDueTasks.length > 0 && (
             <div>
               <div className="text-[10px] font-semibold text-amber-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                <Timer size={10} /> {todayDueTasks.length} vence{todayDueTasks.length !== 1 ? 'n' : ''} hoy
+                <Timer size={10} aria-hidden="true"/> {todayDueTasks.length} vence{todayDueTasks.length !== 1 ? 'n' : ''} hoy
               </div>
               <div className="space-y-1">
                 {todayDueTasks.map((t: Task) => {

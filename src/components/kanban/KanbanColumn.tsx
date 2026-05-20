@@ -140,10 +140,11 @@ export default function KanbanColumn({
             />
             <div className="flex items-center justify-end gap-1">
               <button
+                aria-label="Cancelar"
                 onClick={() => { setIsAdding(false); setNewCardTitle(''); }}
                 className="p-1 rounded-md hover:bg-[var(--af-bg4)] text-[var(--muted-foreground)] transition-colors bg-transparent border-none cursor-pointer"
               >
-                <X size={14} />
+                <X size={14} aria-hidden="true"/>
               </button>
               <button
                 onClick={handleQuickAdd}
@@ -159,7 +160,7 @@ export default function KanbanColumn({
             onClick={handleAddClick}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-[12px] text-[var(--muted-foreground)] hover:bg-[var(--af-bg3)] hover:text-[var(--foreground)] transition-all cursor-pointer border-none bg-transparent"
           >
-            <Plus size={14} />
+            <Plus size={14} aria-hidden="true"/>
             <span>Agregar tarjeta</span>
           </button>
         )}

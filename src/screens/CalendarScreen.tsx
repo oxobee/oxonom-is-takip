@@ -59,12 +59,12 @@ export default function CalendarScreen() {
               {/* Calendar Header */}
               <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                 <div className="flex items-center gap-2">
-                  <button className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={prevMonth}>
-                    <ChevronLeft size={16} className="text-[var(--muted-foreground)]" />
+                  <button aria-label="Mes anterior" className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={prevMonth}>
+                    <ChevronLeft size={16} className="text-[var(--muted-foreground)]" aria-hidden="true"/>
                   </button>
                   <div className="text-[15px] font-semibold min-w-[120px] sm:min-w-[160px] text-center">{MESES[calMonth]} {calYear}</div>
-                  <button className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={nextMonth}>
-                    <ChevronRight size={16} className="text-[var(--muted-foreground)]" />
+                  <button aria-label="Mes siguiente" className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={nextMonth}>
+                    <ChevronRight size={16} className="text-[var(--muted-foreground)]" aria-hidden="true"/>
                   </button>
                 </div>
                 <div className="flex items-center gap-2">

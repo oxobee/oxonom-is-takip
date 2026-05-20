@@ -47,7 +47,7 @@ export default function AdminScreen() {
           <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
             <div>
               <h2 className="text-lg font-semibold flex items-center gap-2">
-                <ShieldCheck size={20} className="text-[var(--af-accent)]" />
+                <ShieldCheck size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
                 Panel Admin
               </h2>
               <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Gestión administrativa del equipo</p>
@@ -409,15 +409,15 @@ export default function AdminScreen() {
                       title="Eliminar del equipo"
                     >
                       {deleting ? (
-                        <Loader2 size={14} className="animate-spin" />
+                        <Loader2 size={14} className="animate-spin" aria-hidden="true"/>
                       ) : (
-                        <Trash2 size={14} />
+                        <Trash2 size={14} aria-hidden="true"/>
                       )}
                     </button>
                   )}
                   {isSelf && (
                     <div className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-[var(--card)] text-[var(--muted-foreground)] flex items-center justify-center" title="No puedes eliminarte a ti mismo">
-                      <Shield size={14} />
+                      <Shield size={14} aria-hidden="true"/>
                     </div>
                   )}
                   <div className="flex items-center gap-3 mb-3">

@@ -27,7 +27,7 @@ export default function InventoryMovements({
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h3 className="text-lg font-semibold">📋 Movimientos ({invMovements.length})</h3>
-        <button className="px-4 py-2 rounded-lg text-[13px] font-semibold cursor-pointer bg-emerald-600 text-white border-none hover:bg-emerald-700 transition-colors flex items-center gap-2 self-start" onClick={() => { setEditingId(null); setForms((p: any) => ({ ...p, invMovProduct: '', invMovType: 'Entrada', invMovWarehouse: 'Almacén Principal', invMovQty: '', invMovReason: '', invMovRef: '', invMovDate: '' })); openModal('invMovement'); }}><Plus size={16} className="stroke-current" />Registrar movimiento</button>
+        <button className="px-4 py-2 rounded-lg text-[13px] font-semibold cursor-pointer bg-emerald-600 text-white border-none hover:bg-emerald-700 transition-colors flex items-center gap-2 self-start" onClick={() => { setEditingId(null); setForms((p: any) => ({ ...p, invMovProduct: '', invMovType: 'Entrada', invMovWarehouse: 'Almacén Principal', invMovQty: '', invMovReason: '', invMovRef: '', invMovDate: '' })); openModal('invMovement'); }}><Plus size={16} className="stroke-current" aria-hidden="true"/>Registrar movimiento</button>
       </div>
       <div className="flex gap-2">
         <select className="flex-1 bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none" value={invMovFilterType} onChange={e => setInvMovFilterType(e.target.value)}><option value="all">Todos</option><option value="Entrada">Entradas</option><option value="Salida">Salidas</option></select>
@@ -57,14 +57,14 @@ export default function InventoryMovements({
                 {/* Desktop: quantity + delete */}
                 <div className="hidden md:flex items-center gap-2">
                   <div className="text-right"><div className={`text-sm font-bold ${m.data.type === 'Entrada' ? 'text-emerald-400' : 'text-red-400'}`}>{m.data.type === 'Entrada' ? '+' : '-'}{m.data.quantity}</div><div className="text-[10px] text-[var(--muted-foreground)]">{m.data.date || ''}</div></div>
-                  <button className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar movimiento', description: '¿Estás seguro?' })) deleteInvMovement(m.id); }}><Trash2 size={14} className="stroke-current" /></button>
+                  <button aria-label="Eliminar" className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar movimiento', description: '¿Estás seguro?' })) deleteInvMovement(m.id); }}><Trash2 size={14} className="stroke-current" aria-hidden="true"/></button>
                 </div>
                 {/* Mobile: quantity + OverflowMenu */}
                 <div className="md:hidden flex items-center gap-2">
                   <div className="text-right"><div className={`text-sm font-bold ${m.data.type === 'Entrada' ? 'text-emerald-400' : 'text-red-400'}`}>{m.data.type === 'Entrada' ? '+' : '-'}{m.data.quantity}</div><div className="text-[10px] text-[var(--muted-foreground)]">{m.data.date || ''}</div></div>
                   <OverflowMenu
                     actions={[
-                      { label: 'Eliminar movimiento', icon: <Trash2 size={14} />, onClick: async () => { if (await confirm({ title: 'Eliminar movimiento', description: '¿Estás seguro?' })) deleteInvMovement(m.id); }, variant: 'danger' },
+                      { label: 'Eliminar movimiento', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirm({ title: 'Eliminar movimiento', description: '¿Estás seguro?' })) deleteInvMovement(m.id); }, variant: 'danger' },
                     ]}
                     side="left"
                     align="end"

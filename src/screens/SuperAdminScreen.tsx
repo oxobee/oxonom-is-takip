@@ -77,7 +77,7 @@ export default function SuperAdminScreen() {
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-amber-500 flex items-center justify-center shadow-lg">
-            <Shield size={20} className="text-white" />
+            <Shield size={20} className="text-white" aria-hidden="true"/>
           </div>
           <div>
             <h2 className="text-lg font-semibold">Super Admin</h2>
@@ -86,17 +86,17 @@ export default function SuperAdminScreen() {
         </div>
         <div className="ml-auto flex items-center gap-2">
           <span className="text-[10px] px-2 py-1 rounded-full bg-red-500/10 text-red-400 border border-red-500/20 font-semibold">SUPER ADMIN</span>
-          {loading && <Loader2 size={16} className="animate-spin text-[var(--af-accent)]" />}
+          {loading && <Loader2 size={16} className="animate-spin text-[var(--af-accent)]" aria-hidden="true"/>}
         </div>
       </div>
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 overflow-x-auto pb-1">
         {([
-          { id: 'dashboard' as SuperAdminTab, icon: <BarChart3 size={14} />, label: 'Dashboard' },
-          { id: 'tenants' as SuperAdminTab, icon: <Building2 size={14} />, label: 'Tenants' },
-          { id: 'users' as SuperAdminTab, icon: <Users size={14} />, label: 'Usuarios' },
-          { id: 'tools' as SuperAdminTab, icon: <Settings size={14} />, label: 'Herramientas' },
+          { id: 'dashboard' as SuperAdminTab, icon: <BarChart3 size={14} aria-hidden="true"/>, label: 'Dashboard' },
+          { id: 'tenants' as SuperAdminTab, icon: <Building2 size={14} aria-hidden="true"/>, label: 'Tenants' },
+          { id: 'users' as SuperAdminTab, icon: <Users size={14} aria-hidden="true"/>, label: 'Usuarios' },
+          { id: 'tools' as SuperAdminTab, icon: <Settings size={14} aria-hidden="true"/>, label: 'Herramientas' },
         ]).map(t => (
           <button
             key={t.id}
@@ -111,8 +111,8 @@ export default function SuperAdminScreen() {
       {/* Error banner */}
       {error && (
         <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 text-red-400 text-xs">
-          <AlertTriangle size={14} /> {error}
-          <button className="ml-auto hover:text-red-300" onClick={() => setError('')}><XCircle size={14} /></button>
+          <AlertTriangle size={14} aria-hidden="true"/> {error}
+          <button className="ml-auto hover:text-red-300" onClick={() => setError('')}><XCircle size={14} aria-hidden="true"/></button>
         </div>
       )}
 
@@ -157,12 +157,12 @@ function DashboardTab({ handleAction, showToast, setLoading }: { handleAction: a
   }
 
   const statCards = [
-    { label: 'Tenants', value: stats.totalTenants, icon: <Building2 size={18} />, color: 'text-blue-400' },
-    { label: 'Usuarios', value: stats.totalUsers, icon: <Users size={18} />, color: 'text-emerald-400' },
-    { label: 'Proyectos', value: stats.totalProjects, icon: <Activity size={18} />, color: 'text-amber-400' },
-    { label: 'Tareas', value: stats.totalTasks, icon: <CheckCircle2 size={18} />, color: 'text-purple-400' },
-    { label: 'Gastos', value: stats.totalExpenses, icon: <Database size={18} />, color: 'text-red-400' },
-    { label: 'Reuniones', value: stats.totalMeetings, icon: <Globe size={18} />, color: 'text-cyan-400' },
+    { label: 'Tenants', value: stats.totalTenants, icon: <Building2 size={18} aria-hidden="true"/>, color: 'text-blue-400' },
+    { label: 'Usuarios', value: stats.totalUsers, icon: <Users size={18} aria-hidden="true"/>, color: 'text-emerald-400' },
+    { label: 'Proyectos', value: stats.totalProjects, icon: <Activity size={18} aria-hidden="true"/>, color: 'text-amber-400' },
+    { label: 'Tareas', value: stats.totalTasks, icon: <CheckCircle2 size={18} aria-hidden="true"/>, color: 'text-purple-400' },
+    { label: 'Gastos', value: stats.totalExpenses, icon: <Database size={18} aria-hidden="true"/>, color: 'text-red-400' },
+    { label: 'Reuniones', value: stats.totalMeetings, icon: <Globe size={18} aria-hidden="true"/>, color: 'text-cyan-400' },
   ];
 
   return (
@@ -177,7 +177,7 @@ function DashboardTab({ handleAction, showToast, setLoading }: { handleAction: a
           onClick={loadDashboard}
           disabled={refreshing}
         >
-          <RefreshCw size={12} className={refreshing ? 'animate-spin' : ''} /> Actualizar
+          <RefreshCw size={12} className={refreshing ? 'animate-spin' : ''} aria-hidden="true"/> Actualizar
         </button>
       </div>
 
@@ -196,7 +196,7 @@ function DashboardTab({ handleAction, showToast, setLoading }: { handleAction: a
       {stats.orphanUsersCount > 0 && (
         <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle size={16} className="text-amber-400" />
+            <AlertTriangle size={16} className="text-amber-400" aria-hidden="true"/>
             <span className="text-sm font-semibold text-amber-400">Usuarios sin Tenant ({stats.orphanUsersCount})</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -221,7 +221,7 @@ function DashboardTab({ handleAction, showToast, setLoading }: { handleAction: a
           {stats.tenantSummaries.map((t: any, i: number) => (
             <div key={i} className="flex items-center gap-3 bg-[var(--card)] rounded-lg p-3 border border-[var(--border)]">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--af-accent)] to-[var(--af-accent2)] flex items-center justify-center flex-shrink-0">
-                <Building2 size={14} className="text-background" />
+                <Building2 size={14} className="text-background" aria-hidden="true"/>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-semibold truncate">{t.name}</div>
@@ -331,7 +331,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
       {/* Actions bar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" aria-hidden="true"/>
           <input
             type="text"
             placeholder="Buscar tenant por nombre o código..."
@@ -345,13 +345,13 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer bg-[var(--af-bg3)] border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-all"
             onClick={loadTenants}
           >
-            <RefreshCw size={12} /> Actualizar
+            <RefreshCw size={12} aria-hidden="true"/> Actualizar
           </button>
           <button
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer bg-[var(--af-accent)] text-background hover:bg-[var(--af-accent2)] transition-all"
             onClick={() => setShowCreateForm(!showCreateForm)}
           >
-            <PlusCircle size={12} /> Nuevo Tenant
+            <PlusCircle size={12} aria-hidden="true"/> Nuevo Tenant
           </button>
         </div>
       </div>
@@ -359,7 +359,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
       {/* Create form */}
       {showCreateForm && (
         <div className="bg-[var(--af-bg3)] rounded-xl border border-[var(--border)] p-4 space-y-3">
-          <h4 className="text-sm font-semibold flex items-center gap-2"><PlusCircle size={14} className="text-[var(--af-accent)]" /> Crear Nuevo Tenant</h4>
+          <h4 className="text-sm font-semibold flex items-center gap-2"><PlusCircle size={14} className="text-[var(--af-accent)]" aria-hidden="true"/> Crear Nuevo Tenant</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] text-[var(--muted-foreground)] uppercase tracking-wide font-semibold block mb-1">Nombre *</label>
@@ -409,7 +409,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
             {/* Tenant header */}
             <div className="flex items-center gap-3 p-4">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--af-accent)] to-[var(--af-accent2)] flex items-center justify-center flex-shrink-0">
-                <Building2 size={18} className="text-background" />
+                <Building2 size={18} className="text-background" aria-hidden="true"/>
               </div>
               <div className="flex-1 min-w-0">
                 {editingTenantId === t.id ? (
@@ -447,19 +447,19 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
               {/* Actions */}
               <div className="flex items-center gap-1 flex-shrink-0">
                 <button onClick={() => setExpandedTenant(expandedTenant === t.id ? null : t.id)} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" title="Ver miembros">
-                  {expandedTenant === t.id ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  {expandedTenant === t.id ? <ChevronUp size={14} aria-hidden="true"/> : <ChevronDown size={14} aria-hidden="true"/>}
                 </button>
                 <button onClick={() => viewTenantDetail(t.id)} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-blue-500/10 text-blue-400 transition-colors" title="Ver detalle">
-                  <Eye size={14} />
+                  <Eye size={14} aria-hidden="true"/>
                 </button>
                 <button onClick={() => { setEditingTenantId(t.id); setEditName(t.name); setEditCode(t.code); }} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-amber-500/10 text-amber-400 transition-colors" title="Editar">
-                  <Edit3 size={14} />
+                  <Edit3 size={14} aria-hidden="true"/>
                 </button>
                 <button onClick={() => regenerateCode(t.id)} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-purple-500/10 text-purple-400 transition-colors" title="Regenerar código">
-                  <Key size={14} />
+                  <Key size={14} aria-hidden="true"/>
                 </button>
                 <button onClick={() => deleteTenant(t.id, t.name)} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-red-500/10 text-red-400 transition-colors" title="Eliminar">
-                  <Trash2 size={14} />
+                  <Trash2 size={14} aria-hidden="true"/>
                 </button>
               </div>
             </div>
@@ -477,7 +477,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-medium truncate flex items-center gap-1">
                           {m.name}
-                          {m.isCreator && <Crown size={10} className="text-amber-400" />}
+                          {m.isCreator && <Crown size={10} className="text-amber-400" aria-hidden="true"/>}
                         </div>
                         <div className="text-[10px] text-[var(--muted-foreground)] truncate">{m.email}</div>
                       </div>
@@ -504,7 +504,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
                     <h3 className="text-lg font-bold">{detailData.name}</h3>
                     <p className="text-xs text-[var(--muted-foreground)]">Codigo: {detailData.code} · {detailData.membersResolved.length} miembros</p>
                   </div>
-                  <button onClick={() => { setShowDetail(null); setDetailData(null); }} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)]"><XCircle size={16} /></button>
+                  <button onClick={() => { setShowDetail(null); setDetailData(null); }} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)]"><XCircle size={16} aria-hidden="true"/></button>
                 </div>
                 <div className="p-5 space-y-4">
                   {/* Collection stats */}
@@ -527,7 +527,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
                             {m.photoURL ? <img src={m.photoURL} alt="" className="w-full h-full object-cover" /> : getInitials(m.name)}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-xs font-semibold truncate flex items-center gap-1">{m.name}{m.isCreator && <Crown size={10} className="text-amber-400" />}</div>
+                            <div className="text-xs font-semibold truncate flex items-center gap-1">{m.name}{m.isCreator && <Crown size={10} className="text-amber-400" aria-hidden="true"/>}</div>
                             <div className="text-[10px] text-[var(--muted-foreground)] truncate">{m.email}</div>
                           </div>
                           <span className={`text-[9px] px-2 py-0.5 rounded-full border ${ROLE_COLORS[m.role] || ROLE_COLORS['Miembro']}`}>{m.role}</span>
@@ -639,7 +639,7 @@ function UsersTab({ handleAction, showToast, setLoading }: { handleAction: any; 
       {/* Actions bar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" aria-hidden="true"/>
           <input
             type="text"
             placeholder="Buscar por nombre o email..."
@@ -658,7 +658,7 @@ function UsersTab({ handleAction, showToast, setLoading }: { handleAction: any; 
             {USER_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
           <button onClick={loadUsers} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer bg-[var(--af-bg3)] border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-all">
-            <RefreshCw size={12} /> Actualizar
+            <RefreshCw size={12} aria-hidden="true"/> Actualizar
           </button>
         </div>
       </div>
@@ -734,7 +734,7 @@ function UsersTab({ handleAction, showToast, setLoading }: { handleAction: any; 
                     className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-red-500/10 text-red-400 transition-colors"
                     title="Eliminar usuario"
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={14} aria-hidden="true"/>
                   </button>
                 </div>
               )}
@@ -807,7 +807,7 @@ function ToolsTab({ handleAction, showToast, setLoading }: { handleAction: any; 
 
       {/* Add User to Tenant */}
       <div className="bg-[var(--af-bg3)] rounded-xl border border-[var(--border)] p-4">
-        <h4 className="text-sm font-semibold mb-3 flex items-center gap-2"><UserPlus size={14} className="text-emerald-400" /> Agregar Usuario a Tenant</h4>
+        <h4 className="text-sm font-semibold mb-3 flex items-center gap-2"><UserPlus size={14} className="text-emerald-400" aria-hidden="true"/> Agregar Usuario a Tenant</h4>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <select value={addUserState.tenantId} onChange={e => setAddUserState(p => ({ ...p, tenantId: e.target.value }))} className="px-3 py-2 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs outline-none cursor-pointer">
             <option value="">Seleccionar Tenant...</option>
@@ -823,7 +823,7 @@ function ToolsTab({ handleAction, showToast, setLoading }: { handleAction: any; 
 
       {/* Remove User from Tenant */}
       <div className="bg-[var(--af-bg3)] rounded-xl border border-[var(--border)] p-4">
-        <h4 className="text-sm font-semibold mb-3 flex items-center gap-2"><UserMinus size={14} className="text-red-400" /> Remover Usuario de Tenant</h4>
+        <h4 className="text-sm font-semibold mb-3 flex items-center gap-2"><UserMinus size={14} className="text-red-400" aria-hidden="true"/> Remover Usuario de Tenant</h4>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <select value={removeUserState.tenantId} onChange={e => setRemoveUserState(p => ({ ...p, tenantId: e.target.value }))} className="px-3 py-2 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs outline-none cursor-pointer">
             <option value="">Seleccionar Tenant...</option>
@@ -839,7 +839,7 @@ function ToolsTab({ handleAction, showToast, setLoading }: { handleAction: any; 
 
       {/* Transfer Ownership */}
       <div className="bg-[var(--af-bg3)] rounded-xl border border-[var(--border)] p-4">
-        <h4 className="text-sm font-semibold mb-3 flex items-center gap-2"><ArrowRightLeft size={14} className="text-amber-400" /> Transferir Propiedad de Tenant</h4>
+        <h4 className="text-sm font-semibold mb-3 flex items-center gap-2"><ArrowRightLeft size={14} className="text-amber-400" aria-hidden="true"/> Transferir Propiedad de Tenant</h4>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <select value={transferState.tenantId} onChange={e => setTransferState(p => ({ ...p, tenantId: e.target.value }))} className="px-3 py-2 rounded-lg bg-[var(--card)] border border-[var(--border)] text-xs outline-none cursor-pointer">
             <option value="">Seleccionar Tenant...</option>

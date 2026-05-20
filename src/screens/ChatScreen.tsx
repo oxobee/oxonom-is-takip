@@ -146,7 +146,7 @@ export default function ChatScreen() {
         {/* Search */}
         <div className="p-3 border-b border-[var(--border)]">
           <div className="relative">
-            <Search size={16} className="stroke-current fill-none flex-shrink-0 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+            <Search size={16} className="stroke-current fill-none flex-shrink-0 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" aria-hidden="true"/>
             <input className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-xl pl-9 pr-3 py-2.5 text-[13px] text-[var(--foreground)] outline-none focus:border-[var(--af-accent)] transition-colors placeholder:text-[var(--af-text3)]" placeholder="Buscar conversaciones..." value={forms.chatSearch || ''} onChange={e => setForms(p => ({ ...p, chatSearch: e.target.value }))} />
           </div>
         </div>
@@ -226,8 +226,8 @@ export default function ChatScreen() {
       <div className={`${chatMobileShow ? 'flex' : 'hidden'} md:flex flex-col flex-1 min-h-0 overflow-hidden bg-background`}>
         {/* Header */}
         <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[var(--border)] flex-shrink-0 backdrop-blur-xl bg-[var(--card)]/80 z-10">
-          <button className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg3)] transition-colors lg:hidden" onClick={() => { setChatMobileShow(false); setShowEmojiPicker(false); }}>
-            <ChevronLeft size={20} />
+          <button aria-label="Volver a conversaciones" className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg3)] transition-colors lg:hidden" onClick={() => { setChatMobileShow(false); setShowEmojiPicker(false); }}>
+            <ChevronLeft size={20} aria-hidden="true"/>
           </button>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold truncate text-[var(--foreground)]">{convTitle}</div>
@@ -236,11 +236,12 @@ export default function ChatScreen() {
           {/* Message search */}
           <div className="relative w-8 h-8 flex items-center justify-center">
             <button
+              aria-label="Buscar mensajes"
               className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg3)] transition-colors"
               onClick={() => { if (chatMsgSearch) setChatMsgSearch(''); else setChatMsgSearch(' '); }}
               title="Buscar mensajes"
             >
-              <Search size={16} className={`transition-colors ${chatMsgSearch ? 'text-[var(--af-accent)]' : 'text-[var(--muted-foreground)]'}`} />
+              <Search size={16} className={`transition-colors ${chatMsgSearch ? 'text-[var(--af-accent)]' : 'text-[var(--muted-foreground)]'}`} aria-hidden="true"/>
             </button>
           </div>
         </div>
@@ -249,7 +250,7 @@ export default function ChatScreen() {
         {chatMsgSearch !== '' && (
           <div className="px-3 py-2 border-b border-[var(--border)] bg-[var(--card)] animate-fadeIn">
             <div className="relative">
-              <Search size={14} className="stroke-current fill-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+              <Search size={14} className="stroke-current fill-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" aria-hidden="true"/>
               <input
                 className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg pl-8 pr-8 py-1.5 text-[12px] text-[var(--foreground)] outline-none focus:border-[var(--af-accent)] placeholder:text-[var(--af-text3)]"
                 placeholder="Buscar en esta conversación..."
@@ -257,8 +258,8 @@ export default function ChatScreen() {
                 onChange={e => setChatMsgSearch(e.target.value)}
                 autoFocus
               />
-              <button className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center hover:bg-[var(--af-bg4)] text-[var(--muted-foreground)] cursor-pointer border-none bg-transparent" onClick={() => setChatMsgSearch('')}>
-                <X size={12} strokeWidth={2.5} />
+              <button aria-label="Limpiar búsqueda" className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center hover:bg-[var(--af-bg4)] text-[var(--muted-foreground)] cursor-pointer border-none bg-transparent" onClick={() => setChatMsgSearch('')}>
+                <X size={12} strokeWidth={2.5} aria-hidden="true"/>
               </button>
             </div>
           </div>
@@ -398,9 +399,9 @@ export default function ChatScreen() {
                             onClick={() => toggleAudioPlay(m.id)}
                           >
                             {playingAudio === m.id ? (
-                              <Pause size={14} fill="currentColor" stroke="none" />
+                              <Pause size={14} fill="currentColor" stroke="none" aria-hidden="true"/>
                             ) : (
-                              <Play size={14} fill="currentColor" stroke="none" className="ml-0.5" />
+                              <Play size={14} fill="currentColor" stroke="none" className="ml-0.5" aria-hidden="true"/>
                             )}
                           </button>
                           <div className="flex-1 min-w-0">
@@ -432,18 +433,19 @@ export default function ChatScreen() {
                             {m.fileSize && <div className="text-[10px] text-[var(--muted-foreground)]">{fmtFileSize(m.fileSize)}</div>}
                           </div>
                           <a href={m.fileData} download={m.fileName || 'archivo'} className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--af-bg4)] hover:bg-[var(--af-accent)]/10 transition-colors flex-shrink-0" title="Descargar">
-                            <Download size={14} className="stroke-current fill-none" />
+                            <Download size={14} className="stroke-current fill-none" aria-hidden="true"/>
                           </a>
                         </div>
                       )}
 
                       {/* Action button (3 dots) */}
                       <button
+                        aria-label="Más opciones del mensaje"
                         className={`absolute -top-2 ${isMe ? '-left-8' : '-right-8'} w-7 h-7 rounded-full flex items-center justify-center bg-[var(--af-bg4)] hover:bg-[var(--af-bg3)] md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer border-none`}
                         style={{ top: -4, [isMe ? 'left' : 'right']: -32 }}
                         onClick={(e) => { e.stopPropagation(); setChatMenuMsg(chatMenuMsg === m.id ? null : m.id); setShowReactionPicker(null); }}
                       >
-                        <MoreVertical size={14} className="text-[var(--muted-foreground)]" />
+                        <MoreVertical size={14} className="text-[var(--muted-foreground)]" aria-hidden="true"/>
                       </button>
 
                       {/* Context menu */}
@@ -616,10 +618,11 @@ export default function ChatScreen() {
                   <div className="text-[11px] text-[var(--af-text3)] truncate">{(chatReplyingTo.text || '').substring(0, 100)}</div>
                 </div>
                 <button
+                  aria-label="Cancelar respuesta"
                   className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-[var(--af-bg4)] text-[var(--muted-foreground)] cursor-pointer border-none bg-transparent flex-shrink-0"
                   onClick={() => setChatReplyingTo(null)}
                 >
-                  <X size={14} strokeWidth={2.5} />
+                  <X size={14} strokeWidth={2.5} aria-hidden="true"/>
                 </button>
               </div>
             </div>
@@ -627,8 +630,8 @@ export default function ChatScreen() {
 
           <div className="flex gap-1 items-end px-2.5 py-2.5 safe-bottom">
             <input ref={fileInputRef} type="file" className="hidden" multiple onChange={(e) => handleFileSelect(e.target.files)} accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.dwg,.txt,.csv" />
-            <button className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer border-none bg-transparent hover:bg-[var(--af-bg3)] transition-colors flex-shrink-0" onClick={() => fileInputRef.current?.click()} title="Adjuntar archivo">
-              <Paperclip size={18} className="stroke-[var(--muted-foreground)]" strokeWidth={1.75} />
+            <button aria-label="Adjuntar archivo" className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer border-none bg-transparent hover:bg-[var(--af-bg3)] transition-colors flex-shrink-0" onClick={() => fileInputRef.current?.click()} title="Adjuntar archivo">
+              <Paperclip size={18} className="stroke-[var(--muted-foreground)]" strokeWidth={1.75} aria-hidden="true"/>
             </button>
             <input
               id="chat-input-field"
@@ -646,6 +649,7 @@ export default function ChatScreen() {
               <span className="text-[20px]" role="img" aria-label="emojis">😀</span>
             </button>
             <button
+              aria-label={isRecording ? 'Detener grabación' : audioPreviewUrl ? 'Descartar nota' : 'Grabar nota de voz'}
               className={`w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer border-none flex-shrink-0 transition-all ${isRecording ? 'bg-red-500 animate-pulse' : audioPreviewUrl ? 'bg-[var(--af-accent)]' : 'bg-transparent hover:bg-[var(--af-bg3)]'}`}
               onClick={handleMicButton}
               title={isRecording ? 'Detener grabación' : audioPreviewUrl ? 'Descartar nota' : 'Grabar nota de voz'}
@@ -653,15 +657,16 @@ export default function ChatScreen() {
               {isRecording ? (
                 <div className="w-3 h-3 bg-white rounded-sm" />
               ) : (
-                <Mic size={18} fill={audioPreviewUrl ? 'var(--background)' : 'none'} stroke={audioPreviewUrl ? 'none' : 'currentColor'} strokeWidth={1.75} />
+                <Mic size={18} fill={audioPreviewUrl ? 'var(--background)' : 'none'} stroke={audioPreviewUrl ? 'none' : 'currentColor'} strokeWidth={1.75} aria-hidden="true"/>
               )}
             </button>
             <button
+              aria-label="Enviar"
               className="w-10 h-10 rounded-xl bg-[var(--af-accent)] flex items-center justify-center cursor-pointer border-none flex-shrink-0 active:scale-95 transition-transform hover:opacity-90 shadow-md"
               onClick={sendAll}
               title="Enviar"
             >
-              <Send size={18} className="stroke-background" strokeWidth={2.5} />
+              <Send size={18} className="stroke-background" strokeWidth={2.5} aria-hidden="true"/>
             </button>
           </div>
         </div>
@@ -674,10 +679,11 @@ export default function ChatScreen() {
           onClick={() => setLightboxImg(null)}
         >
           <button
+            aria-label="Cerrar"
             className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer border-none text-white z-10 transition-colors"
             onClick={() => setLightboxImg(null)}
           >
-            <X size={20} strokeWidth={2.5} />
+            <X size={20} strokeWidth={2.5} aria-hidden="true"/>
           </button>
           <img
             src={lightboxImg.src}

@@ -235,7 +235,7 @@ export default function OnboardingWizard() {
                         }`}
                       >
                         {isCompleted ? (
-                          <CheckCircle2 size={16} />
+                          <CheckCircle2 size={16} aria-hidden="true"/>
                         ) : (
                           <StepIcon size={14} />
                         )}
@@ -248,6 +248,7 @@ export default function OnboardingWizard() {
                 <div className="flex items-center gap-3">
                   {!isFirst && (
                     <button
+                      aria-label="Paso anterior"
                       onClick={() => {
                         setDirection(-1);
                         const prev = STEP_ORDER[currentIdx - 1];
@@ -255,7 +256,7 @@ export default function OnboardingWizard() {
                       }}
                       className="flex items-center gap-2 px-5 py-3 rounded-xl bg-[var(--af-bg3)] border border-[var(--border)] text-[var(--foreground)] text-[14px] font-medium cursor-pointer hover:bg-[var(--af-bg4)] transition-all active:scale-[0.97] flex-shrink-0"
                     >
-                      <ArrowLeft size={16} />
+                      <ArrowLeft size={16} aria-hidden="true"/>
                     </button>
                   )}
                   <button
@@ -264,13 +265,13 @@ export default function OnboardingWizard() {
                   >
                     {isLast ? (
                       <>
-                        <Rocket size={16} />
+                        <Rocket size={16} aria-hidden="true"/>
                         Comenzar
                       </>
                     ) : (
                       <>
                         Siguiente
-                        <ArrowRight size={16} />
+                        <ArrowRight size={16} aria-hidden="true"/>
                       </>
                     )}
                   </button>

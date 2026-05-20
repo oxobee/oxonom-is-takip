@@ -66,7 +66,7 @@ export default function PunchListScreen() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <ClipboardCheck size={20} className="text-[var(--af-accent)]" />
+            <ClipboardCheck size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Punch List
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{punchItems.length} items</p>
@@ -75,7 +75,7 @@ export default function PunchListScreen() {
           className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors"
           onClick={handleCreate}
         >
-          <Plus size={14} />
+          <Plus size={14} aria-hidden="true"/>
           Nuevo item
         </button>
       </div>
@@ -165,7 +165,7 @@ export default function PunchListScreen() {
                   </span>
                   {p.data.photos && p.data.photos.length > 0 && (
                     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--af-bg4)] text-[var(--muted-foreground)] flex items-center gap-0.5">
-                      <Camera size={10} className="stroke-current" /> {p.data.photos.length}
+                      <Camera size={10} className="stroke-current" aria-hidden="true"/> {p.data.photos.length}
                     </span>
                   )}
                 </div>
@@ -209,19 +209,19 @@ export default function PunchListScreen() {
                       ↩ Reabrir
                     </button>
                   )}
-                  <button className="hidden md:block px-1.5 py-1.5 rounded bg-[var(--af-bg4)] text-xs cursor-pointer" onClick={() => handleEdit(p)}><Pencil size={12} /></button>
-                  <button className="hidden md:block px-1.5 py-1.5 rounded bg-red-500/10 text-xs cursor-pointer" onClick={async () => {
+                  <button aria-label="Editar" className="hidden md:block px-1.5 py-1.5 rounded bg-[var(--af-bg4)] text-xs cursor-pointer" onClick={() => handleEdit(p)}><Pencil size={12} aria-hidden="true"/></button>
+                  <button aria-label="Eliminar" className="hidden md:block px-1.5 py-1.5 rounded bg-red-500/10 text-xs cursor-pointer" onClick={async () => {
                     const ok = await confirmDialog.confirm({ title: 'Eliminar item', description: '¿Estás seguro de eliminar este item?' });
                     if (!ok) return;
                     const snapshot = { ...p.data };
                     await fbActions.deletePunchItem(p.id, showToast, activeTenantId);
                     showUndoToast({ collection: 'punchItems', docId: p.id, snapshot, label: 'Item', gender: 'o' });
-                  }}><Trash2 size={12} /></button>
+                  }}><Trash2 size={12} aria-hidden="true"/></button>
                   <div className="md:hidden">
                     <OverflowMenu
                       actions={[
-                        { label: 'Editar item', icon: <Pencil size={14} />, onClick: () => handleEdit(p) },
-                        { label: 'Eliminar item', icon: <Trash2 size={14} />, variant: 'danger', separator: true, onClick: async () => {
+                        { label: 'Editar item', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => handleEdit(p) },
+                        { label: 'Eliminar item', icon: <Trash2 size={14} aria-hidden="true"/>, variant: 'danger', separator: true, onClick: async () => {
                           const ok = await confirmDialog.confirm({ title: 'Eliminar item', description: '¿Estás seguro de eliminar este item?' });
                           if (!ok) return;
                           const snapshot = { ...p.data };

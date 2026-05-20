@@ -156,7 +156,7 @@ function ActionCard({ action }: { action: ExecutedAction }) {
         <p className="text-[11px] opacity-80 mt-0.5 break-words">{action.details}</p>
       </div>
       {action.success && (
-        <Check size={16} className="text-emerald-400 shrink-0 mt-0.5 ml-auto" strokeWidth={2.5} />
+        <Check size={16} className="text-emerald-400 shrink-0 mt-0.5 ml-auto" strokeWidth={2.5} aria-hidden="true"/>
       )}
     </div>
   );
@@ -438,7 +438,7 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
           <div className="flex items-center gap-3">
             <div className="relative">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--af-accent)] to-amber-600 flex items-center justify-center shadow-lg shadow-[var(--af-accent)]/20">
-                <HelpCircle size={20} className="text-black" />
+                <HelpCircle size={20} className="text-black" aria-hidden="true"/>
               </div>
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 rounded-full border-2 border-[var(--af-bg1)]" />
             </div>
@@ -451,10 +451,11 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
             </div>
           </div>
           <button
+            aria-label="Cerrar"
             onClick={onClose}
             className="w-10 h-10 rounded-lg hover:bg-[var(--af-bg4)] active:bg-[var(--af-bg4)] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
           >
-            <X size={16} />
+            <X size={16} aria-hidden="true"/>
           </button>
         </div>
 
@@ -518,7 +519,7 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
               <div className="bg-[var(--af-bg3)] rounded-2xl rounded-bl-md px-4 py-3">
                 {executingTools ? (
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Loader2 size={14} className="animate-spin text-[var(--af-accent)]" />
+                    <Loader2 size={14} className="animate-spin text-[var(--af-accent)]" aria-hidden="true"/>
                     <span className="text-[var(--af-accent)]">Ejecutando acciones...</span>
                   </div>
                 ) : (
@@ -607,7 +608,7 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
               className="w-11 h-11 rounded-xl flex items-center justify-center hover:bg-[var(--af-bg4)] active:bg-[var(--af-bg4)] transition-all duration-200 shrink-0 text-muted-foreground hover:text-foreground"
               title="Subir imagen"
             >
-              <ImageIcon size={20} />
+              <ImageIcon size={20} aria-hidden="true"/>
             </button>
 
             {/* Send button */}
@@ -622,9 +623,9 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
               )}
             >
               {isLoading ? (
-                <Loader2 size={20} className="animate-spin" />
+                <Loader2 size={20} className="animate-spin" aria-hidden="true"/>
               ) : (
-                <Send size={20} />
+                <Send size={20} aria-hidden="true"/>
               )}
             </button>
           </div>

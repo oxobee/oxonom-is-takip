@@ -65,7 +65,7 @@ function FileBrowser({
       <div className="flex flex-col sm:flex-row gap-2 mb-3">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" aria-hidden="true"/>
           <input
             type="text"
             placeholder="Buscar archivos..."
@@ -75,7 +75,7 @@ function FileBrowser({
           />
           {od.searchQuery && (
             <button onClick={() => od.setSearchQuery('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
-              <X className="w-3.5 h-3.5" />
+              <X className="w-3.5 h-3.5" aria-hidden="true"/>
             </button>
           )}
         </div>
@@ -87,9 +87,9 @@ function FileBrowser({
             title={od.viewMode === 'list' ? 'Vista cuadrícula' : 'Vista lista'}
           >
             {od.viewMode === 'list' ? (
-              <LayoutGrid className="w-4 h-4" />
+              <LayoutGrid className="w-4 h-4" aria-hidden="true"/>
             ) : (
-              <List className="w-4 h-4" />
+              <List className="w-4 h-4" aria-hidden="true"/>
             )}
           </button>
           {/* New folder */}
@@ -98,7 +98,7 @@ function FileBrowser({
             className="p-2 rounded-lg border border-[var(--border)] bg-[var(--af-bg3)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
             title="Nueva carpeta"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4" aria-hidden="true"/>
           </button>
           {/* Upload */}
           <button
@@ -106,7 +106,7 @@ function FileBrowser({
             className="px-3 py-2 rounded-lg text-[12px] font-medium text-white cursor-pointer transition-colors flex items-center gap-1.5"
             style={{ backgroundColor: 'var(--af-accent)' }}
           >
-            <Upload className="w-3.5 h-3.5" />
+            <Upload className="w-3.5 h-3.5" aria-hidden="true"/>
             Subir
           </button>
           <input
@@ -135,7 +135,7 @@ function FileBrowser({
         </button>
         {od.breadcrumbs.map((crumb, i) => (
           <React.Fragment key={crumb.id}>
-            <ChevronRight className="w-3 h-3 text-[var(--af-text3)] flex-shrink-0" />
+            <ChevronRight className="w-3 h-3 text-[var(--af-text3)] flex-shrink-0" aria-hidden="true"/>
             <button
               onClick={() => od.navigateBreadcrumb(i)}
               className={`hover:underline whitespace-nowrap ${i === od.breadcrumbs.length - 1 ? 'text-[var(--foreground)] font-medium' : 'text-[var(--muted-foreground)]'}`}
@@ -172,7 +172,7 @@ function FileBrowser({
             onClick={() => { od.setCreatingFolder(false); od.setNewFolderName(''); }}
             className="p-1 rounded text-[11px] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
           >
-            <X size={12} />
+            <X size={12} aria-hidden="true"/>
           </button>
         </div>
       )}
@@ -181,7 +181,7 @@ function FileBrowser({
       {od.uploading && (
         <div className="mb-3 p-2.5 bg-[var(--af-accent)]/10 rounded-lg border border-[var(--af-accent)]/20">
           <div className="flex items-center gap-2 mb-1">
-            <Loader2 className="w-4 h-4 animate-spin text-[var(--af-accent)]" />
+            <Loader2 className="w-4 h-4 animate-spin text-[var(--af-accent)]" aria-hidden="true"/>
             <span className="text-[12px] text-[var(--af-accent)] font-medium truncate">{od.uploadFileName}</span>
           </div>
           <div className="h-1 bg-[var(--af-accent)]/20 rounded-full overflow-hidden">
@@ -201,10 +201,11 @@ function FileBrowser({
             )}
           </div>
           <button
+            aria-label="Cerrar error"
             onClick={od.clearError}
             className="text-red-400/60 hover:text-red-400 text-xs flex-shrink-0"
           >
-            <X size={12} />
+            <X size={12} aria-hidden="true"/>
           </button>
         </div>
       )}
@@ -286,21 +287,21 @@ function FileBrowser({
                       className="p-1 rounded bg-[var(--af-bg4)] hover:bg-[var(--af-accent)]/20 text-[var(--muted-foreground)] hover:text-[var(--af-accent)] transition-colors"
                       title="Descargar"
                     >
-                      <Download className="w-3 h-3" />
+                      <Download className="w-3 h-3" aria-hidden="true"/>
                     </button>
                     <button
                       onClick={e => { e.stopPropagation(); od.setRenamingId(item.id); od.setRenameName(item.name); }}
                       className="p-1 rounded bg-[var(--af-bg4)] hover:bg-amber-500/20 text-[var(--muted-foreground)] hover:text-amber-400 transition-colors"
                       title="Renombrar"
                     >
-                      <Pencil className="w-3 h-3" />
+                      <Pencil className="w-3 h-3" aria-hidden="true"/>
                     </button>
                     <button
                       onClick={e => { e.stopPropagation(); onDeleteFile ? onDeleteFile(item.id, item.name) : od.deleteFile(item.id, item.name); }}
                       className="p-1 rounded bg-[var(--af-bg4)] hover:bg-red-500/20 text-[var(--muted-foreground)] hover:text-red-400 transition-colors"
                       title="Eliminar"
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="w-3 h-3" aria-hidden="true"/>
                     </button>
                   </div>
                 </>
@@ -360,7 +361,7 @@ function FileBrowser({
                     onClick={e => { e.stopPropagation(); od.setRenamingId(null); od.setRenameName(''); }}
                     className="p-1 rounded text-[11px] text-[var(--muted-foreground)]"
                   >
-                    <X size={12} />
+                    <X size={12} aria-hidden="true"/>
                   </button>
                 </div>
               ) : (
@@ -397,21 +398,21 @@ function FileBrowser({
                         className="p-1.5 rounded-lg hover:bg-[var(--af-bg4)] text-[var(--muted-foreground)] hover:text-[var(--af-accent)] transition-colors"
                         title="Descargar"
                       >
-                        <Download className="w-4 h-4" />
+                        <Download className="w-4 h-4" aria-hidden="true"/>
                       </button>
                       <button
                         onClick={e => { e.stopPropagation(); od.setRenamingId(item.id); od.setRenameName(item.name); }}
                         className="p-1.5 rounded-lg hover:bg-amber-500/10 text-[var(--muted-foreground)] hover:text-amber-400 transition-colors"
                         title="Renombrar"
                       >
-                        <Pencil className="w-4 h-4" />
+                        <Pencil className="w-4 h-4" aria-hidden="true"/>
                       </button>
                       <button
                         onClick={e => { e.stopPropagation(); onDeleteFile ? onDeleteFile(item.id, item.name) : od.deleteFile(item.id, item.name); }}
                         className="p-1.5 rounded-lg hover:bg-red-500/10 text-[var(--muted-foreground)] hover:text-red-400 transition-colors"
                         title="Eliminar"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4" aria-hidden="true"/>
                       </button>
                     </div>
                   )}
@@ -550,7 +551,7 @@ export default function FilesScreen() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-lg font-semibold flex items-center gap-2">
-              <FolderOpen size={20} className="text-[var(--af-accent)]" />
+              <FolderOpen size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
               Archivos
             </h2>
             <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Gestiona archivos del equipo y personales</p>

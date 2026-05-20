@@ -314,7 +314,7 @@ export default function IntegrationsScreen() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-lg font-semibold flex items-center gap-2"><Puzzle size={20} className="text-[var(--af-accent)]" /> Marketplace</h2>
+          <h2 className="text-lg font-semibold flex items-center gap-2"><Puzzle size={20} className="text-[var(--af-accent)]" aria-hidden="true"/> Marketplace</h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
             Conecta Archii con tus herramientas favoritas
           </p>
@@ -333,7 +333,7 @@ export default function IntegrationsScreen() {
       {/* Search + Filters */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex-1 min-w-[200px] max-w-sm relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" aria-hidden="true"/>
           <input
             type="text"
             placeholder="Buscar integración..."

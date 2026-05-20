@@ -24,7 +24,7 @@ export default function InvMovementModal({ open, onClose }: { open: boolean; onC
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={480}>
       <div className="text-lg font-semibold mb-5 flex items-center gap-2">
-        <ClipboardList className="w-5 h-5" />
+        <ClipboardList className="w-5 h-5" aria-hidden="true"/>
         Registrar movimiento
       </div>
 
@@ -125,7 +125,7 @@ export default function InvMovementModal({ open, onClose }: { open: boolean; onC
             )}
             {forms.invMovType === 'Salida' && qty > curStock && (
               <div className="flex items-center gap-1 text-red-400 text-xs mt-1">
-                <AlertTriangle className="w-3 h-3" />
+                <AlertTriangle className="w-3 h-3" aria-hidden="true"/>
                 Excede stock disponible en {wh}
               </div>
             )}

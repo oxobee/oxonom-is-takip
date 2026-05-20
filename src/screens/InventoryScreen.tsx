@@ -35,7 +35,7 @@ export default function InventoryScreen() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Package size={20} className="text-[var(--af-accent)]" />
+            <Package size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Inventario
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{invProducts.length} productos · {invCategories.length} categorías</p>

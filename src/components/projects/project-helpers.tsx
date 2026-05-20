@@ -116,10 +116,10 @@ export function computeHealth(
 }
 
 export const HEALTH_CONFIG: Record<HealthLevel, { color: string; bg: string; label: string; icon: React.ReactNode }> = {
-  excelente: { color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/30', label: 'Excelente', icon: <HeartPulse size={11} className="text-emerald-400" /> },
-  bueno: { color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/30', label: 'Bueno', icon: <Heart size={11} className="text-blue-400" /> },
-  riesgo: { color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/30', label: 'En Riesgo', icon: <AlertTriangle size={11} className="text-amber-400" /> },
-  critico: { color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/30', label: 'Crítico', icon: <AlertTriangle size={11} className="text-red-400" /> },
+  excelente: { color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/30', label: 'Excelente', icon: <HeartPulse size={11} className="text-emerald-400" aria-hidden="true"/> },
+  bueno: { color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/30', label: 'Bueno', icon: <Heart size={11} className="text-blue-400" aria-hidden="true"/> },
+  riesgo: { color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/30', label: 'En Riesgo', icon: <AlertTriangle size={11} className="text-amber-400" aria-hidden="true"/> },
+  critico: { color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/30', label: 'Crítico', icon: <AlertTriangle size={11} className="text-red-400" aria-hidden="true"/> },
 };
 
 // ─── Chart Tooltip ───

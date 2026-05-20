@@ -73,7 +73,7 @@ export default function KanbanCard({ card, onClick, getUserName, commentCount = 
         {...listeners}
         className={`absolute top-2 right-2 text-[var(--muted-foreground)] opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing ${isDragging ? '!opacity-100' : ''}`}
       >
-        <GripVertical size={14} />
+        <GripVertical size={14} aria-hidden="true"/>
       </div>
 
       {/* Title */}
@@ -89,7 +89,7 @@ export default function KanbanCard({ card, onClick, getUserName, commentCount = 
               key={i}
               className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-[var(--af-bg3)] text-[var(--muted-foreground)]"
             >
-              <Tag size={8} />
+              <Tag size={8} aria-hidden="true"/>
               {tag}
             </span>
           ))}
@@ -113,9 +113,9 @@ export default function KanbanCard({ card, onClick, getUserName, commentCount = 
           {card.dueDate && (
             <div className={`flex items-center gap-1 text-[11px] ${overdue ? 'text-red-400' : 'text-[var(--muted-foreground)]'}`}>
               {overdue ? (
-                <Clock size={10} className="stroke-red-400" />
+                <Clock size={10} className="stroke-red-400" aria-hidden="true"/>
               ) : (
-                <Calendar size={10} />
+                <Calendar size={10} aria-hidden="true"/>
               )}
               <span>{formatDateShort(card.dueDate)}</span>
             </div>
@@ -124,7 +124,7 @@ export default function KanbanCard({ card, onClick, getUserName, commentCount = 
 
         {commentCount > 0 && (
           <div className="flex items-center gap-0.5 text-[11px] text-[var(--muted-foreground)]">
-            <MessageSquare size={10} />
+            <MessageSquare size={10} aria-hidden="true"/>
             <span>{commentCount}</span>
           </div>
         )}

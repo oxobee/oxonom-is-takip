@@ -60,10 +60,10 @@ const PRIO_COLORS: Record<string, { bg: string; border: string; text: string; do
 };
 
 const STATUS_ICON: Record<string, React.ReactNode> = {
-  'Por hacer': <Clock className="w-3 h-3 text-slate-400" />,
+  'Por hacer': <Clock className="w-3 h-3 text-slate-400" aria-hidden="true"/>,
   'En progreso': <div className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />,
-  'Revision': <Flag className="w-3 h-3 text-amber-500" />,
-  'Completado': <CheckCircle2 className="w-3 h-3 text-emerald-500" />,
+  'Revision': <Flag className="w-3 h-3 text-amber-500" aria-hidden="true"/>,
+  'Completado': <CheckCircle2 className="w-3 h-3 text-emerald-500" aria-hidden="true"/>,
 };
 
 const NOTE_COLORS = [
@@ -893,16 +893,16 @@ export default function WeeklyAgendaScreen() {
     <div className="h-full flex flex-col" ref={printRef}>
       {/* ─── Header Toolbar ─── */}
       <div className="flex-shrink-0 flex flex-wrap items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 border-b border-[var(--border)] bg-[var(--card)]">
-        <CalendarDays className="w-5 h-5 text-[var(--primary)] flex-shrink-0" />
+        <CalendarDays className="w-5 h-5 text-[var(--primary)] flex-shrink-0" aria-hidden="true"/>
         <h2 className="text-sm font-semibold mr-2 hidden sm:block">Agenda Semanal</h2>
 
         {/* Week nav */}
         <button onClick={prevWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Semana anterior">
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-4 h-4" aria-hidden="true"/>
         </button>
         <span className="text-[10px] sm:text-xs font-medium min-w-[100px] sm:min-w-[180px] text-center">{weekLabel}</span>
         <button onClick={nextWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Semana siguiente">
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-4 h-4" aria-hidden="true"/>
         </button>
         <button onClick={goToday} className="text-[10px] sm:text-xs px-2 sm:px-3 py-1.5 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-medium hover:opacity-90 active:scale-95 transition-transform">
           Hoy
@@ -921,7 +921,7 @@ export default function WeeklyAgendaScreen() {
         <button onClick={handlePrint}
           className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform no-print"
           aria-label="Imprimir agenda">
-          <Printer className="w-4 h-4" />
+          <Printer className="w-4 h-4" aria-hidden="true"/>
         </button>
       </div>
 
@@ -988,7 +988,7 @@ export default function WeeklyAgendaScreen() {
                     className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-medium no-print"
                     style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    <Plus className="w-3.5 h-3.5" aria-hidden="true"/>
                     Actividad
                   </button>
                 </div>
@@ -996,7 +996,7 @@ export default function WeeklyAgendaScreen() {
                 {/* Empty state */}
                 {dayTasks.length === 0 && (
                   <div className="text-center py-12">
-                    <CalendarDays className="w-10 h-10 mx-auto mb-2" style={{ color: 'var(--muted-foreground)', opacity: 0.4 }} />
+                    <CalendarDays className="w-10 h-10 mx-auto mb-2" style={{ color: 'var(--muted-foreground)', opacity: 0.4 }} aria-hidden="true"/>
                     <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>Sin actividades este d\u00eda</p>
                     <p className="text-xs mt-1" style={{ color: 'var(--muted-foreground)', opacity: 0.7 }}>Toca el bot\u00f3n + para crear una</p>
                   </div>
@@ -1035,7 +1035,7 @@ export default function WeeklyAgendaScreen() {
                               {/* Time + priority */}
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="flex items-center gap-1 text-[11px]" style={{ color: 'var(--muted-foreground)' }}>
-                                  <Clock className="w-3 h-3" />
+                                  <Clock className="w-3 h-3" aria-hidden="true"/>
                                   {formatHourRange(meta.hourSlots)}
                                 </span>
                                 <span className={`px-1.5 py-0.5 rounded text-[9px] font-semibold ${pc.text}`} style={{ background: 'var(--af-bg3)' }}>
@@ -1050,7 +1050,7 @@ export default function WeeklyAgendaScreen() {
                               onClick={e => { e.stopPropagation(); setConfirmDelete(task.id); }}
                               aria-label="Eliminar"
                             >
-                              <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                              <Trash2 className="w-3.5 h-3.5 text-red-500" aria-hidden="true"/>
                             </button>
                           </div>
                         </button>
@@ -1060,25 +1060,25 @@ export default function WeeklyAgendaScreen() {
                           <div className="px-3 pb-2.5 pt-0 flex flex-wrap gap-x-3 gap-y-1 text-[11px]" style={{ color: 'var(--muted-foreground)' }}>
                             {task.data.projectId && (
                               <span className="flex items-center gap-1">
-                                <FolderOpen className="w-3 h-3" />
+                                <FolderOpen className="w-3 h-3" aria-hidden="true"/>
                                 <span className="truncate max-w-[140px]">{projectMap[task.data.projectId] || '\u2014'}</span>
                               </span>
                             )}
                             {task.data.assigneeId && (
                               <span className="flex items-center gap-1">
-                                <User className="w-3 h-3" />
+                                <User className="w-3 h-3" aria-hidden="true"/>
                                 <span className="truncate max-w-[100px]">{userMap[task.data.assigneeId]?.name || ''}</span>
                               </span>
                             )}
                             {meta.participantIds.length > 0 && (
                               <span className="flex items-center gap-1">
-                                <Users className="w-3 h-3" />
+                                <Users className="w-3 h-3" aria-hidden="true"/>
                                 {meta.participantIds.length}
                               </span>
                             )}
                             {totalSubtasks > 0 && (
                               <span className="flex items-center gap-1">
-                                <ListChecks className="w-3 h-3" />
+                                <ListChecks className="w-3 h-3" aria-hidden="true"/>
                                 {doneSubtasks}/{totalSubtasks}
                               </span>
                             )}
@@ -1273,7 +1273,7 @@ export default function WeeklyAgendaScreen() {
                               {/* Time range */}
                               {!isNarrow && (
                                 <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
-                                  <Clock className="w-2.5 h-2.5" />
+                                  <Clock className="w-2.5 h-2.5" aria-hidden="true"/>
                                   <span>{formatHourRange(meta.hourSlots)}</span>
                                 </div>
                               )}
@@ -1281,7 +1281,7 @@ export default function WeeklyAgendaScreen() {
                               {/* Project */}
                               {!isNarrow && !isMedium && task.data.projectId && (
                                 <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
-                                  <FolderOpen className="w-2.5 h-2.5" />
+                                  <FolderOpen className="w-2.5 h-2.5" aria-hidden="true"/>
                                   <span className="truncate">{projectMap[task.data.projectId] || '\u2014'}</span>
                                 </div>
                               )}
@@ -1295,7 +1295,7 @@ export default function WeeklyAgendaScreen() {
                                   </span>
                                   {!isMedium && meta.participantIds.length > 0 && (
                                     <span className="flex items-center gap-0.5 ml-1" style={{ color: 'var(--muted-foreground)' }}>
-                                      <Users className="w-2.5 h-2.5" />
+                                      <Users className="w-2.5 h-2.5" aria-hidden="true"/>
                                       {meta.participantIds.length}
                                     </span>
                                   )}
@@ -1305,7 +1305,7 @@ export default function WeeklyAgendaScreen() {
                               {/* Subtasks */}
                               {!isNarrow && !isMedium && totalSubtasks > 0 && (
                                 <div className="flex items-center gap-1 mt-0.5" style={{ color: 'var(--muted-foreground)', fontSize: '9px' }}>
-                                  <ListChecks className="w-2.5 h-2.5" />
+                                  <ListChecks className="w-2.5 h-2.5" aria-hidden="true"/>
                                   <span>{doneSubtasks}/{totalSubtasks}</span>
                                 </div>
                               )}
@@ -1326,7 +1326,7 @@ export default function WeeklyAgendaScreen() {
                                 onClick={e => { e.stopPropagation(); setConfirmDelete(task.id); }}
                                 aria-label="Eliminar actividad"
                               >
-                                <X className="w-3 h-3" />
+                                <X className="w-3 h-3" aria-hidden="true"/>
                               </button>
                             </div>
                           );
@@ -1343,7 +1343,7 @@ export default function WeeklyAgendaScreen() {
                           }}
                           aria-label="Crear actividad"
                         >
-                          <Plus className="w-3 h-3" />
+                          <Plus className="w-3 h-3" aria-hidden="true"/>
                         </button>
                       </div>
                     );
@@ -1356,11 +1356,11 @@ export default function WeeklyAgendaScreen() {
           {/* ─── Notes Panel — hidden on mobile ─── */}
           <div className="lg:w-52 flex-shrink-0 flex-col gap-2 no-print lg:min-w-[200px] hidden md:flex" style={{ minWidth: 0 }}>
             <div className="flex items-center gap-2 px-2 flex-shrink-0 lg:flex-shrink">
-              <StickyNote className="w-4 h-4 text-amber-500" />
+              <StickyNote className="w-4 h-4 text-amber-500" aria-hidden="true"/>
               <span className="text-xs font-semibold whitespace-nowrap">Notas</span>
               <div className="flex-1 hidden lg:block" />
               <button onClick={addNote} className="w-6 h-6 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Agregar nota">
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-3.5 h-3.5" aria-hidden="true"/>
               </button>
             </div>
 
@@ -1379,14 +1379,14 @@ export default function WeeklyAgendaScreen() {
                   className="absolute top-1 right-1 w-5 h-5 rounded bg-black/10 dark:bg-white/10 text-[var(--muted-foreground)] flex items-center justify-center opacity-0 group-hover/note:opacity-100 transition-opacity hover:bg-red-200 dark:hover:bg-red-800"
                   aria-label="Eliminar nota"
                 >
-                  <Trash2 className="w-3 h-3" />
+                  <Trash2 className="w-3 h-3" aria-hidden="true"/>
                 </button>
               </div>
             ))}
 
             {weekNotes.length === 0 && (
               <div className="text-center py-4 px-2 w-44 lg:w-auto flex-shrink-0 lg:flex-shrink">
-                <StickyNote className="w-6 h-6 text-amber-500/50 dark:text-amber-400/40 mx-auto mb-1" />
+                <StickyNote className="w-6 h-6 text-amber-500/50 dark:text-amber-400/40 mx-auto mb-1" aria-hidden="true"/>
                 <p className="text-[10px] text-[var(--muted-foreground)]">Sin notas esta semana</p>
               </div>
             )}
@@ -1422,7 +1422,7 @@ export default function WeeklyAgendaScreen() {
             <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] shadow-2xl w-full max-w-sm p-5 af-modal-mobile" onClick={e => e.stopPropagation()}>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-red-500" />
+                  <AlertTriangle className="w-5 h-5 text-red-500" aria-hidden="true"/>
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold">Eliminar actividad</h3>
@@ -1470,9 +1470,9 @@ export default function WeeklyAgendaScreen() {
             <div className="flex items-center gap-3 px-5 py-4 border-b border-[var(--border)]">
               <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--primary)', opacity: 0.12 }}>
                 {editingTask ? (
-                  <Edit3 className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                  <Edit3 className="w-4 h-4" style={{ color: 'var(--primary)' }} aria-hidden="true"/>
                 ) : (
-                  <Plus className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                  <Plus className="w-4 h-4" style={{ color: 'var(--primary)' }} aria-hidden="true"/>
                 )}
               </div>
               <div>
@@ -1493,7 +1493,7 @@ export default function WeeklyAgendaScreen() {
               </div>
               <div className="flex-1" />
               <button onClick={closeForm} className="w-8 h-8 rounded-lg hover:bg-[var(--af-bg3)] flex items-center justify-center" aria-label="Cerrar">
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4" aria-hidden="true"/>
               </button>
             </div>
 
@@ -1508,7 +1508,7 @@ export default function WeeklyAgendaScreen() {
                     color: formTab === 'new' ? 'var(--primary)' : 'var(--muted-foreground)',
                   }}
                 >
-                  <Plus className="w-3.5 h-3.5 inline mr-1.5" />
+                  <Plus className="w-3.5 h-3.5 inline mr-1.5" aria-hidden="true"/>
                   Nueva tarea
                 </button>
                 <button
@@ -1519,7 +1519,7 @@ export default function WeeklyAgendaScreen() {
                     color: formTab === 'link' ? 'var(--primary)' : 'var(--muted-foreground)',
                   }}
                 >
-                  <Link2 className="w-3.5 h-3.5 inline mr-1.5" />
+                  <Link2 className="w-3.5 h-3.5 inline mr-1.5" aria-hidden="true"/>
                   Vincular existente
                 </button>
               </div>
@@ -1534,7 +1534,7 @@ export default function WeeklyAgendaScreen() {
                   {/* Title */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <MessageSquare className="w-3 h-3" /> Titulo *
+                      <MessageSquare className="w-3 h-3" aria-hidden="true"/> Titulo *
                     </label>
                     <input
                       type="text"
@@ -1550,7 +1550,7 @@ export default function WeeklyAgendaScreen() {
                   {/* Project */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <FolderOpen className="w-3 h-3" /> Proyecto
+                      <FolderOpen className="w-3 h-3" aria-hidden="true"/> Proyecto
                     </label>
                     <select value={form.projectId} onChange={e => setForm(f => ({ ...f, projectId: e.target.value }))}
                       className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none"
@@ -1563,7 +1563,7 @@ export default function WeeklyAgendaScreen() {
                   {/* Responsable */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <User className="w-3 h-3" /> Responsable
+                      <User className="w-3 h-3" aria-hidden="true"/> Responsable
                     </label>
                     <select value={form.assigneeId} onChange={e => setForm(f => ({ ...f, assigneeId: e.target.value }))}
                       className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none"
@@ -1576,7 +1576,7 @@ export default function WeeklyAgendaScreen() {
                   {/* Participantes */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <Users className="w-3 h-3" /> Participantes
+                      <Users className="w-3 h-3" aria-hidden="true"/> Participantes
                     </label>
                     <div className="flex flex-wrap gap-1.5 p-2 rounded-lg border border-[var(--border)] bg-[var(--input)] min-h-[36px]">
                       {allUserOptions.map(u => {
@@ -1616,7 +1616,7 @@ export default function WeeklyAgendaScreen() {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                        <Flag className="w-3 h-3" /> Prioridad
+                        <Flag className="w-3 h-3" aria-hidden="true"/> Prioridad
                       </label>
                       <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}
                         className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none"
@@ -1626,7 +1626,7 @@ export default function WeeklyAgendaScreen() {
                     </div>
                     <div>
                       <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                        <CheckCircle2 className="w-3 h-3" /> Estado
+                        <CheckCircle2 className="w-3 h-3" aria-hidden="true"/> Estado
                       </label>
                       <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
                         className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none"
@@ -1639,7 +1639,7 @@ export default function WeeklyAgendaScreen() {
                   {/* Observations */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <MessageSquare className="w-3 h-3" /> Observaciones
+                      <MessageSquare className="w-3 h-3" aria-hidden="true"/> Observaciones
                     </label>
                     <textarea
                       value={form.observations}
@@ -1654,7 +1654,7 @@ export default function WeeklyAgendaScreen() {
                   {/* Horas programadas */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <Clock className="w-3 h-3" /> Horas programadas
+                      <Clock className="w-3 h-3" aria-hidden="true"/> Horas programadas
                     </label>
                     <div className="flex flex-wrap gap-1.5">
                       {form.hours.sort((a, b) => a - b).map(h => (
@@ -1667,7 +1667,7 @@ export default function WeeklyAgendaScreen() {
                             className="hover:opacity-70 transition-opacity"
                             aria-label={`Quitar ${formatHourShort(h)}`}
                           >
-                            <X className="w-2.5 h-2.5" />
+                            <X className="w-2.5 h-2.5" aria-hidden="true"/>
                           </button>
                         </span>
                       ))}
@@ -1696,7 +1696,7 @@ export default function WeeklyAgendaScreen() {
                   {/* Subtareas */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <ListChecks className="w-3 h-3" /> Subtareas {form.subtasks.length > 0 ? `(${form.subtasks.filter(s => s.done).length}/${form.subtasks.length})` : ''}
+                      <ListChecks className="w-3 h-3" aria-hidden="true"/> Subtareas {form.subtasks.length > 0 ? `(${form.subtasks.filter(s => s.done).length}/${form.subtasks.length})` : ''}
                     </label>
                     <div className="space-y-2">
                       {form.subtasks.map((st, idx) => (
@@ -1721,7 +1721,7 @@ export default function WeeklyAgendaScreen() {
                             className="text-[var(--muted-foreground)] hover:text-red-400 cursor-pointer bg-transparent border-none p-0 flex-shrink-0"
                             onClick={() => removeSubtask(idx)}
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-3.5 h-3.5" aria-hidden="true"/>
                           </button>
                         </div>
                       ))}
@@ -1731,7 +1731,7 @@ export default function WeeklyAgendaScreen() {
                         style={{ color: 'var(--af-accent)' }}
                         onClick={addSubtask}
                       >
-                        <Plus className="w-3 h-3" /> Agregar subtarea
+                        <Plus className="w-3 h-3" aria-hidden="true"/> Agregar subtarea
                       </button>
                     </div>
                   </div>
@@ -1744,7 +1744,7 @@ export default function WeeklyAgendaScreen() {
                   {/* Project filter */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <FolderOpen className="w-3 h-3" /> Filtrar por proyecto
+                      <FolderOpen className="w-3 h-3" aria-hidden="true"/> Filtrar por proyecto
                     </label>
                     <select value={linkFilterProject} onChange={e => setLinkFilterProject(e.target.value)}
                       className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none"
@@ -1757,7 +1757,7 @@ export default function WeeklyAgendaScreen() {
                   {/* Search */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <Search className="w-3 h-3" /> Buscar tarea
+                      <Search className="w-3 h-3" aria-hidden="true"/> Buscar tarea
                     </label>
                     <input
                       type="text"
@@ -1811,7 +1811,7 @@ export default function WeeklyAgendaScreen() {
                               </p>
                             </div>
                             {isSelected && (
-                              <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--primary)' }} />
+                              <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--primary)' }} aria-hidden="true"/>
                             )}
                           </button>
                         );
@@ -1833,8 +1833,8 @@ export default function WeeklyAgendaScreen() {
                       <div className={`rounded-lg p-3 ${pc.bg} border-l-4 ${pc.border}`}>
                         <p className="text-xs font-semibold mb-1" style={{ color: 'var(--foreground)' }}>{selTask.data.title}</p>
                         <div className="flex items-center gap-3 text-[10px]" style={{ color: 'var(--muted-foreground)' }}>
-                          <span className="flex items-center gap-1"><FolderOpen className="w-2.5 h-2.5" />{projectMap[selTask.data.projectId] || 'Sin proyecto'}</span>
-                          <span className="flex items-center gap-1"><User className="w-2.5 h-2.5" />{userMap[selTask.data.assigneeId]?.name || 'Sin asignar'}</span>
+                          <span className="flex items-center gap-1"><FolderOpen className="w-2.5 h-2.5" aria-hidden="true"/>{projectMap[selTask.data.projectId] || 'Sin proyecto'}</span>
+                          <span className="flex items-center gap-1"><User className="w-2.5 h-2.5" aria-hidden="true"/>{userMap[selTask.data.assigneeId]?.name || 'Sin asignar'}</span>
                           <span className={pc.text}>{selTask.data.priority}</span>
                         </div>
                         {((selTask.data.subtasks || [])).length > 0 && (
@@ -1849,7 +1849,7 @@ export default function WeeklyAgendaScreen() {
                   {/* Participantes adicionales (link) */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <Users className="w-3 h-3" /> Participantes adicionales
+                      <Users className="w-3 h-3" aria-hidden="true"/> Participantes adicionales
                     </label>
                     <div className="flex flex-wrap gap-1.5 p-2 rounded-lg border border-[var(--border)] bg-[var(--input)] min-h-[36px]">
                       {allUserOptions.map(u => {
@@ -1883,7 +1883,7 @@ export default function WeeklyAgendaScreen() {
                   {/* Horas programadas (link) */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <Clock className="w-3 h-3" /> Horas programadas
+                      <Clock className="w-3 h-3" aria-hidden="true"/> Horas programadas
                     </label>
                     <div className="flex flex-wrap gap-1.5">
                       {form.hours.sort((a, b) => a - b).map(h => (
@@ -1891,7 +1891,7 @@ export default function WeeklyAgendaScreen() {
                           style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}>
                           {formatHourShort(h)}
                           <button type="button" onClick={() => removeHourFromForm(h)} className="hover:opacity-70 transition-opacity">
-                            <X className="w-2.5 h-2.5" />
+                            <X className="w-2.5 h-2.5" aria-hidden="true"/>
                           </button>
                         </span>
                       ))}
@@ -1924,7 +1924,7 @@ export default function WeeklyAgendaScreen() {
                   onClick={() => setConfirmDelete(editingTask.id)}
                   className="flex items-center gap-1.5 text-xs text-red-500 hover:text-red-400 transition-colors mr-auto"
                 >
-                  <Trash2 className="w-3.5 h-3.5" /> Eliminar
+                  <Trash2 className="w-3.5 h-3.5" aria-hidden="true"/> Eliminar
                 </button>
               )}
               <div className="flex-1" />

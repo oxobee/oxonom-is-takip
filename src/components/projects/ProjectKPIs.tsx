@@ -34,7 +34,7 @@ export default function ProjectKPIs({
     <div className="grid grid-cols-2 lg:grid-cols-8 gap-3">
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
         <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-          <FolderKanban size={11} className="text-[var(--af-accent)]" />
+          <FolderKanban size={11} className="text-[var(--af-accent)]" aria-hidden="true"/>
           Activos
         </div>
         <div className="text-lg font-bold text-[var(--af-accent)]">{projectsCount - completedCount}</div>
@@ -42,7 +42,7 @@ export default function ProjectKPIs({
       </div>
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
         <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-          <DollarSign size={11} className="text-[var(--af-accent)]" />
+          <DollarSign size={11} className="text-[var(--af-accent)]" aria-hidden="true"/>
           Presupuesto
         </div>
         <div className="text-lg font-bold text-[var(--af-accent)]">{fmtCOP(totalBudget)}</div>
@@ -50,7 +50,7 @@ export default function ProjectKPIs({
       </div>
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
         <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-          <TrendingUp size={11} className="text-emerald-400" />
+          <TrendingUp size={11} className="text-emerald-400" aria-hidden="true"/>
           Progreso prom.
         </div>
         <div className="text-lg font-bold">{avgProgress}%</div>
@@ -58,7 +58,7 @@ export default function ProjectKPIs({
       </div>
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
         <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-          <CheckCircle2 size={11} className="text-emerald-400" />
+          <CheckCircle2 size={11} className="text-emerald-400" aria-hidden="true"/>
           Terminados
         </div>
         <div className="text-lg font-bold text-emerald-400">{completedCount}</div>
@@ -66,7 +66,7 @@ export default function ProjectKPIs({
       </div>
       <div className={`bg-[var(--card)] border rounded-xl p-4 ${projectsWithOverdue > 0 ? 'border-red-500/30 bg-red-500/5' : 'border-[var(--border)]'}`}>
         <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-          {projectsWithOverdue > 0 && <AlertTriangle size={10} className="text-red-400" />}
+          {projectsWithOverdue > 0 && <AlertTriangle size={10} className="text-red-400" aria-hidden="true"/>}
           Tareas vencidas
         </div>
         <div className={`text-lg font-bold ${projectsWithOverdue > 0 ? 'text-red-400' : ''}`}>{projectsWithOverdue}</div>
@@ -74,7 +74,7 @@ export default function ProjectKPIs({
       </div>
       <div className={`bg-[var(--card)] border rounded-xl p-4 ${overBudgetCount > 0 ? 'border-red-500/30 bg-red-500/5' : 'border-[var(--border)]'}`}>
         <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-          {overBudgetCount > 0 && <AlertTriangle size={10} className="text-red-400" />}
+          {overBudgetCount > 0 && <AlertTriangle size={10} className="text-red-400" aria-hidden="true"/>}
           Sobrepasados
         </div>
         <div className={`text-lg font-bold ${overBudgetCount > 0 ? 'text-red-400' : ''}`}>{overBudgetCount}</div>
@@ -84,7 +84,7 @@ export default function ProjectKPIs({
       {/* ★ NEW: Health Score KPI */}
       <div className={`bg-[var(--card)] border rounded-xl p-4 ${healthSummary.critico > 0 ? 'border-red-500/20' : healthSummary.riesgo > 0 ? 'border-amber-500/20' : 'border-[var(--border)]'}`}>
         <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-          <HeartPulse size={11} className="text-emerald-400" />
+          <HeartPulse size={11} className="text-emerald-400" aria-hidden="true"/>
           Salud global
         </div>
         <div className="flex items-center gap-1.5">
@@ -99,7 +99,7 @@ export default function ProjectKPIs({
       {/* ★ NEW: Health Distribution Mini Donut */}
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
         <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-          <Heart size={11} className="text-[var(--af-accent)]" />
+          <Heart size={11} className="text-[var(--af-accent)]" aria-hidden="true"/>
           Distribución salud
         </div>
         {healthChartData.length > 0 ? (

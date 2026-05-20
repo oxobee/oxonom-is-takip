@@ -63,7 +63,7 @@ export default function RFIsScreen() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <MessageCircleQuestion size={20} className="text-[var(--af-accent)]" />
+            <MessageCircleQuestion size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
             RFIs
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{rfis.length} solicitudes de información</p>
@@ -72,7 +72,7 @@ export default function RFIsScreen() {
           className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors"
           onClick={handleCreate}
         >
-          <Plus size={14} />
+          <Plus size={14} aria-hidden="true"/>
           Nuevo RFI
         </button>
       </div>
@@ -150,20 +150,20 @@ export default function RFIsScreen() {
                         <option key={s} value={s}>{s}</option>
                       ))}
                     </select>
-                    <button className="px-1.5 py-0.5 rounded bg-[var(--af-bg4)] text-xs cursor-pointer" onClick={() => handleEdit(r)}><Pencil size={12} /></button>
-                    <button className="px-1.5 py-0.5 rounded bg-red-500/10 text-xs cursor-pointer" onClick={async () => {
+                    <button aria-label="Editar" className="px-1.5 py-0.5 rounded bg-[var(--af-bg4)] text-xs cursor-pointer" onClick={() => handleEdit(r)}><Pencil size={12} aria-hidden="true"/></button>
+                    <button aria-label="Eliminar" className="px-1.5 py-0.5 rounded bg-red-500/10 text-xs cursor-pointer" onClick={async () => {
                       const ok = await confirmDialog.confirm({ title: 'Eliminar RFI', description: '¿Estás seguro de eliminar este RFI?' });
                       if (!ok) return;
                       const snapshot = { ...r.data };
                       await fbActions.deleteRFI(r.id, showToast, activeTenantId);
                       showUndoToast({ collection: 'rfis', docId: r.id, snapshot, label: 'RFI' });
-                    }}><Trash2 size={12} /></button>
+                    }}><Trash2 size={12} aria-hidden="true"/></button>
                   </div>
                   <div className="md:hidden flex-shrink-0">
                     <OverflowMenu
                       actions={[
-                        { label: 'Editar RFI', icon: <Pencil size={14} />, onClick: () => handleEdit(r) },
-                        { label: 'Eliminar RFI', icon: <Trash2 size={14} />, variant: 'danger', separator: true, onClick: async () => {
+                        { label: 'Editar RFI', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => handleEdit(r) },
+                        { label: 'Eliminar RFI', icon: <Trash2 size={14} aria-hidden="true"/>, variant: 'danger', separator: true, onClick: async () => {
                           const ok = await confirmDialog.confirm({ title: 'Eliminar RFI', description: '¿Estás seguro de eliminar este RFI?' });
                           if (!ok) return;
                           const snapshot = { ...r.data };

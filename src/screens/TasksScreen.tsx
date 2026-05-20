@@ -71,7 +71,7 @@ function AssigneeAvatars({ task, getUserName, size = 'sm' }: { task: Task; getUs
   if (ids.length === 0) {
     return (
       <div className="flex items-center gap-1 text-[10px] text-[var(--af-text3)]">
-        <User size={10} /> Sin asignar
+        <User size={10} aria-hidden="true"/> Sin asignar
       </div>
     );
   }
@@ -390,7 +390,7 @@ export default function TasksScreen() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <CheckCircle2 size={20} className="text-[var(--af-accent)]" />
+            <CheckCircle2 size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Tareas
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{activeTasks.length} activas{completedTasks.length > 0 ? ` · ${completedTasks.length} completadas` : ''}{filteredTasks.length !== tasks.length ? ` · ${filteredTasks.length} filtradas` : ''}</p>
@@ -401,19 +401,19 @@ export default function TasksScreen() {
             className="hidden md:flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-colors"
             onClick={() => { try { exportTasksPDF({ tasks: filteredTasks, projects, teamUsers }); showToast('Tareas PDF descargado'); } catch { showToast('Error al generar PDF', 'error'); } }}
           >
-            <FileText size={14} /> PDF
+            <FileText size={14} aria-hidden="true"/> PDF
           </button>
           <button
             className="hidden sm:flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-colors"
             onClick={() => { try { exportTasksExcel(filteredTasks, projects, teamUsers); showToast('Tareas Excel descargado'); } catch { showToast('Error al generar Excel', 'error'); } }}
           >
-            <Download size={14} /> Excel
+            <Download size={14} aria-hidden="true"/> Excel
           </button>
           <button
             className="hidden sm:flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-colors"
             onClick={exportCSV}
           >
-            <Download size={14} /> CSV
+            <Download size={14} aria-hidden="true"/> CSV
           </button>
           {/* Historial button - quick access to completed tasks */}
           {completedTasks.length > 0 && (
@@ -422,7 +422,7 @@ export default function TasksScreen() {
               onClick={() => setShowCompleted(!showCompleted)}
               title={showCompleted ? 'Ocultar completadas' : 'Ver historial de completadas'}
             >
-              {showCompleted ? <EyeOff size={14} /> : <Archive size={14} />}
+              {showCompleted ? <EyeOff size={14} aria-hidden="true"/> : <Archive size={14} aria-hidden="true"/>}
               <span className="hidden sm:inline">Historial</span>
               <span className="sm:hidden">{completedTasks.length}</span>
               {!showCompleted && <span className="text-[10px] bg-emerald-500/15 text-emerald-400 px-1.5 py-0.5 rounded-full">{completedTasks.length}</span>}
@@ -434,13 +434,13 @@ export default function TasksScreen() {
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] cursor-pointer transition-all ${viewMode === 'list' ? 'bg-[var(--card)] text-[var(--foreground)] font-medium shadow-sm' : 'text-[var(--muted-foreground)]'}`}
               onClick={() => setForms((p: Record<string, any>) => ({ ...p, taskView: 'list' }))}
             >
-              <LayoutList size={14} /> Lista
+              <LayoutList size={14} aria-hidden="true"/> Lista
             </button>
             <button
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] cursor-pointer transition-all ${viewMode === 'kanban' ? 'bg-[var(--card)] text-[var(--foreground)] font-medium shadow-sm' : 'text-[var(--muted-foreground)]'}`}
               onClick={() => setForms((p: Record<string, any>) => ({ ...p, taskView: 'kanban' }))}
             >
-              <KanbanSquare size={14} /> Kanban
+              <KanbanSquare size={14} aria-hidden="true"/> Kanban
             </button>
           </div>
           {/* New task - desktop */}
@@ -448,7 +448,7 @@ export default function TasksScreen() {
             className="hidden sm:flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors"
             onClick={handleNewTask}
           >
-            <Plus size={15} /> Nueva tarea
+            <Plus size={15} aria-hidden="true"/> Nueva tarea
           </button>
         </div>
       </div>
@@ -458,7 +458,7 @@ export default function TasksScreen() {
         <div className="flex items-center gap-2 flex-wrap">
           {/* Search */}
           <div className="relative flex-1 min-w-[160px] max-w-[280px]">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" aria-hidden="true"/>
             <input
               type="text"
               value={searchQuery}
@@ -468,7 +468,7 @@ export default function TasksScreen() {
             />
             {searchQuery && (
               <button className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--af-text3)] cursor-pointer" onClick={() => setSearchQuery('')}>
-                <X size={12} />
+                <X size={12} aria-hidden="true"/>
               </button>
             )}
           </div>
@@ -488,7 +488,7 @@ export default function TasksScreen() {
             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-medium cursor-pointer border transition-colors ${showFilters || hasActiveFilters ? 'bg-[var(--af-accent)]/10 text-[var(--af-accent)] border-[var(--af-accent)]/30' : 'bg-[var(--card)] text-[var(--foreground)] border-[var(--border)] hover:bg-[var(--af-bg3)]'}`}
             onClick={() => setShowFilters(!showFilters)}
           >
-            <Filter size={14} />
+            <Filter size={14} aria-hidden="true"/>
             Filtros
             {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-[var(--af-accent)]" />}
           </button>
@@ -553,7 +553,7 @@ export default function TasksScreen() {
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1">Tasa de completado</div>
           <div className="text-lg font-bold flex items-center gap-1">
-            <TrendingUp size={14} className={kpis.completionRate >= 50 ? 'text-emerald-400' : 'text-amber-400'} />
+            <TrendingUp size={14} className={kpis.completionRate >= 50 ? 'text-emerald-400' : 'text-amber-400'} aria-hidden="true"/>
             <span className={kpis.completionRate >= 50 ? 'text-emerald-400' : 'text-amber-400'}>{kpis.completionRate}%</span>
           </div>
           <div className="text-[10px] text-[var(--muted-foreground)]">{kpis.completed} completadas</div>
@@ -564,14 +564,14 @@ export default function TasksScreen() {
         </div>
         <div className={`bg-[var(--card)] border rounded-xl p-4 ${kpis.overdue > 0 ? 'border-red-500/30 bg-red-500/5' : 'border-[var(--border)]'}`}>
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-            {kpis.overdue > 0 && <AlertTriangle size={10} className="text-red-400" />}
+            {kpis.overdue > 0 && <AlertTriangle size={10} className="text-red-400" aria-hidden="true"/>}
             Vencidas
           </div>
           <div className={`text-lg font-bold ${kpis.overdue > 0 ? 'text-red-400' : ''}`}>{kpis.overdue}</div>
         </div>
         <div className={`bg-[var(--card)] border rounded-xl p-4 ${kpis.highPrioActive > 0 ? 'border-amber-500/30 bg-amber-500/5' : 'border-[var(--border)]'}`}>
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-            <Target size={10} className="text-amber-400" />
+            <Target size={10} className="text-amber-400" aria-hidden="true"/>
             Alta prioridad
           </div>
           <div className={`text-lg font-bold ${kpis.highPrioActive > 0 ? 'text-amber-400' : ''}`}>{kpis.highPrioActive}</div>
@@ -579,7 +579,7 @@ export default function TasksScreen() {
         </div>
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-            <Users size={10} />
+            <Users size={10} aria-hidden="true"/>
             Equipo activo
           </div>
           <div className="text-lg font-bold">{memberProductivity.length}</div>
@@ -621,7 +621,7 @@ export default function TasksScreen() {
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 lg:col-span-2">
           <div className="flex items-center justify-between mb-3">
             <div className="text-[15px] font-semibold flex items-center gap-2">
-              <BarChart3 size={16} className="text-[var(--af-accent)]" />
+              <BarChart3 size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
               Tendencia Mensual
             </div>
             <span className="text-[10px] text-[var(--muted-foreground)] px-2 py-0.5 rounded-full bg-[var(--af-bg4)]">6 meses</span>
@@ -647,7 +647,7 @@ export default function TasksScreen() {
       {memberProductivity.length > 0 && (
         <div>
           <div className="text-[15px] font-semibold mb-3 flex items-center gap-2">
-            <Users size={16} className="text-[var(--af-accent)]" />
+            <Users size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Productividad por Miembro
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -690,7 +690,7 @@ export default function TasksScreen() {
         filteredTasks.length === 0 ? (
           <div className="text-center py-16 text-[var(--af-text3)]">
             <div className="w-14 h-14 rounded-2xl bg-[var(--af-bg3)] flex items-center justify-center mx-auto mb-3">
-              <KanbanSquare size={24} className="text-[var(--af-text3)]" />
+              <KanbanSquare size={24} className="text-[var(--af-text3)]" aria-hidden="true"/>
             </div>
             <div className="text-[15px] font-medium text-[var(--muted-foreground)]">
               {hasActiveFilters ? 'Sin resultados' : 'Sin tareas'}
@@ -705,7 +705,7 @@ export default function TasksScreen() {
             {activeTasks.length === 0 && completedTasks.length > 0 && (
               <div className="text-center py-8">
                 <div className="inline-flex items-center gap-2 text-[var(--muted-foreground)] text-sm">
-                  <CheckCircle2 size={16} className="text-emerald-400" />
+                  <CheckCircle2 size={16} className="text-emerald-400" aria-hidden="true"/>
                   Todas las tareas estan completadas
                 </div>
               </div>
@@ -755,32 +755,32 @@ export default function TasksScreen() {
                               if (!phaseName) return null;
                               return (
                                 <span className="inline-flex items-center gap-0.5 text-violet-400">
-                                  <Layers size={9} className="flex-shrink-0" />
+                                  <Layers size={9} className="flex-shrink-0" aria-hidden="true"/>
                                   {phaseName}
                                 </span>
                               );
                             })()}
                             {t.data.dueDate && (
                               <span className={isOverdue ? 'text-red-400' : ''}>
-                                <Calendar size={10} className="inline mr-0.5" />
+                                <Calendar size={10} className="inline mr-0.5" aria-hidden="true"/>
                                 {fmtDate(t.data.dueDate)}
                               </span>
                             )}
                             {(t.data.estimatedHours ?? 0) > 0 && (
                               <span className="inline-flex items-center gap-0.5 text-blue-400">
-                                <Clock size={9} className="flex-shrink-0" />
+                                <Clock size={9} className="flex-shrink-0" aria-hidden="true"/>
                                 {t.data.estimatedHours}h
                               </span>
                             )}
                             {tTags.length > 0 && (
                               <span className="inline-flex items-center gap-0.5 text-violet-400">
-                                <Tag size={9} className="flex-shrink-0" />
+                                <Tag size={9} className="flex-shrink-0" aria-hidden="true"/>
                                 {tTags.slice(0, 2).join(', ')}{tTags.length > 2 ? ` +${tTags.length - 2}` : ''}
                               </span>
                             )}
                             {t.data.agendaMeta && (
                               <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] font-medium">
-                                <CalendarDays className="w-2.5 h-2.5" />
+                                <CalendarDays className="w-2.5 h-2.5" aria-hidden="true"/>
                                 Agenda
                                 {t.data.agendaMeta.hourSlots?.length > 0 && (
                                   <span className="opacity-70">{formatHourSlots(t.data.agendaMeta.hourSlots)}</span>
@@ -796,7 +796,7 @@ export default function TasksScreen() {
                         <div className="hidden md:flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button className="text-xs px-2.5 py-1.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] cursor-pointer hover:bg-[var(--af-accent)]/20" onClick={() => openEditTask(t)}>Editar</button>
                           <button className="text-xs px-2 py-1.5 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}>
-                            <X size={12} />
+                            <X size={12} aria-hidden="true"/>
                           </button>
                         </div>
                         {/* Mobile overflow menu - always visible on mobile */}
@@ -805,12 +805,12 @@ export default function TasksScreen() {
                             actions={[
                               {
                                 label: 'Editar tarea',
-                                icon: <Pencil size={14} />,
+                                icon: <Pencil size={14} aria-hidden="true"/>,
                                 onClick: () => openEditTask(t),
                               },
                               {
                                 label: 'Eliminar tarea',
-                                icon: <Trash2 size={14} />,
+                                icon: <Trash2 size={14} aria-hidden="true"/>,
                                 onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); },
                                 variant: 'danger',
                                 separator: true,
@@ -835,8 +835,8 @@ export default function TasksScreen() {
                   className="w-full flex items-center gap-2 px-4 py-3 rounded-xl bg-[var(--card)] border border-[var(--border)] hover:bg-[var(--af-bg3)] transition-colors cursor-pointer group/hist"
                   onClick={() => setShowCompleted(!showCompleted)}
                 >
-                  <ChevronRight size={16} className={`text-[var(--af-text3)] transition-transform ${showCompleted ? 'rotate-90' : ''}`} />
-                  <CheckCircle2 size={16} className="text-emerald-400" />
+                  <ChevronRight size={16} className={`text-[var(--af-text3)] transition-transform ${showCompleted ? 'rotate-90' : ''}`} aria-hidden="true"/>
+                  <CheckCircle2 size={16} className="text-emerald-400" aria-hidden="true"/>
                   <span className="text-[13px] font-semibold flex-1 text-left">
                     Tareas completadas
                   </span>
@@ -858,9 +858,9 @@ export default function TasksScreen() {
                   <div className="mt-2 bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 sm:p-4 animate-fadeIn">
                     {/* Quick stats */}
                     <div className="flex items-center gap-3 mb-3 px-1 text-[10px] text-[var(--af-text3)]">
-                      <span className="flex items-center gap-1"><Clock size={9} /> Recientes primero</span>
+                      <span className="flex items-center gap-1"><Clock size={9} aria-hidden="true"/> Recientes primero</span>
                       {completedOldCount > 0 && (
-                        <span className="flex items-center gap-1 text-amber-400/70"><Archive size={9} /> {completedOldCount} archivadas (+30 dias)</span>
+                        <span className="flex items-center gap-1 text-amber-400/70"><Archive size={9} aria-hidden="true"/> {completedOldCount} archivadas (+30 dias)</span>
                       )}
                     </div>
                     {completedTasks.map((t: Task) => {
@@ -884,25 +884,25 @@ export default function TasksScreen() {
                               {proj && <span>{proj.data.name}</span>}
                               {completedDate && (
                                 <span className="inline-flex items-center gap-0.5 text-emerald-400/70">
-                                  <CheckCircle2 size={8} className="flex-shrink-0" />
+                                  <CheckCircle2 size={8} className="flex-shrink-0" aria-hidden="true"/>
                                   Completada {fmtDate(completedDate.toISOString().split('T')[0])}
                                 </span>
                               )}
                               {completedByName && (
                                 <span className="inline-flex items-center gap-0.5">
-                                  <User size={8} className="flex-shrink-0" />
+                                  <User size={8} className="flex-shrink-0" aria-hidden="true"/>
                                   {completedByName}
                                 </span>
                               )}
                               {isOld && (
                                 <span className="inline-flex items-center gap-0.5 text-amber-400/60">
-                                  <Archive size={8} className="flex-shrink-0" />
+                                  <Archive size={8} className="flex-shrink-0" aria-hidden="true"/>
                                   Archivada
                                 </span>
                               )}
                               {t.data.agendaMeta && (
                                 <span className="inline-flex items-center gap-1 text-[9px] px-1 py-0.5 rounded bg-[var(--af-accent)]/5 text-[var(--af-accent)]/60 font-medium">
-                                  <CalendarDays className="w-2 h-2" />
+                                  <CalendarDays className="w-2 h-2" aria-hidden="true"/>
                                   Agenda
                                 </span>
                               )}
@@ -913,16 +913,16 @@ export default function TasksScreen() {
                           <div className="hidden md:flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button className="text-xs px-2.5 py-1.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] cursor-pointer hover:bg-[var(--af-accent)]/20" onClick={() => openEditTask(t)}>Editar</button>
                             <button className="text-xs px-2 py-1.5 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}>
-                              <X size={12} />
+                              <X size={12} aria-hidden="true"/>
                             </button>
                           </div>
                           {/* Mobile overflow */}
                           <div className="md:hidden flex-shrink-0">
                             <OverflowMenu
                               actions={[
-                                { label: 'Reabrir tarea', icon: <Eye size={14} />, onClick: () => toggleTask(t.id, t.data.status) },
-                                { label: 'Editar tarea', icon: <Pencil size={14} />, onClick: () => openEditTask(t) },
-                                { label: 'Eliminar tarea', icon: <Trash2 size={14} />, onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }, variant: 'danger', separator: true },
+                                { label: 'Reabrir tarea', icon: <Eye size={14} aria-hidden="true"/>, onClick: () => toggleTask(t.id, t.data.status) },
+                                { label: 'Editar tarea', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => openEditTask(t) },
+                                { label: 'Eliminar tarea', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }, variant: 'danger', separator: true },
                               ]}
                               side="left"
                               align="end"
@@ -942,7 +942,7 @@ export default function TasksScreen() {
         filteredTasks.length === 0 ? (
           <div className="text-center py-16 text-[var(--af-text3)]">
             <div className="w-14 h-14 rounded-2xl bg-[var(--af-bg3)] flex items-center justify-center mx-auto mb-3">
-              <KanbanSquare size={24} className="text-[var(--af-text3)]" />
+              <KanbanSquare size={24} className="text-[var(--af-text3)]" aria-hidden="true"/>
             </div>
             <div className="text-[15px] font-medium text-[var(--muted-foreground)]">
               {hasActiveFilters ? 'Sin resultados' : 'Sin tareas'}
@@ -984,7 +984,7 @@ export default function TasksScreen() {
                         <span className={`w-2.5 h-2.5 rounded-full ${col.dot}`} />
                         <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">{colTasks.length}</span>
                         <span className="text-[10px] text-[var(--af-text3)] [writing-mode:vertical-lr] rotate-180">Completado</span>
-                        <Eye size={12} className="text-[var(--af-text3)]" />
+                        <Eye size={12} className="text-[var(--af-text3)]" aria-hidden="true"/>
                       </div>
                     ) : (
                       <>
@@ -1005,7 +1005,7 @@ export default function TasksScreen() {
                               onClick={() => setKanbanCompletedCollapsed(true)}
                               title="Colapsar columna"
                             >
-                              <EyeOff size={14} />
+                              <EyeOff size={14} aria-hidden="true"/>
                             </button>
                           )}
                           <button
@@ -1013,7 +1013,7 @@ export default function TasksScreen() {
                             onClick={() => handleNewTaskInColumn(col.status)}
                             title={`Agregar tarea en ${col.status}`}
                           >
-                            <Plus size={14} />
+                            <Plus size={14} aria-hidden="true"/>
                           </button>
                         </div>
 
@@ -1026,7 +1026,7 @@ export default function TasksScreen() {
                             className="text-[10px] px-2.5 py-1 rounded-md bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] cursor-pointer hover:border-[var(--af-accent)]/30 hover:text-[var(--af-accent)] transition-all"
                             onClick={() => handleNewTaskInColumn(col.status)}
                           >
-                            <Plus size={10} className="inline mr-0.5" /> Crear tarea
+                            <Plus size={10} className="inline mr-0.5" aria-hidden="true"/> Crear tarea
                           </button>
                         </div>
                       )}
@@ -1059,14 +1059,14 @@ export default function TasksScreen() {
                                 onClick={e => { e.stopPropagation(); openEditTask(t); }}
                                 title="Editar"
                               >
-                                <Pencil size={11} />
+                                <Pencil size={11} aria-hidden="true"/>
                               </button>
                               <button
                                 className="w-6 h-6 rounded flex items-center justify-center bg-[var(--card)]/90 backdrop-blur-sm text-[var(--af-text3)] hover:text-red-400 hover:bg-red-500/10 cursor-pointer transition-colors border border-[var(--border)]"
                                 onClick={async e => { e.stopPropagation(); if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}
                                 title="Eliminar"
                               >
-                                <Trash2 size={11} />
+                                <Trash2 size={11} aria-hidden="true"/>
                               </button>
                             </div>
 
@@ -1078,7 +1078,7 @@ export default function TasksScreen() {
                                   const phaseName = getPhaseName(t.data.phaseId, t.data.projectId);
                                   return phaseName ? (
                                     <span className="ml-1.5 inline-flex items-center gap-0.5 text-violet-400">
-                                      <Layers size={8} className="flex-shrink-0" />
+                                      <Layers size={8} className="flex-shrink-0" aria-hidden="true"/>
                                       {phaseName}
                                     </span>
                                   ) : null;
@@ -1088,7 +1088,7 @@ export default function TasksScreen() {
 
                           {/* Task title */}
                           <div className="flex items-start gap-2">
-                            <GripVertical size={14} className="text-[var(--af-text3)] flex-shrink-0 mt-0.5 md:opacity-0 md:group-hover/card:opacity-100 transition-opacity" />
+                            <GripVertical size={14} className="text-[var(--af-text3)] flex-shrink-0 mt-0.5 md:opacity-0 md:group-hover/card:opacity-100 transition-opacity" aria-hidden="true"/>
                             <div className={`text-[13px] font-medium flex-1 leading-snug ${t.data.status === 'Completado' ? 'line-through text-[var(--af-text3)]' : ''}`}>
                               {t.data.title}
                             </div>
@@ -1100,13 +1100,13 @@ export default function TasksScreen() {
                               </span>
                               {t.data.dueDate && (
                                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 ${isOverdue ? 'bg-red-500/10 text-red-400' : 'bg-[var(--af-bg4)] text-[var(--muted-foreground)]'}`}>
-                                  <Calendar size={9} className="flex-shrink-0" />
+                                  <Calendar size={9} className="flex-shrink-0" aria-hidden="true"/>
                                   {fmtDate(t.data.dueDate)}
                                 </span>
                               )}
                               {(t.data.estimatedHours ?? 0) > 0 && (
                                 <span className="text-[10px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5 bg-blue-500/10 text-blue-400">
-                                  <Clock size={9} className="flex-shrink-0" />
+                                  <Clock size={9} className="flex-shrink-0" aria-hidden="true"/>
                                   {t.data.estimatedHours}h
                                 </span>
                               )}
@@ -1140,7 +1140,7 @@ export default function TasksScreen() {
                             {t.data.agendaMeta && (
                               <div className="mt-1.5">
                                 <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] font-medium">
-                                  <CalendarDays className="w-2.5 h-2.5" />
+                                  <CalendarDays className="w-2.5 h-2.5" aria-hidden="true"/>
                                   Agenda
                                   {t.data.agendaMeta.hourSlots?.length > 0 && (
                                     <span className="opacity-70">{formatHourSlots(t.data.agendaMeta.hourSlots)}</span>
@@ -1154,7 +1154,7 @@ export default function TasksScreen() {
                           <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border)]">
                             <AssigneeAvatars task={t} getUserName={getUserName} size="md" />
                             <button className="text-[10px] text-[var(--af-text3)] hover:text-red-400 cursor-pointer md:opacity-0 md:group-hover/card:opacity-100 transition-opacity" onClick={async e => { e.stopPropagation(); if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}>
-                              <X size={12} />
+                              <X size={12} aria-hidden="true"/>
                             </button>
                           </div>
                           {/* Mobile: Status change dropdown */}

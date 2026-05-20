@@ -20,11 +20,11 @@ export default function DashboardProjectsList({
     <div className="lg:col-span-2 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5">
       <div className="flex items-center justify-between mb-3">
         <div className="text-[14px] sm:text-[15px] font-semibold flex items-center gap-2">
-          <FolderKanban size={16} className="text-blue-400" />
+          <FolderKanban size={16} className="text-blue-400" aria-hidden="true"/>
           Proyectos
         </div>
         <button className="text-[10px] text-[var(--af-accent)] cursor-pointer hover:underline flex items-center gap-1" onClick={() => navigateTo('projects')}>
-          Ver todos <ChevronRight size={12} />
+          Ver todos <ChevronRight size={12} aria-hidden="true"/>
         </button>
       </div>
       {projs.length === 0 ? (

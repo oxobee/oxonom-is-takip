@@ -91,15 +91,16 @@ function SpotlightTooltip({
         <div className="px-4 pt-3 pb-2 flex items-start justify-between">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-[var(--af-accent)]/15 flex items-center justify-center flex-shrink-0">
-              <Lightbulb size={14} className="stroke-[var(--af-accent)]" />
+              <Lightbulb size={14} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
             </div>
             <span className="text-[13px] font-semibold text-[var(--foreground)]">{tip.title}</span>
           </div>
           <button
+            aria-label="Cerrar"
             onClick={onDismiss}
             className="w-6 h-6 rounded-md flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-all cursor-pointer border-none bg-transparent flex-shrink-0"
           >
-            <X size={14} />
+            <X size={14} aria-hidden="true"/>
           </button>
         </div>
 
@@ -122,7 +123,7 @@ function SpotlightTooltip({
               className="flex items-center gap-1 text-[11px] font-medium text-[var(--af-accent)] hover:text-[var(--af-accent2)] cursor-pointer bg-transparent border-none px-2 py-1 rounded-md hover:bg-[var(--af-accent)]/10 transition-all"
             >
               Siguiente
-              <ChevronRight size={12} />
+              <ChevronRight size={12} aria-hidden="true"/>
             </button>
           )}
         </div>

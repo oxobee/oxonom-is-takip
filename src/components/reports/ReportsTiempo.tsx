@@ -35,10 +35,10 @@ export default function ReportsTiempo({ timeEntries, teamUsers, projects, dateLa
           <span className="text-[11px] text-[var(--af-text3)]">{dateLabel}</span>
           <button className="text-xs text-[var(--af-accent)] cursor-pointer hover:underline" onClick={() => {
             try { exportTimeReportPDF({ timeEntries, teamUsers, projects }); showToast('PDF descargado'); } catch { showToast('Error', 'error'); }
-          }}><FileText size={12} className="inline mr-1" />PDF</button>
+          }}><FileText size={12} className="inline mr-1" aria-hidden="true"/>PDF</button>
           <button className="text-xs text-[var(--af-accent)] cursor-pointer hover:underline" onClick={() => {
             try { exportTimeExcel(timeEntries, projects, teamUsers); showToast('Excel descargado'); } catch { showToast('Error', 'error'); }
-          }}><FileSpreadsheet size={12} className="inline mr-1" />Excel</button>
+          }}><FileSpreadsheet size={12} className="inline mr-1" aria-hidden="true"/>Excel</button>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">

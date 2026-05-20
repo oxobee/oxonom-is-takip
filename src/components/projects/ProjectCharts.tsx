@@ -21,7 +21,7 @@ export default function ProjectCharts({
       {/* Pie chart - status distribution */}
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
         <div className="text-[15px] font-semibold mb-3 flex items-center gap-2">
-          <PieIcon size={16} className="text-[var(--af-accent)]" />
+          <PieIcon size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
           Distribución por Estado
         </div>
         {statusDist.length === 0 ? (
@@ -53,7 +53,7 @@ export default function ProjectCharts({
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 lg:col-span-2">
         <div className="flex items-center justify-between mb-3">
           <div className="text-[15px] font-semibold flex items-center gap-2">
-            <BarChart3 size={16} className="text-[var(--af-accent)]" />
+            <BarChart3 size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Proyectos Creados
           </div>
           <span className="text-[10px] text-[var(--muted-foreground)] px-2 py-0.5 rounded-full bg-[var(--af-bg4)]">6 meses</span>

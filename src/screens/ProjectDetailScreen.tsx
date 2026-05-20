@@ -178,7 +178,7 @@ export default function ProjectDetailScreen() {
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button className="flex items-center gap-1.5 bg-[var(--af-bg3)] border border-[var(--border)] text-[var(--foreground)] px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={() => navigateTo('projects')}>
-                    <ChevronLeft className="w-3.5 h-3.5" />
+                    <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true"/>
                     Volver
                   </button>
                   <button className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer border-none hover:opacity-90 transition-opacity" onClick={() => openEditProject(currentProject)}>
@@ -203,7 +203,7 @@ export default function ProjectDetailScreen() {
                 ) : (
                   <button className="flex items-center gap-1 text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer bg-transparent border-none" onClick={() => setEditingProgress(true)}>
                     {currentProject.data.progress || 0}%
-                    <Pencil className="w-3 h-3 ml-0.5" />
+                    <Pencil className="w-3 h-3 ml-0.5" aria-hidden="true"/>
                   </button>
                 )}
               </div>
@@ -365,7 +365,7 @@ export default function ProjectDetailScreen() {
                         if (!phaseName) return null;
                         return (
                           <span className="inline-flex items-center gap-0.5 text-violet-400">
-                            <Layers size={10} className="flex-shrink-0" />
+                            <Layers size={10} className="flex-shrink-0" aria-hidden="true"/>
                             {phaseName}
                           </span>
                         );
@@ -1122,7 +1122,7 @@ export default function ProjectDetailScreen() {
                     className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer border-none hover:opacity-90 transition-opacity"
                     onClick={() => { resetLogForm(); setSelectedLogId(null); setDailyLogTab('create'); }}
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    <Plus className="w-3.5 h-3.5" aria-hidden="true"/>
                     Nuevo Registro
                   </button>
                 </div>
@@ -1168,13 +1168,13 @@ export default function ProjectDetailScreen() {
                               </div>
                               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--af-bg3)] text-[var(--muted-foreground)] cursor-pointer border-none bg-transparent transition-colors" onClick={() => { setSelectedLogId(log.id); setDailyLogTab('detail'); }} title="Ver detalle">
-                                  <Eye className="w-3.5 h-3.5" />
+                                  <Eye className="w-3.5 h-3.5" aria-hidden="true"/>
                                 </button>
                                 <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--af-bg3)] text-[var(--muted-foreground)] cursor-pointer border-none bg-transparent transition-colors" onClick={() => openEditLog(log)} title="Editar">
-                                  <Pencil className="w-3.5 h-3.5" />
+                                  <Pencil className="w-3.5 h-3.5" aria-hidden="true"/>
                                 </button>
                                 <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-500/10 text-[var(--muted-foreground)] hover:text-red-400 cursor-pointer border-none bg-transparent transition-colors" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar bitácora', description: '¿Eliminar este registro de bitácora?' })) deleteDailyLog(log.id); }} title="Eliminar">
-                                  <Trash2 className="w-3.5 h-3.5" />
+                                  <Trash2 className="w-3.5 h-3.5" aria-hidden="true"/>
                                 </button>
                               </div>
                             </div>
@@ -1218,7 +1218,7 @@ export default function ProjectDetailScreen() {
                   return (
                     <div className="space-y-4">
                       <button className="flex items-center gap-1.5 text-[12px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer border-none bg-transparent" onClick={() => { setDailyLogTab('list'); setSelectedLogId(null); }}>
-                        <ChevronLeft className="w-3.5 h-3.5" />
+                        <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true"/>
                         Volver a bitácora
                       </button>
 
@@ -1300,7 +1300,7 @@ export default function ProjectDetailScreen() {
                 {dailyLogTab === 'create' && (
                   <div className="space-y-4">
                     <button className="flex items-center gap-1.5 text-[12px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer border-none bg-transparent" onClick={() => { setDailyLogTab('list'); setSelectedLogId(null); resetLogForm(); }}>
-                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true"/>
                       Volver a bitácora
                     </button>
 
@@ -1351,7 +1351,7 @@ export default function ProjectDetailScreen() {
                               <input type="text" className="flex-1 bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]" placeholder={`Actividad ${i + 1}`} value={a} onChange={e => { const arr = [...(logForm.activities || [''])]; arr[i] = e.target.value; setLogForm((p: Record<string, any>) => ({ ...p, activities: arr })); }} />
                               {(logForm.activities || ['']).length > 1 && (
                                 <button className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-red-500/10 text-[var(--muted-foreground)] hover:text-red-400 cursor-pointer border-none bg-transparent flex-shrink-0 transition-colors" onClick={() => { const arr = (logForm.activities || ['']).filter((_: string, idx: number) => idx !== i); setLogForm((p: Record<string, any>) => ({ ...p, activities: arr.length > 0 ? arr : [''] })); }}>
-                                  <X className="w-4 h-4" />
+                                  <X className="w-4 h-4" aria-hidden="true"/>
                                 </button>
                               )}
                             </div>
@@ -1371,7 +1371,7 @@ export default function ProjectDetailScreen() {
                               <input type="text" className="flex-1 bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]" placeholder={`Equipo ${i + 1}`} value={e} onChange={ev => { const arr = [...(logForm.equipment || [''])]; arr[i] = ev.target.value; setLogForm((p: Record<string, any>) => ({ ...p, equipment: arr })); }} />
                               {(logForm.equipment || ['']).length > 1 && (
                                 <button className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-red-500/10 text-[var(--muted-foreground)] hover:text-red-400 cursor-pointer border-none bg-transparent flex-shrink-0 transition-colors" onClick={() => { const arr = (logForm.equipment || ['']).filter((_: string, idx: number) => idx !== i); setLogForm((p: Record<string, any>) => ({ ...p, equipment: arr.length > 0 ? arr : [''] })); }}>
-                                  <X className="w-4 h-4" />
+                                  <X className="w-4 h-4" aria-hidden="true"/>
                                 </button>
                               )}
                             </div>
@@ -1391,7 +1391,7 @@ export default function ProjectDetailScreen() {
                               <input type="text" className="flex-1 bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]" placeholder={`Material ${i + 1}`} value={m} onChange={ev => { const arr = [...(logForm.materials || [''])]; arr[i] = ev.target.value; setLogForm((p: Record<string, any>) => ({ ...p, materials: arr })); }} />
                               {(logForm.materials || ['']).length > 1 && (
                                 <button className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-red-500/10 text-[var(--muted-foreground)] hover:text-red-400 cursor-pointer border-none bg-transparent flex-shrink-0 transition-colors" onClick={() => { const arr = (logForm.materials || ['']).filter((_: string, idx: number) => idx !== i); setLogForm((p: Record<string, any>) => ({ ...p, materials: arr.length > 0 ? arr : [''] })); }}>
-                                  <X className="w-4 h-4" />
+                                  <X className="w-4 h-4" aria-hidden="true"/>
                                 </button>
                               )}
                             </div>
@@ -1414,7 +1414,7 @@ export default function ProjectDetailScreen() {
                           ))}
                           <label className="w-20 h-20 rounded-lg border-2 border-dashed border-[var(--border)] flex items-center justify-center cursor-pointer hover:border-[var(--af-accent)]/40 transition-colors flex-shrink-0">
                             <input type="file" accept="image/*" className="hidden" multiple onChange={e => { const files = e.target.files; if (!files) return; Array.from(files).forEach(f => { const reader = new FileReader(); reader.onload = () => setLogForm((pf: Record<string, any>) => ({ ...pf, photos: [...(pf.photos || []), reader.result as string] })); reader.readAsDataURL(f); }); }} />
-                            <Plus className="w-5 h-5 text-[var(--muted-foreground)]" />
+                            <Plus className="w-5 h-5 text-[var(--muted-foreground)]" aria-hidden="true"/>
                           </label>
                         </div>
                       </div>
@@ -1460,15 +1460,15 @@ export default function ProjectDetailScreen() {
                 </div>
               )}
               {ganttData.phases.length > 0 && (
-                <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-4"><div className="text-[13px] font-semibold">Tareas por fase</div>{ganttData.phases.map((phase: WorkPhase & { days: number; offset: number; tasks: Task[] }) => phase.tasks.length > 0 && (<div key={phase.id}><div className="text-[11px] font-medium text-[var(--muted-foreground)] mb-1.5 flex items-center gap-1"><Layers size={10} /> {phase.data.name} ({phase.tasks.length})</div>{phase.tasks.slice(0, 5).map((t: Task) => (<div key={t.id} className="flex items-center gap-2 py-1 ml-3"><div className={"w-1.5 h-1.5 rounded-full " + (t.data.status === 'Completado' ? 'bg-emerald-500' : 'bg-[var(--af-bg4)]')} /><span className={"text-[11px] flex-1 truncate " + (t.data.status === 'Completado' ? 'line-through text-[var(--af-text3)]' : '')}>{t.data.title}</span>{t.data.dueDate && <span className="text-[9px] text-[var(--af-text3)]">{fmtDate(t.data.dueDate)}</span>}</div>))}{phase.tasks.length > 5 && <div className="text-[10px] text-[var(--af-accent)] ml-3">+{phase.tasks.length - 5} mas...</div>}</div>))}</div>
+                <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 space-y-4"><div className="text-[13px] font-semibold">Tareas por fase</div>{ganttData.phases.map((phase: WorkPhase & { days: number; offset: number; tasks: Task[] }) => phase.tasks.length > 0 && (<div key={phase.id}><div className="text-[11px] font-medium text-[var(--muted-foreground)] mb-1.5 flex items-center gap-1"><Layers size={10} aria-hidden="true"/> {phase.data.name} ({phase.tasks.length})</div>{phase.tasks.slice(0, 5).map((t: Task) => (<div key={t.id} className="flex items-center gap-2 py-1 ml-3"><div className={"w-1.5 h-1.5 rounded-full " + (t.data.status === 'Completado' ? 'bg-emerald-500' : 'bg-[var(--af-bg4)]')} /><span className={"text-[11px] flex-1 truncate " + (t.data.status === 'Completado' ? 'line-through text-[var(--af-text3)]' : '')}>{t.data.title}</span>{t.data.dueDate && <span className="text-[9px] text-[var(--af-text3)]">{fmtDate(t.data.dueDate)}</span>}</div>))}{phase.tasks.length > 5 && <div className="text-[10px] text-[var(--af-accent)] ml-3">+{phase.tasks.length - 5} mas...</div>}</div>))}</div>
               )}
             </div>)}
 
             {/* 10. TAB: Comentarios */}
             {forms.detailTab === 'Comentarios' && (<div className="space-y-4">
-              <div className="flex items-center gap-3"><div className="bg-[var(--card)] border border-[var(--border)] rounded-xl px-3 py-2 flex items-center gap-2"><MessageSquare size={14} className="text-[var(--af-accent)]" /><span className="text-sm font-bold">{projComments.length}</span><span className="text-[11px] text-[var(--muted-foreground)]">comentarios</span></div></div>
+              <div className="flex items-center gap-3"><div className="bg-[var(--card)] border border-[var(--border)] rounded-xl px-3 py-2 flex items-center gap-2"><MessageSquare size={14} className="text-[var(--af-accent)]" aria-hidden="true"/><span className="text-sm font-bold">{projComments.length}</span><span className="text-[11px] text-[var(--muted-foreground)]">comentarios</span></div></div>
               {replyingTo && (<div className="bg-[var(--af-accent)]/10 border border-[var(--af-accent)]/20 rounded-lg px-3 py-2 flex items-center justify-between"><span className="text-[11px] text-[var(--af-accent)]">Respondiendo a {(comments || []).find((c: Comment) => c.id === replyingTo)?.data?.userName || '...'}</span><button className="text-[10px] text-red-400 cursor-pointer hover:underline" onClick={() => setReplyingTo(null)}>Cancelar</button></div>)}
-              <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3"><textarea className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)] resize-none" rows={3} placeholder="Escribe un comentario... Usa @ para mencionar" value={commentText} onChange={e => setCommentText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleProjectComment(); }} /><div className="flex justify-end mt-2"><button className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer border-none hover:opacity-90 disabled:opacity-40" disabled={!commentText.trim()} onClick={handleProjectComment}><Send size={12} /> Enviar</button></div></div>
+              <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3"><textarea className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)] resize-none" rows={3} placeholder="Escribe un comentario... Usa @ para mencionar" value={commentText} onChange={e => setCommentText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleProjectComment(); }} /><div className="flex justify-end mt-2"><button className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer border-none hover:opacity-90 disabled:opacity-40" disabled={!commentText.trim()} onClick={handleProjectComment}><Send size={12} aria-hidden="true"/> Enviar</button></div></div>
               {projComments.length === 0 ? (<div className="text-center py-16 text-[var(--af-text3)]"><div className="text-4xl mb-3">💬</div><div className="text-sm font-medium">Sin comentarios</div><div className="text-xs mt-1">Inicia la conversacion sobre este proyecto</div></div>) : (<div className="space-y-3">{projComments.map((c: Comment) => { const replies = (projReplies || []).filter((r: Comment) => r.data.parentId === c.id); return (<div key={c.id} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3"><div className="flex items-start gap-2.5"><div className="w-7 h-7 rounded-full bg-[var(--af-bg4)] flex items-center justify-center text-[11px] font-bold text-[var(--af-accent)] shrink-0 overflow-hidden">{c.data.userPhoto ? <img src={c.data.userPhoto} className="w-full h-full object-cover rounded-full" /> : (c.data.userName || '?')[0].toUpperCase()}</div><div className="flex-1 min-w-0"><div className="flex items-center gap-2 mb-0.5"><span className="text-[12px] font-semibold">{c.data.userName || 'Usuario'}</span>{c.data.createdAt && <span className="text-[9px] text-[var(--muted-foreground)]">{timeAgo(c.data.createdAt)}</span>}</div><div className="text-[12px] text-[var(--foreground)] leading-relaxed whitespace-pre-wrap break-words">{c.data.text}</div>{c.data.mentions && c.data.mentions.length > 0 && <div className="text-[9px] text-blue-400 mt-1">Menciona: {(c.data.mentions || []).map((m: string) => getUserName(m)).filter(Boolean).join(', ')}</div>}<button className="text-[9px] text-[var(--muted-foreground)] mt-1.5 cursor-pointer hover:text-[var(--af-accent)]" onClick={() => setReplyingTo(c.id)}>Responder</button>{replies.length > 0 && (<div className="mt-2 pl-3 border-l-2 border-[var(--af-bg4)] space-y-2">{replies.map((r: Comment) => (<div key={r.id} className="flex items-start gap-2"><div className="w-5 h-5 rounded-full bg-[var(--af-bg4)] flex items-center justify-center text-[9px] font-bold text-[var(--muted-foreground)] shrink-0">{(r.data.userName || '?')[0].toUpperCase()}</div><div className="flex-1 min-w-0"><div className="flex items-center gap-2"><span className="text-[11px] font-medium">{r.data.userName}</span>{r.data.createdAt && <span className="text-[8px] text-[var(--muted-foreground)]">{timeAgo(r.data.createdAt)}</span>}</div><div className="text-[11px] leading-relaxed whitespace-pre-wrap">{r.data.text}</div></div></div>))}</div>)}</div></div></div>); })}</div>)}
             </div>)}
 

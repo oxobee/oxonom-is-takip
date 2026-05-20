@@ -26,28 +26,28 @@ const ACTION_BUTTONS = [
   {
     id: 'tasks',
     label: 'Sugerir tareas',
-    icon: <CheckSquare size={16} />,
+    icon: <CheckSquare size={16} aria-hidden="true"/>,
     prompt: 'Sugiere 5 tareas importantes para mi proyecto actual con prioridades y fechas límite recomendadas',
     description: 'Genera tareas sugeridas para tu proyecto',
   },
   {
     id: 'budget',
     label: 'Analizar presupuesto',
-    icon: <DollarSign size={16} />,
+    icon: <DollarSign size={16} aria-hidden="true"/>,
     prompt: 'Analiza mi presupuesto actual, muestra gastos por categoría y recomienda cómo optimizar costos',
     description: 'Analiza y optimiza los gastos del proyecto',
   },
   {
     id: 'schedule',
     label: 'Planificar cronograma',
-    icon: <CalendarDays size={16} />,
+    icon: <CalendarDays size={16} aria-hidden="true"/>,
     prompt: 'Crea un cronograma de obra con hitos y fechas clave para las próximas 8 semanas',
     description: 'Sugiere hitos y fechas clave',
   },
   {
     id: 'improve',
     label: 'Mejoras del proyecto',
-    icon: <BarChart3 size={16} />,
+    icon: <BarChart3 size={16} aria-hidden="true"/>,
     prompt: 'Analiza mi proyecto y dame recomendaciones accionables para mejorarlo (tiempo, costo, calidad)',
     description: 'Recomendaciones para mejorar tu proyecto',
   },
@@ -116,15 +116,16 @@ export default function QuickActions({ isOpen, onClose, onOpenChat }: QuickActio
         <div className="px-4 py-3 border-b border-[var(--af-bg4)] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[var(--af-accent)] to-amber-600 flex items-center justify-center">
-              <Zap size={12} className="text-black" strokeWidth={2.5} />
+              <Zap size={12} className="text-black" strokeWidth={2.5} aria-hidden="true"/>
             </div>
             <h4 className="text-sm font-semibold text-foreground">Acciones rápidas</h4>
           </div>
           <button
+            aria-label="Cerrar"
             onClick={onClose}
             className="w-10 h-10 rounded-lg active:bg-[var(--af-bg4)] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
           >
-            <X size={14} />
+            <X size={14} aria-hidden="true"/>
           </button>
         </div>
 
@@ -149,7 +150,7 @@ export default function QuickActions({ isOpen, onClose, onOpenChat }: QuickActio
                   : 'bg-[var(--af-bg3)] text-muted-foreground'
               )}>
                 {loadingId === action.id ? (
-                  <Loader2 size={16} className="animate-spin" />
+                  <Loader2 size={16} className="animate-spin" aria-hidden="true"/>
                 ) : (
                   action.icon
                 )}
@@ -209,7 +210,7 @@ export default function QuickActions({ isOpen, onClose, onOpenChat }: QuickActio
             className="w-full py-3 rounded-xl bg-gradient-to-r from-[var(--af-accent)]/15 to-amber-600/10 text-[var(--af-accent)] text-xs font-semibold active:from-[var(--af-accent)]/20 active:to-amber-600/15 transition-all border border-[var(--af-accent)]/10 mb-[env(safe-area-inset-bottom,0px)]"
           >
             <span className="flex items-center justify-center gap-1.5">
-              <HelpCircle size={14} />
+              <HelpCircle size={14} aria-hidden="true"/>
               Abrir Super IA
             </span>
           </button>

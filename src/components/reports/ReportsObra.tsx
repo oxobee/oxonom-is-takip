@@ -78,10 +78,10 @@ export default function ReportsObra({ projects, rfis, submittals, punchItems, da
     {/* Export buttons */}
     <div className="flex items-center gap-2 justify-end">
       <button className="flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer border border-[var(--border)] hover:border-[var(--af-accent)]/30 transition-colors" onClick={() => { try { exportObraPDF({ rfis, submittals, punchItems, dailyLogs, projects }); showToast('Reporte PDF descargado'); } catch { showToast('Error al generar PDF', 'error'); } }}>
-        <FileText size={12} /> PDF
+        <FileText size={12} aria-hidden="true"/> PDF
       </button>
       <button className="flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer border border-[var(--border)] hover:border-[var(--af-accent)]/30 transition-colors" onClick={() => { try { exportObraExcel({ rfis, submittals, punchItems, dailyLogs, projects }); showToast('Reporte Excel descargado'); } catch { showToast('Error al generar Excel', 'error'); } }}>
-        <Download size={12} /> Excel
+        <Download size={12} aria-hidden="true"/> Excel
       </button>
     </div>
 

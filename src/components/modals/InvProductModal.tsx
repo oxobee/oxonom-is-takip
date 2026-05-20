@@ -21,7 +21,7 @@ export default function InvProductModal({ open, onClose }: { open: boolean; onCl
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={520}>
       <div className="text-lg font-semibold mb-5 flex items-center gap-2">
-        <Package className="w-5 h-5" />
+        <Package className="w-5 h-5" aria-hidden="true"/>
         {editingId ? 'Editar producto' : 'Nuevo producto'}
       </div>
 
@@ -80,13 +80,13 @@ export default function InvProductModal({ open, onClose }: { open: boolean; onCl
           {forms.invProdImage ? (
             <div className="relative rounded-xl overflow-hidden border border-[var(--border)] inline-block">
               <img src={forms.invProdImage} alt="Preview" className="w-full max-h-[140px] object-contain bg-[var(--af-bg3)]" />
-              <button className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center text-xs hover:bg-black/70 transition-colors cursor-pointer" onClick={() => setForms(p => ({ ...p, invProdImage: '' }))}>
-                <X className="w-3 h-3" />
+              <button aria-label="Quitar imagen" className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center text-xs hover:bg-black/70 transition-colors cursor-pointer" onClick={() => setForms(p => ({ ...p, invProdImage: '' }))}>
+                <X className="w-3 h-3" aria-hidden="true"/>
               </button>
             </div>
           ) : (
             <label className="flex flex-col items-center justify-center gap-1.5 p-5 border-2 border-dashed border-[var(--border)] rounded-xl cursor-pointer hover:border-[var(--af-accent)]/50 transition-colors bg-[var(--af-bg3)]">
-              <ImageIcon className="w-6 h-6 text-[var(--muted-foreground)]" />
+              <ImageIcon className="w-6 h-6 text-[var(--muted-foreground)]" aria-hidden="true"/>
               <span className="text-xs text-[var(--muted-foreground)]">Toca para agregar foto</span>
               <span className="text-[10px] text-[var(--muted-foreground)]">JPG, PNG — máx 3 MB</span>
               <input type="file" accept="image/*" className="hidden" onChange={handleInvProductImageSelect} />

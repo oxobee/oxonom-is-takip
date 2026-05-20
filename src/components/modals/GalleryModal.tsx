@@ -19,7 +19,7 @@ export default function GalleryModal({ open, onClose }: { open: boolean; onClose
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={480}>
       <div className="text-lg font-semibold mb-5 flex items-center gap-2">
-        <Camera className="w-5 h-5" />
+        <Camera className="w-5 h-5" aria-hidden="true"/>
         {editingId ? 'Editar foto' : 'Agregar foto'}
       </div>
 
@@ -29,13 +29,13 @@ export default function GalleryModal({ open, onClose }: { open: boolean; onClose
           {forms.galleryImageData ? (
             <div className="relative rounded-xl overflow-hidden border border-[var(--border)]">
               <img src={forms.galleryImageData} alt="Preview" className="w-full max-h-[200px] object-contain bg-[var(--af-bg3)]" />
-              <button className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center text-sm hover:bg-black/70 transition-colors" onClick={() => setForms(p => ({ ...p, galleryImageData: '' }))}>
-                <X className="w-4 h-4" />
+              <button aria-label="Quitar imagen" className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center text-sm hover:bg-black/70 transition-colors" onClick={() => setForms(p => ({ ...p, galleryImageData: '' }))}>
+                <X className="w-4 h-4" aria-hidden="true"/>
               </button>
             </div>
           ) : (
             <label className="flex flex-col items-center justify-center gap-2 p-8 border-2 border-dashed border-[var(--border)] rounded-xl cursor-pointer hover:border-[var(--af-accent)]/50 transition-colors bg-[var(--af-bg3)]">
-              <ImageIcon className="w-8 h-8 text-[var(--muted-foreground)]" />
+              <ImageIcon className="w-8 h-8 text-[var(--muted-foreground)]" aria-hidden="true"/>
               <span className="text-sm text-[var(--muted-foreground)]">Toca para seleccionar una imagen</span>
               <span className="text-[10px] text-[var(--muted-foreground)]">JPG, PNG, WebP — máx. 5 MB</span>
               <input type="file" accept="image/*" className="hidden" onChange={handleGalleryImageSelect} />

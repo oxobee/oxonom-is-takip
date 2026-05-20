@@ -163,10 +163,11 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
                       {name}{uid === authUser?.uid ? ' (Tu)' : ''}
                       <button
                         type="button"
+                        aria-label="Quitar asignado"
                         className="ml-0.5 hover:text-red-400 cursor-pointer bg-transparent border-none p-0"
                         onClick={() => removeAssignee(uid)}
                       >
-                        <X size={11} className="stroke-current" />
+                        <X size={11} className="stroke-current" aria-hidden="true"/>
                       </button>
                     </span>
                   );
@@ -177,7 +178,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
             {/* Lista de checkbox para seleccionar */}
             <div className="border border-[var(--border)] rounded-lg overflow-hidden max-h-[180px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
               <div className="px-2.5 py-2 bg-[var(--af-bg3)] border-b border-[var(--border)] flex items-center gap-1.5 text-[11px] text-[var(--muted-foreground)] font-medium">
-                <Users size={12} />
+                <Users size={12} aria-hidden="true"/>
                 {assignees.length === 0 ? 'Seleccionar responsables' : `${assignees.length} responsable${assignees.length > 1 ? 's' : ''} seleccionado${assignees.length > 1 ? 's' : ''}`}
               </div>
               {teamUsers.length === 0 && (
@@ -262,14 +263,15 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
                     key={tag}
                     className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-violet-500/10 text-violet-400 border border-violet-500/20"
                   >
-                    <Tag size={9} />
+                    <Tag size={9} aria-hidden="true"/>
                     {tag}
                     <button
                       type="button"
+                      aria-label="Quitar etiqueta"
                       className="ml-0.5 hover:text-red-400 cursor-pointer bg-transparent border-none p-0"
                       onClick={() => removeTag(tag)}
                     >
-                      <X size={10} className="stroke-current" />
+                      <X size={10} className="stroke-current" aria-hidden="true"/>
                     </button>
                   </span>
                 ))}
@@ -289,7 +291,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
                 className="px-2.5 py-1.5 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--af-accent)]/30 hover:text-[var(--af-accent)] cursor-pointer transition-colors"
                 onClick={addTag}
               >
-                <Plus size={13} />
+                <Plus size={13} aria-hidden="true"/>
               </button>
             </div>
           </div>
@@ -315,10 +317,11 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
                 />
                 <button
                   type="button"
+                  aria-label="Eliminar subtarea"
                   className="text-[var(--af-text3)] hover:text-red-400 cursor-pointer bg-transparent border-none p-0 flex-shrink-0"
                   onClick={() => removeSubtask(idx)}
                 >
-                  <Trash2 size={13} />
+                  <Trash2 size={13} aria-hidden="true"/>
                 </button>
               </div>
             ))}
@@ -327,7 +330,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
               className="flex items-center gap-1.5 text-[11px] text-[var(--af-accent)] cursor-pointer hover:underline bg-transparent border-none p-0 font-medium"
               onClick={addSubtask}
             >
-              <Plus size={13} /> Agregar subtarea
+              <Plus size={13} aria-hidden="true"/> Agregar subtarea
             </button>
           </div>
         </FormField>

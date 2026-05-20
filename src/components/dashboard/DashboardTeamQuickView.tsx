@@ -14,7 +14,7 @@ export default function DashboardTeamQuickView({
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5">
       <div className="flex items-center justify-between mb-3">
         <div className="text-[14px] font-semibold flex items-center gap-2">
-          <Users size={14} className="text-purple-400" /> Equipo
+          <Users size={14} className="text-purple-400" aria-hidden="true"/> Equipo
         </div>
         <button className="text-[10px] text-[var(--af-accent)] cursor-pointer hover:underline flex items-center gap-1" onClick={() => navigateTo('team')}>
           Equipo <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path d="m9 18 6-6-6-6" /></svg>

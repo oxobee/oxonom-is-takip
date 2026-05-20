@@ -87,10 +87,11 @@ export default function KanbanCardModal({
           </h2>
         </div>
         <button
+          aria-label="Cerrar"
           onClick={onClose}
           className="p-1.5 rounded-lg hover:bg-[var(--af-bg3)] text-[var(--muted-foreground)] transition-colors bg-transparent border-none cursor-pointer flex-shrink-0 ml-3"
         >
-          <X size={18} />
+          <X size={18} aria-hidden="true"/>
         </button>
       </div>
 
@@ -107,7 +108,7 @@ export default function KanbanCardModal({
       {card.tags.length > 0 && (
         <div className="mb-4">
           <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-2">
-            <Tag size={12} />
+            <Tag size={12} aria-hidden="true"/>
             Etiquetas
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -192,7 +193,7 @@ export default function KanbanCardModal({
       {onAddComment && (
         <div className="border-t border-[var(--border)] pt-4">
           <div className="flex items-center gap-1.5 text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">
-            <MessageSquare size={12} />
+            <MessageSquare size={12} aria-hidden="true"/>
             Comentarios ({comments.length})
           </div>
 
@@ -211,7 +212,7 @@ export default function KanbanCardModal({
               disabled={!commentText.trim()}
               className="p-2 rounded-lg bg-[var(--af-accent)] text-background hover:bg-[var(--af-accent2)] transition-colors border-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <Send size={14} />
+              <Send size={14} aria-hidden="true"/>
             </button>
           </div>
 
@@ -272,7 +273,7 @@ export default function KanbanCardModal({
               onClick={() => setShowDeleteConfirm(true)}
               className="flex items-center gap-2 text-[12px] text-red-400 hover:text-red-300 transition-colors bg-transparent border-none cursor-pointer"
             >
-              <Trash2 size={14} />
+              <Trash2 size={14} aria-hidden="true"/>
               Eliminar
             </button>
           )}

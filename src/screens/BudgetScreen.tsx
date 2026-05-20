@@ -170,7 +170,7 @@ export default function BudgetScreen() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <DollarSign size={20} className="text-[var(--af-accent)]" />
+            <DollarSign size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Presupuesto
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{expenses.length} gastos registrados{filtered.length !== expenses.length ? ` · ${filtered.length} filtrados` : ''}</p>
@@ -180,25 +180,25 @@ export default function BudgetScreen() {
             className="flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-colors"
             onClick={() => { try { exportBudgetPDF({ expenses: filtered, projects }); showToast('Presupuesto PDF descargado'); } catch { showToast('Error al generar PDF', 'error'); } }}
           >
-            <FileText size={14} /> PDF
+            <FileText size={14} aria-hidden="true"/> PDF
           </button>
           <button
             className="flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-colors"
             onClick={() => { try { exportExpensesExcel(filtered, projects); showToast('Presupuesto Excel descargado'); } catch { showToast('Error al generar Excel', 'error'); } }}
           >
-            <Download size={14} /> Excel
+            <Download size={14} aria-hidden="true"/> Excel
           </button>
           <button
             className="flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-colors"
             onClick={exportCSV}
           >
-            <Download size={14} /> CSV
+            <Download size={14} aria-hidden="true"/> CSV
           </button>
           <button
             className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors"
             onClick={() => { setEditingId(null); setForms((p: Record<string, any>) => ({ ...p, expConcept: '', expProject: '', expAmount: '', expDate: new Date().toISOString().split('T')[0], expCategory: 'Materiales', expPaymentMethod: 'Efectivo', expVendor: '', expNotes: '' })); openModal('expense'); }}
           >
-            <Plus size={15} /> Registrar gasto
+            <Plus size={15} aria-hidden="true"/> Registrar gasto
           </button>
         </div>
       </div>
@@ -207,7 +207,7 @@ export default function BudgetScreen() {
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" aria-hidden="true"/>
             <input
               type="text"
               value={search}
@@ -220,7 +220,7 @@ export default function BudgetScreen() {
             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-medium cursor-pointer border transition-colors ${showFilters || hasActiveFilters ? 'bg-[var(--af-accent)]/10 text-[var(--af-accent)] border-[var(--af-accent)]/30' : 'bg-[var(--card)] text-[var(--foreground)] border-[var(--border)] hover:bg-[var(--af-bg3)]'}`}
             onClick={() => setShowFilters(!showFilters)}
           >
-            <Filter size={14} />
+            <Filter size={14} aria-hidden="true"/>
             Filtros
             {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-[var(--af-accent)]" />}
           </button>
@@ -280,7 +280,7 @@ export default function BudgetScreen() {
           <div className="text-lg font-bold flex items-center gap-1">
             {momChange !== null ? (
               <>
-                {momChange >= 0 ? <TrendingUp size={14} className="text-red-400" /> : <TrendingDown size={14} className="text-emerald-400" />}
+                {momChange >= 0 ? <TrendingUp size={14} className="text-red-400" aria-hidden="true"/> : <TrendingDown size={14} className="text-emerald-400" aria-hidden="true"/>}
                 <span className={momChange >= 0 ? 'text-red-400' : 'text-emerald-400'}>{Math.abs(momChange)}%</span>
               </>
             ) : '—'}
@@ -289,7 +289,7 @@ export default function BudgetScreen() {
         </div>
         <div className={`bg-[var(--card)] border rounded-xl p-4 ${projectsOverBudget > 0 ? 'border-red-500/30 bg-red-500/5' : 'border-[var(--border)]'}`}>
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-            {projectsOverBudget > 0 && <AlertTriangle size={10} className="text-red-400" />}
+            {projectsOverBudget > 0 && <AlertTriangle size={10} className="text-red-400" aria-hidden="true"/>}
             Sobrepasados
           </div>
           <div className={`text-lg font-bold ${projectsOverBudget > 0 ? 'text-red-400' : ''}`}>{projectsOverBudget}</div>
@@ -297,7 +297,7 @@ export default function BudgetScreen() {
         </div>
         <div className={`bg-[var(--card)] border rounded-xl p-4 ${projectsNearLimit > 0 ? 'border-amber-500/30 bg-amber-500/5' : 'border-[var(--border)]'}`}>
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-            <AlertTriangle size={10} className="text-amber-400" />
+            <AlertTriangle size={10} className="text-amber-400" aria-hidden="true"/>
             Cerca del límite
           </div>
           <div className={`text-lg font-bold ${projectsNearLimit > 0 ? 'text-amber-400' : ''}`}>{projectsNearLimit}</div>
@@ -339,7 +339,7 @@ export default function BudgetScreen() {
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 lg:col-span-2">
           <div className="flex items-center justify-between mb-3">
             <div className="text-[15px] font-semibold flex items-center gap-2">
-              <BarChart3 size={16} className="text-[var(--af-accent)]" />
+              <BarChart3 size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
               Tendencia Mensual
             </div>
             <span className="text-[10px] text-[var(--muted-foreground)] px-2 py-0.5 rounded-full bg-[var(--af-bg4)]">6 meses</span>
@@ -364,7 +364,7 @@ export default function BudgetScreen() {
       {projectBudgetData.length > 0 && (
         <div>
           <div className="text-[15px] font-semibold mb-3 flex items-center gap-2">
-            <Receipt size={16} className="text-[var(--af-accent)]" />
+            <Receipt size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Presupuesto por Proyecto
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -388,7 +388,7 @@ export default function BudgetScreen() {
                 </div>
                 {p.pct > 100 && (
                   <div className="mt-2 text-[10px] text-red-400 flex items-center gap-1">
-                    <AlertTriangle size={10} /> Excedido por {fmtCOP(p.spent - p.budget)}
+                    <AlertTriangle size={10} aria-hidden="true"/> Excedido por {fmtCOP(p.spent - p.budget)}
                   </div>
                 )}
               </div>
@@ -438,7 +438,7 @@ export default function BudgetScreen() {
               <div key={pid} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
-                    <Receipt size={16} className="text-[var(--af-accent)]" />
+                    <Receipt size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
                     <span className="text-[15px] font-semibold">{proj?.data.name || 'Sin proyecto'}</span>
                     <span className="text-[10px] text-[var(--muted-foreground)] px-1.5 py-0.5 rounded-full bg-[var(--af-bg4)]">{exps.length} gasto{exps.length !== 1 ? 's' : ''}</span>
                   </div>
@@ -468,12 +468,12 @@ export default function BudgetScreen() {
                         actions={[
                           {
                             label: 'Editar gasto',
-                            icon: <Edit3 size={14} />,
+                            icon: <Edit3 size={14} aria-hidden="true"/>,
                             onClick: () => openEditExpense(e),
                           },
                           {
                             label: 'Eliminar gasto',
-                            icon: <Trash2 size={14} />,
+                            icon: <Trash2 size={14} aria-hidden="true"/>,
                             onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar gasto', description: '¿Estás seguro? El gasto será eliminado permanentemente.' })) deleteExpense(e.id); },
                             variant: 'danger',
                           },
@@ -494,7 +494,7 @@ export default function BudgetScreen() {
       {expenses.length === 0 && (
         <div className="text-center py-16 text-[var(--af-text3)]">
           <div className="w-14 h-14 rounded-2xl bg-[var(--af-bg3)] flex items-center justify-center mx-auto mb-3">
-            <DollarSign size={24} className="text-[var(--af-text3)]" />
+            <DollarSign size={24} className="text-[var(--af-text3)]" aria-hidden="true"/>
           </div>
           <div className="text-[15px] font-medium text-[var(--muted-foreground)]">Sin gastos</div>
           <div className="text-xs mt-1">Registra tu primer gasto para empezar a llevar control</div>

@@ -23,7 +23,7 @@ export default function TeamScreen() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Users size={20} className="text-[var(--af-accent)]" />
+            <Users size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Equipo
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{teamUsers.filter(u => !forms.teamCompanyFilter || u.data.companyId === forms.teamCompanyFilter).length} miembros</p>
@@ -34,7 +34,7 @@ export default function TeamScreen() {
               onClick={() => setShowManageMembers(true)}
               className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors"
             >
-              <Plus size={14} />
+              <Plus size={14} aria-hidden="true"/>
               Gestionar miembros
             </button>
           )}

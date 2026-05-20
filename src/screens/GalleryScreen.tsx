@@ -19,12 +19,12 @@ export default function GalleryScreen() {
   <div className="flex items-center justify-between flex-wrap gap-3">
     <div>
       <h2 className="text-lg font-semibold flex items-center gap-2">
-        <Camera size={20} className="text-[var(--af-accent)]" /> Galería de proyectos
+        <Camera size={20} className="text-[var(--af-accent)]" aria-hidden="true"/> Galería de proyectos
       </h2>
       <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{getFilteredGalleryPhotos().length} foto{getFilteredGalleryPhotos().length !== 1 ? 's' : ''}</p>
     </div>
     <button className="px-4 py-2 rounded-lg text-[13px] font-semibold cursor-pointer bg-[var(--af-accent)] text-background border-none hover:bg-[var(--af-accent2)] transition-colors flex items-center gap-2 self-start" onClick={() => { setEditingId(null); setForms(p => ({ ...p, galleryImageData: '', galleryProject: '', galleryCategory: 'Otro', galleryCaption: '' })); openModal('gallery'); }}>
-      <Plus size={16} />
+      <Plus size={16} aria-hidden="true"/>
       Agregar foto
     </button>
   </div>

@@ -35,13 +35,13 @@ export default function InventoryProducts({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h3 className="text-lg font-semibold">📦 Productos ({invProducts.length})</h3>
         <button className="px-4 py-2 rounded-lg text-[13px] font-semibold cursor-pointer bg-[var(--af-accent)] text-background border-none hover:bg-[var(--af-accent2)] transition-colors flex items-center gap-2 self-start" onClick={() => { setEditingId(null); const rf: Record<string,any> = { invProdName: '', invProdSku: '', invProdCat: '', invProdUnit: 'Unidad', invProdPrice: '', invProdMinStock: '5', invProdDesc: '', invProdImage: '', invProdWarehouse: 'Almacén Principal' }; INV_WAREHOUSES.forEach(w => { rf[`invProdWS_${w.replace(/\s/g,'_')}`] = '0'; }); setForms((p: any) => ({ ...p, ...rf })); openModal('invProduct'); }}>
-          <Plus size={16} className="stroke-current" />
+          <Plus size={16} className="stroke-current" aria-hidden="true"/>
           Nuevo producto
         </button>
       </div>
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" aria-hidden="true"/>
           <input className="w-full bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg pl-9 pr-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]" placeholder="Buscar producto..." value={invSearch} onChange={e => setInvSearch(e.target.value)} />
         </div>
         <select className="bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none" value={invFilterCat} onChange={e => setInvFilterCat(e.target.value)}>
@@ -82,15 +82,15 @@ export default function InventoryProducts({
                   </div>
                   {/* Desktop: edit/delete buttons */}
                   <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-                    <button className="w-8 h-8 rounded-lg bg-[var(--card)] border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer" onClick={() => openEditInvProduct(p)}><Pencil size={14} className="stroke-current" /></button>
-                    <button className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar producto', description: '¿Estás seguro? El producto será eliminado permanentemente.' })) deleteInvProduct(p.id); }}><Trash2 size={14} className="stroke-current" /></button>
+                    <button aria-label="Editar" className="w-8 h-8 rounded-lg bg-[var(--card)] border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer" onClick={() => openEditInvProduct(p)}><Pencil size={14} className="stroke-current" aria-hidden="true"/></button>
+                    <button aria-label="Eliminar" className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar producto', description: '¿Estás seguro? El producto será eliminado permanentemente.' })) deleteInvProduct(p.id); }}><Trash2 size={14} className="stroke-current" aria-hidden="true"/></button>
                   </div>
                   {/* Mobile: OverflowMenu */}
                   <div className="md:hidden flex-shrink-0">
                     <OverflowMenu
                       actions={[
-                        { label: 'Editar producto', icon: <Pencil size={14} />, onClick: () => openEditInvProduct(p) },
-                        { label: 'Eliminar producto', icon: <Trash2 size={14} />, onClick: async () => { if (await confirm({ title: 'Eliminar producto', description: '¿Estás seguro? El producto será eliminado permanentemente.' })) deleteInvProduct(p.id); }, variant: 'danger', separator: true },
+                        { label: 'Editar producto', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => openEditInvProduct(p) },
+                        { label: 'Eliminar producto', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirm({ title: 'Eliminar producto', description: '¿Estás seguro? El producto será eliminado permanentemente.' })) deleteInvProduct(p.id); }, variant: 'danger', separator: true },
                       ]}
                       side="left"
                       align="end"

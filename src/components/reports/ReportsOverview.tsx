@@ -139,7 +139,7 @@ export default function ReportsOverview({ projects, tasks, expenses, timeEntries
         <button className="w-full text-xs text-[var(--af-accent)] cursor-pointer hover:underline text-center bg-[var(--af-accent)]/5 rounded-lg py-2 transition-colors hover:bg-[var(--af-accent)]/10" onClick={() => {
           try { exportBudgetPDF({ expenses, projects }); showToast('Presupuesto PDF descargado'); } catch { showToast('Error', 'error'); }
         }}>
-          <FileText size={12} className="inline mr-1" /> Descargar reporte de presupuesto PDF
+          <FileText size={12} className="inline mr-1" aria-hidden="true"/> Descargar reporte de presupuesto PDF
         </button>
       </div>
       {/* Card 4: Equipo */}

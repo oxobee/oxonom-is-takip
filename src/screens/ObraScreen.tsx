@@ -111,7 +111,7 @@ export default function ObraScreen() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold flex items-center gap-2">
-              <HardHat size={20} className="text-[var(--af-accent)]" />
+              <HardHat size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
               Bitácora de Obra
             </h2>
             <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Registro diario de actividades, clima, personal y materiales en obra</p>
@@ -123,7 +123,7 @@ export default function ObraScreen() {
                 showToast('Bitácora PDF descargada');
               } catch { showToast('Error al generar PDF', 'error'); }
             }}>
-              <FileText size={14} /> Exportar PDF
+              <FileText size={14} aria-hidden="true"/> Exportar PDF
             </button>
           )}
         </div>
@@ -292,9 +292,9 @@ export default function ObraScreen() {
                             {log.data.temperature && <span className="text-[11px] text-[var(--af-text3)]">{log.data.temperature}°C</span>}
                           </div>
                           <div className="flex items-center gap-2">
-                            {log.data.laborCount > 0 && <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 flex items-center gap-1"><Users size={10} />{log.data.laborCount}</span>}
+                            {log.data.laborCount > 0 && <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 flex items-center gap-1"><Users size={10} aria-hidden="true"/>{log.data.laborCount}</span>}
                             {(log.data.activities?.length || 0) > 0 && <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--af-accent)]/10 text-[var(--af-accent)]">{log.data.activities.length} act.</span>}
-                            {isExpanded ? <ChevronUp size={14} className="text-[var(--af-text3)]" /> : <ChevronDown size={14} className="text-[var(--af-text3)]" />}
+                            {isExpanded ? <ChevronUp size={14} className="text-[var(--af-text3)]" aria-hidden="true"/> : <ChevronDown size={14} className="text-[var(--af-text3)]" aria-hidden="true"/>}
                           </div>
                         </div>
 
@@ -332,7 +332,7 @@ export default function ObraScreen() {
                             {/* Materials */}
                             {log.data.materials && log.data.materials.length > 0 && (
                               <div>
-                                <div className="text-[11px] font-semibold text-[var(--af-accent)] uppercase tracking-wide mb-1.5 flex items-center gap-1"><Package size={10} /> Materiales</div>
+                                <div className="text-[11px] font-semibold text-[var(--af-accent)] uppercase tracking-wide mb-1.5 flex items-center gap-1"><Package size={10} aria-hidden="true"/> Materiales</div>
                                 <div className="flex flex-wrap gap-1.5">
                                   {log.data.materials.map((mat: string, i: number) => (
                                     <span key={i} className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--af-bg4)] text-[var(--foreground)]">{mat}</span>
@@ -344,7 +344,7 @@ export default function ObraScreen() {
                             {/* Equipment */}
                             {log.data.equipment && log.data.equipment.length > 0 && (
                               <div>
-                                <div className="text-[11px] font-semibold text-[var(--af-accent)] uppercase tracking-wide mb-1.5 flex items-center gap-1"><Wrench size={10} /> Equipos</div>
+                                <div className="text-[11px] font-semibold text-[var(--af-accent)] uppercase tracking-wide mb-1.5 flex items-center gap-1"><Wrench size={10} aria-hidden="true"/> Equipos</div>
                                 <div className="flex flex-wrap gap-1.5">
                                   {log.data.equipment.map((eq: string, i: number) => (
                                     <span key={i} className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--af-bg4)] text-[var(--foreground)]">{eq}</span>

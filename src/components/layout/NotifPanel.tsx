@@ -92,7 +92,7 @@ export default function NotifPanel() {
         {notifPermission !== 'granted' && (
           <div className="p-4 bg-amber-500/5 border-b border-[var(--border)] flex-shrink-0">
             <div className="flex items-center gap-3">
-              <Bell size={20} className="stroke-[var(--af-accent)]" />
+              <Bell size={20} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
               <div className="flex-1">
                 <div className="text-[13px] font-medium">Activar notificaciones del sistema</div>
                 <div className="text-[11px] text-[var(--muted-foreground)]">Para recibir alertas incluso con la app cerrada</div>
@@ -110,7 +110,7 @@ export default function NotifPanel() {
             const filtered = notifFilterCat === 'all' ? notifHistory : notifHistory.filter((n: any) => n.type === notifFilterCat);
             if (filtered.length === 0) return (
               <div className="p-8 text-center">
-                <Bell size={28} className="stroke-[var(--muted-foreground)] mb-2" />
+                <Bell size={28} className="stroke-[var(--muted-foreground)] mb-2" aria-hidden="true"/>
                 <div className="text-sm text-[var(--muted-foreground)]">{notifFilterCat === 'all' ? 'Sin notificaciones' : 'Sin notificaciones de esta categoría'}</div>
                 <div className="text-[11px] text-[var(--af-text3)] mt-1">Las alertas aparecerán aquí</div>
               </div>
@@ -127,7 +127,7 @@ export default function NotifPanel() {
                   }
                 }}
               >
-                <div className="flex-shrink-0 mt-0.5"><Bell size={16} className="stroke-[var(--muted-foreground)]" /></div>
+                <div className="flex-shrink-0 mt-0.5"><Bell size={16} className="stroke-[var(--muted-foreground)]" aria-hidden="true"/></div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <div className={`text-[13px] leading-snug ${!n.read ? 'font-semibold' : 'font-medium'}`}>{n.title}</div>
@@ -161,7 +161,7 @@ export default function NotifPanel() {
               className="flex items-center gap-1 px-2 py-1 rounded-md text-[10px] text-[var(--muted-foreground)] cursor-pointer hover:text-[var(--foreground)] hover:bg-[var(--af-bg4)] transition-all"
               onClick={() => setShowChannels(!showChannels)}
             >
-              <Settings size={10} /> Canales externos
+              <Settings size={10} aria-hidden="true"/> Canales externos
             </button>
           </div>
 
@@ -174,15 +174,15 @@ export default function NotifPanel() {
                   className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] cursor-pointer transition-all ${channelPrefs.whatsapp ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-[var(--af-bg3)] text-[var(--muted-foreground)] border border-[var(--border)]'}`}
                   onClick={() => toggleChannel('whatsapp')}
                 >
-                  <MessageCircle size={11} /> WhatsApp
-                  {channelPrefs.whatsapp && <Check size={10} className="stroke-current" strokeWidth={3} />}
+                  <MessageCircle size={11} aria-hidden="true"/> WhatsApp
+                  {channelPrefs.whatsapp && <Check size={10} className="stroke-current" strokeWidth={3} aria-hidden="true"/>}
                 </button>
                 <button
                   className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] cursor-pointer transition-all ${channelPrefs.email ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30' : 'bg-[var(--af-bg3)] text-[var(--muted-foreground)] border border-[var(--border)]'}`}
                   onClick={() => toggleChannel('email')}
                 >
-                  <Mail size={11} /> Email
-                  {channelPrefs.email && <Check size={10} className="stroke-current" strokeWidth={3} />}
+                  <Mail size={11} aria-hidden="true"/> Email
+                  {channelPrefs.email && <Check size={10} className="stroke-current" strokeWidth={3} aria-hidden="true"/>}
                 </button>
                 <button
                   className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] cursor-pointer transition-all ${channelPrefs.push ? 'bg-purple-500/10 text-purple-400 border border-purple-500/30' : 'bg-[var(--af-bg3)] text-[var(--muted-foreground)] border border-[var(--border)]'}`}
@@ -196,14 +196,14 @@ export default function NotifPanel() {
                   }}
                   disabled={pushRegistering}
                 >
-                  {pushRegistering ? <Loader size={11} className="animate-spin" /> : <Smartphone size={11} />}
+                  {pushRegistering ? <Loader size={11} className="animate-spin" aria-hidden="true"/> : <Smartphone size={11} aria-hidden="true"/>}
                   {pushRegistering ? '...' : 'Push'}
-                  {channelPrefs.push && !pushRegistering && <Check size={10} className="stroke-current" strokeWidth={3} />}
+                  {channelPrefs.push && !pushRegistering && <Check size={10} className="stroke-current" strokeWidth={3} aria-hidden="true"/>}
                 </button>
               </div>
               {!pushSupported && (
                 <div className="text-[9px] text-[var(--af-text3)] mt-1.5 flex items-center gap-1">
-                  <Radio size={9} /> Push requiere configuración del servidor (VAPID keys)
+                  <Radio size={9} aria-hidden="true"/> Push requiere configuración del servidor (VAPID keys)
                 </div>
               )}
             </div>
@@ -228,7 +228,7 @@ export default function NotifPanel() {
                 onClick={() => toggleNotifPref(p.key)}
               >
                 <p.Icon size={11} /> {p.label}
-                {notifPrefs[p.key] && <Check size={10} className="stroke-current" strokeWidth={3} />}
+                {notifPrefs[p.key] && <Check size={10} className="stroke-current" strokeWidth={3} aria-hidden="true"/>}
               </button>
             ))}
           </div>
@@ -237,9 +237,9 @@ export default function NotifPanel() {
               <button
                 className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] cursor-pointer transition-all ${notifSound ? 'bg-[var(--af-accent)]/10 text-[var(--af-accent)] border border-[var(--af-accent)]/30' : 'bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)]'}`}
                 onClick={() => setNotifSound(!notifSound)}
-              ><Volume2 size={12} className="inline mr-0.5" /> Sonido</button>
+              ><Volume2 size={12} className="inline mr-0.5" aria-hidden="true"/> Sonido</button>
               <span className="text-[10px] text-[var(--af-text3)]">
-                {notifPermission === 'granted' ? <><CheckCircle size={10} className="inline mr-0.5 text-emerald-400" /> OS activas</> : notifPermission === 'denied' ? <><XCircle size={10} className="inline mr-0.5 text-red-400" /> OS bloqueadas</> : <><Loader size={10} className="inline mr-0.5 animate-spin" /> Sin activar OS</>}
+                {notifPermission === 'granted' ? <><CheckCircle size={10} className="inline mr-0.5 text-emerald-400" aria-hidden="true"/> OS activas</> : notifPermission === 'denied' ? <><XCircle size={10} className="inline mr-0.5 text-red-400" aria-hidden="true"/> OS bloqueadas</> : <><Loader size={10} className="inline mr-0.5 animate-spin" aria-hidden="true"/> Sin activar OS</>}
               </span>
             </div>
             <span className="text-[10px] text-[var(--af-text3)]">

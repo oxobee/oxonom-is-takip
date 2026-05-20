@@ -76,7 +76,7 @@ export default function ReportsScreen() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <BarChart3 size={20} className="text-[var(--af-accent)]" />
+            <BarChart3 size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Reportes
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Reportes consolidados del proyecto</p>
@@ -95,7 +95,7 @@ export default function ReportsScreen() {
               showToast('Reporte PDF descargado');
             } catch (err) { showToast('Error al generar PDF', 'error'); }
           }}>
-            <FileText size={13} /> PDF
+            <FileText size={13} aria-hidden="true"/> PDF
           </button>
           {/* CSV (legacy) */}
           <button className="flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-2 rounded-lg text-xs font-medium cursor-pointer border border-[var(--border)] hover:border-[var(--af-accent)]/30 transition-colors" onClick={() => {
@@ -117,7 +117,7 @@ export default function ReportsScreen() {
               showToast('Reporte CSV descargado');
             } catch (err) { showToast('Error al exportar', 'error'); }
           }}>
-            <Download size={13} /> CSV
+            <Download size={13} aria-hidden="true"/> CSV
           </button>
         </div>
       </div>

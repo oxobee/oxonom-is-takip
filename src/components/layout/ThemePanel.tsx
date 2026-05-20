@@ -122,7 +122,7 @@ function ThemeCard({ themeDef, isActive, onSelect }: {
       {/* Check indicator */}
       {isActive && (
         <div className="w-6 h-6 rounded-full bg-[var(--af-accent)] flex items-center justify-center flex-shrink-0">
-          <Check size={12} className="text-[var(--primary-foreground)]" />
+          <Check size={12} className="text-[var(--primary-foreground)]" aria-hidden="true"/>
         </div>
       )}
     </button>

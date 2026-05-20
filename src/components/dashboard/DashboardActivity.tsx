@@ -32,7 +32,7 @@ export default function DashboardActivity({
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5">
         <div className="flex items-center justify-between mb-3">
           <div className="text-[14px] font-semibold flex items-center gap-2">
-            <TrendingUp size={14} className="text-emerald-400" /> Actividad Reciente
+            <TrendingUp size={14} className="text-emerald-400" aria-hidden="true"/> Actividad Reciente
           </div>
         </div>
         {recentActivity.length === 0 ? (

@@ -126,7 +126,7 @@ export default function CompaniesScreen() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Building2 size={20} className="text-[var(--af-accent)]" />
+            <Building2 size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Empresas
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
@@ -138,7 +138,7 @@ export default function CompaniesScreen() {
           className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:opacity-90 transition-opacity"
           onClick={handleNewCompany}
         >
-          <Plus size={14} />
+          <Plus size={14} aria-hidden="true"/>
           Nueva empresa
         </button>
       </div>
@@ -146,7 +146,7 @@ export default function CompaniesScreen() {
       {/* ── Search + Sort bar ── */}
       <div className="flex items-center gap-2 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" aria-hidden="true"/>
           <input
             type="text"
             value={search}
@@ -156,7 +156,7 @@ export default function CompaniesScreen() {
           />
         </div>
         <div className="relative">
-          <ArrowUpDown size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] pointer-events-none" />
+          <ArrowUpDown size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] pointer-events-none" aria-hidden="true"/>
           <select
             value={sortBy}
             onChange={e => setSortBy(e.target.value as SortKey)}
@@ -166,7 +166,7 @@ export default function CompaniesScreen() {
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
           </select>
-          <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] pointer-events-none" />
+          <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] pointer-events-none" aria-hidden="true"/>
         </div>
       </div>
 
@@ -175,7 +175,7 @@ export default function CompaniesScreen() {
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
             <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-              <Building2 size={11} className="text-[var(--af-accent)]" />
+              <Building2 size={11} className="text-[var(--af-accent)]" aria-hidden="true"/>
               Total empresas
             </div>
             <div className="text-lg font-bold text-[var(--af-accent)]">{companies.length}</div>
@@ -185,7 +185,7 @@ export default function CompaniesScreen() {
           </div>
           <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
             <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-              <Briefcase size={11} className="text-blue-400" />
+              <Briefcase size={11} className="text-blue-400" aria-hidden="true"/>
               Total proyectos
             </div>
             <div className="text-lg font-bold text-blue-400">{summary.totalProjects}</div>
@@ -193,7 +193,7 @@ export default function CompaniesScreen() {
           </div>
           <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
             <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-              <DollarSign size={11} className="text-emerald-400" />
+              <DollarSign size={11} className="text-emerald-400" aria-hidden="true"/>
               Presupuesto total
             </div>
             <div className="text-lg font-bold text-emerald-400">{fmtCOP(summary.totalBudget)}</div>
@@ -258,14 +258,14 @@ export default function CompaniesScreen() {
                       onClick={() => handleEditCompany(c)}
                       title="Editar"
                     >
-                      <Pencil size={12} />
+                      <Pencil size={12} aria-hidden="true"/>
                     </button>
                     <button
                       className="w-7 h-7 rounded-lg flex items-center justify-center cursor-pointer border-none bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
                       onClick={() => deleteCompany(c.id)}
                       title="Eliminar"
                     >
-                      <Trash2 size={12} />
+                      <Trash2 size={12} aria-hidden="true"/>
                     </button>
                   </div>
                 </div>
@@ -288,7 +288,7 @@ export default function CompaniesScreen() {
                   <div className="bg-[var(--af-bg3)] rounded-lg px-3 py-2">
                     <div className="text-[10px] text-[var(--muted-foreground)] mb-0.5">Proyectos</div>
                     <div className="text-sm font-bold flex items-center gap-1">
-                      <Briefcase size={12} className="text-blue-400" />
+                      <Briefcase size={12} className="text-blue-400" aria-hidden="true"/>
                       {stats.count}
                     </div>
                   </div>
@@ -310,7 +310,7 @@ export default function CompaniesScreen() {
                       className="flex items-center gap-1 text-[11px] text-[var(--af-accent)] cursor-pointer hover:underline font-medium"
                       onClick={handleViewProjects}
                     >
-                      <Eye size={12} />
+                      <Eye size={12} aria-hidden="true"/>
                       Ver proyectos
                     </button>
                   )}

@@ -80,7 +80,7 @@ export default function AIFloatingWrapper() {
           )}
           title="Acciones rápidas"
         >
-          <Plus size={20} />
+          <Plus size={20} aria-hidden="true"/>
         </button>
 
         {/* Main AI Chat Button (golden gradient) */}
@@ -95,7 +95,7 @@ export default function AIFloatingWrapper() {
           )}
           title="Abrir Super IA"
         >
-          <Zap size={24} />
+          <Zap size={24} aria-hidden="true"/>
         </button>
       </div>
       )}

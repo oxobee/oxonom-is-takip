@@ -27,7 +27,7 @@ export default function DashboardSprintProgress({
   return (
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5">
       <div className="text-[14px] font-semibold mb-3 flex items-center gap-2">
-        <Zap size={14} className="text-[var(--af-accent)]" /> Progreso Sprint
+        <Zap size={14} className="text-[var(--af-accent)]" aria-hidden="true"/> Progreso Sprint
       </div>
       <div className="flex items-center justify-center">
         <div className="relative w-[90px] h-[90px]">
@@ -49,7 +49,7 @@ export default function DashboardSprintProgress({
         </div>
         {rangeTotalTime > 0 && (
           <div className="flex items-center justify-center gap-1.5 mt-1 pt-2 border-t border-[var(--border)]">
-            <Timer size={10} className="text-blue-400" />
+            <Timer size={10} className="text-blue-400" aria-hidden="true"/>
             <span className="text-[10px] text-blue-400 font-medium">{fmtHours(rangeTotalTime)} registradas</span>
             <span className="text-[10px] text-[var(--af-text3)]">({rangeTimeEntriesLength} entradas)</span>
           </div>

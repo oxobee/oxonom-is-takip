@@ -25,7 +25,7 @@ export default function InventoryTransfers({
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h3 className="text-lg font-semibold">🔄 Transferencias ({invTransfers.length})</h3>
-        <button className="px-4 py-2 rounded-lg text-[13px] font-semibold cursor-pointer bg-blue-600 text-white border-none hover:bg-blue-700 transition-colors flex items-center gap-2 self-start" onClick={() => { setEditingId(null); setForms((p: any) => ({ ...p, invTrProduct: '', invTrFrom: '', invTrTo: '', invTrQty: '', invTrDate: '', invTrNotes: '' })); openModal('invTransfer'); }}><ArrowLeftRight size={16} className="stroke-current" />Nueva transferencia</button>
+        <button className="px-4 py-2 rounded-lg text-[13px] font-semibold cursor-pointer bg-blue-600 text-white border-none hover:bg-blue-700 transition-colors flex items-center gap-2 self-start" onClick={() => { setEditingId(null); setForms((p: any) => ({ ...p, invTrProduct: '', invTrFrom: '', invTrTo: '', invTrQty: '', invTrDate: '', invTrNotes: '' })); openModal('invTransfer'); }}><ArrowLeftRight size={16} className="stroke-current" aria-hidden="true"/>Nueva transferencia</button>
       </div>
       <select className="bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none" value={invTransferFilterStatus} onChange={e => setInvTransferFilterStatus(e.target.value)}><option value="all">Todos los estados</option>{TRANSFER_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}</select>
       {invTransfers.filter(t => invTransferFilterStatus === 'all' || t.data.status === invTransferFilterStatus).length === 0 ? (
@@ -51,14 +51,14 @@ export default function InventoryTransfers({
                 {/* Desktop: status badge + delete */}
                 <div className="hidden md:flex items-center gap-2">
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${t.data.status === 'Completada' ? 'bg-emerald-500/15 text-emerald-400' : t.data.status === 'En tránsito' ? 'bg-blue-500/15 text-blue-400' : t.data.status === 'Cancelada' ? 'bg-red-500/15 text-red-400' : 'bg-amber-500/15 text-amber-400'}`}>{t.data.status}</span>
-                  <button className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar transferencia', description: '¿Estás seguro?' })) deleteInvTransfer(t.id); }}><Trash2 size={14} className="stroke-current" /></button>
+                  <button aria-label="Eliminar" className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar transferencia', description: '¿Estás seguro?' })) deleteInvTransfer(t.id); }}><Trash2 size={14} className="stroke-current" aria-hidden="true"/></button>
                 </div>
                 {/* Mobile: status badge + OverflowMenu */}
                 <div className="md:hidden flex items-center gap-2">
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${t.data.status === 'Completada' ? 'bg-emerald-500/15 text-emerald-400' : t.data.status === 'En tránsito' ? 'bg-blue-500/15 text-blue-400' : t.data.status === 'Cancelada' ? 'bg-red-500/15 text-red-400' : 'bg-amber-500/15 text-amber-400'}`}>{t.data.status}</span>
                   <OverflowMenu
                     actions={[
-                      { label: 'Eliminar transferencia', icon: <Trash2 size={14} />, onClick: async () => { if (await confirm({ title: 'Eliminar transferencia', description: '¿Estás seguro?' })) deleteInvTransfer(t.id); }, variant: 'danger' },
+                      { label: 'Eliminar transferencia', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirm({ title: 'Eliminar transferencia', description: '¿Estás seguro?' })) deleteInvTransfer(t.id); }, variant: 'danger' },
                     ]}
                     side="left"
                     align="end"

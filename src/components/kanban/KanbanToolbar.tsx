@@ -114,22 +114,24 @@ export default function KanbanToolbar({
         {/* View mode toggle */}
         <div className="flex items-center bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg p-0.5 ml-auto flex-shrink-0">
           <button
+            aria-label="Vista tablero"
             onClick={() => setKanbanViewMode('board')}
             className={`p-1.5 rounded-md transition-all cursor-pointer border-none ${
               viewMode === 'board' ? 'bg-[var(--af-accent)]/15 text-[var(--af-accent)]' : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
             }`}
             title="Vista tablero"
           >
-            <LayoutGrid size={16} />
+            <LayoutGrid size={16} aria-hidden="true"/>
           </button>
           <button
+            aria-label="Vista lista"
             onClick={() => setKanbanViewMode('list')}
             className={`p-1.5 rounded-md transition-all cursor-pointer border-none ${
               viewMode === 'list' ? 'bg-[var(--af-accent)]/15 text-[var(--af-accent)]' : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
             }`}
             title="Vista lista"
           >
-            <List size={16} />
+            <List size={16} aria-hidden="true"/>
           </button>
         </div>
       </div>
@@ -138,7 +140,7 @@ export default function KanbanToolbar({
       <div className="flex items-center gap-2 flex-wrap">
         {/* Search */}
         <div className="flex-1 min-w-[180px] flex items-center gap-2 bg-[var(--af-bg3)] border border-[var(--border)] rounded-xl px-3 py-2">
-          <Search size={15} className="text-[var(--muted-foreground)] flex-shrink-0" />
+          <Search size={15} className="text-[var(--muted-foreground)] flex-shrink-0" aria-hidden="true"/>
           <input
             type="text"
             value={searchQuery}
@@ -147,8 +149,8 @@ export default function KanbanToolbar({
             className="flex-1 bg-transparent text-[13px] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] outline-none"
           />
           {searchQuery && (
-            <button onClick={() => handleSearch('')} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] bg-transparent border-none cursor-pointer p-0">
-              <X size={14} />
+            <button aria-label="Limpiar búsqueda" onClick={() => handleSearch('')} className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] bg-transparent border-none cursor-pointer p-0">
+              <X size={14} aria-hidden="true"/>
             </button>
           )}
         </div>
@@ -162,14 +164,14 @@ export default function KanbanToolbar({
               : 'bg-[var(--af-bg3)] text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--af-accent)]/30 hover:text-[var(--foreground)]'
           }`}
         >
-          <Filter size={14} />
+          <Filter size={14} aria-hidden="true"/>
           <span>Filtros</span>
           {hasActiveFilters && (
             <span className="w-4 h-4 rounded-full bg-[var(--af-accent)] text-background text-[10px] flex items-center justify-center">
               {[filterAssignee, filterPriority, filterProject].filter(Boolean).length}
             </span>
           )}
-          <ChevronDown size={12} className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+          <ChevronDown size={12} className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} aria-hidden="true"/>
         </button>
 
         {/* New Board button */}
@@ -236,7 +238,7 @@ export default function KanbanToolbar({
               onClick={clearFilters}
               className="flex items-center gap-1 text-[11px] text-red-400 hover:text-red-300 transition-colors bg-transparent border-none cursor-pointer ml-auto"
             >
-              <X size={12} />
+              <X size={12} aria-hidden="true"/>
               Limpiar
             </button>
           )}

@@ -13,7 +13,7 @@ export default function ProjectBudgetCards({ projectBudgetData }: ProjectBudgetC
   return (
     <div>
       <div className="text-[15px] font-semibold mb-3 flex items-center gap-2">
-        <DollarSign size={16} className="text-[var(--af-accent)]" />
+        <DollarSign size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
         Presupuesto por Proyecto
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -37,7 +37,7 @@ export default function ProjectBudgetCards({ projectBudgetData }: ProjectBudgetC
             </div>
             {p.pct > 100 && (
               <div className="mt-2 text-[10px] text-red-400 flex items-center gap-1">
-                <AlertTriangle size={10} /> Excedido por {fmtCOP(p.spent - p.budget)}
+                <AlertTriangle size={10} aria-hidden="true"/> Excedido por {fmtCOP(p.spent - p.budget)}
               </div>
             )}
           </div>

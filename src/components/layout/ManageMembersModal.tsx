@@ -228,7 +228,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
                         className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-red-400 hover:bg-red-500/15 border border-red-500/20 transition-colors cursor-pointer flex-shrink-0"
                         title="Eliminar del tenant"
                       >
-                        <Trash2 size={12} />
+                        <Trash2 size={12} aria-hidden="true"/>
                         Quitar
                       </button>
                     )}
@@ -337,7 +337,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
                   className="p-3 rounded-xl bg-[var(--af-accent)] hover:opacity-90 text-[var(--primary-foreground)] transition-colors cursor-pointer border-none"
                   title="Copiar codigo"
                 >
-                  <Copy size={20} />
+                  <Copy size={20} aria-hidden="true"/>
                 </button>
               </div>
               <p className="text-[var(--af-text3)] text-xs mt-4">Los nuevos miembros entraran como Miembro</p>

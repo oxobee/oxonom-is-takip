@@ -123,10 +123,10 @@ export default function MeetingModal({ open, onClose }: { open: boolean; onClose
           >
             <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${isRecurring ? 'bg-[var(--af-accent)] border-[var(--af-accent)]' : 'border-[var(--input)]'}`}>
               {isRecurring && (
-                <Check size={12} className="text-background" />
+                <Check size={12} className="text-background" aria-hidden="true"/>
               )}
             </div>
-            <Repeat size={16} className={`transition-colors ${isRecurring ? 'text-[var(--af-accent)]' : 'text-[var(--muted-foreground)]'}`} />
+            <Repeat size={16} className={`transition-colors ${isRecurring ? 'text-[var(--af-accent)]' : 'text-[var(--muted-foreground)]'}`} aria-hidden="true"/>
             <span className="text-sm font-medium">Repetir semanalmente</span>
           </button>
 
@@ -189,7 +189,7 @@ export default function MeetingModal({ open, onClose }: { open: boolean; onClose
           />
           {quickAddUsers.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
-              <UserPlus size={12} className="text-[var(--muted-foreground)] mt-0.5 mr-0.5" />
+              <UserPlus size={12} className="text-[var(--muted-foreground)] mt-0.5 mr-0.5" aria-hidden="true"/>
               {quickAddUsers.map((u: any) => {
                 const name = u.data?.name || u.name || '';
                 const inList = isAttendeeInList(name);

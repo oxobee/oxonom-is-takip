@@ -18,7 +18,7 @@ export default function DashboardFinancialSummary({
   return (
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5">
       <div className="text-[14px] font-semibold mb-3 flex items-center gap-2">
-        <DollarSign size={14} className="text-emerald-400" /> Resumen Financiero
+        <DollarSign size={14} className="text-emerald-400" aria-hidden="true"/> Resumen Financiero
       </div>
       <div className="space-y-2.5">
         <div className="flex items-center justify-between">
@@ -45,7 +45,7 @@ export default function DashboardFinancialSummary({
         )}
         {overdueInvoices > 0 && (
           <div className="flex items-center justify-between mt-1">
-            <div className="flex items-center gap-2"><AlertTriangle size={10} className="text-red-400" /><span className="text-[11px] text-red-400 font-medium">Facturas vencidas</span></div>
+            <div className="flex items-center gap-2"><AlertTriangle size={10} className="text-red-400" aria-hidden="true"/><span className="text-[11px] text-red-400 font-medium">Facturas vencidas</span></div>
             <span className="text-[11px] font-semibold text-red-400">{overdueInvoices}</span>
           </div>
         )}

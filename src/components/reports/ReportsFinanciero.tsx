@@ -55,7 +55,7 @@ export default function ReportsFinanciero({ projects, expenses, invoices, timeEn
         <h3 className="text-[15px] font-semibold">Presupuesto vs Real por Proyecto</h3>
         <button className="text-xs text-[var(--af-accent)] cursor-pointer hover:underline" onClick={() => {
           try { exportBudgetPDF({ expenses, projects }); showToast('PDF descargado'); } catch { showToast('Error', 'error'); }
-        }}><FileText size={12} className="inline mr-1" />PDF</button>
+        }}><FileText size={12} className="inline mr-1" aria-hidden="true"/>PDF</button>
       </div>
       {budgetVsRealData.length === 0 ? <div className="text-sm text-[var(--muted-foreground)]">Sin proyectos con presupuesto</div> : (
         <ResponsiveContainer width="100%" height={220}>
@@ -77,7 +77,7 @@ export default function ReportsFinanciero({ projects, expenses, invoices, timeEn
         <h3 className="text-[15px] font-semibold">Gastos por Categoria</h3>
         <button className="text-xs text-[var(--af-accent)] cursor-pointer hover:underline" onClick={() => {
           try { exportExpensesExcel(expenses, projects); showToast('Excel descargado'); } catch { showToast('Error', 'error'); }
-        }}><FileSpreadsheet size={12} className="inline mr-1" />Excel</button>
+        }}><FileSpreadsheet size={12} className="inline mr-1" aria-hidden="true"/>Excel</button>
       </div>
       {categoryData.length === 0 ? <div className="text-sm text-[var(--muted-foreground)]">Sin gastos</div> : (
         <ResponsiveContainer width="100%" height={220}>

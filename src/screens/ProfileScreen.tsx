@@ -580,12 +580,12 @@ export default function ProfileScreen() {
           {/* Calendar Header */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-1.5">
-              <button className="w-7 h-7 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={pcPrevMonth}>
-                <ChevronLeft size={14} className="text-[var(--muted-foreground)]" />
+              <button aria-label="Mes anterior" className="w-7 h-7 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={pcPrevMonth}>
+                <ChevronLeft size={14} className="text-[var(--muted-foreground)]" aria-hidden="true"/>
               </button>
               <div className="text-[13px] sm:text-[14px] font-semibold min-w-[110px] sm:min-w-[140px] text-center">{MESES[pcMonth]} {pcYear}</div>
-              <button className="w-7 h-7 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={pcNextMonth}>
-                <ChevronRight size={14} className="text-[var(--muted-foreground)]" />
+              <button aria-label="Mes siguiente" className="w-7 h-7 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={pcNextMonth}>
+                <ChevronRight size={14} className="text-[var(--muted-foreground)]" aria-hidden="true"/>
               </button>
             </div>
             <button className="text-[10px] px-2 py-1 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={pcGoToday}>Hoy</button>

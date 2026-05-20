@@ -810,11 +810,6 @@ html {
     scroll-behavior: auto !important;
   }
 
-  .af-skeleton {
-    animation: none !important;
-    background: var(--af-bg4) !important;
-  }
-
   [data-radix-popper-content-wrapper],
   [data-vaul-overlay],
   [data-vaul-content] {
@@ -822,11 +817,35 @@ html {
   }
 
   .animate-fadeIn,
+  .animate-fadeInUp,
   .animate-slideIn,
-  .animate-slideUp {
+  .animate-slideUp,
+  .animate-scaleIn,
+  .animate-spin,
+  .animate-float {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  /* Framer Motion — ensure no residual transforms */
+  [style*="transform"],
+  [style*="opacity"] {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Ambient/glow effects — disable pulsing */
+  .af-ambient-glow,
+  .af-ambient-glow-2 {
+    animation: none !important;
+  }
+
+  /* Skeleton loading — instant fill */
+  .af-skeleton,
+  .shimmer {
+    animation: none !important;
+    background: var(--af-bg4) !important;
   }
 }
 

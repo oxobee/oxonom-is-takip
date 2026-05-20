@@ -13,7 +13,7 @@ export default function InstallBanner() {
       <div className="max-w-lg mx-auto bg-[var(--card)] border border-[var(--af-accent)]/30 rounded-2xl p-4 shadow-2xl">
         <div className="flex items-start gap-3">
           <div className="w-12 h-12 bg-[var(--af-accent)] rounded-xl flex items-center justify-center flex-shrink-0">
-            <HomeIcon size={24} className="stroke-background" />
+            <HomeIcon size={24} className="stroke-background" aria-hidden="true"/>
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-[15px] font-semibold">Instalar Archii</div>
@@ -27,8 +27,8 @@ export default function InstallBanner() {
               </button>
             </div>
           </div>
-          <button className="w-9 h-9 flex items-center justify-center text-[var(--af-text3)] cursor-pointer hover:text-[var(--foreground)] flex-shrink-0" onClick={dismissInstallBanner}>
-            <X size={16} className="stroke-current" />
+          <button aria-label="Cerrar" className="w-9 h-9 flex items-center justify-center text-[var(--af-text3)] cursor-pointer hover:text-[var(--foreground)] flex-shrink-0" onClick={dismissInstallBanner}>
+            <X size={16} className="stroke-current" aria-hidden="true"/>
           </button>
         </div>
       </div>

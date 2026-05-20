@@ -62,7 +62,7 @@ export default function ProjectCards({
                 className={`w-5 h-5 rounded flex items-center justify-center border transition-all cursor-pointer ${isSelected ? 'bg-[var(--af-accent)] border-[var(--af-accent)]' : 'border-[var(--border)] bg-[var(--card)] opacity-0 group-hover:opacity-100 hover:opacity-100'}`}
                 onClick={() => toggleSelect(p.id)}
               >
-                {isSelected && <CheckSquare size={13} className="text-background" />}
+                {isSelected && <CheckSquare size={13} className="text-background" aria-hidden="true"/>}
               </button>
             </div>
 
@@ -78,7 +78,7 @@ export default function ProjectCards({
                 {compName && <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--af-bg4)] text-[var(--af-text3)]">{compName}</span>}
                 {stats.overdue > 0 && (
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 font-medium flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3" />{stats.overdue}
+                    <AlertTriangle className="w-3 h-3" aria-hidden="true"/>{stats.overdue}
                   </span>
                 )}
                 {/* ★ Health badge */}
@@ -96,8 +96,8 @@ export default function ProjectCards({
               <div className="md:hidden" onClick={e => e.stopPropagation()}>
                 <OverflowMenu
                   actions={[
-                    { label: 'Editar proyecto', icon: <Pencil size={14} />, onClick: () => openEditProject(p) },
-                    { label: 'Eliminar proyecto', icon: <Trash2 size={14} />, onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar proyecto', description: `¿Estás seguro de eliminar "${d.name}"?` })) deleteProject(p.id); }, variant: 'danger', separator: true },
+                    { label: 'Editar proyecto', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => openEditProject(p) },
+                    { label: 'Eliminar proyecto', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar proyecto', description: `¿Estás seguro de eliminar "${d.name}"?` })) deleteProject(p.id); }, variant: 'danger', separator: true },
                   ]}
                   side="left"
                   align="end"
@@ -156,13 +156,13 @@ export default function ProjectCards({
                 {d.budget > 0 && <span className="text-[var(--af-accent)] font-medium">{fmtCOP(d.budget)}</span>}
                 {stats.total > 0 && (
                   <span className="text-[var(--muted-foreground)]">
-                    <CheckCircle2 size={10} className="inline mr-0.5 text-emerald-400" />{stats.completed}/{stats.total}
+                    <CheckCircle2 size={10} className="inline mr-0.5 text-emerald-400" aria-hidden="true"/>{stats.completed}/{stats.total}
                   </span>
                 )}
               </div>
               {daysLeft !== null && d.status !== 'Terminado' && (
                 <span className={`flex items-center gap-1 font-medium ${daysLeft < 0 ? 'text-red-400' : daysLeft <= 7 ? 'text-amber-400' : 'text-[var(--muted-foreground)]'}`}>
-                  <Clock className="w-3 h-3" />
+                  <Clock className="w-3 h-3" aria-hidden="true"/>
                   {daysLeft < 0 ? `-${Math.abs(daysLeft)}d` : `${daysLeft}d`}
                 </span>
               )}

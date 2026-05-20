@@ -14,13 +14,13 @@ export default function SuppliersScreen() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Store size={20} className="text-[var(--af-accent)]" />
+            <Store size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Proveedores
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{suppliers.length} proveedores</p>
         </div>
         <button className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors" onClick={() => { setEditingId(null); openModal('supplier'); }}>
-          <Plus size={14} />Nuevo proveedor
+          <Plus size={14} aria-hidden="true"/>Nuevo proveedor
         </button>
       </div>
       {loading && (

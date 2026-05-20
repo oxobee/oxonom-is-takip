@@ -35,7 +35,7 @@ export default function DashboardCharts({
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5">
         <div className="flex items-center justify-between mb-3">
           <div className="text-[14px] font-semibold flex items-center gap-2">
-            <TrendingUp size={14} className="text-[var(--af-accent)]" /> Tendencia de Ingresos
+            <TrendingUp size={14} className="text-[var(--af-accent)]" aria-hidden="true"/> Tendencia de Ingresos
           </div>
           <span className="text-[9px] text-[var(--af-text3)] px-2 py-0.5 rounded-full bg-[var(--af-bg4)]">6 meses</span>
         </div>
@@ -59,7 +59,7 @@ export default function DashboardCharts({
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 sm:p-5">
         <div className="flex items-center justify-between mb-3">
           <div className="text-[14px] font-semibold flex items-center gap-2">
-            <Users size={14} className="text-purple-400" /> Carga de Trabajo
+            <Users size={14} className="text-purple-400" aria-hidden="true"/> Carga de Trabajo
           </div>
           <button className="text-[10px] text-[var(--af-accent)] cursor-pointer hover:underline flex items-center gap-1" onClick={() => navigateTo('reports')}>
             Reportes <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path d="m9 18 6-6-6-6" /></svg>

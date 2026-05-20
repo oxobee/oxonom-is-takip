@@ -1374,3 +1374,48 @@ Stage Summary:
   4. Accesos rápidos desde Quick Actions y Agenda de Hoy
   5. Pantalla completa accesible desde sidebar
 - Deploy automático a Vercel en curso
+
+---
+Task ID: 12
+Agent: Super Z (Main)
+Task: Fix lógica de vencimiento de tareas — día de gracia + zona horaria local
+
+Protocolo leido: LEE_PRIMERO.txt + INSTRUCTIVO_BITACORA.txt
+
+Work Log:
+- Identificado bug: tareas se marcan vencidas el mismo día de su fecha de vencimiento
+- Causa raíz: 2 problemas combinados:
+  1. new Date("2026-05-21") parsea como UTC medianoche, pero comparación contra new Date() (hora actual) hace que el mismo día ya sea "menor"
+  2. En zona horaria UTC-5 (Colombia), new Date("2026-05-21") = 20 de mayo 7pm local → ya "pasó"
+- Corregido isOverdue() en kanban-helpers.ts:
+  - Parsea fecha como LOCAL (new Date(year, month-1, day)) en vez de UTC
+  - Día de vencimiento NO es vencido (estrictamente menor, no menor o igual)
+- Reemplazadas 20+ comparaciones inline en 17 archivos con llamada a isOverdue()
+- Archivos modificados:
+  - src/lib/kanban-helpers.ts (función central corregida)
+  - src/screens/TasksScreen.tsx (4 comparaciones)
+  - src/components/kanban/KanbanBoard.tsx (2 comparaciones)
+  - src/screens/AdminScreen.tsx (3 comparaciones)
+  - src/screens/CalendarScreen.tsx (3 comparaciones)
+  - src/contexts/AppContext.tsx (2 comparaciones)
+  - src/screens/ProfileScreen.tsx (2 comparaciones)
+  - src/screens/ProjectDetailScreen.tsx (4 comparaciones)
+  - src/components/dashboard/useDashboardData.ts (2 comparaciones)
+  - src/components/projects/useProjectsData.ts (2 comparaciones)
+  - src/components/projects/project-helpers.tsx (1 comparación)
+  - src/components/reports/ReportsEquipo.tsx (1 comparación)
+  - src/components/reports/ReportsObra.tsx (1 comparación)
+  - src/components/reports/ReportsOverview.tsx (1 comparación)
+  - src/lib/export-pdf.ts (4 comparaciones)
+  - src/lib/export-excel.ts (2 comparaciones)
+  - src/lib/health-score.ts (1 comparación)
+- Cron route (server-side) usa comparación de strings "YYYY-MM-DD" < "YYYY-MM-DD" que ya es correcta
+- Build verificado: 0 errores TypeScript, 47 rutas compiladas
+- Commit: 96f01b1, push a main completado
+
+Stage Summary:
+- Bug corregido: tareas ya NO aparecen vencidas en su propio día de vencimiento
+- Zona horaria: fechas ahora se parsean como local (no UTC) para Colombia
+- Centralizada lógica de vencimiento en una sola función isOverdue()
+- 17 archivos, +64 lineas, -42 lineas
+- Deploy automático a Vercel en curso

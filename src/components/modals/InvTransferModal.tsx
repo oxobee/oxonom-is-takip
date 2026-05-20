@@ -24,7 +24,7 @@ export default function InvTransferModal({ open, onClose }: { open: boolean; onC
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={480}>
       <div className="text-lg font-semibold mb-5 flex items-center gap-2">
-        <ArrowLeftRight className="w-5 h-5" />
+        <ArrowLeftRight className="w-5 h-5" aria-hidden="true"/>
         Nueva transferencia
       </div>
 

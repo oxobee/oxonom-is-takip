@@ -68,7 +68,7 @@ export default function SubmittalsScreen() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <FileCheck size={20} className="text-[var(--af-accent)]" />
+            <FileCheck size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Submittals
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{submittals.length} submittals</p>
@@ -77,7 +77,7 @@ export default function SubmittalsScreen() {
           className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors"
           onClick={handleCreate}
         >
-          <Plus size={14} />
+          <Plus size={14} aria-hidden="true"/>
           Nuevo submittal
         </button>
       </div>
@@ -143,20 +143,20 @@ export default function SubmittalsScreen() {
                     </span>
                   </div>
                   <div className="hidden md:flex gap-1.5 flex-shrink-0">
-                    <button className="px-1.5 py-0.5 rounded bg-[var(--af-bg4)] text-xs cursor-pointer" onClick={() => handleEdit(s)}><Pencil size={12} /></button>
-                    <button className="px-1.5 py-0.5 rounded bg-red-500/10 text-xs cursor-pointer" onClick={async () => {
+                    <button aria-label="Editar" className="px-1.5 py-0.5 rounded bg-[var(--af-bg4)] text-xs cursor-pointer" onClick={() => handleEdit(s)}><Pencil size={12} aria-hidden="true"/></button>
+                    <button aria-label="Eliminar" className="px-1.5 py-0.5 rounded bg-red-500/10 text-xs cursor-pointer" onClick={async () => {
                       const ok = await confirmDialog.confirm({ title: 'Eliminar submittal', description: '¿Estás seguro de eliminar este submittal?' });
                       if (!ok) return;
                       const snapshot = { ...s.data };
                       await fbActions.deleteSubmittal(s.id, showToast, activeTenantId);
                       showUndoToast({ collection: 'submittals', docId: s.id, snapshot, label: 'Submittal' });
-                    }}><Trash2 size={12} /></button>
+                    }}><Trash2 size={12} aria-hidden="true"/></button>
                   </div>
                   <div className="md:hidden flex-shrink-0">
                     <OverflowMenu
                       actions={[
-                        { label: 'Editar submittal', icon: <Pencil size={14} />, onClick: () => handleEdit(s) },
-                        { label: 'Eliminar submittal', icon: <Trash2 size={14} />, variant: 'danger', separator: true, onClick: async () => {
+                        { label: 'Editar submittal', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => handleEdit(s) },
+                        { label: 'Eliminar submittal', icon: <Trash2 size={14} aria-hidden="true"/>, variant: 'danger', separator: true, onClick: async () => {
                           const ok = await confirmDialog.confirm({ title: 'Eliminar submittal', description: '¿Estás seguro de eliminar este submittal?' });
                           if (!ok) return;
                           const snapshot = { ...s.data };

@@ -28,7 +28,7 @@ export default function EmptyState({
         <div className="text-4xl mb-3">{emoji}</div>
       ) : (
         <div className="flex justify-center mb-3 text-[var(--muted-foreground)]">
-          <FolderOpen size={40} strokeWidth={1.5} />
+          <FolderOpen size={40} strokeWidth={1.5} aria-hidden="true" />
         </div>
       )}
       <div className="text-[15px] font-medium text-[var(--muted-foreground)] mb-1">{title}</div>

@@ -28,6 +28,7 @@ function StarRating({ value, onChange }: { value: number; onChange: (v: number) 
                 ? 'fill-amber-400 text-amber-400'
                 : 'fill-transparent text-[var(--muted-foreground)]/30'
             }`}
+         aria-hidden="true"
           />
         </button>
       ))}
@@ -94,7 +95,7 @@ export default function FeedbackWidget() {
           whileTap={{ scale: 0.95 }}
           title="Enviar feedback"
         >
-          <MessageSquarePlus size={20} className="stroke-[var(--af-accent)]" />
+          <MessageSquarePlus size={20} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
           <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[var(--af-accent)] text-[8px] font-bold text-background flex items-center justify-center">
             BETA
           </span>
@@ -128,7 +129,7 @@ export default function FeedbackWidget() {
               <div className="flex items-center justify-between px-5 pb-3 border-b border-[var(--border)]">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-[var(--af-accent)]/15 flex items-center justify-center">
-                    <MessageSquarePlus size={16} className="stroke-[var(--af-accent)]" />
+                    <MessageSquarePlus size={16} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
                   </div>
                   <div>
                     <h3 className="text-base font-bold">Feedback Beta</h3>
@@ -139,7 +140,7 @@ export default function FeedbackWidget() {
                   onClick={() => setOpen(false)}
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-all cursor-pointer border-none bg-transparent"
                 >
-                  <X size={18} />
+                  <X size={18} aria-hidden="true"/>
                 </button>
               </div>
 
@@ -198,9 +199,9 @@ export default function FeedbackWidget() {
                   className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl bg-gradient-to-r from-[var(--af-accent)] to-[var(--af-accent2)] text-background text-[14px] font-semibold cursor-pointer hover:shadow-lg hover:shadow-[var(--af-accent)]/20 transition-all active:scale-[0.97] border-none disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting ? (
-                    <Loader size={16} className="animate-spin" />
+                    <Loader size={16} className="animate-spin" aria-hidden="true"/>
                   ) : (
-                    <Send size={16} />
+                    <Send size={16} aria-hidden="true"/>
                   )}
                   {submitting ? 'Enviando...' : 'Enviar feedback'}
                 </button>
@@ -222,7 +223,7 @@ export default function FeedbackWidget() {
           >
             <div className="flex items-center gap-3 mb-2">
               <div className="w-8 h-8 rounded-full bg-[var(--af-green)]/15 flex items-center justify-center">
-                <CheckCircle2 size={18} className="stroke-[var(--af-green)]" />
+                <CheckCircle2 size={18} className="stroke-[var(--af-green)]" aria-hidden="true"/>
               </div>
               <div className="text-[13px] font-semibold">Gracias!</div>
             </div>

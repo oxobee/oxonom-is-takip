@@ -96,6 +96,7 @@ export default function SupplierModal({ open, onClose }: { open: boolean; onClos
                   key={n}
                   size={16}
                   className={n <= rating ? 'text-amber-400 fill-amber-400' : 'text-[var(--muted-foreground)]/30'}
+               aria-hidden="true"
                 />
               ))}
             </div>

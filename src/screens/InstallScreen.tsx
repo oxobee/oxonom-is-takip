@@ -20,7 +20,7 @@ export default function InstallScreen() {
             {isStandalone ? (
               <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 flex items-center gap-3">
                 <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Check size={20} className="stroke-emerald-400" />
+                  <Check size={20} className="stroke-emerald-400" aria-hidden="true"/>
                 </div>
                 <div>
                   <div className="text-sm font-semibold text-emerald-400">App instalada correctamente</div>
@@ -30,7 +30,7 @@ export default function InstallScreen() {
             ) : installPrompt ? (
               <div className="bg-[var(--af-accent)]/10 border border-[var(--af-accent)]/20 rounded-xl p-4 flex items-center gap-3">
                 <div className="w-10 h-10 bg-[var(--af-accent)]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Download size={20} className="stroke-[var(--af-accent)]" />
+                  <Download size={20} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-semibold">Listo para instalar</div>
@@ -43,7 +43,7 @@ export default function InstallScreen() {
             ) : (
               <div className="bg-[var(--af-accent)]/10 border border-[var(--af-accent)]/20 rounded-xl p-4 flex items-center gap-3">
                 <div className="w-10 h-10 bg-[var(--af-accent)]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Info size={20} className="stroke-[var(--af-accent)]" />
+                  <Info size={20} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
                 </div>
                 <div>
                   <div className="text-sm font-semibold">Instalación manual</div>
@@ -166,7 +166,7 @@ export default function InstallScreen() {
                     });
                   }
                 }}>
-                  <RefreshCw size={16} className="stroke-current" />
+                  <RefreshCw size={16} className="stroke-current" aria-hidden="true"/>
                   Actualizar cache
                 </button>
                 <button className="px-4 py-2 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] text-[13px] text-[var(--foreground)] cursor-pointer hover:bg-[var(--af-bg4)] transition-colors flex items-center gap-2" onClick={() => {
@@ -176,7 +176,7 @@ export default function InstallScreen() {
                   setShowInstallBanner(true);
                   showToast('Recordatorio de instalación restablecido');
                 }}>
-                  <Download size={16} className="stroke-current" />
+                  <Download size={16} className="stroke-current" aria-hidden="true"/>
                   Mostrar prompt
                 </button>
                 <button className="px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-[13px] text-red-400 cursor-pointer hover:bg-red-500/20 transition-colors flex items-center gap-2" onClick={async () => {
@@ -189,7 +189,7 @@ export default function InstallScreen() {
                     setTimeout(() => window.location.reload(), 1000);
                   }
                 }}>
-                  <Trash2 size={16} className="stroke-current" />
+                  <Trash2 size={16} className="stroke-current" aria-hidden="true"/>
                   Borrar caché
                 </button>
               </div>

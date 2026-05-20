@@ -50,13 +50,13 @@ export default function InvoicesScreen() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Receipt size={20} className="text-[var(--af-accent)]" />
+            <Receipt size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
             Facturación
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{invoices.length} facturas</p>
         </div>
         <button className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors" onClick={openNewInvoice}>
-          <Plus size={14} />
+          <Plus size={14} aria-hidden="true"/>
           Nueva Factura
         </button>
       </div>
@@ -101,32 +101,32 @@ export default function InvoicesScreen() {
                     </div>
                     <div className="hidden md:flex gap-1 shrink-0" onClick={e => e.stopPropagation()}>
                       {/* PDF Download */}
-                      <button className="px-2 py-1.5 rounded text-xs cursor-pointer bg-[var(--af-accent)]/10 text-[var(--af-accent)] hover:bg-[var(--af-accent)]/20" onClick={() => {
+                      <button aria-label="Descargar PDF" className="px-2 py-1.5 rounded text-xs cursor-pointer bg-[var(--af-accent)]/10 text-[var(--af-accent)] hover:bg-[var(--af-accent)]/20" onClick={() => {
                         try { exportInvoicePDF(inv, proj); showToast('PDF descargado'); } catch (err) { showToast('Error al generar PDF', 'error'); }
                       }} title="Descargar PDF">
-                        <FileText size={14} />
+                        <FileText size={14} aria-hidden="true"/>
                       </button>
                       {inv.data.status === 'Borrador' && <button className="px-2 py-1.5 rounded text-xs cursor-pointer bg-blue-500/10 text-blue-400 hover:bg-blue-500/20" onClick={() => fbActions.updateInvoiceStatus(inv.id, 'Enviada', showToast, activeTenantId)}>Enviar</button>}
                       {inv.data.status === 'Enviada' && <button className="px-2 py-1.5 rounded text-xs cursor-pointer bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20" onClick={() => fbActions.updateInvoiceStatus(inv.id, 'Pagada', showToast, activeTenantId)}>Pagar</button>}
                       {inv.data.status === 'Enviada' && <button className="px-2 py-1.5 rounded text-xs cursor-pointer bg-red-500/10 text-red-400 hover:bg-red-500/20" onClick={() => fbActions.updateInvoiceStatus(inv.id, 'Vencida', showToast, activeTenantId)}>Vencer</button>}
-                      <button className="px-2 py-1.5 rounded text-xs cursor-pointer bg-red-500/10 text-red-400 hover:bg-red-500/20" onClick={async () => {
+                      <button aria-label="Eliminar" className="px-2 py-1.5 rounded text-xs cursor-pointer bg-red-500/10 text-red-400 hover:bg-red-500/20" onClick={async () => {
                         const ok = await confirm({ title: 'Eliminar factura', description: '¿Estás seguro de eliminar esta factura?' });
                         if (!ok) return;
                         const snapshot = { ...inv.data };
                         await fbActions.deleteInvoice(inv.id, showToast, activeTenantId);
                         showUndoToast({ collection: 'invoices', docId: inv.id, snapshot, label: 'Factura', gender: 'a' });
-                      }}><Trash2 size={14} /></button>
+                      }}><Trash2 size={14} aria-hidden="true"/></button>
                     </div>
                     <div className="md:hidden shrink-0" onClick={e => e.stopPropagation()}>
                       <OverflowMenu
                         actions={[
-                          { label: 'Descargar PDF', icon: <FileText size={14} />, onClick: () => {
+                          { label: 'Descargar PDF', icon: <FileText size={14} aria-hidden="true"/>, onClick: () => {
                             try { exportInvoicePDF(inv, proj); showToast('PDF descargado'); } catch (err) { showToast('Error al generar PDF', 'error'); }
                           }},
                           ...(inv.data.status === 'Borrador' ? [{ label: 'Enviar factura', onClick: () => fbActions.updateInvoiceStatus(inv.id, 'Enviada', showToast, activeTenantId) }] : []),
                           ...(inv.data.status === 'Enviada' ? [{ label: 'Marcar como pagada', onClick: () => fbActions.updateInvoiceStatus(inv.id, 'Pagada', showToast, activeTenantId) }] : []),
                           ...(inv.data.status === 'Enviada' ? [{ label: 'Marcar como vencida', onClick: () => fbActions.updateInvoiceStatus(inv.id, 'Vencida', showToast, activeTenantId) }] : []),
-                          { label: 'Eliminar factura', icon: <Trash2 size={14} />, variant: 'danger' as const, separator: true, onClick: async () => {
+                          { label: 'Eliminar factura', icon: <Trash2 size={14} aria-hidden="true"/>, variant: 'danger' as const, separator: true, onClick: async () => {
                             const ok = await confirm({ title: 'Eliminar factura', description: '¿Estás seguro de eliminar esta factura?' });
                             if (!ok) return;
                             const snapshot = { ...inv.data };

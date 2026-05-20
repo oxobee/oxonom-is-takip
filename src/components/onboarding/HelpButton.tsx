@@ -65,9 +65,10 @@ export function HelpButton() {
         transition={{ delay: 1.5, type: 'spring', stiffness: 200, damping: 15 }}
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
+        aria-label="Ayuda"
         title="Ayuda"
       >
-        <CircleHelp size={22} strokeWidth={2.5} />
+        <CircleHelp size={22} strokeWidth={2.5} aria-hidden="true"/>
 
         {/* Pulse ring */}
         {showPulse && !helpOpen && (
@@ -168,7 +169,7 @@ function HelpPanel() {
           <div className="flex items-center justify-between px-5 pb-3 border-b border-[var(--border)]">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--af-accent)]/15 to-[var(--af-accent2)]/8 flex items-center justify-center">
-                <BookOpen size={16} className="stroke-[var(--af-accent)]" />
+                <BookOpen size={16} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
               </div>
               <div>
                 <h3 className="text-base font-bold">Centro de Ayuda</h3>
@@ -176,10 +177,11 @@ function HelpPanel() {
               </div>
             </div>
             <button
+              aria-label="Cerrar"
               onClick={() => setHelpOpen(false)}
               className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-all cursor-pointer border-none bg-transparent"
             >
-              <X size={18} />
+              <X size={18} aria-hidden="true"/>
             </button>
           </div>
 
@@ -193,7 +195,7 @@ function HelpPanel() {
                   : 'text-[var(--muted-foreground)] hover:bg-[var(--af-bg3)]'
               }`}
             >
-              <BookOpen size={14} />
+              <BookOpen size={14} aria-hidden="true"/>
               Guia
             </button>
             <button
@@ -204,7 +206,7 @@ function HelpPanel() {
                   : 'text-[var(--muted-foreground)] hover:bg-[var(--af-bg3)]'
               }`}
             >
-              <Keyboard size={14} />
+              <Keyboard size={14} aria-hidden="true"/>
               Atajos
             </button>
           </div>
@@ -237,7 +239,7 @@ function HelpPanel() {
                               <div className="text-[11px] text-[var(--muted-foreground)]">{(item as any).desc}</div>
                             )}
                           </div>
-                          <ChevronRight size={14} className="text-[var(--muted-foreground)] flex-shrink-0" />
+                          <ChevronRight size={14} className="text-[var(--muted-foreground)] flex-shrink-0" aria-hidden="true"/>
                         </button>
                       ))}
                     </div>
@@ -247,7 +249,7 @@ function HelpPanel() {
                 {/* Tip */}
                 <div className="p-3 rounded-xl bg-[var(--af-accent)]/5 border border-[var(--af-accent)]/15">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <Sparkles size={14} className="stroke-[var(--af-accent)]" />
+                    <Sparkles size={14} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
                     <span className="text-[12px] font-semibold text-[var(--af-accent)]">Tip</span>
                   </div>
                   <p className="text-[11px] text-[var(--muted-foreground)] leading-relaxed">
