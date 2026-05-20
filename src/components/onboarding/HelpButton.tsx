@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOnboardingStore } from '@/stores/onboarding-store';
+import { useUIStore } from '@/stores/ui-store';
 import { useApp } from '@/contexts/AppContext';
 import { toast } from 'sonner';
 import {
@@ -28,7 +29,7 @@ const HELP_SECTIONS = [
       { icon: ClipboardCheck, label: 'Tareas', desc: 'Seguimiento y asignacion de tareas', screen: 'tasks' },
       { icon: MessageCircle, label: 'Chat', desc: 'Comunicacion con tu equipo', screen: 'chat' },
       { icon: FileText, label: 'Archivos', desc: 'Planos, documentos y galeria', screen: 'files' },
-      { icon: Bot, label: 'Asistente IA', desc: 'Preguntale cualquier cosa', screen: 'chat' },
+      { icon: Bot, label: 'Asistente IA', desc: 'Preguntale cualquier cosa', action: 'open-ai-chat' as const },
       { icon: Users, label: 'Equipo', desc: 'Gestion de miembros y roles', screen: 'team' },
     ],
   },
@@ -87,14 +88,14 @@ export function HelpButton() {
 /* ─── Help Panel ─── */
 function HelpPanel() {
   const { helpOpen, setHelpOpen, startWizard, showSpotlight, resetWizard, spotlightTips } = useOnboardingStore();
+  const { toggleAIChat } = useUIStore();
   const { navigateTo } = useApp();
   const [activeTab, setActiveTab] = useState<'guide' | 'shortcuts'>('guide');
 
-  // Close on Escape
+  // Close on Escape (? is handled globally by useKeyboardShortcuts → toggleHelp)
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && helpOpen) setHelpOpen(false);
-      if (e.key === '?' && !helpOpen) setHelpOpen(true);
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
@@ -120,6 +121,10 @@ function HelpPanel() {
         resetWizard();
         setHelpOpen(false);
         toast.success('Onboarding reiniciado correctamente');
+        break;
+      case 'open-ai-chat':
+        setHelpOpen(false);
+        setTimeout(() => toggleAIChat(), 200);
         break;
       default:
         // Navigate to screen (from Guia rapida items)
@@ -218,8 +223,8 @@ function HelpPanel() {
                         <button
                           key={i}
                           onClick={() => {
-                            if ('action' in item) handleAction(item.action);
-                            else if ('screen' in item) handleAction('nav:' + item.screen);
+                            if ('action' in item && item.action) handleAction(item.action);
+                            else if ('screen' in item && item.screen) handleAction('nav:' + item.screen);
                           }}
                           className="w-full flex items-center gap-3 p-3 rounded-xl bg-[var(--af-bg3)] hover:bg-[var(--af-bg4)] cursor-pointer transition-all active:scale-[0.98] text-left border-none"
                         >

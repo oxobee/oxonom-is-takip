@@ -1,10 +1,10 @@
 'use client';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { getInitials, avatarColor } from '@/lib/helpers';
 import { ROLE_ICONS } from '@/lib/types';
 import { useUIStore } from '@/stores/ui-store';
 import type { FirebaseUser } from '@/lib/firebase-service';
-import { LayoutGrid, User, Folder, ClipboardCheck, MessageCircle, DollarSign, FileText, Camera, Image, Package, Settings, Store, Users, Calendar, Globe, Building2, Download, ChevronLeft, Home, Timer, Receipt, BarChart3, Shield, CircleHelp, ClipboardList, ListChecks, CalendarDays } from 'lucide-react';
+import { LayoutGrid, User, Folder, ClipboardCheck, MessageCircle, DollarSign, FileText, Camera, Image, Package, Settings, Store, Users, Calendar, Globe, Building2, Download, ChevronLeft, Home, Timer, Receipt, BarChart3, Shield, CircleHelp, ClipboardList, ListChecks, CalendarDays, Search, X } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 
 interface SidebarProps {
@@ -39,6 +39,8 @@ export default function Sidebar({
   onOpenSettings,
 }: SidebarProps) {
   const setSettingsOpen = useUIStore(s => s.setSettingsOpen);
+  const [navSearch, setNavSearch] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const calendarBadge = useMemo(() => {
     const count = tasks.filter(t => t.data.dueDate && t.data.status !== 'Completado').length;
     return count > 0 ? count : undefined;
@@ -82,12 +84,20 @@ export default function Sidebar({
     ...(isEmailAdmin ? [{ divider: true }, { id: 'superAdmin', label: 'Super Admin', icon: <Shield size={18} className="stroke-red-400" aria-hidden="true" />, isSuperAdmin: true }] : []),
   ];
 
-  const principalItems = navItems.filter((n: any) => !n.divider).slice(0, 6);
-  const gestionItems = navItems.filter((n: any) => !n.divider).slice(6);
+  // Filter nav items by search query
+  const searchQ = navSearch.toLowerCase().trim();
+  const allNavItems = navItems.filter((n: any) => !n.divider);
+  const filteredNavItems = searchQ
+    ? allNavItems.filter((n: any) => n.label.toLowerCase().includes(searchQ) || n.id.toLowerCase().includes(searchQ))
+    : allNavItems;
+  const principalItems = searchQ ? filteredNavItems : allNavItems.slice(0, 6);
+  const gestionItems = searchQ ? [] : allNavItems.slice(6);
+  const hasResults = filteredNavItems.length > 0;
 
   const handleNavClick = (navId: string) => {
     navigateTo(navId, null);
     setSidebarOpen(false);
+    setNavSearch('');
   };
 
   const renderNavList = (items: any[], isActive: (n: any) => boolean) => (
@@ -147,10 +157,38 @@ export default function Sidebar({
 
           {/* Navigation */}
           <div className="overflow-y-auto -mx-1 px-1" id="onboarding-sidebar-trigger-mobile" style={{ maxHeight: 'calc(80vh - 180px)', WebkitOverflowScrolling: 'touch' }}>
-            <div className="text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-3 mb-1">Principal</div>
-            {renderNavList(principalItems, isActive)}
-            <div className="text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-3 mt-4 mb-1">Gestión</div>
-            {renderNavList(gestionItems, isActive)}
+            {/* Nav search */}
+            <div className="relative mx-2 mb-2">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={navSearch}
+                onChange={e => setNavSearch(e.target.value)}
+                placeholder="Buscar navegación..."
+                className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg pl-8 pr-7 py-2 text-[12px] text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]/50 transition-colors"
+              />
+              {navSearch && (
+                <button className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[var(--af-bg4)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-accent)]/20 transition-colors border-none" onClick={() => setNavSearch('')}>
+                  <X size={10} className="text-[var(--muted-foreground)]" />
+                </button>
+              )}
+            </div>
+            {searchQ ? (
+              hasResults ? (
+                <div className="text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-3 mb-1">Resultados ({filteredNavItems.length})</div>
+              ) : (
+                <div className="text-center py-6 text-[var(--af-text3)] text-[12px]">Sin resultados para "{navSearch}"</div>
+              )
+            ) : (
+              <>
+                <div className="text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-3 mb-1">Principal</div>
+                {renderNavList(principalItems, isActive)}
+                <div className="text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-3 mt-4 mb-1">Gestión</div>
+                {renderNavList(gestionItems, isActive)}
+              </>
+            )}
+            {searchQ && hasResults && renderNavList(filteredNavItems, isActive)}
           </div>
 
           {/* Settings button */}
@@ -214,21 +252,70 @@ export default function Sidebar({
           <div className={`transition-all duration-200 overflow-hidden ${sidebarCollapsed ? 'md:hidden md:w-0' : 'md:block'}`}><div style={{ fontFamily: "'DM Serif Display', serif" }} className="text-lg flex items-center gap-1.5">Archii <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--af-accent)]/15 text-[var(--af-accent)]" style={{ fontFamily: 'system-ui, sans-serif' }}>2.0</span></div><div className="text-[10px] text-[var(--af-text3)]">Premium</div></div>
         </div>
         <div className="flex-1 overflow-y-auto py-3 px-3" id="onboarding-sidebar-trigger">
-          <div className={`text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-2 mb-1 transition-all duration-200 overflow-hidden ${sidebarCollapsed ? 'md:hidden md:h-0' : 'md:block'}`}>Principal</div>
-          {principalItems.map((n: any) => (
-            <div key={n.id} className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13.5px] mb-0.5 transition-all ${isActive(n) ? 'bg-[var(--accent)] text-[var(--af-accent2)] shadow-sm' : 'text-[var(--muted-foreground)] hover:bg-[var(--af-bg3)] hover:text-[var(--foreground)]'}`} onClick={() => handleNavClick(n.id)}>
-              {n.icon}
-              <span className={`flex-1 transition-all duration-200 ${sidebarCollapsed ? 'md:hidden' : ''}`}>{n.label}</span>
-              {n.badge !== undefined && <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full transition-all duration-200 ${n.id === 'tasks' && pendingCount > 0 ? 'bg-red-500 text-white' : 'bg-[var(--af-bg4)] text-[var(--muted-foreground)]'} ${sidebarCollapsed ? 'md:hidden' : ''}`}>{n.badge}</span>}
+          {/* Desktop nav search — only when expanded */}
+          {!sidebarCollapsed && (
+            <div className="relative mb-2">
+              <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={navSearch}
+                onChange={e => setNavSearch(e.target.value)}
+                placeholder="Buscar..."
+                className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg pl-8 pr-7 py-1.5 text-[12px] text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]/50 transition-colors"
+              />
+              {navSearch && (
+                <button className="absolute right-1.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[var(--af-bg4)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-accent)]/20 transition-colors border-none" onClick={() => setNavSearch('')}>
+                  <X size={10} className="text-[var(--muted-foreground)]" />
+                </button>
+              )}
             </div>
-          ))}
-          <div className={`text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-2 mt-4 mb-1 transition-all duration-200 overflow-hidden ${sidebarCollapsed ? 'md:hidden md:h-0' : 'md:block'}`}>Gestión</div>
-          {gestionItems.map((n: any) => (
-            <div key={n.id} className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13.5px] mb-0.5 transition-all ${isActive(n) ? 'bg-[var(--accent)] text-[var(--af-accent2)] shadow-sm' : 'text-[var(--muted-foreground)] hover:bg-[var(--af-bg3)] hover:text-[var(--foreground)]'}`} onClick={() => handleNavClick(n.id)}>
-              {n.icon}
-              <span className={`transition-all duration-200 ${sidebarCollapsed ? 'md:hidden' : ''}`}>{n.label}</span>
-            </div>
-          ))}
+          )}
+          {/* When collapsed: show search icon that expands + focuses */}
+          {sidebarCollapsed && (
+            <button
+              className="flex items-center justify-center w-full py-2 mb-1 rounded-lg cursor-pointer hover:bg-[var(--af-bg3)] transition-colors text-[var(--muted-foreground)]"
+              onClick={() => { setSidebarCollapsed(false); setTimeout(() => searchInputRef.current?.focus(), 300); }}
+              title="Buscar navegación"
+            >
+              <Search size={18} />
+            </button>
+          )}
+          {searchQ ? (
+            <>
+              {hasResults ? (
+                <>
+                  <div className="text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-2 mb-1">Resultados ({filteredNavItems.length})</div>
+                  {filteredNavItems.map((n: any) => (
+                    <div key={n.id} className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13.5px] mb-0.5 transition-all ${isActive(n) ? 'bg-[var(--accent)] text-[var(--af-accent2)] shadow-sm' : 'text-[var(--muted-foreground)] hover:bg-[var(--af-bg3)] hover:text-[var(--foreground)]'}`} onClick={() => handleNavClick(n.id)}>
+                      {n.icon}
+                      <span>{n.label}</span>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <div className="text-center py-6 text-[var(--af-text3)] text-[11px]">Sin resultados</div>
+              )}
+            </>
+          ) : (
+            <>
+              <div className={`text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-2 mb-1 transition-all duration-200 overflow-hidden ${sidebarCollapsed ? 'md:hidden md:h-0' : 'md:block'}`}>Principal</div>
+              {principalItems.map((n: any) => (
+                <div key={n.id} className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13.5px] mb-0.5 transition-all ${isActive(n) ? 'bg-[var(--accent)] text-[var(--af-accent2)] shadow-sm' : 'text-[var(--muted-foreground)] hover:bg-[var(--af-bg3)] hover:text-[var(--foreground)]'}`} onClick={() => handleNavClick(n.id)}>
+                  {n.icon}
+                  <span className={`flex-1 transition-all duration-200 ${sidebarCollapsed ? 'md:hidden' : ''}`}>{n.label}</span>
+                  {n.badge !== undefined && <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full transition-all duration-200 ${n.id === 'tasks' && pendingCount > 0 ? 'bg-red-500 text-white' : 'bg-[var(--af-bg4)] text-[var(--muted-foreground)]'} ${sidebarCollapsed ? 'md:hidden' : ''}`}>{n.badge}</span>}
+                </div>
+              ))}
+              <div className={`text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-2 mt-4 mb-1 transition-all duration-200 overflow-hidden ${sidebarCollapsed ? 'md:hidden md:h-0' : 'md:block'}`}>Gestión</div>
+              {gestionItems.map((n: any) => (
+                <div key={n.id} className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer text-[13.5px] mb-0.5 transition-all ${isActive(n) ? 'bg-[var(--accent)] text-[var(--af-accent2)] shadow-sm' : 'text-[var(--muted-foreground)] hover:bg-[var(--af-bg3)] hover:text-[var(--foreground)]'}`} onClick={() => handleNavClick(n.id)}>
+                  {n.icon}
+                  <span className={`transition-all duration-200 ${sidebarCollapsed ? 'md:hidden' : ''}`}>{n.label}</span>
+                </div>
+              ))}
+            </>
+          )}
         </div>
         <div className="border-t border-[var(--border)] p-3 flex items-center gap-2.5 cursor-pointer hover:bg-[var(--af-bg3)]" onClick={() => navigateTo('profile')}>
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border ${authUser?.photoURL ? '' : avatarColor(authUser?.uid ?? '')} overflow-hidden`}>{authUser?.photoURL ? <img src={authUser.photoURL} alt="" className="w-full h-full object-cover" /> : initials}</div>
