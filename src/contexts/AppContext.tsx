@@ -1780,10 +1780,19 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     const name = forms.projName || '';
     if (!name) { showToast('El nombre es obligatorio', 'error'); return; }
     if (!authUser) { showToast('Error: no hay sesión activa', 'error'); return; }
+    if (!activeTenantId) { showToast('Error: no hay espacio de trabajo activo. Recarga la página.', 'error'); return; }
     try {
       await fbActions.saveProject({ ...forms, projName: name }, editingId, showToast, authUser, activeTenantId);
       closeModal('project'); setForms(p => ({ ...p, projName: '', projClient: '', projLocation: '', projBudget: '', projDesc: '', projStart: '', projEnd: '', projStatus: 'Concepto', projCompany: '', projType: 'Ejecución', enabledPhases: [] }));
-    } catch (err) { console.error('[Archii] saveProject error:', err); showToast('Error al guardar proyecto', 'error'); }
+    } catch (err: any) {
+      console.error('[Archii] saveProject error:', err);
+      const msg = err?.message || '';
+      if (msg.includes('PERMISSION_DENIED') || msg.includes('permission')) {
+        showToast('Permiso denegado: verifica que eres miembro del espacio de trabajo', 'error');
+      } else {
+        showToast('Error al guardar proyecto: ' + (msg || 'intenta de nuevo'), 'error');
+      }
+    }
   };
 
   const deleteProject = async (id: string) => {
