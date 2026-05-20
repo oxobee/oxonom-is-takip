@@ -571,38 +571,261 @@ export default function WeeklyAgendaScreen() {
 
   /* ─── Print ─── */
   const handlePrint = () => {
-    const el = printRef.current;
-    if (!el) return;
+    // Build data-driven print view (not innerHTML dump)
+    const filtered = filterProject === 'all'
+      ? agendaTasks
+      : agendaTasks.filter(t => t.data.projectId === filterProject);
+
+    // Group tasks by day
+    const tasksByDayKey: Record<string, Task[]> = {};
+    filtered.forEach(t => {
+      const dk = t.data.agendaMeta?.dayKey;
+      if (!dk) return;
+      if (!tasksByDayKey[dk]) tasksByDayKey[dk] = [];
+      tasksByDayKey[dk].push(t);
+    });
+
+    // Stats
+    const totalTasks = filtered.length;
+    const byPriority: Record<string, number> = {};
+    const byStatus: Record<string, number> = {};
+    const byProject: Record<string, number> = {};
+    let totalHours = 0;
+    filtered.forEach(t => {
+      const p = t.data.priority || 'Media';
+      const s = t.data.status || 'Por hacer';
+      const pr = t.data.projectId ? (projectMap[t.data.projectId] || 'Sin proyecto') : 'Sin proyecto';
+      byPriority[p] = (byPriority[p] || 0) + 1;
+      byStatus[s] = (byStatus[s] || 0) + 1;
+      byProject[pr] = (byProject[pr] || 0) + 1;
+      totalHours += t.data.agendaMeta?.hourSlots?.length || 0;
+    });
+
+    const statusSymbol: Record<string, string> = {
+      'Por hacer': '\u25CB', 'En progreso': '\u25CE', 'Revision': '\u25B3', 'Completado': '\u2713',
+    };
+
+    const prioBorder: Record<string, string> = {
+      'Alta': '#ef4444', 'Media': '#f59e0b', 'Baja': '#10b981', 'Cr\u00edtica': '#a855f7',
+    };
+    const prioBg: Record<string, string> = {
+      'Alta': '#fef2f2', 'Media': '#fffbeb', 'Baja': '#ecfdf5', 'Cr\u00edtica': '#faf5ff',
+    };
+
+    const now = new Date();
+    const genDate = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()} ${now.getHours() > 12 ? now.getHours() - 12 : now.getHours()}:${String(now.getMinutes()).padStart(2, '0')} ${now.getHours() >= 12 ? 'pm' : 'am'}`;
+    const filterLabel = filterProject !== 'all' ? (projectMap[filterProject] || 'Proyecto') : null;
+
+    // Build grid rows
+    let gridRows = '';
+    HOURS.forEach(hour => {
+      // Time label
+      gridRows += `<div class="time-label">${formatHour(hour)}</div>`;
+      // Day cells
+      weekDates.forEach((d, di) => {
+        const dk = dateKey(d);
+        const isToday = dk === todayKey;
+        const dayTasks = (tasksByDayKey[dk] || []).filter(t => {
+          const slots = t.data.agendaMeta?.hourSlots || [];
+          return Math.min(...slots) === hour;
+        });
+
+        let cellContent = '';
+        dayTasks.forEach(task => {
+          const meta = task.data.agendaMeta;
+          if (!meta) return;
+          const priority = task.data.priority || 'Media';
+          const border = prioBorder[priority] || '#f59e0b';
+          const bg = prioBg[priority] || '#fffbeb';
+          const spanCount = Math.max(...meta.hourSlots) - Math.min(...meta.hourSlots) + 1;
+          const heightPx = spanCount * 48 - 6;
+          const proj = task.data.projectId ? (projectMap[task.data.projectId] || '') : '';
+          const assignee = task.data.assigneeId ? (userMap[task.data.assigneeId]?.name || '') : '';
+          const status = task.data.status || 'Por hacer';
+          const participants = meta.participantIds?.length || 0;
+          const subtasks = task.data.subtasks || [];
+          const doneSub = subtasks.filter(s => s.done).length;
+          const obs = (task.data.description || '').trim();
+
+          cellContent += `
+            <div class="task-card" style="border-left:3px solid ${border};background:${bg};height:${heightPx}px;">
+              <div class="task-title">${task.data.title || ''}</div>
+              <div class="task-meta">
+                <span>${formatHourRange(meta.hourSlots)}</span>
+                ${proj ? ` &middot; <span>${proj}</span>` : ''}
+              </div>
+              ${assignee ? `<div class="task-meta">${statusSymbol[status] || '\u25CB'} ${status} &middot; ${assignee}</div>` : `<div class="task-meta">${statusSymbol[status] || '\u25CB'} ${status}</div>`}
+              ${participants > 0 ? `<div class="task-meta">\u{1F465} ${participants} participante${participants > 1 ? 's' : ''}</div>` : ''}
+              ${subtasks.length > 0 ? `<div class="task-meta">\u2611 ${doneSub}/${subtasks.length} subtareas</div>` : ''}
+              ${obs ? `<div class="task-obs">${obs.length > 80 ? obs.slice(0, 80) + '...' : obs}</div>` : ''}
+            </div>`;
+        });
+
+        gridRows += `<div class="slot${isToday ? ' today' : ''}">${cellContent}</div>`;
+      });
+    });
+
+    // Column headers
+    let colHeaders = '<div class="col-header"></div>';
+    weekDates.forEach((d, i) => {
+      const dk = dateKey(d);
+      const isToday = dk === todayKey;
+      colHeaders += `<div class="col-header${isToday ? ' today' : ''}">
+        <div class="day-name">${DAY_NAMES[i]}</div>
+        <div class="day-date">${fmtDay(d)}</div>
+      </div>`;
+    });
+
+    // Stats section
+    let statsHtml = '';
+    if (totalTasks > 0) {
+      statsHtml = `
+      <div class="stats-section">
+        <h3>Resumen de la Semana</h3>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value">${totalTasks}</div>
+            <div class="stat-label">Actividades</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${totalHours}</div>
+            <div class="stat-label">Horas programadas</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${Object.keys(byProject).length}</div>
+            <div class="stat-label">Proyectos</div>
+          </div>
+        </div>
+        <div class="stats-detail">
+          <div class="stats-col">
+            <h4>Prioridad</h4>
+            ${Object.entries(byPriority).map(([k, v]) =>
+              `<div class="stats-row"><span style="color:${prioBorder[k] || '#6b7280'}">\u25CF</span> ${k}: <strong>${v}</strong></div>`
+            ).join('')}
+          </div>
+          <div class="stats-col">
+            <h4>Estado</h4>
+            ${Object.entries(byStatus).map(([k, v]) =>
+              `<div class="stats-row">${statusSymbol[k] || '\u25CB'} ${k}: <strong>${v}</strong></div>`
+            ).join('')}
+          </div>
+          <div class="stats-col">
+            <h4>Por Proyecto</h4>
+            ${Object.entries(byProject).map(([k, v]) =>
+              `<div class="stats-row">\u25AA ${k}: <strong>${v}</strong></div>`
+            ).join('')}
+          </div>
+        </div>
+      </div>`;
+    }
+
+    // Notes section
+    let notesHtml = '';
+    if (weekNotes.length > 0 && weekNotes.some(n => n.text.trim())) {
+      notesHtml = `
+      <div class="notes-section">
+        <h3>Notas de la Semana</h3>
+        ${weekNotes.filter(n => n.text.trim()).map(n =>
+          `<div class="note-block">${n.text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`
+        ).join('')}
+      </div>`;
+    }
+
     const w = window.open('', '_blank');
     if (!w) return;
-    w.document.write(`<!DOCTYPE html><html><head><title>Agenda Semanal — Archii</title>
+    w.document.write(`<!DOCTYPE html><html lang="es"><head>
+      <meta charset="UTF-8">
+      <title>Agenda Semanal — Archii</title>
       <style>
+        @page { size: landscape; margin: 10mm; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DM Sans', system-ui, sans-serif; background: #fff; color: #1a1a1a; padding: 20px; }
-        .agenda-grid { display: grid; grid-template-columns: 54px repeat(7, 1fr); gap: 0; border: 1.5px solid #d1d5db; border-radius: 10px; overflow: hidden; }
-        .col-header { background: #f9fafb; border-bottom: 1.5px solid #d1d5db; border-right: 1px solid #e5e7eb; padding: 8px 4px; text-align: center; font-size: 11px; }
-        .col-header .day-name { font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #374151; }
-        .col-header .day-date { font-size: 10px; color: #6b7280; margin-top: 2px; }
-        .time-label { background: #f9fafb; border-right: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; padding: 4px 6px; text-align: right; font-size: 10px; color: #6b7280; display: flex; align-items: flex-start; justify-content: flex-end; }
-        .slot { border-right: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; padding: 2px 3px; min-height: 44px; position: relative; }
-        .task-card { border-left: 3px solid; border-radius: 4px; padding: 3px 6px; margin-bottom: 2px; font-size: 9px; line-height: 1.3; }
-        .task-card .task-title { font-weight: 600; }
-        .task-card .task-meta { color: #6b7280; }
-        .prio-Alta { background: #fef2f2; border-color: #ef4444; }
-        .prio-Media { background: #fffbeb; border-color: #f59e0b; }
-        .prio-Baja { background: #ecfdf5; border-color: #10b981; }
-        .prio-Cr\u00edtica { background: #faf5ff; border-color: #a855f7; }
-        .notes-section { margin-top: 16px; border: 1.5px solid #d1d5db; border-radius: 10px; padding: 12px; }
-        .notes-section h3 { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
-        .note-block { background: #fef9c3; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 11px; white-space: pre-wrap; }
-        .agenda-title { text-align: center; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-        .agenda-subtitle { text-align: center; font-size: 12px; color: #6b7280; margin-bottom: 16px; }
-        @media print { body { padding: 10px; } .no-print { display: none !important; } }
-      </style></head><body>`);
-    w.document.write(el.innerHTML);
-    w.document.write('</body></html>');
+        body { font-family: 'DM Sans', 'Segoe UI', system-ui, -apple-system, sans-serif; background: #fff; color: #1a1a1a; padding: 16px; font-size: 11px; }
+        
+        /* Header */
+        .print-header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 3px solid #3b82f6; }
+        .print-logo { font-size: 22px; font-weight: 800; color: #3b82f6; letter-spacing: -0.5px; }
+        .print-title { font-size: 16px; font-weight: 700; color: #1e293b; }
+        .print-subtitle { font-size: 11px; color: #64748b; margin-top: 2px; }
+        .print-meta { margin-left: auto; text-align: right; font-size: 10px; color: #94a3b8; }
+        .print-meta div { margin-bottom: 1px; }
+
+        /* Grid */
+        .agenda-grid { display: grid; grid-template-columns: 54px repeat(7, 1fr); border: 1.5px solid #d1d5db; border-radius: 8px; overflow: hidden; }
+        .col-header { background: #f1f5f9; border-bottom: 1.5px solid #d1d5db; border-right: 1px solid #e2e8f0; padding: 6px 3px; text-align: center; }
+        .col-header.today { background: #3b82f6; color: #fff; }
+        .col-header .day-name { font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .col-header .day-date { font-size: 9px; margin-top: 1px; opacity: 0.7; }
+        .col-header.today .day-date { color: #dbeafe; }
+        .time-label { background: #f8fafc; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 3px 5px; text-align: right; font-size: 9px; color: #94a3b8; display: flex; align-items: flex-start; justify-content: flex-end; height: 48px; }
+        .slot { border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 2px; min-height: 48px; position: relative; vertical-align: top; }
+        .slot.today { background: #eff6ff; }
+        .slot:last-child { border-right: none; }
+
+        /* Task cards */
+        .task-card { border-radius: 4px; padding: 3px 5px; margin-bottom: 2px; font-size: 8.5px; line-height: 1.35; overflow: hidden; position: absolute; top: 2px; left: 2px; right: 2px; }
+        .task-card .task-title { font-weight: 700; font-size: 9px; color: #1e293b; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .task-card .task-meta { color: #64748b; font-size: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .task-card .task-obs { color: #94a3b8; font-size: 7.5px; margin-top: 1px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Stats */
+        .stats-section { margin-top: 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; }
+        .stats-section h3 { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 10px; }
+        .stats-grid { display: flex; gap: 12px; margin-bottom: 10px; }
+        .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 16px; text-align: center; min-width: 100px; }
+        .stat-value { font-size: 20px; font-weight: 800; color: #3b82f6; }
+        .stat-label { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+        .stats-detail { display: flex; gap: 24px; }
+        .stats-col { min-width: 140px; }
+        .stats-col h4 { font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; }
+        .stats-row { font-size: 10px; color: #64748b; padding: 1px 0; }
+        .stats-row strong { color: #1e293b; }
+
+        /* Notes */
+        .notes-section { margin-top: 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; }
+        .notes-section h3 { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 6px; }
+        .note-block { background: #fef9c3; border-radius: 4px; padding: 6px 10px; margin-bottom: 4px; font-size: 10px; white-space: pre-wrap; color: #713f12; }
+
+        /* Footer */
+        .print-footer { margin-top: 10px; padding-top: 6px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; font-size: 9px; color: #94a3b8; }
+
+        @media print {
+          body { padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .no-print { display: none !important; }
+          .print-header { break-inside: avoid; }
+          .agenda-grid { break-inside: avoid; }
+          .stats-section { break-inside: avoid; }
+          .notes-section { break-inside: avoid; }
+        }
+      </style>
+    </head><body>
+      <div class="print-header">
+        <div>
+          <div class="print-logo">Archii</div>
+        </div>
+        <div>
+          <div class="print-title">Agenda Semanal</div>
+          <div class="print-subtitle">${weekLabel}${filterLabel ? ` &middot; Proyecto: ${filterLabel}` : ''}</div>
+        </div>
+        <div class="print-meta">
+          <div>Generado: ${genDate}</div>
+        </div>
+      </div>
+
+      <div class="agenda-grid">
+        ${colHeaders}
+        ${gridRows}
+      </div>
+
+      ${statsHtml}
+      ${notesHtml}
+
+      <div class="print-footer">
+        <span>Archii \u2014 Gesti\u00f3n de Proyectos de Construcci\u00f3n</span>
+        <span>Agenda Semanal ${weekLabel}</span>
+      </div>
+    </body></html>`);
     w.document.close();
-    setTimeout(() => w.print(), 300);
+    setTimeout(() => w.print(), 400);
   };
 
   /* ─── Global mouse up listener ─── */
@@ -675,9 +898,9 @@ export default function WeeklyAgendaScreen() {
           {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
         </select>
 
-        {/* Print — hidden on mobile */}
+        {/* Print */}
         <button onClick={handlePrint}
-          className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] items-center justify-center hover:scale-105 active:scale-95 transition-transform no-print hidden sm:flex"
+          className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform no-print"
           aria-label="Imprimir agenda">
           <Printer className="w-4 h-4" />
         </button>
