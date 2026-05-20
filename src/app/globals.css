@@ -591,6 +591,16 @@ select {
 .dark select {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239a9b9e' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
 }
+/* Fix: <option> elements inside <select> don't inherit CSS custom properties in most browsers.
+   In dark mode, the dropdown list appears with white background and light text, making it unreadable.
+   Apply explicit background + color to <option> elements so they render correctly. */
+.dark select option {
+  background-color: #1e2128;
+  color: #f0f0ee;
+}
+.dark select option:checked {
+  background-color: #2a2d35;
+}
 
 /* Chat input sticky bar for mobile — safe-bottom already defined above */
 
