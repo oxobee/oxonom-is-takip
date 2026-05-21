@@ -1,0 +1,184 @@
+name: Sync PWA → Mobile
+
+# ============================================================
+# Auto-sync: Cuando se hace push al PWA (archii), este workflow
+# copia los archivos modificados al repo mobile (archii_mobile)
+# y crea un Pull Request para revision manual.
+#
+# Archivos PROTEGIDOS (no se sobreescriben):
+#   - next.config.ts       (build targets diferentes)
+#   - package.json         (Capacitor deps solo en mobile)
+#   - capacitor.config.ts  (solo mobile)
+#   - android/             (solo mobile)
+#   - ios/                 (solo mobile)
+#   - src/lib/capacitor-*  (bridges nativos solo mobile)
+#   - src/lib/api-config.ts (API bridge solo mobile)
+#   - src/components/archii/CapacitorInit.tsx
+#   - src/hooks/useCapacitor.ts
+#   - .github/workflows/build-android.yml
+#   - .github/workflows/ci.yml (legacy)
+#   - scripts/build-mobile.sh
+# ============================================================
+
+on:
+  push:
+    branches: [main]
+    paths:
+      # Solo se dispara cuando cambian archivos de codigo fuente
+      - 'src/**'
+      - 'public/**'
+      - 'firebase.json'
+      - 'firestore.rules'
+      - 'firestore.indexes.json'
+  workflow_dispatch:  # Permite ejecucion manual
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    # No sincronizar si el commit viene del propio sync
+    if: "!contains(github.event.head_commit.message, 'sync: from PWA')"
+
+    steps:
+      - name: Checkout PWA (archii)
+        uses: actions/checkout@v4
+        with:
+          path: pwa
+          fetch-depth: 0
+
+      - name: Checkout Mobile (archii_mobile)
+        uses: actions/checkout@v4
+        with:
+          repository: yecos/archii_mobile
+          token: ${{ secrets.SYNC_TOKEN }}
+          path: mobile
+          fetch-depth: 0
+
+      - name: Detect changed files in PWA
+        id: changes
+        run: |
+          cd pwa
+          # Get list of files changed in the last commit
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD -- src/ public/ firebase.json firestore.rules firestore.indexes.json 2>/dev/null || echo "")
+          echo "changed<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "📊 Files changed in PWA:"
+          echo "$CHANGED_FILES"
+          COUNT=$(echo "$CHANGED_FILES" | grep -c . || echo "0")
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+
+      - name: Sync files PWA → Mobile
+        if: steps.changes.outputs.count != '0'
+        run: |
+          CHANGED="${{ steps.changes.outputs.changed }}"
+          SYNCED=0
+          SKIPPED=0
+
+          # ── Archivos/carpetas PROTEGIDOS (nunca sobreescribir) ──
+          PROTECTED_PATTERNS=(
+            "next.config.ts"
+            "package.json"
+            "package-lock.json"
+            "bun.lock"
+            "capacitor.config.ts"
+            "android/"
+            "ios/"
+            "scripts/"
+            "src/lib/api-config.ts"
+            "src/lib/capacitor-firebase-auth.ts"
+            "src/lib/capacitor-media.ts"
+            "src/lib/capacitor-native.ts"
+            "src/lib/capacitor-notifications.ts"
+            "src/lib/capacitor-ui.ts"
+            "src/components/archii/CapacitorInit.tsx"
+            "src/hooks/useCapacitor.ts"
+            "src/app/ClientProviders.tsx"
+            "src/contexts/AppContext.tsx"
+            "src/lib/firebase-service.ts"
+            ".github/workflows/build-android.yml"
+            ".github/workflows/ci.yml"
+            ".github/workflows/sync-to-mobile.yml"
+          )
+
+          is_protected() {
+            local file="$1"
+            for pattern in "${PROTECTED_PATTERNS[@]}"; do
+              if [[ "$file" == "$pattern" ]] || [[ "$file" == "$pattern"* ]]; then
+                return 0
+              fi
+            done
+            return 1
+          }
+
+          echo "📋 Sync results:" > /tmp/sync-report.md
+          echo "" >> /tmp/sync-report.md
+
+          for file in $CHANGED; do
+            if is_protected "$file"; then
+              echo "⏭️  SKIP (protected): $file"
+              echo "| ⏭️ SKIP | \`$file\` | Protected — manual merge needed |" >> /tmp/sync-report.md
+              SKIPPED=$((SKIPPED + 1))
+            else
+              if [ -f "pwa/$file" ]; then
+                # Ensure directory exists in mobile
+                mkdir -p "mobile/$(dirname "$file")"
+                # Copy file
+                cp "pwa/$file" "mobile/$file"
+                echo "✅ COPIED: $file"
+                echo "| ✅ Copied | \`$file\` | Auto-synced |" >> /tmp/sync-report.md
+                SYNCED=$((SYNCED + 1))
+              else
+                # File was deleted in PWA — also delete in mobile
+                if [ -f "mobile/$file" ]; then
+                  rm "mobile/$file"
+                  echo "🗑️  DELETED: $file"
+                  echo "| 🗑️ Deleted | \`$file\` | Removed in PWA |" >> /tmp/sync-report.md
+                  SYNCED=$((SYNCED + 1))
+                fi
+              fi
+            fi
+          done
+
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Synced: $SYNCED files"
+          echo "⏭️  Skipped: $SKIPPED files (protected)"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          # Save stats for PR body
+          echo "synced=$SYNCED" >> $GITHUB_ENV
+          echo "skipped=$SKIPPED" >> $GITHUB_ENV
+
+          # Prepend summary to report
+          {
+            echo "## 🔄 PWA → Mobile Sync Report"
+            echo ""
+            echo "- **PWA commit:** \`${{ github.sha }}\`"
+            echo "- **Commit message:** ${{ github.event.head_commit.message }}"
+            echo "- **Files synced:** $SYNCED"
+            echo "- **Files skipped (protected):** $SKIPPED"
+            echo ""
+            echo "| Status | File | Note |"
+            echo "|--------|------|------|"
+          } > /tmp/sync-header.md
+          cat /tmp/sync-header.md /tmp/sync-report.md > /tmp/sync-body.md
+
+      - name: Create Pull Request in archii_mobile
+        if: steps.changes.outputs.count != '0'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          path: mobile
+          token: ${{ secrets.SYNC_TOKEN }}
+          branch: sync/pwa-${{ github.sha_short || github.sha }}
+          delete-branch: true
+          title: "🔄 sync: PWA changes → mobile (${{ env.synced || 0 }} files)"
+          body-path: /tmp/sync-body.md
+          commit-message: "sync: from PWA archii@${{ github.sha }}"
+          labels: |
+            sync
+            automated
+          draft: false
