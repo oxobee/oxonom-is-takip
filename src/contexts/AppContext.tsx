@@ -267,6 +267,20 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     return () => {};
   }, []);
 
+  // Detect Android WebView / TWA / native wrapper
+  // These environments block popup windows, so OAuth must use redirect flow
+  const isWebView = useCallback(() => {
+    if (typeof window === 'undefined') return false;
+    const ua = navigator.userAgent || '';
+    // Android WebView has 'wv' or 'WebView' in user agent
+    const isAndroidWebView = /wv|WebView/i.test(ua) && /Android/i.test(ua);
+    // TWA (Trusted Web Activity) detected via referrer android-app://
+    const isTWA = document.referrer?.startsWith('android-app://') ?? false;
+    // Capacitor/Cordova bridge detection
+    const hasNativeBridge = !!(window as any).androidBridge || !!(window as any).Capacitor || !!(window as any).cordova;
+    return isAndroidWebView || isTWA || hasNativeBridge;
+  }, []);
+
   // Check if running as standalone app
   useEffect(() => {
     const standalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
@@ -1467,6 +1481,14 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       // IMPORTANT: GoogleAuthProvider is on firebase.auth (namespace), NOT firebase.auth() (instance)
       const provider = new fb.auth.GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
+
+      // In Android WebView/TWA, popups are blocked — use redirect directly
+      if (isWebView()) {
+        console.log('[Archii Auth] WebView detected — using signInWithRedirect for Google');
+        await fb.auth().signInWithRedirect(provider);
+        return;
+      }
+
       const result = await fb.auth().signInWithPopup(provider);
 
     } catch (e: any) {
@@ -1481,11 +1503,22 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         'auth/network-request-failed': 'Error de conexión. Verifica tu internet.',
         'auth/internal-error': 'Error interno de Firebase. Google puede no estar habilitado como proveedor. Ve a Firebase Console > Authentication > Sign-in method > Google > Habilitar.',
         'auth/invalid-api-key': 'API Key inválida. Verifica la configuración de Firebase.',
+        'auth/web-storage-unsupported': 'Tu navegador no soporta almacenamiento web. Intenta con Chrome.',
       };
-      // If popup fails with internal-error, popup-blocked or unauthorized-domain, try redirect as fallback
-      if (e.code === 'auth/popup-blocked' || e.code === 'auth/unauthorized-domain' || e.code === 'auth/internal-error') {
+      // Fallback to redirect for popup-blocked, unauthorized-domain, internal-error,
+      // network-request-failed, or any unrecognized error (common in WebViews)
+      const redirectCodes = [
+        'auth/popup-blocked',
+        'auth/unauthorized-domain',
+        'auth/internal-error',
+        'auth/network-request-failed',
+        'auth/web-storage-unsupported',
+      ];
+      const shouldTryRedirect = redirectCodes.includes(e.code) || !e.code;
 
+      if (shouldTryRedirect) {
         try {
+          console.log('[Archii Auth] Falling back to signInWithRedirect for Google');
           const fb2 = getFirebase();
           const provider2 = new fb2.auth.GoogleAuthProvider();
           provider2.setCustomParameters({ prompt: 'select_account' });
@@ -1516,6 +1549,24 @@ export default function AppProvider({ children }: { children: React.ReactNode })
 
       // If user is already logged in (e.g. with Google), LINK Microsoft to existing account
       if (currentUser) {
+
+        // In Android WebView/TWA, popups are blocked — use redirect for linking
+        if (isWebView()) {
+          try {
+            console.log('[Archii Auth] WebView detected — using linkWithRedirect for Microsoft');
+            const linkProvider = new authNS.OAuthProvider('microsoft.com');
+            linkProvider.addScope('Files.ReadWrite.All');
+            linkProvider.addScope('Sites.ReadWrite.All');
+            linkProvider.addScope('User.Read');
+            linkProvider.setCustomParameters({ prompt: 'consent' });
+            await currentUser.linkWithRedirect(linkProvider);
+            return;
+          } catch (linkRedirectErr: any) {
+            console.error('[Archii Auth] Microsoft linkWithRedirect failed:', linkRedirectErr.code);
+            showToast('No se pudo vincular Microsoft. Intenta desde un navegador.', 'error');
+            return;
+          }
+        }
 
         try {
           // First get the Microsoft credential via popup
@@ -1611,6 +1662,15 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       provider.addScope('User.Read');
       provider.setCustomParameters({ prompt: 'select_account' });
 
+      // In Android WebView/TWA, popups are blocked — use redirect directly
+      if (isWebView()) {
+        console.log('[Archii Auth] WebView detected — using signInWithRedirect for Microsoft');
+        const redirectProvider = new authNS.OAuthProvider('microsoft.com');
+        redirectProvider.setCustomParameters({ prompt: 'select_account' });
+        await authInstance.signInWithRedirect(redirectProvider);
+        return;
+      }
+
       let result: any;
       try {
         result = await authInstance.signInWithPopup(provider);
@@ -1622,8 +1682,9 @@ export default function AppProvider({ children }: { children: React.ReactNode })
           try {
             result = await authInstance.signInWithPopup(basicProvider);
           } catch (basicErr: any) {
-            if (basicErr.code === 'auth/popup-blocked' || basicErr.code === 'auth/internal-error') {
-
+            // Broadened redirect fallback — WebViews may throw unexpected error codes
+            const msRedirectCodes = ['auth/popup-blocked', 'auth/internal-error', 'auth/network-request-failed'];
+            if (msRedirectCodes.includes(basicErr.code) || !basicErr.code) {
               const redirectProvider = new authNS.OAuthProvider('microsoft.com');
               redirectProvider.setCustomParameters({ prompt: 'select_account' });
               await authInstance.signInWithRedirect(redirectProvider);
@@ -1631,8 +1692,8 @@ export default function AppProvider({ children }: { children: React.ReactNode })
             }
             throw basicErr;
           }
-        } else if (popupErr.code === 'auth/popup-blocked' || popupErr.code === 'auth/internal-error') {
-
+        } else if (popupErr.code === 'auth/popup-blocked' || popupErr.code === 'auth/internal-error' || popupErr.code === 'auth/network-request-failed' || !popupErr.code) {
+          // Broadened redirect fallback for WebViews
           const redirectProvider = new authNS.OAuthProvider('microsoft.com');
           redirectProvider.setCustomParameters({ prompt: 'select_account' });
           await authInstance.signInWithRedirect(redirectProvider);
