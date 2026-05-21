@@ -142,6 +142,8 @@ export default function WeeklyAgendaScreen() {
   /* ─── State ─── */
   const [baseDate, setBaseDate] = useState(new Date());
   const [weekNotes, setWeekNotes] = useState<WeekNote[]>([]);
+  const [notesLoaded, setNotesLoaded] = useState(false);
+  const notesSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [filterProject, setFilterProject] = useState<string>('all');
   const [showForm, setShowForm] = useState(false);
   const [formTab, setFormTab] = useState<FormTab>('new');
@@ -577,7 +579,58 @@ export default function WeeklyAgendaScreen() {
     }
   };
 
-  /* ─── Notes ─── */
+  /* ─── Notes: Firestore persistence ─── */
+  const weekDocId = useMemo(() => {
+    if (!activeTenantId) return '';
+    const monday = weekDates[0];
+    return `${activeTenantId}_${dateKey(monday)}`;
+  }, [activeTenantId, weekDates]);
+
+  // Load notes from Firestore when week changes
+  useEffect(() => {
+    if (!weekDocId || !authUser) return;
+    let cancelled = false;
+    const loadNotes = async () => {
+      try {
+        const db = getFirebase().firestore();
+        const doc = await db.collection('agendaWeekData').doc(weekDocId).get();
+        if (!cancelled) {
+          const data = doc.data();
+          setWeekNotes(data?.notes || []);
+          setNotesLoaded(true);
+        }
+      } catch (err) {
+        console.error('[Archii Agenda] Error loading notes:', err);
+        if (!cancelled) setNotesLoaded(true);
+      }
+    };
+    setNotesLoaded(false);
+    loadNotes();
+    return () => { cancelled = true; };
+  }, [weekDocId, authUser]);
+
+  // Save notes to Firestore with debounce (1s)
+  useEffect(() => {
+    if (!notesLoaded || !weekDocId || !authUser) return;
+    if (notesSaveTimer.current) clearTimeout(notesSaveTimer.current);
+    notesSaveTimer.current = setTimeout(async () => {
+      try {
+        const db = getFirebase().firestore();
+        const ts = getFirebase().firestore.FieldValue.serverTimestamp();
+        await db.collection('agendaWeekData').doc(weekDocId).set(scrubUndefined({
+          tenantId: activeTenantId,
+          weekStart: dateKey(weekDates[0]),
+          notes: weekNotes,
+          updatedAt: ts,
+          updatedBy: authUser.uid,
+        }), { merge: true });
+      } catch (err) {
+        console.error('[Archii Agenda] Error saving notes:', err);
+      }
+    }, 1000);
+    return () => { if (notesSaveTimer.current) clearTimeout(notesSaveTimer.current); };
+  }, [weekNotes, notesLoaded, weekDocId, authUser, activeTenantId, weekDates]);
+
   const addNote = () => {
     setWeekNotes(prev => [...prev, { id: uid(), text: '', color: NOTE_COLORS[prev.length % NOTE_COLORS.length] }]);
   };
