@@ -1454,3 +1454,33 @@ Stage Summary:
 - Sprint 2 COMPLETO (7/7 items)
 - Sprint 3 parcial: prefers-reduced-motion mejorado
 - Deploy automático a Vercel en curso
+
+---
+Task ID: 14
+Agent: Super Z (Main)
+Task: Fix — Notas de Agenda Semanal no se guardan
+
+Protocolo leido: LEE_PRIMERO.txt + INSTRUCTIVO_BITACORA.txt
+
+Work Log:
+- Leidos LEE_PRIMERO.txt, worklog.md y git pull
+- Analizado WeeklyAgendaScreen.tsx completo (~2000 lineas)
+- ROOT CAUSE: La coleccion agendaWeekData NO tenia reglas de Firestore
+  - firestore.rules listaba 20+ colecciones pero agendaWeekData no estaba incluida
+  - Firestore por defecto deniega todo acceso → writes silenciosamente fallaban
+  - Error solo se logueaba a console.error, usuario no veia nada
+- Fix 1: Agregada regla tenant-scoped para agendaWeekData en firestore.rules (8 lineas)
+- Fix 2: Agregado toast.error() cuando falla save o load de notas
+- Fix 3: Agregado panel de notas colapsable en vista mobile (antes hidden md:flex)
+- Fix 4: Reset weekNotes a [] antes de cargar nueva semana (evita stale data)
+- Fix 5: Removida dependencia weekDates del save effect (evita re-saves innecesarios)
+- Build: 0 errores TypeScript, 0 errores de compilacion
+- Commit: 1b19a3d, push a main completado
+
+Stage Summary:
+- Archivos modificados: 2 (firestore.rules, WeeklyAgendaScreen.tsx)
+- Total: +67 lineas, -2 lineas
+- CAUSA RAIZ: Regla de Firestore faltante para agendaWeekData
+- Notas ahora persisten correctamente en Firestore
+- Notas visibles en mobile con panel colapsable
+- Toast de error visible si Firestore falla
