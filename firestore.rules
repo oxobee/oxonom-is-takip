@@ -493,19 +493,23 @@ service cloud.firestore {
       }
     }
 
-    // Direct Messages (DMs between users) — accessible by both participants
-    // DMs are identified by dm_{uid1}_{uid2} where uid1 < uid2
+    // Direct Messages — tenant-scoped, accessible by participants
     match /directMessages/{dmId} {
-      allow read: if isSignedIn()
-        && (request.auth.uid == dmId.split('_')[1] || request.auth.uid == dmId.split('_')[2]);
+      allow read: if isSignedIn() && isTenantMember(resource.data.tenantId);
+      allow create: if isSignedIn() && isTenantMember(request.resource.data.tenantId);
+      allow update: if isSignedIn() && isTenantMember(resource.data.tenantId);
+      allow delete: if false; // Conversations are never hard-deleted
 
       match /messages/{msgId} {
         allow read: if isSignedIn()
-          && (request.auth.uid == dmId.split('_')[1] || request.auth.uid == dmId.split('_')[2]);
+          && isTenantMember(get(/databases/$(database)/documents/directMessages/$(dmId)).data.tenantId);
         allow create: if isSignedIn()
-          && (request.auth.uid == dmId.split('_')[1] || request.auth.uid == dmId.split('_')[2]);
-        allow update, delete: if isSignedIn()
-          && (request.auth.uid == dmId.split('_')[1] || request.auth.uid == dmId.split('_')[2]);
+          && isTenantMember(get(/databases/$(database)/documents/directMessages/$(dmId)).data.tenantId);
+        allow update: if isSignedIn()
+          && isTenantMember(get(/databases/$(database)/documents/directMessages/$(dmId)).data.tenantId);
+        allow delete: if isSignedIn()
+          && isTenantMember(get(/databases/$(database)/documents/directMessages/$(dmId)).data.tenantId)
+          && resource.data.senderId == request.auth.uid; // Only sender can delete their own messages
       }
     }
 

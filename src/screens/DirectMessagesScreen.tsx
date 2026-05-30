@@ -69,22 +69,17 @@ export default function DirectMessagesScreen() {
     if (!authUser || !activeTenantId) { setConversations([]); setLoadingConvs(false); return; }
 
     const db = getFirebase().firestore();
-    // Query conversations where the current user is a participant
-    // Since Firestore doesn't support array-contains-any on multiple fields easily,
-    // we use two queries: one for each possible position in the sorted array
     const uid = authUser.uid;
 
-    // Actually, we can query by array-contains on participants
+    // Query by tenantId — client-side filter for participants
     const q = db.collection('directMessages')
-      .where('participants', 'array-contains', uid)
       .where('tenantId', '==', activeTenantId)
       .orderBy('lastMessageAt', 'desc');
 
     const unsub = q.onSnapshot((snap: any) => {
-      const convs = snap.docs.map((d: any) => ({
-        id: d.id,
-        data: d.data(),
-      })) as DirectMessageConversation[];
+      const convs = snap.docs
+        .map((d: any) => ({ id: d.id, data: d.data() }))
+        .filter((c: any) => c.data.participants && c.data.participants.includes(uid)) as DirectMessageConversation[];
       setConversations(convs);
       setLoadingConvs(false);
     }, (err: any) => {
@@ -163,16 +158,36 @@ export default function DirectMessagesScreen() {
     };
   }, [authUser, teamUsers]);
 
-  /* ===== DERIVED: UNREAD COUNT ===== */
-  const getUnreadCount = useCallback((conv: DirectMessageConversation): number => {
-    if (!authUser) return 0;
-    // We can't easily compute unread from just the conversation doc
-    // without reading messages. We'll use a simple heuristic:
-    // if lastMessageBy is not me and there's no read tracking on the conv level,
-    // we show a dot. For proper unread counts, we'd need a per-user read timestamp.
-    // For now, we'll track unread conversations in local state.
-    return 0; // Simplified — would need more complex tracking
-  }, [authUser]);
+  /* ===== UNREAD COUNTS ===== */
+  const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    if (!authUser || !activeTenantId || conversations.length === 0) return;
+
+    const db = getFirebase().firestore();
+    const unsubs: (() => void)[] = [];
+
+    conversations.forEach(conv => {
+      const unsub = db.collection('directMessages')
+        .doc(conv.id)
+        .collection('messages')
+        .where('senderId', '!=', authUser.uid)
+        .where('readAt', '==', null)
+        .onSnapshot(snap => {
+          setUnreadCounts(prev => ({
+            ...prev,
+            [conv.id]: snap.size,
+          }));
+        }, () => {});
+      unsubs.push(unsub);
+    });
+
+    return () => unsubs.forEach(u => u());
+  }, [authUser, activeTenantId, conversations]);
+
+  const getUnreadCount = useCallback((convId: string): number => {
+    return unreadCounts[convId] || 0;
+  }, [unreadCounts]);
 
   /* ===== FILTERED CONVERSATIONS ===== */
   const filteredConversations = useMemo(() => {
@@ -424,6 +439,11 @@ export default function DirectMessagesScreen() {
                     }
                   </div>
                 </div>
+                {getUnreadCount(conv.id) > 0 && (
+                  <div className="w-5 h-5 rounded-full bg-[var(--af-accent)] flex items-center justify-center flex-shrink-0">
+                    <span className="text-[10px] font-bold text-background">{getUnreadCount(conv.id)}</span>
+                  </div>
+                )}
               </div>
             );
           })}
