@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, AuthError } from "@/lib/api-auth";
 import { getAdminDb } from "@/lib/firebase-admin";
 import { chatCompletionWithTools, type ChatMessage } from "@/lib/gemini-helper";
-import { TOOLS, SYSTEM_PROMPT, ADMIN_ONLY_TOOLS } from "./tools";
-import { executeToolCall, type ToolCall, type ExecutedAction } from "./tool-executor";
+import type { ToolCall, ExecutedAction } from "./_lib/types";
+import { SYSTEM_PROMPT } from "./_lib/system-prompt";
+import { TOOLS } from "./_lib/tool-definitions";
+import { executeToolCall } from "./_lib/execute-tool-call";
 
 /**
  * POST /api/ai-agent
@@ -16,8 +18,6 @@ import { executeToolCall, type ToolCall, type ExecutedAction } from "./tool-exec
  *
  * Powered by Google Gemini (gemini-2.0-flash)
  */
-
-// ─── MAIN HANDLER ────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
   // Auth check

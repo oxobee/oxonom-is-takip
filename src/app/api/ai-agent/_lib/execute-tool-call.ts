@@ -1,57 +1,11 @@
-import type { Firestore } from "firebase-admin/firestore";
+import type { FirestoreDoc, ExecutedAction } from "./types";
+import { formatCOP, findProjectByName, findTaskByTitle } from "./helpers";
+import { requireAdminRole } from "./rbac";
 import { getAdminFieldValue } from "@/lib/firebase-admin";
 import { getNextSequentialNumber, atomicStockUpdate } from "@/app/api/_lib/counter";
-import { ADMIN_ONLY_TOOLS } from "./tools";
+import type { Firestore } from "firebase-admin/firestore";
 
-// ─── TOOL EXECUTION ENGINE ──────────────────────────────────────────
-
-interface ToolCall {
-  id: string;
-  type: "function";
-  function: {
-    name: string;
-    arguments: string;
-  };
-}
-
-interface ExecutedAction {
-  type: string;
-  label: string;
-  icon: string;
-  details: string;
-  success: boolean;
-  error?: string;
-}
-
-function formatCOP(amount: number): string {
-  return new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
-type FirestoreDoc = { id: string; data: Record<string, any> };
-
-function findProjectByName(projects: FirestoreDoc[], name: string): FirestoreDoc | null {
-  if (!name) return null;
-  const lower = name.toLowerCase();
-  return (
-    projects.find((p) => p.data?.name?.toLowerCase() === lower) ??
-    projects.find((p) => p.data?.name?.toLowerCase().includes(lower))
-  ) ?? null;
-}
-
-function findTaskByTitle(tasks: FirestoreDoc[], title: string): FirestoreDoc | null {
-  if (!title) return null;
-  const lower = title.toLowerCase();
-  return (
-    tasks.find((t) => t.data?.title?.toLowerCase() === lower) ??
-    tasks.find((t) => t.data?.title?.toLowerCase().includes(lower))
-  ) ?? null;
-}
-
-async function executeToolCall(
+export async function executeToolCall(
   name: string,
   args: Record<string, any>,
   db: Firestore,
@@ -65,13 +19,10 @@ async function executeToolCall(
 
   try {
     // SECURITY: Role-based access control for write/update/delete operations
-    if (ADMIN_ONLY_TOOLS.has(name)) {
-      const allowedRoles = ["Admin", "Director", "Super Admin"];
-      if (!userRole || !allowedRoles.includes(userRole)) {
-        const error = `Lo siento, solo Administradores o Directores pueden ejecutar "${name}". Contacta al admin de tu equipo.`;
-        actions.push({ type: "permission_denied", label: "Sin permisos", icon: "🔒", details: error, success: false, error });
-        return error;
-      }
+    const rbacError = requireAdminRole(name, userRole);
+    if (rbacError) {
+      actions.push({ type: "permission_denied", label: "Sin permisos", icon: "🔒", details: rbacError, success: false, error: rbacError });
+      return rbacError;
     }
 
     switch (name) {
@@ -322,7 +273,7 @@ async function executeToolCall(
         if (args.assignee_name) {
           // Only search within tenant members
           const taskTenantSnap = await db.collection("tenants").doc(tenantId).get();
-          const taskTenantMembers = taskTenantSnap.exists ? (taskTenantSnap.data()?.members || []) : [];
+          const taskTenantMembers: string[] = taskTenantSnap.exists ? (taskTenantSnap.data()?.members || []) : [];
           const taskUsersPromises = taskTenantMembers.map(async (uid: string) => {
             const doc = await db.collection("users").doc(uid).get();
             if (doc.exists) return { id: doc.id, data: doc.data() };
@@ -580,7 +531,7 @@ async function executeToolCall(
         if (args.assignee_name) {
           // Only search within tenant members
           const rfiTenantSnap = await db.collection("tenants").doc(tenantId).get();
-          const rfiTenantMembers = rfiTenantSnap.exists ? (rfiTenantSnap.data()?.members || []) : [];
+          const rfiTenantMembers: string[] = rfiTenantSnap.exists ? (rfiTenantSnap.data()?.members || []) : [];
           const rfiUsersPromises = rfiTenantMembers.map(async (uid: string) => {
             const doc = await db.collection("users").doc(uid).get();
             if (doc.exists) return { id: doc.id, data: doc.data() };
@@ -983,7 +934,7 @@ async function executeToolCall(
         if (args.reviewer_name) {
           // Only search within tenant members
           const subTenantSnap = await db.collection("tenants").doc(tenantId).get();
-          const subTenantMembers = subTenantSnap.exists ? (subTenantSnap.data()?.members || []) : [];
+          const subTenantMembers: string[] = subTenantSnap.exists ? (subTenantSnap.data()?.members || []) : [];
           const subUsersPromises = subTenantMembers.map(async (uid: string) => {
             const doc = await db.collection("users").doc(uid).get();
             if (doc.exists) return { id: doc.id, data: doc.data() };
@@ -1037,7 +988,7 @@ async function executeToolCall(
         if (args.assigned_to_name) {
           // Only search within tenant members
           const punchTenantSnap = await db.collection("tenants").doc(tenantId).get();
-          const punchTenantMembers = punchTenantSnap.exists ? (punchTenantSnap.data()?.members || []) : [];
+          const punchTenantMembers: string[] = punchTenantSnap.exists ? (punchTenantSnap.data()?.members || []) : [];
           const punchUsersPromises = punchTenantMembers.map(async (uid: string) => {
             const doc = await db.collection("users").doc(uid).get();
             if (doc.exists) return { id: doc.id, data: doc.data() };
@@ -1310,6 +1261,3 @@ async function executeToolCall(
     return `Error ejecutando ${name}: ${errMsg}`;
   }
 }
-
-export { executeToolCall, formatCOP, findProjectByName, findTaskByTitle };
-export type { ToolCall, ExecutedAction, FirestoreDoc };

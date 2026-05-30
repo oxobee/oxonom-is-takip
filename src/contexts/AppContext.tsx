@@ -151,7 +151,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   });
 
   // Admin state
-  const [adminTab, setAdminTab] = useState<'timeline' | 'dashboard' | 'permissions' | 'team'>('timeline');
+  const [adminTab, setAdminTab] = useState<'timeline' | 'dashboard' | 'permissions' | 'team' | 'audit' | 'errors' | 'feedback'>('timeline');
   const [adminWeekOffset, setAdminWeekOffset] = useState(0);
   const [adminTaskSearch, setAdminTaskSearch] = useState('');
   const [adminFilterAssignee, setAdminFilterAssignee] = useState<string>('all');

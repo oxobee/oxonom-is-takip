@@ -153,7 +153,11 @@ function AppContent() {
     budget: 'Presupuestos', files: 'Planos y archivos', gallery: 'Galería', inventory: 'Inventario',
     admin: 'Panel Admin', superAdmin: 'Super Admin', obra: 'Seguimiento obra', suppliers: 'Proveedores', team: 'Equipo',
     calendar: 'Calendario', portal: 'Portal cliente', profile: 'Mi Perfil', install: 'Instalar App',
-    companies: 'Empresas', rfis: 'RFIs', submittals: 'Submittals', punchList: 'Punch List', changeorders: 'Órdenes de Cambio', catalogs: 'Catálogos', fieldnotes: 'Notas de Campo', kanban: 'Tablero Kanban', integrations: 'Integraciones', adminlog: 'Logs del Sistema', weeklyAgenda: 'Agenda Semanal', timeTracking: 'Time Tracking', projectDetail: currentProject?.data.name || 'Proyecto',
+    companies: 'Empresas', rfis: 'RFIs', submittals: 'Submittals', punchList: 'Punch List',
+    changeorders: 'Órdenes de Cambio', catalogs: 'Catálogos', fieldnotes: 'Notas de Campo',
+    kanban: 'Tablero Kanban', integrations: 'Integraciones', adminlog: 'Logs del Sistema',
+    weeklyAgenda: 'Agenda Semanal', timeTracking: 'Time Tracking',
+    projectDetail: currentProject?.data.name || 'Proyecto',
   };
 
   return (
@@ -264,7 +268,6 @@ function AppContent() {
               {screen === 'projects' && <ProjectsScreen />}
               {screen === 'projectDetail' && <ProjectDetailScreen />}
               {screen === 'tasks' && <TasksScreen />}
-              {screen === 'kanban' && <KanbanBoardScreen />}
               {screen === 'chat' && <ChatScreen />}
               {screen === 'directmessages' && <DirectMessagesScreen />}
               {screen === 'budget' && <BudgetScreen />}
@@ -291,6 +294,7 @@ function AppContent() {
               {screen === 'changeorders' && <ChangeOrdersScreen />}
               {screen === 'catalogs' && <CatalogsScreen />}
               {screen === 'fieldnotes' && <FieldNotesScreen />}
+              {screen === 'kanban' && <KanbanBoardScreen />}
               {screen === 'integrations' && <IntegrationsScreen />}
               {screen === 'adminlog' && <AdminLogScreen />}
               </ErrorBoundary>
