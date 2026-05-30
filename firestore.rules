@@ -11,12 +11,15 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    /** Check if user's auth token tenantId matches the given tenantId */
+    /** Check if user is a member of the given tenant by looking up the tenant document's members array.
+     *  This replaces the previous custom-claim check (request.auth.token.tenantId) which was never
+     *  set for regular (non-SSO) users, causing all tenant-scoped reads to fail with permission-denied.
+     *  The Firestore get() is evaluated per-rule and cached within the same request. */
     function isTenantMember(tenantId) {
       return isSignedIn()
         && tenantId != null
         && tenantId != ''
-        && request.auth.token.tenantId == tenantId;
+        && request.auth.uid in get(/databases/$(database)/documents/tenants/$(tenantId)).data.members;
     }
 
     // ========================================================================
