@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
 
 /* ===== MODULED IMPORTS ===== */
-import type { TeamUser, Project, Task, Expense, Supplier, Approval, WorkPhase, ProjectFile, OneDriveFile, GalleryPhoto, Comment, RFI, Submittal, PunchItem, Company, DailyLog, Meeting, ChangeOrder } from '@/lib/types';
+import type { TeamUser, Project, Task, Expense, Supplier, Approval, WorkPhase, ProjectFile, OneDriveFile, GalleryPhoto, Comment, RFI, Submittal, PunchItem, Company, DailyLog, Meeting, ChangeOrder, Catalog, FieldNote } from '@/lib/types';
 import { DEFAULT_PHASES, EXPENSE_CATS, SUPPLIER_CATS, PHOTO_CATS, ADMIN_EMAILS, USER_ROLES, ROLE_COLORS, ROLE_ICONS, MESES, DIAS_SEMANA, NAV_ITEMS, SCREEN_TITLES, DEFAULT_ROLE_PERMS } from '@/lib/types';
 
 import { fmtCOP, fmtDate, fmtDateTime, fmtSize, getInitials, statusColor, prioColor, taskStColor, avatarColor, fmtRecTime, fmtDuration, fmtTimer, getWeekStart, fileToBase64, getPlatform, uniqueId, scrubUndefined } from '@/lib/helpers';
@@ -50,6 +50,8 @@ interface AppContextValue {
   submittals: Submittal[];
   punchItems: PunchItem[];
   changeOrders: ChangeOrder[];
+  catalogs: Catalog[];
+  fieldNotes: FieldNote[];
   selectedProjectId: string;
   navigateTo: (screen: string, itemId?: string | null) => void;
   saveApproval: () => Promise<void>;
@@ -121,6 +123,8 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   const [submittals, setSubmittals] = useState<Submittal[]>([]);
   const [punchItems, setPunchItems] = useState<PunchItem[]>([]);
   const [changeOrders, setChangeOrders] = useState<ChangeOrder[]>([]);
+  const [catalogs, setCatalogs] = useState<Catalog[]>([]);
+  const [fieldNotes, setFieldNotes] = useState<FieldNote[]>([]);
   const [rfiFilterProject, setRfiFilterProject] = useState<string>('');
   const [rfiFilterStatus, setRfiFilterStatus] = useState<string>('');
   const [subFilterProject, setSubFilterProject] = useState<string>('');
@@ -1040,6 +1044,30 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       setChangeOrders(snap.docs.map((d: any) => ({ id: d.id, data: d.data() })));
     }, (err: any) => {
       console.error('[Archii] ChangeOrders snapshot error:', err.code, err.message);
+    });
+    return () => unsub();
+  }, [ready, authUser, activeTenantId]);
+
+  // Load Field Notes (tenant-filtered)
+  useEffect(() => {
+    if (!ready || !authUser || !activeTenantId) { setFieldNotes([]); return; }
+    const db = getFirebase().firestore();
+    const unsub = db.collection('fieldNotes').where('tenantId', '==', activeTenantId).orderBy('createdAt', 'desc').onSnapshot(snap => {
+      setFieldNotes(snap.docs.map((d: any) => ({ id: d.id, data: d.data() })));
+    }, (err: any) => {
+      console.error('[Archii] FieldNotes snapshot error:', err.code, err.message);
+    });
+    return () => unsub();
+  }, [ready, authUser, activeTenantId]);
+
+  // Load Catalogs (tenant-filtered)
+  useEffect(() => {
+    if (!ready || !authUser || !activeTenantId) { setCatalogs([]); return; }
+    const db = getFirebase().firestore();
+    const unsub = db.collection('catalogs').where('tenantId', '==', activeTenantId).orderBy('createdAt', 'desc').onSnapshot(snap => {
+      setCatalogs(snap.docs.map((d: any) => ({ id: d.id, data: d.data() })));
+    }, (err: any) => {
+      console.error('[Archii] Catalogs snapshot error:', err.code, err.message);
     });
     return () => unsub();
   }, [ready, authUser, activeTenantId]);
@@ -3248,6 +3276,8 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     resetLogForm,
     rfis, setRfis, submittals, setSubmittals, punchItems, setPunchItems,
     changeOrders, setChangeOrders,
+    catalogs, setCatalogs,
+    fieldNotes, setFieldNotes,
     coFilterProject, setCoFilterProject, coFilterStatus, setCoFilterStatus, coFilterType, setCoFilterType,
     rfiFilterProject, setRfiFilterProject, rfiFilterStatus, setRfiFilterStatus,
     subFilterProject, setSubFilterProject, subFilterStatus, setSubFilterStatus,
