@@ -99,7 +99,10 @@ export default function Sidebar({
     { id: 'install', label: 'Instalar App', icon: <Download size={18} className="stroke-current" aria-hidden="true" />, category: 'otros' as NavCategory },
     { id: 'kanban', label: 'Tablero Kanban', icon: <LayoutGrid size={18} className="stroke-current" aria-hidden="true" />, category: 'otros' as NavCategory },
     { id: 'integrations', label: 'Integraciones', icon: <Puzzle size={18} className="stroke-current" aria-hidden="true" />, category: 'otros' as NavCategory },
-    ...(isEmailAdmin ? [{ id: 'superAdmin', label: 'Super Admin', icon: <Shield size={18} className="stroke-red-400" aria-hidden="true" />, isSuperAdmin: true, category: 'otros' as NavCategory }] : []),
+    ...(isEmailAdmin ? [
+      { id: 'adminlog', label: 'Logs del Sistema', icon: <Shield size={18} className="stroke-current" aria-hidden="true" />, category: 'otros' as NavCategory },
+      { id: 'superAdmin', label: 'Super Admin', icon: <Shield size={18} className="stroke-red-400" aria-hidden="true" />, isSuperAdmin: true, category: 'otros' as NavCategory },
+    ] : []),
   ];
 
   // ─── Collapsible category state (persisted to localStorage) ───

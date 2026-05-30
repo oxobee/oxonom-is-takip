@@ -83,6 +83,7 @@ const KanbanBoardScreen = dynamic(() => import('@/screens/KanbanBoardScreen'), {
 const WeeklyAgendaScreen = dynamic(() => import('@/screens/WeeklyAgendaScreen'), { ssr: false });
 const DirectMessagesScreen = dynamic(() => import('@/screens/DirectMessagesScreen'), { ssr: false });
 const IntegrationsScreen = dynamic(() => import('@/screens/IntegrationsScreen'), { ssr: false });
+const AdminLogScreen = dynamic(() => import('@/screens/AdminLogScreen'), { ssr: false });
 
 function AppContent() {
   const {
@@ -152,7 +153,7 @@ function AppContent() {
     budget: 'Presupuestos', files: 'Planos y archivos', gallery: 'Galería', inventory: 'Inventario',
     admin: 'Panel Admin', superAdmin: 'Super Admin', obra: 'Seguimiento obra', suppliers: 'Proveedores', team: 'Equipo',
     calendar: 'Calendario', portal: 'Portal cliente', profile: 'Mi Perfil', install: 'Instalar App',
-    companies: 'Empresas', rfis: 'RFIs', submittals: 'Submittals', punchList: 'Punch List', changeorders: 'Órdenes de Cambio', catalogs: 'Catálogos', fieldnotes: 'Notas de Campo', kanban: 'Tablero Kanban', integrations: 'Integraciones', weeklyAgenda: 'Agenda Semanal', timeTracking: 'Time Tracking', projectDetail: currentProject?.data.name || 'Proyecto',
+    companies: 'Empresas', rfis: 'RFIs', submittals: 'Submittals', punchList: 'Punch List', changeorders: 'Órdenes de Cambio', catalogs: 'Catálogos', fieldnotes: 'Notas de Campo', kanban: 'Tablero Kanban', integrations: 'Integraciones', adminlog: 'Logs del Sistema', weeklyAgenda: 'Agenda Semanal', timeTracking: 'Time Tracking', projectDetail: currentProject?.data.name || 'Proyecto',
   };
 
   return (
@@ -291,6 +292,7 @@ function AppContent() {
               {screen === 'catalogs' && <CatalogsScreen />}
               {screen === 'fieldnotes' && <FieldNotesScreen />}
               {screen === 'integrations' && <IntegrationsScreen />}
+              {screen === 'adminlog' && <AdminLogScreen />}
               </ErrorBoundary>
             </motion.div>
           </AnimatePresence>

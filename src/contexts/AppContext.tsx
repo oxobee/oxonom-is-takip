@@ -2645,7 +2645,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     inventory: 'Inventario', reports: 'Reportes', admin: 'Panel de Administración',
     superAdmin: 'Super Administrador', rfis: 'RFIs', submittals: 'Submittals',
     punchList: 'Punch List', changeorders: 'Órdenes de Cambio', catalogs: 'Catálogos',
-    fieldnotes: 'Notas de Campo', integrations: 'Integraciones', install: 'Instalar App',
+    fieldnotes: 'Notas de Campo', integrations: 'Integraciones', adminlog: 'Logs del Sistema', install: 'Instalar App',
   };
 
   const activeTasks = tasks.filter(t => t.data.status !== 'Completado');
