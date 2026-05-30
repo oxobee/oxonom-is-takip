@@ -5,7 +5,7 @@ import { useUIStore } from '@/stores/ui-store';
 
 /* ===== MODULED IMPORTS ===== */
 import type { TeamUser, Project, Task, Expense, Supplier, Approval, WorkPhase, ProjectFile, OneDriveFile, GalleryPhoto, Comment, RFI, Submittal, PunchItem, Company, DailyLog, Meeting, ChangeOrder, Catalog, FieldNote } from '@/lib/types';
-import { DEFAULT_PHASES, EXPENSE_CATS, SUPPLIER_CATS, PHOTO_CATS, ADMIN_EMAILS, USER_ROLES, ROLE_COLORS, ROLE_ICONS, MESES, DIAS_SEMANA, NAV_ITEMS, SCREEN_TITLES, DEFAULT_ROLE_PERMS } from '@/lib/types';
+import { ADMIN_EMAILS, ROLE_ICONS } from '@/lib/types';
 
 import { fmtCOP, fmtDate, fmtDateTime, fmtSize, getInitials, statusColor, prioColor, taskStColor, avatarColor, fmtRecTime, fmtDuration, fmtTimer, getWeekStart, fileToBase64, getPlatform, uniqueId, scrubUndefined } from '@/lib/helpers';
 import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
@@ -2635,7 +2635,18 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   // User display helpers
   const userName = authUser?.displayName || authUser?.email?.split('@')[0] || '';
   const initials = getInitials(userName);
-  const screenTitles = SCREEN_TITLES;
+  const screenTitles: Record<string, string> = {
+    dashboard: 'Dashboard', profile: 'Mi Perfil', projects: 'Proyectos', tasks: 'Tareas',
+    kanban: 'Tablero Kanban', timeTracking: 'Time Tracking', chat: 'Chat',
+    directmessages: 'Mensajes Directos', budget: 'Presupuestos', files: 'Archivos',
+    obra: 'Seguimiento de Obra', suppliers: 'Proveedores', team: 'Equipo',
+    companies: 'Empresas', invoices: 'Facturación', calendar: 'Calendario',
+    weeklyAgenda: 'Agenda Semanal', portal: 'Portal Cliente', gallery: 'Galería de Fotos',
+    inventory: 'Inventario', reports: 'Reportes', admin: 'Panel de Administración',
+    superAdmin: 'Super Administrador', rfis: 'RFIs', submittals: 'Submittals',
+    punchList: 'Punch List', changeorders: 'Órdenes de Cambio', catalogs: 'Catálogos',
+    fieldnotes: 'Notas de Campo', integrations: 'Integraciones', install: 'Instalar App',
+  };
 
   const activeTasks = tasks.filter(t => t.data.status !== 'Completado');
   const completedTasks = tasks.filter(t => t.data.status === 'Completado');
