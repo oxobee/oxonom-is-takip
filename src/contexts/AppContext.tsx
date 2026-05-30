@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { useUIStore } from '@/stores/ui-store';
 
 /* ===== MODULED IMPORTS ===== */
-import type { TeamUser, Project, Task, Expense, Supplier, Approval, WorkPhase, ProjectFile, OneDriveFile, GalleryPhoto, Comment, RFI, Submittal, PunchItem, Company, DailyLog, Meeting } from '@/lib/types';
+import type { TeamUser, Project, Task, Expense, Supplier, Approval, WorkPhase, ProjectFile, OneDriveFile, GalleryPhoto, Comment, RFI, Submittal, PunchItem, Company, DailyLog, Meeting, ChangeOrder } from '@/lib/types';
 import { DEFAULT_PHASES, EXPENSE_CATS, SUPPLIER_CATS, PHOTO_CATS, ADMIN_EMAILS, USER_ROLES, ROLE_COLORS, ROLE_ICONS, MESES, DIAS_SEMANA, NAV_ITEMS, SCREEN_TITLES, DEFAULT_ROLE_PERMS } from '@/lib/types';
 
 import { fmtCOP, fmtDate, fmtDateTime, fmtSize, getInitials, statusColor, prioColor, taskStColor, avatarColor, fmtRecTime, fmtDuration, fmtTimer, getWeekStart, fileToBase64, getPlatform, uniqueId, scrubUndefined } from '@/lib/helpers';
@@ -49,6 +49,7 @@ interface AppContextValue {
   rfis: RFI[];
   submittals: Submittal[];
   punchItems: PunchItem[];
+  changeOrders: ChangeOrder[];
   selectedProjectId: string;
   navigateTo: (screen: string, itemId?: string | null) => void;
   saveApproval: () => Promise<void>;
@@ -119,6 +120,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   const [rfis, setRfis] = useState<RFI[]>([]);
   const [submittals, setSubmittals] = useState<Submittal[]>([]);
   const [punchItems, setPunchItems] = useState<PunchItem[]>([]);
+  const [changeOrders, setChangeOrders] = useState<ChangeOrder[]>([]);
   const [rfiFilterProject, setRfiFilterProject] = useState<string>('');
   const [rfiFilterStatus, setRfiFilterStatus] = useState<string>('');
   const [subFilterProject, setSubFilterProject] = useState<string>('');
@@ -126,6 +128,9 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   const [punchFilterProject, setPunchFilterProject] = useState<string>('');
   const [punchFilterStatus, setPunchFilterStatus] = useState<string>('');
   const [punchFilterLocation, setPunchFilterLocation] = useState<string>('');
+  const [coFilterProject, setCoFilterProject] = useState<string>('');
+  const [coFilterStatus, setCoFilterStatus] = useState<string>('');
+  const [coFilterType, setCoFilterType] = useState<string>('');
   const [dailyLogTab, setDailyLogTab] = useState<'list' | 'create' | 'detail'>('list');
   const [selectedLogId, setSelectedLogId] = useState<string | null>(null);
   const [logForm, setLogForm] = useState<Record<string, any>>({
@@ -1024,6 +1029,18 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     }, (err: any) => {
   console.error('[Archii] Snapshot error:', err.code, err.message);
 });
+    return () => unsub();
+  }, [ready, authUser, activeTenantId]);
+
+  // Load Change Orders (tenant-filtered)
+  useEffect(() => {
+    if (!ready || !authUser || !activeTenantId) { setChangeOrders([]); return; }
+    const db = getFirebase().firestore();
+    const unsub = db.collection('changeOrders').where('tenantId', '==', activeTenantId).orderBy('createdAt', 'desc').onSnapshot(snap => {
+      setChangeOrders(snap.docs.map((d: any) => ({ id: d.id, data: d.data() })));
+    }, (err: any) => {
+      console.error('[Archii] ChangeOrders snapshot error:', err.code, err.message);
+    });
     return () => unsub();
   }, [ready, authUser, activeTenantId]);
 
@@ -3230,6 +3247,8 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     openEditLog,
     resetLogForm,
     rfis, setRfis, submittals, setSubmittals, punchItems, setPunchItems,
+    changeOrders, setChangeOrders,
+    coFilterProject, setCoFilterProject, coFilterStatus, setCoFilterStatus, coFilterType, setCoFilterType,
     rfiFilterProject, setRfiFilterProject, rfiFilterStatus, setRfiFilterStatus,
     subFilterProject, setSubFilterProject, subFilterStatus, setSubFilterStatus,
     punchFilterProject, setPunchFilterProject, punchFilterStatus, setPunchFilterStatus,

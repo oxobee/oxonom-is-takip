@@ -254,6 +254,16 @@ service cloud.firestore {
           get(/databases/$(database)/documents/projects/$(projectId)).data.tenantId
         );
       }
+
+      // Change Order Counter (atomic sequential numbering)
+      match /changeOrderCounter/{counterId} {
+        allow read: if isSignedIn() && isTenantMember(
+          get(/databases/$(database)/documents/projects/$(projectId)).data.tenantId
+        );
+        allow create, update: if isSignedIn() && isTenantMember(
+          get(/databases/$(database)/documents/projects/$(projectId)).data.tenantId
+        );
+      }
     }
 
     // Tasks
@@ -417,6 +427,14 @@ service cloud.firestore {
 
     // Punch Items
     match /punchItems/{punchId} {
+      allow read: if isSignedIn() && isTenantMember(resource.data.tenantId);
+      allow create: if isSignedIn() && isTenantMember(request.resource.data.tenantId);
+      allow update: if isSignedIn() && isTenantMember(resource.data.tenantId);
+      allow delete: if isSignedIn() && isTenantMember(resource.data.tenantId);
+    }
+
+    // Change Orders (Ordenes de Cambio)
+    match /changeOrders/{coId} {
       allow read: if isSignedIn() && isTenantMember(resource.data.tenantId);
       allow create: if isSignedIn() && isTenantMember(request.resource.data.tenantId);
       allow update: if isSignedIn() && isTenantMember(resource.data.tenantId);
