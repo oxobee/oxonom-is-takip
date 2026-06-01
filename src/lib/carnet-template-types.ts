@@ -1,3 +1,127 @@
+/* ─── Image Compression Utility ─── */
+
+/**
+ * Compress an image file to a base64 data URL with size constraints.
+ * Uses Canvas to resize and JPEG compression to reduce file size.
+ * This is needed because Firestore has a ~1MB limit per field value.
+ *
+ * @param file - The image File to compress
+ * @param maxWidth - Maximum width in pixels (default: 800)
+ * @param maxHeight - Maximum height in pixels (default: 1200)
+ * @param quality - JPEG quality 0-1 (default: 0.7)
+ * @returns Promise<string> - Compressed base64 data URL
+ */
+export function compressImage(
+  file: File,
+  maxWidth: number = 800,
+  maxHeight: number = 1200,
+  quality: number = 0.7
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        // Calculate new dimensions maintaining aspect ratio
+        let w = img.width;
+        let h = img.height;
+
+        if (w > maxWidth) {
+          h = Math.round((h * maxWidth) / w);
+          w = maxWidth;
+        }
+        if (h > maxHeight) {
+          w = Math.round((w * maxHeight) / h);
+          h = maxHeight;
+        }
+
+        // Draw on canvas and export as JPEG
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Canvas context not available'));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, w, h);
+
+        // Convert to JPEG with compression
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+        // If still too large (>900KB base64 ≈ 675KB raw), reduce quality further
+        const base64Length = dataUrl.length - dataUrl.indexOf(',') - 1;
+        const estimatedBytes = Math.ceil(base64Length * 0.75);
+
+        if (estimatedBytes > 900000 && quality > 0.3) {
+          // Retry with lower quality
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                resolve(dataUrl); // Return original if blob fails
+                return;
+              }
+              const retryReader = new FileReader();
+              retryReader.onload = () => resolve(retryReader.result as string);
+              retryReader.onerror = reject;
+              retryReader.readAsDataURL(blob);
+            },
+            'image/jpeg',
+            quality * 0.6
+          );
+        } else {
+          resolve(dataUrl);
+        }
+      };
+      img.onerror = () => reject(new Error('Error loading image'));
+      img.src = reader.result as string;
+    };
+    reader.onerror = () => reject(new Error('Error reading file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Compress a base64 data URL to fit within Firestore's ~1MB field limit.
+ * Re-encodes the image at lower quality/size.
+ */
+export function compressBase64Image(
+  dataUrl: string,
+  maxWidth: number = 800,
+  maxHeight: number = 1200,
+  quality: number = 0.6
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width;
+      let h = img.height;
+
+      if (w > maxWidth) {
+        h = Math.round((h * maxWidth) / w);
+        w = maxWidth;
+      }
+      if (h > maxHeight) {
+        w = Math.round((w * maxHeight) / h);
+        h = maxHeight;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(dataUrl);
+        return;
+      }
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => resolve(dataUrl); // Return original on error
+    img.src = dataUrl;
+  });
+}
+
 /* ─── Carnet Template Types ─── */
 export interface CarnetTemplate {
   id?: string;

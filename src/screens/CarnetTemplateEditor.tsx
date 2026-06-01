@@ -22,6 +22,8 @@ import {
   CARD_FIELDS,
   createDefaultPortraitTemplate,
   createDefaultBackTemplate,
+  compressImage,
+  compressBase64Image,
 } from '@/lib/carnet-template-types';
 
 const QR_BASE_URL = 'https://archii-theta.vercel.app/carnet';
@@ -115,11 +117,65 @@ export default function CarnetTemplateEditor() {
 
   useEffect(() => { fetchTemplates(); }, [fetchTemplates]);
 
-  /* ─── Save template ─── */
+  /* ─── Save template (with image compression to fit Firestore limits) ─── */
   const handleSave = async () => {
     if (!currentTemplate || !authUser) return;
     try {
       setSaving(true);
+
+      // Compress any large images before saving to avoid Firestore 1MB field limit
+      let templateToSave = { ...currentTemplate, side };
+
+      // Compress background image if it's a base64 data URL (too large)
+      if (templateToSave.backgroundImage && templateToSave.backgroundImage.startsWith('data:')) {
+        const bgSize = templateToSave.backgroundImage.length;
+        if (bgSize > 800000) { // ~600KB raw, approaching limit
+          try {
+            templateToSave.backgroundImage = await compressBase64Image(templateToSave.backgroundImage, 638, 1004, 0.6);
+          } catch (e) {
+            console.warn('[Editor] Could not compress background image, removing it');
+            templateToSave.backgroundImage = undefined;
+          }
+        }
+      }
+
+      // Compress logo image if too large
+      if (templateToSave.logo?.image && templateToSave.logo.image.startsWith('data:')) {
+        const logoSize = templateToSave.logo.image.length;
+        if (logoSize > 800000) {
+          try {
+            templateToSave.logo = {
+              ...templateToSave.logo,
+              image: await compressBase64Image(templateToSave.logo.image, 200, 200, 0.7),
+            };
+          } catch (e) {
+            console.warn('[Editor] Could not compress logo image');
+          }
+        }
+      }
+
+      // Compress element images if too large
+      const compressedElements = await Promise.all(
+        templateToSave.elements.map(async (el) => {
+          if (el.type === 'image') {
+            const imgEl = el as ImageTemplateElement;
+            if (imgEl.image && imgEl.image.startsWith('data:') && imgEl.image.length > 800000) {
+              try {
+                const compressed = await compressBase64Image(imgEl.image, 400, 400, 0.7);
+                return { ...el, image: compressed } as ImageTemplateElement;
+              } catch (e) {
+                return el;
+              }
+            }
+          }
+          return el;
+        })
+      );
+      templateToSave.elements = compressedElements;
+
+      // Update current template with compressed versions
+      setCurrentTemplate(templateToSave);
+
       const token = await authUser.getIdToken();
       const res = await fetch('/api/carnet-templates', {
         method: 'POST',
@@ -127,7 +183,7 @@ export default function CarnetTemplateEditor() {
         body: JSON.stringify({
           action: 'save',
           tenantId: activeTenantId,
-          template: { ...currentTemplate, side },
+          template: templateToSave,
         }),
       });
       const data = await res.json();
@@ -235,38 +291,47 @@ export default function CarnetTemplateEditor() {
     setSelectedId(newId);
   };
 
-  /* ─── Upload handlers ─── */
-  const handleBackgroundUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /* ─── Upload handlers (with compression to fit Firestore 1MB limit) ─── */
+  const handleBackgroundUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      setCurrentTemplate(prev => prev ? { ...prev, backgroundImage: reader.result as string } : prev);
-    };
-    reader.readAsDataURL(file);
+    try {
+      // Compress: background images at card resolution, JPEG 70% quality
+      const compressed = await compressImage(file, 638, 1004, 0.7);
+      setCurrentTemplate(prev => prev ? { ...prev, backgroundImage: compressed } : prev);
+    } catch (err) {
+      console.error('[Editor] Background upload error:', err);
+      toast.error('Error al procesar imagen de fondo');
+    }
   };
 
-  const handleImageElementUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageElementUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !selectedId) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      updateElement(selectedId, { image: reader.result as string } as Partial<ImageTemplateElement>);
-    };
-    reader.readAsDataURL(file);
+    try {
+      // Compress: element images smaller, JPEG 75% quality
+      const compressed = await compressImage(file, 400, 400, 0.75);
+      updateElement(selectedId, { image: compressed } as Partial<ImageTemplateElement>);
+    } catch (err) {
+      console.error('[Editor] Image upload error:', err);
+      toast.error('Error al procesar imagen');
+    }
   };
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
+    try {
+      // Compress: logos small, JPEG 80% quality
+      const compressed = await compressImage(file, 200, 200, 0.8);
       setCurrentTemplate(prev => prev ? {
         ...prev,
-        logo: { x: 20, y: 8, width: 28, height: 28, image: reader.result as string, visible: true, opacity: 1 },
+        logo: { x: 20, y: 8, width: 28, height: 28, image: compressed, visible: true, opacity: 1 },
       } : prev);
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      console.error('[Editor] Logo upload error:', err);
+      toast.error('Error al procesar logo');
+    }
   };
 
   /* ─── New template from default ─── */
