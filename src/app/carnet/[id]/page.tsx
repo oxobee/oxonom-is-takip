@@ -347,7 +347,7 @@ export default function CarnetPublicPage() {
           color: '#8a7a5e',
           letterSpacing: 0.3,
         }}>
-          Diseñamos espacios que transforman
+          Identidad corporativa verificada
         </div>
       </div>
 

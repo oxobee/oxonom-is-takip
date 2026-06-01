@@ -1484,3 +1484,25 @@ Stage Summary:
 - Notas ahora persisten correctamente en Firestore
 - Notas visibles en mobile con panel colapsable
 - Toast de error visible si Firestore falla
+---
+Task ID: 14
+Agent: Super Z (Main)
+Task: Fix Firestore composite index errors (changeOrders, catalogs, fieldNotes) + Fix /api/carnets 500 error
+
+Work Log:
+- Diagnosed root cause: Firestore queries with where('tenantId').orderBy('createdAt') require composite indexes that were never deployed
+- Root cause #2: firebase.json did NOT reference firestore.indexes.json (only had rules), so indexes were never deployed
+- Added missing indexes to firestore.indexes.json for: changeOrders, catalogs, carnets (3 variants)
+- Updated firebase.json to include "indexes": "firestore.indexes.json"
+- Made carnets API resilient: removed .orderBy() from list/create/duplicate queries, sort in memory instead
+- Added fallback queries in AppContext for changeOrders, catalogs, fieldNotes listeners: when failed-precondition error occurs, falls back to simple where() query with client-side sorting
+- Better error diagnostics in carnets API: detect FAILED_PRECONDITION errors and return helpful message
+- Build verified: 0 errors, all routes compiled including /api/carnets and /carnet/[id]
+- Committed: c220d35 (indexes) + fbf263c (fallback queries)
+
+Stage Summary:
+- Files modified: firebase.json, firestore.indexes.json, src/app/api/carnets/route.ts, src/contexts/AppContext.tsx
+- Added 5 new Firestore composite indexes (changeOrders, catalogs, carnets x3)
+- All 3 failing screens (ChangeOrders, Catalogs, FieldNotes) now have automatic fallback
+- Carnets API no longer depends on composite indexes for basic operations
+- NEEDS: User to push to GitHub (requires PAT) and create indexes in Firebase Console

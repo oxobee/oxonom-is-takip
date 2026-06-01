@@ -95,6 +95,11 @@ const FLAG_REGISTRY: Record<string, { envKey: string; defaultValue: boolean; des
   },
 
   // BETA flags
+  carnets: {
+    envKey: 'CARNETS',
+    defaultValue: true,
+    description: 'Módulo de Carnets corporativos (CRUD, QR, PDF/PNG export)',
+  },
   feedback_widget: {
     envKey: 'FEEDBACK_WIDGET',
     defaultValue: true,

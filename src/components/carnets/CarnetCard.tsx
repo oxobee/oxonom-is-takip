@@ -200,7 +200,7 @@ export default function CarnetCard({ data, tenantName, forExport }: CarnetCardPr
               color: '#8a7a5e',
               letterSpacing: 0.3 * scaleFactor,
             }}>
-              Diseñamos espacios que transforman
+              Identidad corporativa verificada
             </span>
             <span style={{
               fontSize: 6.5 * scaleFactor,
