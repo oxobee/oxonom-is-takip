@@ -1,6 +1,7 @@
 'use client';
 import React, { useRef, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import type { CarnetTemplate, TemplateElement, TextTemplateElement, PhotoTemplateElement, QRTemplateElement, ShapeTemplateElement, ImageTemplateElement } from '@/lib/carnet-template-types';
 
 /* ─── Types ─── */
 export interface CarnetData {
@@ -32,6 +33,8 @@ interface CarnetCardProps {
   tenantNit?: string;
   /** If true, renders at higher resolution for export */
   forExport?: boolean;
+  /** Custom template to render from (overrides hardcoded design) */
+  template?: CarnetTemplate;
 }
 
 /* ─── Design tokens ─── */
@@ -138,8 +141,13 @@ function HeartIcon({ size = 10, color = GOLD }: { size?: number; color?: string 
 /* ═══════════════════════════════════════
    MAIN COMPONENT
    ═══════════════════════════════════════ */
-export default function CarnetCard({ data, tenantName, tenantSubtitle, tenantNit, forExport }: CarnetCardProps) {
+export default function CarnetCard({ data, tenantName, tenantSubtitle, tenantNit, forExport, template }: CarnetCardProps) {
   useEffect(() => { ensureFont(); }, []);
+
+  // If template provided, render from template
+  if (template) {
+    return <TemplateCarnetCard data={data} template={template} tenantName={tenantName} forExport={forExport} />;
+  }
 
   const displayName = tenantName || data.tenantName || 'ARCHII';
   const displaySubtitle = tenantSubtitle || data.tenantSubtitle || '';
@@ -607,6 +615,216 @@ function BackDetailRow({ icon, label, value, scale, highlight }: { icon: React.R
           {value}
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   TEMPLATE-BASED RENDERING
+   ═══════════════════════════════════════ */
+
+function TemplateCarnetCard({ data, template, tenantName, forExport }: {
+  data: CarnetData;
+  template: CarnetTemplate;
+  tenantName?: string;
+  forExport?: boolean;
+}) {
+  const s = forExport ? 2 : 1;
+  const qrUrl = `${QR_BASE_URL}/${data.employeeCode}`;
+
+  const isValid = data.validUntil ? new Date(data.validUntil) >= new Date() : true;
+  const statusText = isValid ? 'VIGENTE' : 'VENCIDO';
+
+  // Field resolver
+  const resolveField = (field?: string): string => {
+    if (!field || field === 'custom') return '';
+    const fieldMap: Record<string, string> = {
+      fullName: data.fullName,
+      employeeCode: data.employeeCode,
+      position: data.position,
+      area: data.area,
+      phone: data.phone,
+      email: data.email,
+      city: data.city,
+      bloodType: data.bloodType,
+      eps: data.eps,
+      emergencyContact: data.emergencyContact,
+      emergencyPhone: data.emergencyPhone,
+      startDate: data.startDate ? new Date(data.startDate).toLocaleDateString('es-CO', { year: 'numeric', month: 'short' }) : '',
+      validUntil: data.validUntil ? new Date(data.validUntil).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' }) : '',
+      tenantName: tenantName || data.tenantName || '',
+      statusText,
+    };
+    return fieldMap[field] || '';
+  };
+
+  const cardStyle: React.CSSProperties = {
+    width: template.width * s,
+    height: template.height * s,
+    position: 'relative',
+    overflow: 'hidden',
+    background: template.backgroundColor || '#F8F5F0',
+    borderRadius: 12 * s,
+    border: `1.5px solid ${GOLD}`,
+    fontFamily: "'Montserrat', sans-serif",
+    boxShadow: forExport ? 'none' : '0 4px 24px rgba(0,0,0,0.08)',
+  };
+
+  const renderEl = (el: TemplateElement) => {
+    if (!el.visible) return null;
+    const base: React.CSSProperties = {
+      position: 'absolute',
+      left: el.x * s,
+      top: el.y * s,
+      width: el.width * s,
+      height: el.height * s,
+      opacity: el.opacity ?? 1,
+      zIndex: el.zIndex ?? 1,
+      transform: el.rotation ? `rotate(${el.rotation}deg)` : undefined,
+    };
+
+    switch (el.type) {
+      case 'text': {
+        const tel = el as TextTemplateElement;
+        const text = tel.field && tel.field !== 'custom' ? resolveField(tel.field) : (tel.text || '');
+        if (!text) return null;
+        return (
+          <div key={el.id} style={{
+            ...base,
+            fontFamily: `'${tel.fontFamily}', sans-serif`,
+            fontSize: tel.fontSize * s,
+            fontWeight: tel.fontWeight,
+            color: tel.fontColor,
+            textAlign: tel.textAlign,
+            letterSpacing: tel.letterSpacing * s,
+            textTransform: tel.textTransform as any,
+            fontStyle: tel.fontStyle,
+            lineHeight: tel.lineHeight,
+            overflow: 'hidden',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+          }}>
+            {text}
+          </div>
+        );
+      }
+      case 'photo': {
+        const pel = el as PhotoTemplateElement;
+        return (
+          <div key={el.id} style={{
+            ...base,
+            borderRadius: pel.shape === 'circle' ? '50%' : 4 * s,
+            border: `${pel.borderWidth * s}px solid ${pel.borderColor}`,
+            overflow: 'hidden',
+            background: '#EDE8E0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            {data.photoBase64 ? (
+              <img
+                src={data.photoBase64.startsWith('data:') ? data.photoBase64 : `data:image/jpeg;base64,${data.photoBase64}`}
+                alt={data.fullName}
+                style={{ width: '100%', height: '100%', objectFit: pel.objectFit }}
+              />
+            ) : (
+              <svg width={32 * s} height={32 * s} viewBox="0 0 24 24" fill="none" stroke={GOLD_LIGHT} strokeWidth="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            )}
+          </div>
+        );
+      }
+      case 'qr': {
+        const qel = el as QRTemplateElement;
+        return (
+          <div key={el.id} style={{ ...base, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 * s }}>
+            <div style={{
+              padding: 3 * s,
+              border: `${qel.borderWidth * s}px solid ${qel.borderColor}`,
+              borderRadius: 4 * s,
+              background: qel.bgColor,
+            }}>
+              <QRCodeSVG
+                value={qrUrl}
+                size={Math.min((qel.width - 8) * s, (qel.height - (qel.labelText ? 20 : 8)) * s)}
+                level="M"
+                fgColor={qel.fgColor}
+                bgColor={qel.bgColor}
+              />
+            </div>
+            {qel.labelText && (
+              <span style={{
+                fontSize: (qel.labelFontSize || 5) * s,
+                color: qel.labelColor || '#8A8279',
+                textAlign: 'center',
+              }}>
+                {qel.labelText}
+              </span>
+            )}
+          </div>
+        );
+      }
+      case 'shape': {
+        const sel = el as ShapeTemplateElement;
+        return (
+          <div key={el.id} style={{
+            ...base,
+            background: sel.fillColor,
+            border: sel.borderWidth > 0 ? `${sel.borderWidth * s}px solid ${sel.borderColor}` : 'none',
+            borderRadius: sel.shapeType === 'circle' ? '50%' : sel.shapeType === 'line' ? 0 : sel.borderRadius * s,
+          }} />
+        );
+      }
+      case 'image': {
+        const iel = el as ImageTemplateElement;
+        return (
+          <div key={el.id} style={{
+            ...base,
+            borderRadius: iel.borderRadius * s,
+            overflow: 'hidden',
+            background: '#EDE8E0',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            {iel.image ? (
+              <img src={iel.image} alt="" style={{ width: '100%', height: '100%', objectFit: iel.objectFit }} />
+            ) : null}
+          </div>
+        );
+      }
+      default: return null;
+    }
+  };
+
+  return (
+    <div style={cardStyle} id={`carnet-${template.side}`}>
+      {/* Background image */}
+      {template.backgroundImage && (
+        <img src={template.backgroundImage} alt="" style={{
+          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+          objectFit: (template.backgroundFit || 'cover') as any, zIndex: 0,
+        }} />
+      )}
+      {/* Logo */}
+      {template.logo?.visible && template.logo.image && (
+        <img src={template.logo.image} alt="Logo" style={{
+          position: 'absolute',
+          left: template.logo.x * s,
+          top: template.logo.y * s,
+          width: template.logo.width * s,
+          height: template.logo.height * s,
+          objectFit: 'contain',
+          zIndex: 10,
+          opacity: template.logo.opacity ?? 1,
+        }} />
+      )}
+      {/* Elements sorted by zIndex */}
+      {template.elements
+        .sort((a, b) => (a.zIndex ?? 1) - (b.zIndex ?? 1))
+        .map(renderEl)}
     </div>
   );
 }
