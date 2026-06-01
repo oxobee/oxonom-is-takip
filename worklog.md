@@ -1506,3 +1506,28 @@ Stage Summary:
 - All 3 failing screens (ChangeOrders, Catalogs, FieldNotes) now have automatic fallback
 - Carnets API no longer depends on composite indexes for basic operations
 - NEEDS: User to push to GitHub (requires PAT) and create indexes in Firebase Console
+
+---
+Task ID: 1
+Agent: Super Z (Main)
+Task: Fix Firebase Admin SDK initialization error + enhance Carnet Template Editor integration
+
+Work Log:
+- Cloned repo from GitHub (already existed locally, pulled latest)
+- Investigated "The default Firebase app does not exist" error
+- Found root cause: firebase-admin.ts passed `credential: undefined` to initializeApp() when FIREBASE_ADMIN_CREDENTIALS was not set
+- Fixed getAdminApp() to conditionally include credential property only when defined
+- Added getAdminDb() error handling with user-friendly Spanish error message
+- Added FIREBASE_ADMIN_CREDENTIALS placeholder to .env with setup instructions
+- Added "Diseñador" (Palette icon) button to CarnetsScreen header linking to carnet-designer screen
+- Imported Palette icon from lucide-react in CarnetsScreen
+- Verified build succeeds (0 errors)
+- Committed and pushed to GitHub (0838156)
+
+Stage Summary:
+- Fixed: "Invalid Firebase app options" error when FIREBASE_ADMIN_CREDENTIALS not configured
+- Fixed: Now properly falls back to ADC without credential property
+- Added: Clear error message in Spanish for missing admin credentials
+- Added: Designer button in CarnetsScreen for easy navigation to template editor
+- CarnetTemplateEditor already complete with: react-rnd drag/resize, properties panel, element palette, preview modal, template CRUD via API
+- Commit: 0838156

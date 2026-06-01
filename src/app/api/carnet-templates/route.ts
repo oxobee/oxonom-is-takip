@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuth } from 'firebase-admin/auth';
-import { getAdminDb } from '@/lib/firebase-admin';
+import { getAdminDb, getAdminAuth } from '@/lib/firebase-admin';
 
 /* ─── Helper: verify auth ─── */
 async function verifyAuth(req: NextRequest) {
   const authHeader = req.headers.get('authorization') || '';
   const token = authHeader.replace('Bearer ', '');
   if (!token) throw new Error('No autenticado');
-  const decoded = await getAuth().verifyIdToken(token);
+  const decoded = await getAdminAuth().verifyIdToken(token);
   return decoded;
 }
 
