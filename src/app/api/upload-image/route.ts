@@ -85,10 +85,17 @@ export async function POST(req: NextRequest) {
           tenantId,
         },
       },
-      public: true, // Make publicly accessible via download URL
     });
 
+    // Make the file publicly accessible
+    try {
+      await file.makePublic();
+    } catch (pubErr: any) {
+      console.warn('[upload-image] Could not make file public (may need Storage rules update):', pubErr.message);
+    }
+
     // Get the public download URL
+    // Format: https://storage.googleapis.com/{bucket-name}/{object-path}
     const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
 
     console.log(`[upload-image] Uploaded ${filePath} (${buffer.length} bytes) for tenant ${tenantId}`);
