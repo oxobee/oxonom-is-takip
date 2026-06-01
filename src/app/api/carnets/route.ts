@@ -91,24 +91,27 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "tenantId requerido" }, { status: 400 });
       }
 
-      let query = db.collection("carnets")
+      // Fetch all carnets for this tenant (simple query that doesn't need composite index)
+      // then filter/sort in memory — avoids failed-precondition errors if index isn't deployed yet
+      const snap = await db.collection("carnets")
         .where("tenantId", "==", tenantId)
-        .orderBy("createdAt", "desc");
+        .get();
 
-      if (status === 'active') {
-        query = db.collection("carnets")
-          .where("tenantId", "==", tenantId)
-          .where("isActive", "==", true)
-          .orderBy("createdAt", "desc");
-      } else if (status === 'inactive') {
-        query = db.collection("carnets")
-          .where("tenantId", "==", tenantId)
-          .where("isActive", "==", false)
-          .orderBy("createdAt", "desc");
-      }
-
-      const snap = await query.get();
       let carnets = snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
+
+      // Sort by createdAt desc in memory
+      carnets.sort((a: any, b: any) => {
+        const aTime = a.createdAt?._seconds || new Date(a.createdAt).getTime() / 1000 || 0;
+        const bTime = b.createdAt?._seconds || new Date(b.createdAt).getTime() / 1000 || 0;
+        return bTime - aTime;
+      });
+
+      // Status filter in memory
+      if (status === 'active') {
+        carnets = carnets.filter((c: any) => c.isActive === true);
+      } else if (status === 'inactive') {
+        carnets = carnets.filter((c: any) => c.isActive === false);
+      }
 
       // Client-side search filter (Firestore doesn't support full-text search)
       if (search) {
@@ -149,10 +152,10 @@ export async function POST(request: NextRequest) {
       let code = employeeCode;
       if (!code) {
         // Find the highest ARCH-XXX number for this tenant
+        // Simple query without orderBy to avoid composite index requirement
         const existingSnap = await db.collection("carnets")
           .where("tenantId", "==", tenantId)
-          .orderBy("createdAt", "desc")
-          .limit(100)
+          .limit(500)
           .get();
 
         let maxNum = 0;
@@ -343,10 +346,10 @@ export async function POST(request: NextRequest) {
       }
 
       // Generate new employee code
+      // Simple query without orderBy to avoid composite index requirement
       const existingSnap = await db.collection("carnets")
         .where("tenantId", "==", tenantId)
-        .orderBy("createdAt", "desc")
-        .limit(100)
+        .limit(500)
         .get();
 
       let maxNum = 0;
@@ -427,7 +430,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Acción no reconocida" }, { status: 400 });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Error interno";
-    console.error("[Carnets] Error:", message);
+    const code = (error as any)?.code || '';
+    console.error("[Carnets] Error:", code, message);
+    // Return helpful error for missing indexes
+    if (code === 'FAILED_PRECONDITION' || message.includes('requires an index')) {
+      return NextResponse.json(
+        { error: 'Se requiere crear un índice de Firestore. Por favor contacta al administrador.', details: message },
+        { status: 500 }
+      );
+    }
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

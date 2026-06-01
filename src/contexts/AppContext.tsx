@@ -1040,36 +1040,73 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   useEffect(() => {
     if (!ready || !authUser || !activeTenantId) { setChangeOrders([]); return; }
     const db = getFirebase().firestore();
+    let fallbackUnsub: (() => void) | null = null;
     const unsub = db.collection('changeOrders').where('tenantId', '==', activeTenantId).orderBy('createdAt', 'desc').onSnapshot(snap => {
       setChangeOrders(snap.docs.map((d: any) => ({ id: d.id, data: d.data() })));
     }, (err: any) => {
       console.error('[Archii] ChangeOrders snapshot error:', err.code, err.message);
+      // Fallback: fetch without orderBy, sort client-side
+      if (err.code === 'failed-precondition') {
+        fallbackUnsub = db.collection('changeOrders').where('tenantId', '==', activeTenantId).onSnapshot(fallbackSnap => {
+          const items = fallbackSnap.docs.map((d: any) => ({ id: d.id, data: d.data() }));
+          items.sort((a: any, b: any) => {
+            const aT = a.data?.createdAt?.seconds || 0;
+            const bT = b.data?.createdAt?.seconds || 0;
+            return bT - aT;
+          });
+          setChangeOrders(items);
+        });
+      }
     });
-    return () => unsub();
+    return () => { unsub(); if (fallbackUnsub) fallbackUnsub(); };
   }, [ready, authUser, activeTenantId]);
 
   // Load Field Notes (tenant-filtered)
   useEffect(() => {
     if (!ready || !authUser || !activeTenantId) { setFieldNotes([]); return; }
     const db = getFirebase().firestore();
+    let fallbackUnsub: (() => void) | null = null;
     const unsub = db.collection('fieldNotes').where('tenantId', '==', activeTenantId).orderBy('createdAt', 'desc').onSnapshot(snap => {
       setFieldNotes(snap.docs.map((d: any) => ({ id: d.id, data: d.data() })));
     }, (err: any) => {
       console.error('[Archii] FieldNotes snapshot error:', err.code, err.message);
+      if (err.code === 'failed-precondition') {
+        fallbackUnsub = db.collection('fieldNotes').where('tenantId', '==', activeTenantId).onSnapshot(fallbackSnap => {
+          const items = fallbackSnap.docs.map((d: any) => ({ id: d.id, data: d.data() }));
+          items.sort((a: any, b: any) => {
+            const aT = a.data?.createdAt?.seconds || 0;
+            const bT = b.data?.createdAt?.seconds || 0;
+            return bT - aT;
+          });
+          setFieldNotes(items);
+        });
+      }
     });
-    return () => unsub();
+    return () => { unsub(); if (fallbackUnsub) fallbackUnsub(); };
   }, [ready, authUser, activeTenantId]);
 
   // Load Catalogs (tenant-filtered)
   useEffect(() => {
     if (!ready || !authUser || !activeTenantId) { setCatalogs([]); return; }
     const db = getFirebase().firestore();
+    let fallbackUnsub: (() => void) | null = null;
     const unsub = db.collection('catalogs').where('tenantId', '==', activeTenantId).orderBy('createdAt', 'desc').onSnapshot(snap => {
       setCatalogs(snap.docs.map((d: any) => ({ id: d.id, data: d.data() })));
     }, (err: any) => {
       console.error('[Archii] Catalogs snapshot error:', err.code, err.message);
+      if (err.code === 'failed-precondition') {
+        fallbackUnsub = db.collection('catalogs').where('tenantId', '==', activeTenantId).onSnapshot(fallbackSnap => {
+          const items = fallbackSnap.docs.map((d: any) => ({ id: d.id, data: d.data() }));
+          items.sort((a: any, b: any) => {
+            const aT = a.data?.createdAt?.seconds || 0;
+            const bT = b.data?.createdAt?.seconds || 0;
+            return bT - aT;
+          });
+          setCatalogs(items);
+        });
+      }
     });
-    return () => unsub();
+    return () => { unsub(); if (fallbackUnsub) fallbackUnsub(); };
   }, [ready, authUser, activeTenantId]);
 
   // Load daily logs for selected project
