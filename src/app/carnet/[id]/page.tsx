@@ -1,9 +1,11 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { ShieldCheck, AlertTriangle, MapPin, Phone, Mail, Building2 } from 'lucide-react';
+import { ShieldCheck, AlertTriangle, MapPin, Phone, Mail, Building2, Heart, Droplet, Briefcase, Calendar } from 'lucide-react';
 
-const GOLD = '#B8945E';
+const GOLD = '#C9A96E';
+const GOLD_DARK = '#A88B52';
+const CREAM = '#F8F5F0';
 
 interface CarnetPublicData {
   id: string;
@@ -65,7 +67,7 @@ export default function CarnetPublicPage() {
   // Font loading
   useEffect(() => {
     const link = document.createElement('link');
-    link.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap';
+    link.href = 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap';
     link.rel = 'stylesheet';
     document.head.appendChild(link);
   }, []);
@@ -77,7 +79,7 @@ export default function CarnetPublicPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #f8f7f4 0%, #f0ece4 100%)',
+        background: `linear-gradient(135deg, ${CREAM} 0%, #EDE8E0 100%)`,
         fontFamily: "'Montserrat', sans-serif",
       }}>
         <div style={{ textAlign: 'center' }}>
@@ -89,7 +91,7 @@ export default function CarnetPublicPage() {
             animation: 'spin 1s linear infinite',
             margin: '0 auto 16px',
           }} />
-          <p style={{ color: '#8a7a5e', fontSize: 14 }}>Verificando carnet...</p>
+          <p style={{ color: '#8A8279', fontSize: 14, fontWeight: 500 }}>Verificando carnet...</p>
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -103,41 +105,49 @@ export default function CarnetPublicPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #f8f7f4 0%, #f0ece4 100%)',
+        background: `linear-gradient(135deg, ${CREAM} 0%, #EDE8E0 100%)`,
         fontFamily: "'Montserrat', sans-serif",
         padding: 24,
       }}>
         <div style={{
           textAlign: 'center',
-          background: '#ffffff',
+          background: CREAM,
           borderRadius: 24,
           padding: '48px 32px',
           maxWidth: 420,
           width: '100%',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.08)',
-          border: `2px solid rgba(184,148,94,0.2)`,
+          boxShadow: '0 8px 40px rgba(0,0,0,0.06)',
+          border: `1.5px solid ${GOLD}`,
+          position: 'relative',
+          overflow: 'hidden',
         }}>
+          {/* Left stripe */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, bottom: 0,
+            width: 5,
+            background: `linear-gradient(180deg, ${GOLD}, ${GOLD_DARK}, ${GOLD})`,
+          }} />
           <div style={{
             width: 64, height: 64,
             borderRadius: '50%',
-            background: 'rgba(220,53,69,0.08)',
+            background: 'rgba(192,57,43,0.08)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 16px',
           }}>
-            <AlertTriangle size={32} color="#dc3545" />
+            <AlertTriangle size={32} color="#C0392B" />
           </div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#1a1a1a', marginBottom: 8 }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#2D2A26', marginBottom: 8 }}>
             Carnet no encontrado
           </h1>
-          <p style={{ fontSize: 14, color: '#737373', marginBottom: 24 }}>
+          <p style={{ fontSize: 14, color: '#5C564E', marginBottom: 24 }}>
             {error || `No se encontró un carnet con el código "${employeeCode}"`}
           </p>
           <div style={{
             fontSize: 11,
-            color: '#8a7a5e',
-            borderTop: '1px solid rgba(184,148,94,0.15)',
+            color: '#8A8279',
+            borderTop: '1px solid rgba(201,169,110,0.2)',
             paddingTop: 16,
           }}>
             Powered by <span style={{ fontWeight: 700, color: GOLD }}>Archii</span>
@@ -154,7 +164,7 @@ export default function CarnetPublicPage() {
   return (
     <div style={{
       minHeight: '100dvh',
-      background: 'linear-gradient(135deg, #f8f7f4 0%, #f0ece4 100%)',
+      background: `linear-gradient(135deg, ${CREAM} 0%, #EDE8E0 100%)`,
       fontFamily: "'Montserrat', sans-serif",
       display: 'flex',
       flexDirection: 'column',
@@ -164,190 +174,272 @@ export default function CarnetPublicPage() {
     }}>
       {/* Main Card */}
       <div style={{
-        background: '#ffffff',
+        background: CREAM,
         borderRadius: 24,
-        padding: '40px 32px',
-        maxWidth: 480,
+        padding: '40px 36px',
+        maxWidth: 460,
         width: '100%',
-        boxShadow: '0 8px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(184,148,94,0.1)',
-        border: `2px solid ${GOLD}`,
+        boxShadow: '0 8px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(201,169,110,0.15)',
+        border: `1.5px solid ${GOLD}`,
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* Gold top accent */}
+        {/* Left gold stripe */}
         <div style={{
-          position: 'absolute',
-          top: 0, left: 0, right: 0,
-          height: 4,
-          background: `linear-gradient(90deg, ${GOLD}, #d4b87a, ${GOLD})`,
+          position: 'absolute', top: 0, left: 0, bottom: 0,
+          width: 5,
+          background: `linear-gradient(180deg, ${GOLD}, ${GOLD_DARK}, ${GOLD})`,
         }} />
 
-        {/* Tenant header */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          marginBottom: 24,
-        }}>
+        {/* Curved gold accent (bottom-left) */}
+        <svg
+          style={{ position: 'absolute', bottom: 0, left: 0, width: 80, height: 120, opacity: 0.08 }}
+          viewBox="0 0 80 120"
+          fill="none"
+        >
+          <path d="M0 120 Q0 60 40 40 Q80 20 80 0 L80 120 Z" fill={GOLD} />
+        </svg>
+
+        {/* Content */}
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          {/* Tenant header */}
           <div style={{
-            width: 32, height: 32,
-            borderRadius: 8,
-            background: `linear-gradient(135deg, ${GOLD}, #d4b87a)`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
-            fontWeight: 700,
-            fontSize: 14,
+            textAlign: 'center',
+            marginBottom: 20,
           }}>
-            A
-          </div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 14, color: '#1a1a1a', letterSpacing: 1 }}>
+            <div style={{
+              fontWeight: 700,
+              fontSize: 16,
+              color: '#2D2A26',
+              letterSpacing: 3,
+              textTransform: 'uppercase',
+            }}>
               {data.tenantName}
             </div>
-            <div style={{ fontSize: 10, color: '#8a7a5e' }}>
+            <div style={{ fontSize: 10, color: GOLD, fontWeight: 500, letterSpacing: 2, textTransform: 'uppercase', marginTop: 2 }}>
               Carnet Corporativo
             </div>
+            {/* Gold decorative line */}
+            <div style={{
+              width: 40, height: 1.5,
+              background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`,
+              margin: '10px auto 0',
+            }} />
           </div>
-        </div>
 
-        {/* Photo + Name */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          marginBottom: 24,
-        }}>
+          {/* Photo + Name */}
           <div style={{
-            width: 120, height: 120,
-            borderRadius: '50%',
-            border: `3px solid ${GOLD}`,
-            overflow: 'hidden',
-            background: '#f0ece4',
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 16,
+            marginBottom: 20,
           }}>
-            {data.photoBase64 ? (
-              <img
-                src={data.photoBase64.startsWith('data:') ? data.photoBase64 : `data:image/jpeg;base64,${data.photoBase64}`}
-                alt={data.fullName}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <span style={{ fontSize: 48, color: '#c4b07e' }}>👤</span>
+            <div style={{
+              width: 120, height: 120,
+              borderRadius: '50%',
+              border: `3px solid ${GOLD}`,
+              overflow: 'hidden',
+              background: '#EDE8E0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 16,
+              boxShadow: '0 2px 8px rgba(201,169,110,0.15)',
+            }}>
+              {data.photoBase64 ? (
+                <img
+                  src={data.photoBase64.startsWith('data:') ? data.photoBase64 : `data:image/jpeg;base64,${data.photoBase64}`}
+                  alt={data.fullName}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                <svg width={48} height={48} viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.5">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              )}
+            </div>
+
+            <h1 style={{
+              fontSize: 22,
+              fontWeight: 700,
+              color: '#2D2A26',
+              textAlign: 'center',
+              marginBottom: 4,
+              letterSpacing: 1,
+              textTransform: 'uppercase',
+            }}>
+              {data.fullName}
+            </h1>
+
+            <div style={{
+              fontSize: 13,
+              fontWeight: 500,
+              color: GOLD_DARK,
+              marginBottom: 8,
+              letterSpacing: 1,
+              textTransform: 'uppercase',
+            }}>
+              {data.position}
+            </div>
+
+            {data.area && (
+              <div style={{
+                fontSize: 11,
+                color: '#5C564E',
+                background: 'rgba(201,169,110,0.08)',
+                padding: '4px 14px',
+                borderRadius: 999,
+                border: '1px solid rgba(201,169,110,0.15)',
+                letterSpacing: 0.5,
+              }}>
+                {data.area}
+              </div>
             )}
           </div>
 
-          <h1 style={{
-            fontSize: 24,
-            fontWeight: 700,
-            color: '#1a1a1a',
-            textAlign: 'center',
-            marginBottom: 4,
-          }}>
-            {data.fullName}
-          </h1>
-
+          {/* Status badge */}
           <div style={{
-            fontSize: 14,
-            fontWeight: 500,
-            color: GOLD,
-            marginBottom: 8,
+            display: 'flex',
+            justifyContent: 'center',
+            marginBottom: 20,
           }}>
-            {data.position}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 20px',
+              borderRadius: 999,
+              background: data.isValid
+                ? 'rgba(61,139,94,0.08)'
+                : 'rgba(192,57,43,0.08)',
+              border: `1px solid ${data.isValid ? 'rgba(61,139,94,0.25)' : 'rgba(192,57,43,0.25)'}`,
+            }}>
+              {data.isValid ? (
+                <ShieldCheck size={18} color="#3D8B5E" />
+              ) : (
+                <AlertTriangle size={18} color="#C0392B" />
+              )}
+              <span style={{
+                fontWeight: 700,
+                fontSize: 12,
+                letterSpacing: 1.5,
+                color: data.isValid ? '#3D8B5E' : '#C0392B',
+              }}>
+                {data.isValid ? 'VIGENTE' : 'VENCIDO'}
+              </span>
+            </div>
           </div>
 
-          {data.area && (
+          {/* Info grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 14,
+            marginBottom: 20,
+          }}>
+            <InfoItem icon={<MapPin size={13} color={GOLD} />} label="Ciudad" value={data.city} />
+            <InfoItem icon={<Phone size={13} color={GOLD} />} label="Telefono" value={data.phone} />
+            <InfoItem icon={<Mail size={13} color={GOLD} />} label="Email" value={data.email} />
+            <InfoItem icon={<Building2 size={13} color={GOLD} />} label="Codigo" value={data.employeeCode} />
+          </div>
+
+          {/* Additional details */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 14,
+            marginBottom: 16,
+            padding: '12px 14px',
+            background: 'rgba(201,169,110,0.05)',
+            borderRadius: 12,
+            border: '1px solid rgba(201,169,110,0.1)',
+          }}>
+            {data.bloodType && (
+              <InfoItem icon={<Droplet size={13} color={GOLD} />} label="Tipo de sangre" value={data.bloodType} />
+            )}
+            {data.eps && (
+              <InfoItem icon={<ShieldCheck size={13} color={GOLD} />} label="EPS" value={data.eps} />
+            )}
+          </div>
+
+          {/* Emergency contact */}
+          {(data.emergencyContact || data.emergencyPhone) && (
             <div style={{
-              fontSize: 12,
-              color: '#737373',
-              background: 'rgba(184,148,94,0.08)',
-              padding: '4px 12px',
-              borderRadius: 999,
-              border: '1px solid rgba(184,148,94,0.15)',
+              padding: '12px 14px',
+              background: 'rgba(201,169,110,0.06)',
+              borderRadius: 12,
+              border: '1px solid rgba(201,169,110,0.12)',
+              marginBottom: 16,
             }}>
-              {data.area}
+              <div style={{
+                fontSize: 9,
+                fontWeight: 700,
+                color: GOLD_DARK,
+                letterSpacing: 1.5,
+                textTransform: 'uppercase',
+                marginBottom: 6,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5,
+              }}>
+                <Heart size={11} color={GOLD_DARK} />
+                Contacto de emergencia
+              </div>
+              {data.emergencyContact && (
+                <div style={{ fontSize: 13, fontWeight: 500, color: '#2D2A26' }}>
+                  {data.emergencyContact}
+                </div>
+              )}
+              {data.emergencyPhone && (
+                <div style={{ fontSize: 12, color: '#5C564E', marginTop: 2 }}>
+                  {data.emergencyPhone}
+                </div>
+              )}
             </div>
           )}
-        </div>
 
-        {/* Status badge */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginBottom: 24,
-        }}>
+          {/* Validity */}
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '8px 20px',
-            borderRadius: 999,
-            background: data.isValid
-              ? 'rgba(45,143,94,0.08)'
-              : 'rgba(220,53,69,0.08)',
-            border: `1px solid ${data.isValid ? 'rgba(45,143,94,0.25)' : 'rgba(220,53,69,0.25)'}`,
+            textAlign: 'center',
+            padding: '12px 0',
+            borderTop: '1px solid rgba(201,169,110,0.2)',
+            marginBottom: 8,
           }}>
-            {data.isValid ? (
-              <ShieldCheck size={18} color="#2d8f5e" />
-            ) : (
-              <AlertTriangle size={18} color="#dc3545" />
-            )}
-            <span style={{
-              fontWeight: 700,
-              fontSize: 13,
+            <div style={{
+              fontSize: 9,
+              color: '#8A8279',
+              fontWeight: 600,
               letterSpacing: 1,
-              color: data.isValid ? '#2d8f5e' : '#dc3545',
+              marginBottom: 4,
+              textTransform: 'uppercase',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 4,
             }}>
-              {data.isValid ? 'VIGENTE' : 'VENCIDO'}
-            </span>
+              <Calendar size={11} color={GOLD} />
+              Valido hasta
+            </div>
+            <div style={{
+              fontSize: 15,
+              fontWeight: 600,
+              color: data.isValid ? '#2D2A26' : '#C0392B',
+            }}>
+              {formattedValidUntil}
+            </div>
           </div>
-        </div>
 
-        {/* Info grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 16,
-          marginBottom: 24,
-        }}>
-          <InfoItem icon={<MapPin size={14} />} label="Ciudad" value={data.city} />
-          <InfoItem icon={<Phone size={14} />} label="Teléfono" value={data.phone} />
-          <InfoItem icon={<Mail size={14} />} label="Email" value={data.email} />
-          <InfoItem icon={<Building2 size={14} />} label="Código" value={data.employeeCode} />
-        </div>
-
-        {/* Validity */}
-        <div style={{
-          textAlign: 'center',
-          padding: '12px 0',
-          borderTop: '1px solid rgba(184,148,94,0.15)',
-          marginBottom: 8,
-        }}>
-          <div style={{ fontSize: 10, color: '#8a7a5e', fontWeight: 600, letterSpacing: 0.5, marginBottom: 4 }}>
-            VÁLIDO HASTA
-          </div>
+          {/* Tagline */}
           <div style={{
-            fontSize: 16,
-            fontWeight: 600,
-            color: data.isValid ? '#1a1a1a' : '#dc3545',
+            textAlign: 'center',
+            fontSize: 10,
+            fontStyle: 'italic',
+            color: '#8A8279',
+            letterSpacing: 0.3,
           }}>
-            {formattedValidUntil}
+            Identidad corporativa verificada
           </div>
-        </div>
-
-        {/* Tagline */}
-        <div style={{
-          textAlign: 'center',
-          fontSize: 10,
-          fontStyle: 'italic',
-          color: '#8a7a5e',
-          letterSpacing: 0.3,
-        }}>
-          Identidad corporativa verificada
         </div>
       </div>
 
@@ -356,7 +448,7 @@ export default function CarnetPublicPage() {
         marginTop: 24,
         textAlign: 'center',
         fontSize: 11,
-        color: '#8a7a5e',
+        color: '#8A8279',
       }}>
         Powered by <span style={{ fontWeight: 700, color: GOLD }}>Archii</span>
       </div>
@@ -367,11 +459,11 @@ export default function CarnetPublicPage() {
 function InfoItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   if (!value) return <div />;
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-      <div style={{ color: '#B8945E', marginTop: 2, flexShrink: 0 }}>{icon}</div>
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7 }}>
+      <div style={{ marginTop: 2, flexShrink: 0 }}>{icon}</div>
       <div>
-        <div style={{ fontSize: 9, fontWeight: 600, color: '#8a7a5e', letterSpacing: 0.5, marginBottom: 2 }}>{label}</div>
-        <div style={{ fontSize: 12, fontWeight: 500, color: '#1a1a1a', wordBreak: 'break-all' }}>{value}</div>
+        <div style={{ fontSize: 8, fontWeight: 600, color: '#8A8279', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 1 }}>{label}</div>
+        <div style={{ fontSize: 12, fontWeight: 500, color: '#2D2A26', wordBreak: 'break-all' }}>{value}</div>
       </div>
     </div>
   );

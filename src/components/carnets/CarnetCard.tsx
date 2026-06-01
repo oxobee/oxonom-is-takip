@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 
 /* ─── Types ─── */
@@ -21,16 +21,28 @@ export interface CarnetData {
   city: string;
   isActive?: boolean;
   tenantName?: string;
+  tenantSubtitle?: string;
+  tenantNit?: string;
 }
 
 interface CarnetCardProps {
   data: CarnetData;
   tenantName?: string;
+  tenantSubtitle?: string;
+  tenantNit?: string;
   /** If true, renders at higher resolution for export */
   forExport?: boolean;
 }
 
-const GOLD = '#B8945E';
+/* ─── Design tokens ─── */
+const GOLD = '#C9A96E';
+const GOLD_LIGHT = '#D4B87A';
+const GOLD_DARK = '#A88B52';
+const CREAM = '#F8F5F0';
+const CREAM_DARK = '#EDE8E0';
+const TEXT_PRIMARY = '#2D2A26';
+const TEXT_SECONDARY = '#5C564E';
+const TEXT_MUTED = '#8A8279';
 const QR_BASE_URL = 'https://archii-theta.vercel.app/carnet';
 
 /* ─── Montserrat font import (only once) ─── */
@@ -39,297 +51,515 @@ function ensureFont() {
   if (fontLoaded || typeof document === 'undefined') return;
   fontLoaded = true;
   const link = document.createElement('link');
-  link.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap';
+  link.href = 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap';
   link.rel = 'stylesheet';
   document.head.appendChild(link);
 }
 
-/* ─── Card dimensions ─── */
-// 8.5cm x 5.4cm at 300 DPI → 1004px x 638px
-// We render at 502px x 319px (2x for retina) and CSS scales to display size
-const CARD_W = 502;
-const CARD_H = 319;
+/* ─── Card dimensions (Portrait) ─── */
+// Standard ID card rotated portrait: 53.98mm × 85.6mm
+// At 300 DPI: ~638 × 1004 px (export 2×)
+// Display: 319 × 502 px
+const CARD_W = 319;
+const CARD_H = 502;
 
-export default function CarnetCard({ data, tenantName, forExport }: CarnetCardProps) {
-  React.useEffect(() => { ensureFont(); }, []);
+/* ═══════════════════════════════════════
+   SVG ICONS (small, gold-colored)
+   ═══════════════════════════════════════ */
+function PhoneIcon({ size = 10, color = GOLD }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+    </svg>
+  );
+}
 
-  const frontRef = useRef<HTMLDivElement>(null);
-  const backRef = useRef<HTMLDivElement>(null);
+function MailIcon({ size = 10, color = GOLD }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+      <polyline points="22,6 12,13 2,6" />
+    </svg>
+  );
+}
+
+function MapPinIcon({ size = 10, color = GOLD }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
+
+function IdBadgeIcon({ size = 10, color = GOLD }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <path d="M12 9v4" />
+      <path d="M8 2h8v3H8z" />
+    </svg>
+  );
+}
+
+function BriefcaseIcon({ size = 10, color = GOLD }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+    </svg>
+  );
+}
+
+function DropletIcon({ size = 10, color = GOLD }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+    </svg>
+  );
+}
+
+function ShieldIcon({ size = 10, color = GOLD }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  );
+}
+
+function HeartIcon({ size = 10, color = GOLD }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  );
+}
+
+/* ═══════════════════════════════════════
+   MAIN COMPONENT
+   ═══════════════════════════════════════ */
+export default function CarnetCard({ data, tenantName, tenantSubtitle, tenantNit, forExport }: CarnetCardProps) {
+  useEffect(() => { ensureFont(); }, []);
 
   const displayName = tenantName || data.tenantName || 'ARCHII';
+  const displaySubtitle = tenantSubtitle || data.tenantSubtitle || '';
+  const displayNit = tenantNit || data.tenantNit || '';
   const qrUrl = `${QR_BASE_URL}/${data.employeeCode}`;
 
   const isValid = data.validUntil ? new Date(data.validUntil) >= new Date() : true;
-  const statusColor = isValid ? '#2d8f5e' : '#dc3545';
+  const statusColor = isValid ? '#3D8B5E' : '#C0392B';
   const statusText = isValid ? 'VIGENTE' : 'VENCIDO';
 
   const formattedValidUntil = data.validUntil
     ? new Date(data.validUntil).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })
     : 'Sin fecha';
 
-  /* ─── Shared style base ─── */
+  const formattedStartDate = data.startDate
+    ? new Date(data.startDate).toLocaleDateString('es-CO', { year: 'numeric', month: 'short' })
+    : '';
+
+  const formattedStartEnd = data.startDate && data.validUntil
+    ? `${formattedStartDate} – ${new Date(data.validUntil).toLocaleDateString('es-CO', { year: 'numeric', month: 'short' })}`
+    : formattedValidUntil;
+
+  const s = forExport ? 2 : 1; // scale factor
+
+  /* ─── Shared card base ─── */
   const cardBase: React.CSSProperties = {
-    width: forExport ? CARD_W * 2 : CARD_W,
-    height: forExport ? CARD_H * 2 : CARD_H,
+    width: CARD_W * s,
+    height: CARD_H * s,
     fontFamily: "'Montserrat', sans-serif",
     position: 'relative',
     overflow: 'hidden',
-    background: '#ffffff',
-    borderRadius: forExport ? 24 : 12,
-    border: `2px solid ${GOLD}`,
+    background: CREAM,
+    borderRadius: 12 * s,
+    border: `1.5px solid ${GOLD}`,
+    boxShadow: forExport ? 'none' : `0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)`,
   };
 
-  const scaleFactor = forExport ? 2 : 1;
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'row', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap', justifyContent: 'center' }}>
       {/* ═══════ FRONT ═══════ */}
-      <div ref={frontRef} id="carnet-front" style={cardBase}>
-        {/* Gold top accent line */}
+      <div ref={forExport ? undefined : undefined} id="carnet-front" style={cardBase}>
+        {/* Left vertical gold stripe */}
         <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0,
-          height: 4 * scaleFactor,
-          background: `linear-gradient(90deg, ${GOLD}, #d4b87a, ${GOLD})`,
+          position: 'absolute', top: 0, left: 0, bottom: 0,
+          width: 5 * s,
+          background: `linear-gradient(180deg, ${GOLD}, ${GOLD_DARK}, ${GOLD})`,
         }} />
 
-        {/* Content */}
+        {/* Curved gold accent (bottom-left) */}
+        <svg
+          style={{ position: 'absolute', bottom: 0, left: 0, width: 80 * s, height: 120 * s, opacity: 0.12 }}
+          viewBox="0 0 80 120"
+          fill="none"
+        >
+          <path d="M0 120 Q0 60 40 40 Q80 20 80 0 L80 120 Z" fill={GOLD} />
+        </svg>
+
+        {/* Content area (with left padding for stripe) */}
         <div style={{
-          padding: `${16 * scaleFactor}px ${20 * scaleFactor}px`,
+          padding: `${18 * s}px ${18 * s}px ${14 * s}px ${20 * s}px`,
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
+          alignItems: 'center',
+          position: 'relative',
+          zIndex: 1,
         }}>
-          {/* Header: Tenant name + code */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 * scaleFactor }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 * scaleFactor }}>
-              {/* Logo placeholder */}
-              <div style={{
-                width: 22 * scaleFactor, height: 22 * scaleFactor,
-                borderRadius: 4 * scaleFactor,
-                background: `linear-gradient(135deg, ${GOLD}, #d4b87a)`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#fff', fontWeight: 700,
-                fontSize: 9 * scaleFactor,
-              }}>
-                A
-              </div>
-              <span style={{
-                fontWeight: 700,
-                fontSize: 11 * scaleFactor,
-                color: '#1a1a1a',
-                letterSpacing: 1.5 * scaleFactor,
-              }}>
-                {displayName}
-              </span>
-            </div>
-            <span style={{
-              fontSize: 8 * scaleFactor,
-              fontWeight: 600,
+          {/* Tenant name */}
+          <div style={{
+            fontWeight: 700,
+            fontSize: 14 * s,
+            color: TEXT_PRIMARY,
+            letterSpacing: 3 * s,
+            textTransform: 'uppercase',
+            textAlign: 'center',
+            lineHeight: 1.2,
+          }}>
+            {displayName}
+          </div>
+
+          {/* Tenant subtitle */}
+          {displaySubtitle && (
+            <div style={{
+              fontSize: 7 * s,
+              fontWeight: 500,
               color: GOLD,
-              letterSpacing: 0.5 * scaleFactor,
+              letterSpacing: 2 * s,
+              textTransform: 'uppercase',
+              marginTop: 2 * s,
+              textAlign: 'center',
             }}>
-              {data.employeeCode}
+              {displaySubtitle}
+            </div>
+          )}
+
+          {/* Gold decorative line */}
+          <div style={{
+            width: 40 * s,
+            height: 1.5 * s,
+            background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`,
+            marginTop: 8 * s,
+            marginBottom: 4 * s,
+          }} />
+
+          {/* Photo */}
+          <div style={{
+            width: 96 * s,
+            height: 96 * s,
+            borderRadius: '50%',
+            border: `${2.5 * s}px solid ${GOLD}`,
+            overflow: 'hidden',
+            flexShrink: 0,
+            background: CREAM_DARK,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: 4 * s,
+            boxShadow: `0 2px 8px rgba(201,169,110,0.15)`,
+          }}>
+            {data.photoBase64 ? (
+              <img
+                src={data.photoBase64.startsWith('data:') ? data.photoBase64 : `data:image/jpeg;base64,${data.photoBase64}`}
+                alt={data.fullName}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <svg width={32 * s} height={32 * s} viewBox="0 0 24 24" fill="none" stroke={GOLD_LIGHT} strokeWidth="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            )}
+          </div>
+
+          {/* Full name */}
+          <div style={{
+            fontWeight: 700,
+            fontSize: 11 * s,
+            color: TEXT_PRIMARY,
+            textTransform: 'uppercase',
+            textAlign: 'center',
+            lineHeight: 1.3,
+            marginTop: 8 * s,
+            letterSpacing: 0.8 * s,
+            maxWidth: 250 * s,
+          }}>
+            {data.fullName}
+          </div>
+
+          {/* Position */}
+          <div style={{
+            fontSize: 8 * s,
+            fontWeight: 500,
+            color: GOLD_DARK,
+            textTransform: 'uppercase',
+            letterSpacing: 1 * s,
+            marginTop: 2 * s,
+            textAlign: 'center',
+          }}>
+            {data.position}
+          </div>
+
+          {/* ID number box */}
+          <div style={{
+            marginTop: 8 * s,
+            padding: `${3 * s}px ${14 * s}px`,
+            border: `${1.5 * s}px solid ${GOLD}`,
+            borderRadius: 4 * s,
+            background: 'rgba(201,169,110,0.06)',
+          }}>
+            <span style={{
+              fontSize: 9 * s,
+              fontWeight: 600,
+              color: TEXT_PRIMARY,
+              letterSpacing: 1.5 * s,
+            }}>
+              ID: {data.employeeCode}
             </span>
           </div>
 
-          {/* Main content: Photo + Info */}
-          <div style={{ display: 'flex', gap: 16 * scaleFactor, flex: 1 }}>
-            {/* Photo */}
-            <div style={{
-              width: 88 * scaleFactor, height: 88 * scaleFactor,
-              borderRadius: '50%',
-              border: `${2.5 * scaleFactor}px solid ${GOLD}`,
-              overflow: 'hidden',
-              flexShrink: 0,
-              background: '#f0ece4',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              {data.photoBase64 ? (
-                <img
-                  src={data.photoBase64.startsWith('data:') ? data.photoBase64 : `data:image/jpeg;base64,${data.photoBase64}`}
-                  alt={data.fullName}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              ) : (
-                <span style={{ fontSize: 28 * scaleFactor, color: '#c4b07e' }}>
-                  👤
-                </span>
-              )}
-            </div>
-
-            {/* Info */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 2 * scaleFactor }}>
-              <div style={{
-                fontWeight: 700,
-                fontSize: 15 * scaleFactor,
-                color: '#1a1a1a',
-                lineHeight: 1.2,
-                marginBottom: 2 * scaleFactor,
-              }}>
-                {data.fullName}
-              </div>
-              <div style={{
-                fontSize: 9 * scaleFactor,
-                fontWeight: 500,
-                color: GOLD,
-                marginBottom: 4 * scaleFactor,
-              }}>
-                {data.position}
-              </div>
-
-              {/* Detail grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 * scaleFactor }}>
-                <InfoRow icon="📞" value={data.phone} scale={scaleFactor} />
-                <InfoRow icon="📧" value={data.email} scale={scaleFactor} />
-                <InfoRow icon="📍" value={data.city} scale={scaleFactor} />
-                <InfoRow icon="🆔" value={data.employeeCode} scale={scaleFactor} />
-              </div>
-            </div>
+          {/* Contact details */}
+          <div style={{
+            marginTop: 8 * s,
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 3.5 * s,
+            paddingLeft: 20 * s,
+          }}>
+            {data.phone && (
+              <ContactLine icon={<PhoneIcon size={9 * s} />} value={data.phone} scale={s} />
+            )}
+            {data.email && (
+              <ContactLine icon={<MailIcon size={9 * s} />} value={data.email} scale={s} />
+            )}
+            {data.city && (
+              <ContactLine icon={<MapPinIcon size={9 * s} />} value={data.city} scale={s} />
+            )}
           </div>
 
-          {/* Footer: Tagline + status */}
+          {/* Spacer */}
+          <div style={{ flex: 1 }} />
+
+          {/* Footer: Tagline + Status */}
           <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            marginTop: 6 * scaleFactor,
-            paddingTop: 6 * scaleFactor,
-            borderTop: `1px solid rgba(184,148,94,0.2)`,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            marginTop: 6 * s,
+            paddingTop: 5 * s,
+            borderTop: `1px solid rgba(201,169,110,0.2)`,
           }}>
             <span style={{
-              fontSize: 6.5 * scaleFactor,
+              fontSize: 5.5 * s,
               fontStyle: 'italic',
-              color: '#8a7a5e',
-              letterSpacing: 0.3 * scaleFactor,
+              color: TEXT_MUTED,
+              letterSpacing: 0.3 * s,
             }}>
               Identidad corporativa verificada
             </span>
             <span style={{
-              fontSize: 6.5 * scaleFactor,
+              fontSize: 6 * s,
               fontWeight: 700,
               color: statusColor,
-              letterSpacing: 1 * scaleFactor,
+              letterSpacing: 1 * s,
             }}>
               {statusText}
             </span>
           </div>
         </div>
 
-        {/* Gold corner accents */}
+        {/* Top-right gold corner accent */}
         <div style={{
-          position: 'absolute', bottom: 0, right: 0,
-          width: 32 * scaleFactor, height: 32 * scaleFactor,
-          background: `linear-gradient(135deg, transparent 50%, rgba(184,148,94,0.08) 50%)`,
+          position: 'absolute', top: 0, right: 0,
+          width: 24 * s, height: 24 * s,
+          background: `linear-gradient(225deg, rgba(201,169,110,0.08) 50%, transparent 50%)`,
         }} />
       </div>
 
       {/* ═══════ BACK ═══════ */}
-      <div ref={backRef} id="carnet-back" style={{ ...cardBase, background: '#faf9f6' }}>
-        {/* Gold top accent line */}
+      <div id="carnet-back" style={{ ...cardBase }}>
+        {/* Left vertical gold stripe */}
         <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0,
-          height: 4 * scaleFactor,
-          background: `linear-gradient(90deg, ${GOLD}, #d4b87a, ${GOLD})`,
+          position: 'absolute', top: 0, left: 0, bottom: 0,
+          width: 5 * s,
+          background: `linear-gradient(180deg, ${GOLD}, ${GOLD_DARK}, ${GOLD})`,
         }} />
 
+        {/* Subtle geometric pattern (right side) */}
+        <svg
+          style={{ position: 'absolute', top: 0, right: 0, width: 120 * s, height: '100%', opacity: 0.05 }}
+          viewBox="0 0 120 500"
+          fill="none"
+        >
+          <line x1="20" y1="0" x2="120" y2="200" stroke={GOLD} strokeWidth="1" />
+          <line x1="40" y1="0" x2="120" y2="160" stroke={GOLD} strokeWidth="0.5" />
+          <line x1="60" y1="0" x2="120" y2="120" stroke={GOLD} strokeWidth="0.5" />
+          <line x1="0" y1="500" x2="120" y2="300" stroke={GOLD} strokeWidth="0.5" />
+          <line x1="0" y1="450" x2="100" y2="300" stroke={GOLD} strokeWidth="0.5" />
+        </svg>
+
+        {/* Content */}
         <div style={{
-          padding: `${14 * scaleFactor}px ${20 * scaleFactor}px`,
+          padding: `${16 * s}px ${16 * s}px ${12 * s}px ${20 * s}px`,
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
+          position: 'relative',
+          zIndex: 1,
         }}>
           {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 * scaleFactor }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 * scaleFactor }}>
-              <div style={{
-                width: 16 * scaleFactor, height: 16 * scaleFactor,
-                borderRadius: 3 * scaleFactor,
-                background: `linear-gradient(135deg, ${GOLD}, #d4b87a)`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#fff', fontWeight: 700,
-                fontSize: 7 * scaleFactor,
-              }}>
-                A
-              </div>
-              <span style={{
-                fontWeight: 600,
-                fontSize: 8 * scaleFactor,
-                color: '#8a7a5e',
-                letterSpacing: 1 * scaleFactor,
-              }}>
-                {displayName}
-              </span>
-            </div>
-            <span style={{ fontSize: 7 * scaleFactor, color: '#8a7a5e', fontWeight: 500 }}>
-              {data.position}{data.area ? ` · ${data.area}` : ''}
-            </span>
-          </div>
-
-          {/* Main content: Info + QR */}
-          <div style={{ display: 'flex', gap: 16 * scaleFactor, flex: 1 }}>
-            {/* Left: Info */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 5 * scaleFactor }}>
-              <BackInfoRow label="Tipo de sangre" value={data.bloodType || '—'} scale={scaleFactor} />
-              <BackInfoRow label="EPS" value={data.eps || '—'} scale={scaleFactor} />
-              <BackInfoRow label="Válido hasta" value={formattedValidUntil} scale={scaleFactor} highlight={isValid ? GOLD : '#dc3545'} />
-              <BackInfoRow label="Contacto emergencia" value={data.emergencyContact || '—'} scale={scaleFactor} />
-              <BackInfoRow label="Teléfono emergencia" value={data.emergencyPhone || '—'} scale={scaleFactor} />
-            </div>
-
-            {/* Right: QR Code */}
+          <div style={{ marginBottom: 8 * s }}>
             <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 4 * scaleFactor,
-            }}>
-              <div style={{
-                padding: 4 * scaleFactor,
-                border: `1.5px solid ${GOLD}`,
-                borderRadius: 8 * scaleFactor,
-                background: '#ffffff',
-              }}>
-                <QRCodeSVG
-                  value={qrUrl}
-                  size={64 * scaleFactor}
-                  level="M"
-                  fgColor="#1a1a1a"
-                  bgColor="#ffffff"
-                />
-              </div>
-              <span style={{
-                fontSize: 5.5 * scaleFactor,
-                color: '#8a7a5e',
-                textAlign: 'center',
-                letterSpacing: 0.3 * scaleFactor,
-              }}>
-                Escanea para conocer el perfil
-              </span>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div style={{
-            display: 'flex', justifyContent: 'center', alignItems: 'center',
-            marginTop: 6 * scaleFactor,
-            paddingTop: 6 * scaleFactor,
-            borderTop: `1px solid rgba(184,148,94,0.15)`,
-          }}>
-            <span style={{
-              fontSize: 6 * scaleFactor,
-              fontWeight: 600,
-              color: GOLD,
-              letterSpacing: 2 * scaleFactor,
+              fontWeight: 700,
+              fontSize: 10 * s,
+              color: TEXT_PRIMARY,
+              letterSpacing: 2 * s,
+              textTransform: 'uppercase',
             }}>
               {displayName}
+            </div>
+            {displaySubtitle && (
+              <div style={{
+                fontSize: 6.5 * s,
+                fontWeight: 500,
+                color: GOLD,
+                letterSpacing: 1.5 * s,
+                textTransform: 'uppercase',
+                marginTop: 1 * s,
+              }}>
+                {displaySubtitle}
+              </div>
+            )}
+          </div>
+
+          {/* Gold decorative line */}
+          <div style={{
+            width: 30 * s,
+            height: 1 * s,
+            background: GOLD,
+            marginBottom: 8 * s,
+          }} />
+
+          {/* Employee details with icons */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 * s }}>
+            {data.position && (
+              <BackDetailRow icon={<BriefcaseIcon size={9 * s} />} label="Cargo" value={data.position} scale={s} />
+            )}
+            {data.area && (
+              <BackDetailRow icon={<IdBadgeIcon size={9 * s} />} label="Area" value={data.area} scale={s} />
+            )}
+            {data.bloodType && (
+              <BackDetailRow icon={<DropletIcon size={9 * s} />} label="Tipo de sangre" value={data.bloodType} scale={s} />
+            )}
+            {data.eps && (
+              <BackDetailRow icon={<ShieldIcon size={9 * s} />} label="EPS" value={data.eps} scale={s} />
+            )}
+            {(data.startDate || data.validUntil) && (
+              <BackDetailRow icon={<ShieldIcon size={9 * s} />} label="Vigencia" value={formattedStartEnd} scale={s} highlight={isValid ? GOLD_DARK : '#C0392B'} />
+            )}
+          </div>
+
+          {/* QR Code */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            marginTop: 8 * s,
+          }}>
+            <div style={{
+              padding: 5 * s,
+              border: `${1.5 * s}px solid ${GOLD}`,
+              borderRadius: 6 * s,
+              background: '#ffffff',
+              boxShadow: `0 1px 4px rgba(201,169,110,0.1)`,
+            }}>
+              <QRCodeSVG
+                value={qrUrl}
+                size={68 * s}
+                level="M"
+                fgColor={TEXT_PRIMARY}
+                bgColor="#ffffff"
+              />
+            </div>
+            <span style={{
+              fontSize: 5 * s,
+              color: TEXT_MUTED,
+              textAlign: 'center',
+              letterSpacing: 0.3 * s,
+              marginTop: 3 * s,
+              fontWeight: 500,
+            }}>
+              Escanea para verificar identidad
             </span>
+          </div>
+
+          {/* Emergency Contact */}
+          {(data.emergencyContact || data.emergencyPhone) && (
+            <div style={{
+              marginTop: 6 * s,
+              padding: `${6 * s}px ${10 * s}px`,
+              background: 'rgba(201,169,110,0.06)',
+              borderRadius: 6 * s,
+              border: `1px solid rgba(201,169,110,0.12)`,
+            }}>
+              <div style={{
+                fontSize: 6 * s,
+                fontWeight: 700,
+                color: GOLD_DARK,
+                letterSpacing: 1.5 * s,
+                textTransform: 'uppercase',
+                marginBottom: 2 * s,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 3 * s,
+              }}>
+                <HeartIcon size={8 * s} color={GOLD_DARK} />
+                Contacto de emergencia
+              </div>
+              {data.emergencyContact && (
+                <div style={{ fontSize: 8 * s, fontWeight: 500, color: TEXT_PRIMARY }}>
+                  {data.emergencyContact}
+                </div>
+              )}
+              {data.emergencyPhone && (
+                <div style={{ fontSize: 7.5 * s, color: TEXT_SECONDARY, marginTop: 1 * s }}>
+                  {data.emergencyPhone}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Spacer */}
+          <div style={{ flex: 1 }} />
+
+          {/* Footer: Company legal info */}
+          <div style={{
+            textAlign: 'center',
+            marginTop: 4 * s,
+            paddingTop: 5 * s,
+            borderTop: `1px solid rgba(201,169,110,0.15)`,
+          }}>
+            {displayNit && (
+              <div style={{
+                fontSize: 5.5 * s,
+                fontWeight: 500,
+                color: TEXT_MUTED,
+                letterSpacing: 0.5 * s,
+              }}>
+                NIT. {displayNit}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Gold corner accent */}
+        {/* Bottom-right gold corner accent */}
         <div style={{
-          position: 'absolute', bottom: 0, left: 0,
-          width: 32 * scaleFactor, height: 32 * scaleFactor,
-          background: `linear-gradient(225deg, transparent 50%, rgba(184,148,94,0.08) 50%)`,
+          position: 'absolute', bottom: 0, right: 0,
+          width: 32 * s, height: 32 * s,
+          background: `linear-gradient(225deg, transparent 50%, rgba(201,169,110,0.06) 50%)`,
         }} />
       </div>
     </div>
@@ -337,17 +567,20 @@ export default function CarnetCard({ data, tenantName, forExport }: CarnetCardPr
 }
 
 /* ─── Sub-components ─── */
-function InfoRow({ icon, value, scale }: { icon: string; value: string; scale: number }) {
-  if (!value) return null;
+
+function ContactLine({ icon, value, scale }: { icon: React.ReactNode; value: string; scale: number }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 3 * scale }}>
-      <span style={{ fontSize: 7 * scale }}>{icon}</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5 * scale }}>
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+        {icon}
+      </div>
       <span style={{
         fontSize: 7.5 * scale,
-        color: '#4a4a4a',
+        color: TEXT_SECONDARY,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        fontWeight: 400,
       }}>
         {value}
       </span>
@@ -355,18 +588,24 @@ function InfoRow({ icon, value, scale }: { icon: string; value: string; scale: n
   );
 }
 
-function BackInfoRow({ label, value, scale, highlight }: { label: string; value: string; scale: number; highlight?: string }) {
+function BackDetailRow({ icon, label, value, scale, highlight }: { icon: React.ReactNode; label: string; value: string; scale: number; highlight?: string }) {
   return (
-    <div>
-      <div style={{ fontSize: 6 * scale, fontWeight: 600, color: '#8a7a5e', letterSpacing: 0.5 * scale, marginBottom: 1 * scale }}>
-        {label}
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 * scale }}>
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', marginTop: 2 * scale }}>
+        {icon}
       </div>
-      <div style={{
-        fontSize: 9 * scale,
-        fontWeight: 500,
-        color: highlight || '#1a1a1a',
-      }}>
-        {value}
+      <div>
+        <div style={{ fontSize: 5.5 * scale, fontWeight: 600, color: TEXT_MUTED, letterSpacing: 0.8 * scale, textTransform: 'uppercase', marginBottom: 0.5 * scale }}>
+          {label}
+        </div>
+        <div style={{
+          fontSize: 8.5 * scale,
+          fontWeight: 500,
+          color: highlight || TEXT_PRIMARY,
+          lineHeight: 1.3,
+        }}>
+          {value}
+        </div>
       </div>
     </div>
   );
@@ -376,7 +615,7 @@ function BackInfoRow({ label, value, scale, highlight }: { label: string; value:
    EXPORT UTILITIES
    ═══════════════════════════════════════ */
 
-export async function exportPDF(data: CarnetData, tenantName?: string): Promise<void> {
+export async function exportPDF(data: CarnetData, tenantName?: string, tenantSubtitle?: string, tenantNit?: string): Promise<void> {
   const html2canvas = (await import('html2canvas')).default;
   const { jsPDF } = await import('jspdf');
 
@@ -387,7 +626,7 @@ export async function exportPDF(data: CarnetData, tenantName?: string): Promise<
     throw new Error('Carnet elements not found');
   }
 
-  // Temporarily set export mode
+  // Temporarily set export mode (double dimensions)
   const origFrontStyle = frontEl.style.cssText;
   const origBackStyle = backEl.style.cssText;
 
@@ -398,22 +637,22 @@ export async function exportPDF(data: CarnetData, tenantName?: string): Promise<
 
   try {
     const [frontCanvas, backCanvas] = await Promise.all([
-      html2canvas(frontEl, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }),
-      html2canvas(backEl, { scale: 2, useCORS: true, backgroundColor: '#faf9f6' }),
+      html2canvas(frontEl, { scale: 2, useCORS: true, backgroundColor: CREAM }),
+      html2canvas(backEl, { scale: 2, useCORS: true, backgroundColor: CREAM }),
     ]);
 
-    // PDF: Letter size, landscape, both sides on one page
+    // PDF: Letter size, landscape — both portrait cards side by side
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' });
 
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
 
-    // Card dimensions in mm (8.5cm x 5.4cm)
-    const cardWmm = 85;
-    const cardHmm = 54;
+    // Card dimensions in mm (portrait: 54mm × 85.6mm)
+    const cardWmm = 54;
+    const cardHmm = 85.6;
 
     // Center vertically, position front and back side by side
-    const gap = 10;
+    const gap = 12;
     const totalW = cardWmm * 2 + gap;
     const startX = (pageW - totalW) / 2;
     const startY = (pageH - cardHmm) / 2;
@@ -427,8 +666,8 @@ export async function exportPDF(data: CarnetData, tenantName?: string): Promise<
     pdf.addImage(backImg, 'PNG', startX + cardWmm + gap, startY, cardWmm, cardHmm);
 
     // Labels
-    pdf.setFontSize(8);
-    pdf.setTextColor('#8a7a5e');
+    pdf.setFontSize(7);
+    pdf.setTextColor('#8A8279');
     pdf.text('FRENTE', startX + cardWmm / 2, startY - 3, { align: 'center' });
     pdf.text('REVERSO', startX + cardWmm + gap + cardWmm / 2, startY - 3, { align: 'center' });
 
@@ -452,7 +691,7 @@ export async function exportPNG(side: 'front' | 'back', data: CarnetData): Promi
   el.style.height = `${CARD_H * 2}px`;
 
   try {
-    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: side === 'front' ? '#ffffff' : '#faf9f6' });
+    const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: CREAM });
     const link = document.createElement('a');
     link.download = `carnet-${data.employeeCode}-${side}.png`;
     link.href = canvas.toDataURL('image/png');

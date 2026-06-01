@@ -243,7 +243,7 @@ export default function CarnetsScreen() {
   const handleExportPDF = async (carnet: CarnetRecord) => {
     try {
       setExporting(true);
-      await exportPDF(carnet as CarnetData, activeTenantName || undefined);
+      await exportPDF(carnet as CarnetData, activeTenantName || undefined, undefined, undefined);
       toast.success('PDF descargado');
     } catch (err: any) {
       toast.error('Error al exportar PDF');
@@ -461,7 +461,7 @@ export default function CarnetsScreen() {
 
       {/* ═══ Preview Modal ═══ */}
       {previewCarnet && (
-        <CenterModal open={!!previewCarnet} onClose={() => setPreviewCarnet(null)} maxWidth={680}>
+        <CenterModal open={!!previewCarnet} onClose={() => setPreviewCarnet(null)} maxWidth={780}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Vista previa del carnet</h2>
             <button onClick={() => setPreviewCarnet(null)} className="w-8 h-8 rounded-lg hover:bg-[var(--af-bg3)] flex items-center justify-center cursor-pointer bg-transparent border-none">
@@ -475,6 +475,9 @@ export default function CarnetsScreen() {
               tenantName={activeTenantName || undefined}
             />
           </div>
+          <p className="text-[11px] text-[var(--muted-foreground)] text-center mt-2">
+            Frente · Reverso
+          </p>
 
           <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-[var(--border)]">
             <button
