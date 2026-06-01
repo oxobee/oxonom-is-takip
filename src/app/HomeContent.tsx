@@ -84,6 +84,7 @@ const WeeklyAgendaScreen = dynamic(() => import('@/screens/WeeklyAgendaScreen'),
 const DirectMessagesScreen = dynamic(() => import('@/screens/DirectMessagesScreen'), { ssr: false });
 const IntegrationsScreen = dynamic(() => import('@/screens/IntegrationsScreen'), { ssr: false });
 const AdminLogScreen = dynamic(() => import('@/screens/AdminLogScreen'), { ssr: false });
+const CarnetsScreen = dynamic(() => import('@/screens/CarnetsScreen'), { ssr: false });
 
 function AppContent() {
   const {
@@ -156,6 +157,7 @@ function AppContent() {
     companies: 'Empresas', rfis: 'RFIs', submittals: 'Submittals', punchList: 'Punch List',
     changeorders: 'Órdenes de Cambio', catalogs: 'Catálogos', fieldnotes: 'Notas de Campo',
     kanban: 'Tablero Kanban', integrations: 'Integraciones', adminlog: 'Logs del Sistema',
+    carnets: 'Carnets',
     weeklyAgenda: 'Agenda Semanal', timeTracking: 'Time Tracking',
     projectDetail: currentProject?.data.name || 'Proyecto',
   };
@@ -297,6 +299,7 @@ function AppContent() {
               {screen === 'kanban' && <KanbanBoardScreen />}
               {screen === 'integrations' && <IntegrationsScreen />}
               {screen === 'adminlog' && <AdminLogScreen />}
+              {screen === 'carnets' && <CarnetsScreen />}
               </ErrorBoundary>
             </motion.div>
           </AnimatePresence>

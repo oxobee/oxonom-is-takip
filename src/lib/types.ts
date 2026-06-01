@@ -954,4 +954,5 @@ export const SCREEN_TITLES: Record<string, string> = {
   changeorders: 'Órdenes de Cambio',
   catalogs: 'Catálogos',
   fieldnotes: 'Notas de Campo',
+  carnets: 'Carnets',
 };
