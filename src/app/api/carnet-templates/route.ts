@@ -76,6 +76,31 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ error: 'Elements debe ser un array' }, { status: 400 });
         }
 
+        // Safety net: strip any oversized base64 images that somehow slipped through
+        // Firestore limit: ~1,048,487 bytes per field value
+        const FIRESTORE_FIELD_LIMIT = 900000;
+        const sanitizeOversizedImages = (data: any): any => {
+          const cleaned = { ...data };
+          if (cleaned.backgroundImage && typeof cleaned.backgroundImage === 'string' && cleaned.backgroundImage.startsWith('data:') && cleaned.backgroundImage.length > FIRESTORE_FIELD_LIMIT) {
+            console.warn('[carnet-templates] Removing oversized backgroundImage:', cleaned.backgroundImage.length, 'bytes');
+            delete cleaned.backgroundImage;
+          }
+          if (cleaned.logo?.image && typeof cleaned.logo.image === 'string' && cleaned.logo.image.startsWith('data:') && cleaned.logo.image.length > FIRESTORE_FIELD_LIMIT) {
+            console.warn('[carnet-templates] Removing oversized logo image:', cleaned.logo.image.length, 'bytes');
+            cleaned.logo = { ...cleaned.logo, image: '' };
+          }
+          if (Array.isArray(cleaned.elements)) {
+            cleaned.elements = cleaned.elements.map((el: any) => {
+              if (el.image && typeof el.image === 'string' && el.image.startsWith('data:') && el.image.length > FIRESTORE_FIELD_LIMIT) {
+                console.warn('[carnet-templates] Removing oversized element image:', el.image.length, 'bytes');
+                return { ...el, image: '' };
+              }
+              return el;
+            });
+          }
+          return cleaned;
+        };
+
         const now = new Date();
 
         if (template.id) {
@@ -85,22 +110,22 @@ export async function POST(req: NextRequest) {
           if (!existing.exists) return NextResponse.json({ error: 'Template no encontrado' }, { status: 404 });
           if (existing.data()?.tenantId !== tenantId) return NextResponse.json({ error: 'Sin permisos' }, { status: 403 });
 
-          const updateData = {
+          const updateData = sanitizeOversizedImages({
             ...template,
             tenantId,
             updatedAt: now,
-          };
+          });
           delete updateData.id;
           await docRef.update(updateData);
           return NextResponse.json({ id: template.id, message: 'Template actualizado' });
         } else {
           // Create new
-          const docData = {
+          const docData = sanitizeOversizedImages({
             ...template,
             tenantId,
             createdAt: now,
             updatedAt: now,
-          };
+          });
           delete docData.id;
           const ref = await col.add(docData);
           return NextResponse.json({ id: ref.id, message: 'Template creado' });

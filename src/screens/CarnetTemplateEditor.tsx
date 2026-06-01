@@ -138,7 +138,87 @@ export default function CarnetTemplateEditor() {
     return data.url;
   };
 
-  /* ─── Save template (upload images to Firebase Storage to avoid Firestore 1MB limit) ─── */
+  /* ─── Aggressively compress a base64 image to fit within Firestore's ~1MB field limit ─── */
+  const compressToFitFirestore = async (
+    imageData: string,
+    maxWidth: number,
+    maxHeight: number,
+    label: string
+  ): Promise<string | undefined> => {
+    const FIRESTORE_FIELD_LIMIT = 900000; // ~900KB safe limit for base64 string length
+    if (!imageData || !imageData.startsWith('data:')) return imageData;
+
+    // If already small enough, return as-is
+    if (imageData.length <= FIRESTORE_FIELD_LIMIT) return imageData;
+
+    let current = imageData;
+    const qualities = [0.7, 0.5, 0.35, 0.25, 0.15];
+    const scales = [1, 0.8, 0.6, 0.5];
+
+    for (const scale of scales) {
+      const w = Math.round(maxWidth * scale);
+      const h = Math.round(maxHeight * scale);
+      for (const quality of qualities) {
+        try {
+          current = await compressBase64Image(current, w, h, quality);
+          console.log(`[compressToFitFirestore] ${label}: ${w}x${h} q=${quality} → ${current.length} chars`);
+          if (current.length <= FIRESTORE_FIELD_LIMIT) {
+            return current;
+          }
+        } catch (e) {
+          console.warn(`[compressToFitFirestore] Failed at ${w}x${h} q=${quality}:`, e);
+        }
+      }
+    }
+
+    // Last resort: try very small
+    try {
+      current = await compressBase64Image(imageData, Math.round(maxWidth * 0.3), Math.round(maxHeight * 0.3), 0.1);
+      if (current.length <= FIRESTORE_FIELD_LIMIT) return current;
+    } catch (e) { /* give up */ }
+
+    console.warn(`[compressToFitFirestore] ${label}: Could not compress below ${FIRESTORE_FIELD_LIMIT} chars (got ${current.length}). Removing image.`);
+    return undefined;
+  };
+
+  /* ─── Process an image: try Storage first, fall back to aggressive compression ─── */
+  const processImageForSave = async (
+    imageData: string | undefined,
+    maxWidth: number,
+    maxHeight: number,
+    storagePath: string,
+    label: string
+  ): Promise<string | undefined> => {
+    if (!imageData) return undefined;
+    // If already a URL, keep it
+    if (imageData.startsWith('https://') || imageData.startsWith('http://')) return imageData;
+    // If not base64, keep as-is
+    if (!imageData.startsWith('data:')) return imageData;
+
+    // Strategy 1: Try uploading to Firebase Storage
+    try {
+      let compressed = imageData;
+      if (compressed.length > 200000) {
+        compressed = await compressBase64Image(compressed, maxWidth, maxHeight, 0.75);
+      }
+      const url = await uploadImageToStorage(compressed, storagePath);
+      console.log(`[Editor] ${label}: uploaded to Storage → ${url.substring(0, 80)}...`);
+      return url;
+    } catch (storageErr: any) {
+      console.warn(`[Editor] ${label}: Storage upload failed (${storageErr.message}), falling back to compression`);
+    }
+
+    // Strategy 2: Aggressive compression to fit in Firestore
+    const compressed = await compressToFitFirestore(imageData, maxWidth, maxHeight, label);
+    if (compressed) {
+      console.log(`[Editor] ${label}: compressed to ${compressed.length} chars for Firestore`);
+    } else {
+      toast.warning(`Imagen de ${label} muy grande y Storage no disponible. Se removió.`);
+    }
+    return compressed;
+  };
+
+  /* ─── Save template (upload images to Storage, fallback to compression) ─── */
   const handleSave = async () => {
     if (!currentTemplate || !authUser) return;
     try {
@@ -146,54 +226,31 @@ export default function CarnetTemplateEditor() {
 
       let templateToSave = { ...currentTemplate, side };
 
-      // Upload background image to Storage if it's a base64 data URL
-      if (templateToSave.backgroundImage && templateToSave.backgroundImage.startsWith('data:')) {
-        try {
-          // Compress first to reduce upload size
-          let bgData = templateToSave.backgroundImage;
-          if (bgData.length > 200000) {
-            bgData = await compressBase64Image(bgData, 638, 1004, 0.75);
-          }
-          const bgUrl = await uploadImageToStorage(bgData, 'carnet-templates/backgrounds');
-          templateToSave.backgroundImage = bgUrl;
-        } catch (e: any) {
-          console.warn('[Editor] Could not upload background image:', e.message);
-          toast.error('Error subiendo imagen de fondo: ' + (e.message || ''));
-          templateToSave.backgroundImage = undefined;
-        }
+      // Process background image
+      if (templateToSave.backgroundImage) {
+        templateToSave.backgroundImage = await processImageForSave(
+          templateToSave.backgroundImage, 638, 1004, 'carnet-templates/backgrounds', 'fondo'
+        );
       }
 
-      // Upload logo image to Storage if it's a base64 data URL
-      if (templateToSave.logo?.image && templateToSave.logo.image.startsWith('data:')) {
-        try {
-          let logoData = templateToSave.logo.image;
-          if (logoData.length > 100000) {
-            logoData = await compressBase64Image(logoData, 300, 300, 0.8);
-          }
-          const logoUrl = await uploadImageToStorage(logoData, 'carnet-templates/logos');
-          templateToSave.logo = { ...templateToSave.logo, image: logoUrl };
-        } catch (e: any) {
-          console.warn('[Editor] Could not upload logo image:', e.message);
-        }
+      // Process logo image
+      if (templateToSave.logo?.image) {
+        const logoImage = await processImageForSave(
+          templateToSave.logo.image, 300, 300, 'carnet-templates/logos', 'logo'
+        );
+        templateToSave.logo = { ...templateToSave.logo, image: logoImage || '' };
       }
 
-      // Upload element images to Storage if they're base64 data URLs
+      // Process element images
       const processedElements = await Promise.all(
         templateToSave.elements.map(async (el) => {
           if (el.type === 'image') {
             const imgEl = el as ImageTemplateElement;
-            if (imgEl.image && imgEl.image.startsWith('data:')) {
-              try {
-                let imgData = imgEl.image;
-                if (imgData.length > 100000) {
-                  imgData = await compressBase64Image(imgData, 500, 500, 0.75);
-                }
-                const imgUrl = await uploadImageToStorage(imgData, 'carnet-templates/elements');
-                return { ...el, image: imgUrl } as ImageTemplateElement;
-              } catch (e: any) {
-                console.warn('[Editor] Could not upload element image:', e.message);
-                return el;
-              }
+            if (imgEl.image) {
+              const img = await processImageForSave(
+                imgEl.image, 500, 500, 'carnet-templates/elements', 'elemento'
+              );
+              return { ...el, image: img || '' } as ImageTemplateElement;
             }
           }
           return el;
@@ -201,7 +258,7 @@ export default function CarnetTemplateEditor() {
       );
       templateToSave.elements = processedElements;
 
-      // Update current template with Storage URLs (so UI shows the remote images)
+      // Update current template with processed images
       setCurrentTemplate(templateToSave);
 
       const token = await authUser.getIdToken();
