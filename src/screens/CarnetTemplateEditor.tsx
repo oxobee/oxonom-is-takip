@@ -117,53 +117,81 @@ export default function CarnetTemplateEditor() {
 
   useEffect(() => { fetchTemplates(); }, [fetchTemplates]);
 
-  /* ─── Save template (with image compression to fit Firestore limits) ─── */
+  /* ─── Upload a base64 image to Firebase Storage, returns the public URL ─── */
+  const uploadImageToStorage = async (
+    imageData: string,
+    storagePath: string
+  ): Promise<string> => {
+    if (!authUser || !activeTenantId) throw new Error('No autenticado');
+    // If it's already a Storage URL, no need to re-upload
+    if (imageData.startsWith('https://') || imageData.startsWith('http://')) {
+      return imageData;
+    }
+    const token = await authUser.getIdToken();
+    const res = await fetch('/api/upload-image', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tenantId: activeTenantId, imageData, path: storagePath }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error subiendo imagen a Storage');
+    return data.url;
+  };
+
+  /* ─── Save template (upload images to Firebase Storage to avoid Firestore 1MB limit) ─── */
   const handleSave = async () => {
     if (!currentTemplate || !authUser) return;
     try {
       setSaving(true);
 
-      // Compress any large images before saving to avoid Firestore 1MB field limit
       let templateToSave = { ...currentTemplate, side };
 
-      // Compress background image if it's a base64 data URL (too large)
+      // Upload background image to Storage if it's a base64 data URL
       if (templateToSave.backgroundImage && templateToSave.backgroundImage.startsWith('data:')) {
-        const bgSize = templateToSave.backgroundImage.length;
-        if (bgSize > 800000) { // ~600KB raw, approaching limit
-          try {
-            templateToSave.backgroundImage = await compressBase64Image(templateToSave.backgroundImage, 638, 1004, 0.6);
-          } catch (e) {
-            console.warn('[Editor] Could not compress background image, removing it');
-            templateToSave.backgroundImage = undefined;
+        try {
+          // Compress first to reduce upload size
+          let bgData = templateToSave.backgroundImage;
+          if (bgData.length > 200000) {
+            bgData = await compressBase64Image(bgData, 638, 1004, 0.75);
           }
+          const bgUrl = await uploadImageToStorage(bgData, 'carnet-templates/backgrounds');
+          templateToSave.backgroundImage = bgUrl;
+        } catch (e: any) {
+          console.warn('[Editor] Could not upload background image:', e.message);
+          toast.error('Error subiendo imagen de fondo: ' + (e.message || ''));
+          templateToSave.backgroundImage = undefined;
         }
       }
 
-      // Compress logo image if too large
+      // Upload logo image to Storage if it's a base64 data URL
       if (templateToSave.logo?.image && templateToSave.logo.image.startsWith('data:')) {
-        const logoSize = templateToSave.logo.image.length;
-        if (logoSize > 800000) {
-          try {
-            templateToSave.logo = {
-              ...templateToSave.logo,
-              image: await compressBase64Image(templateToSave.logo.image, 200, 200, 0.7),
-            };
-          } catch (e) {
-            console.warn('[Editor] Could not compress logo image');
+        try {
+          let logoData = templateToSave.logo.image;
+          if (logoData.length > 100000) {
+            logoData = await compressBase64Image(logoData, 300, 300, 0.8);
           }
+          const logoUrl = await uploadImageToStorage(logoData, 'carnet-templates/logos');
+          templateToSave.logo = { ...templateToSave.logo, image: logoUrl };
+        } catch (e: any) {
+          console.warn('[Editor] Could not upload logo image:', e.message);
         }
       }
 
-      // Compress element images if too large
-      const compressedElements = await Promise.all(
+      // Upload element images to Storage if they're base64 data URLs
+      const processedElements = await Promise.all(
         templateToSave.elements.map(async (el) => {
           if (el.type === 'image') {
             const imgEl = el as ImageTemplateElement;
-            if (imgEl.image && imgEl.image.startsWith('data:') && imgEl.image.length > 800000) {
+            if (imgEl.image && imgEl.image.startsWith('data:')) {
               try {
-                const compressed = await compressBase64Image(imgEl.image, 400, 400, 0.7);
-                return { ...el, image: compressed } as ImageTemplateElement;
-              } catch (e) {
+                let imgData = imgEl.image;
+                if (imgData.length > 100000) {
+                  imgData = await compressBase64Image(imgData, 500, 500, 0.75);
+                }
+                const imgUrl = await uploadImageToStorage(imgData, 'carnet-templates/elements');
+                return { ...el, image: imgUrl } as ImageTemplateElement;
+              } catch (e: any) {
+                console.warn('[Editor] Could not upload element image:', e.message);
                 return el;
               }
             }
@@ -171,9 +199,9 @@ export default function CarnetTemplateEditor() {
           return el;
         })
       );
-      templateToSave.elements = compressedElements;
+      templateToSave.elements = processedElements;
 
-      // Update current template with compressed versions
+      // Update current template with Storage URLs (so UI shows the remote images)
       setCurrentTemplate(templateToSave);
 
       const token = await authUser.getIdToken();
