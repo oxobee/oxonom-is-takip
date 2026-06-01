@@ -8,7 +8,7 @@ import { FormField, FormInput, FormSelect, ModalFooter } from '@/components/comm
 import {
   Search, Plus, Eye, Edit3, Trash2, Copy, ToggleLeft, ToggleRight,
   Download, FileText, Image, Printer, Users, UserCheck, UserX,
-  ShieldCheck, AlertTriangle, CreditCard, X, Upload,
+  ShieldCheck, AlertTriangle, CreditCard, X, Upload, Palette,
 } from 'lucide-react';
 
 interface CarnetRecord {
@@ -44,7 +44,7 @@ interface Stats {
 const BLOOD_TYPES = ['', 'O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
 
 export default function CarnetsScreen() {
-  const { activeTenantId, activeTenantName, authUser } = useApp() as any;
+  const { activeTenantId, activeTenantName, authUser, setScreen } = useApp() as any;
   const [carnets, setCarnets] = useState<CarnetRecord[]>([]);
   const [stats, setStats] = useState<Stats>({ total: 0, active: 0, inactive: 0, valid: 0, expired: 0 });
   const [loading, setLoading] = useState(true);
@@ -287,12 +287,20 @@ export default function CarnetsScreen() {
             Gestión de carnets corporativos
           </p>
         </div>
-        <button
-          onClick={handleCreate}
-          className="af-btn-primary flex items-center gap-2 text-sm px-4 py-2.5"
-        >
-          <Plus size={16} /> Nuevo Carnet
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setScreen('carnet-designer')}
+            className="af-btn-secondary flex items-center gap-2 text-sm px-4 py-2.5"
+          >
+            <Palette size={16} /> Diseñador
+          </button>
+          <button
+            onClick={handleCreate}
+            className="af-btn-primary flex items-center gap-2 text-sm px-4 py-2.5"
+          >
+            <Plus size={16} /> Nuevo Carnet
+          </button>
+        </div>
       </div>
 
       {/* ═══ KPI Stats ═══ */}
