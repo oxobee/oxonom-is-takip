@@ -216,7 +216,7 @@ export default function CarnetsScreen() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      const img = new Image();
+      const img = document.createElement('img');
       img.onload = () => {
         // Resize to max 200x200
         const canvas = document.createElement('canvas');
