@@ -68,8 +68,11 @@ function uid() {
   return `el-${Date.now()}-${++idCounter}`;
 }
 
-export default function CarnetTemplateEditor() {
+export default function CarnetTemplateEditor({ onClose }: { onClose?: () => void } = {}) {
   const { activeTenantId, activeTenantName, authUser, setScreen } = useApp() as any;
+
+  // When embedded (e.g. inside CarnetsScreen overlay), use onClose; otherwise navigate
+  const handleClose = onClose || (() => setScreen('carnets'));
 
   // Template state
   const [templates, setTemplates] = useState<CarnetTemplate[]>([]);
@@ -763,7 +766,7 @@ export default function CarnetTemplateEditor() {
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)] bg-[var(--card)]">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setScreen('carnets')}
+            onClick={handleClose}
             className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--af-bg3)] cursor-pointer bg-transparent border-none"
           >
             <ArrowLeft size={18} className="text-[var(--muted-foreground)]" />

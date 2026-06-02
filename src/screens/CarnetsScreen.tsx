@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import { useApp } from '@/contexts/AppContext';
 import { toast } from 'sonner';
 import CarnetCard, { exportPDF, exportPNG, type CarnetData } from '@/components/carnets/CarnetCard';
@@ -12,6 +13,9 @@ import {
   ShieldCheck, AlertTriangle, CreditCard, X, Upload, Palette,
   FileSpreadsheet, CheckCircle2, AlertCircle, Loader2,
 } from 'lucide-react';
+
+// Lazy-load the designer to avoid bloating the main carnets bundle
+const CarnetTemplateEditor = dynamic(() => import('@/screens/CarnetTemplateEditor'), { ssr: false });
 
 interface CarnetRecord {
   id: string;
@@ -75,6 +79,9 @@ export default function CarnetsScreen() {
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<any>(null);
   const [importFile, setImportFile] = useState<File | null>(null);
+
+  // Designer state — opens as full-screen overlay within CarnetsScreen
+  const [showDesigner, setShowDesigner] = useState(false);
 
   // Fetch carnets
   const fetchCarnets = useCallback(async () => {
@@ -333,7 +340,7 @@ export default function CarnetsScreen() {
             <FileSpreadsheet size={16} /> Importar Excel
           </button>
           <button
-            onClick={() => setScreen('carnet-designer')}
+            onClick={() => setShowDesigner(true)}
             className="af-btn-secondary flex items-center gap-2 text-sm px-4 py-2.5"
           >
             <Palette size={16} /> Diseñador
@@ -960,6 +967,17 @@ export default function CarnetsScreen() {
             submitDisabled={saving}
           />
         </CenterModal>
+      )}
+
+      {/* ═══ Designer Overlay (full-screen within Carnets) ═══ */}
+      {showDesigner && (
+        <div className="fixed inset-0 z-50 bg-[var(--background)] animate-fadeIn">
+          <CarnetTemplateEditor onClose={() => {
+            setShowDesigner(false);
+            // Refresh templates after closing designer so carnets use latest design
+            fetchTemplates();
+          }} />
+        </div>
       )}
     </div>
   );
