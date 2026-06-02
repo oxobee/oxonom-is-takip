@@ -35,10 +35,11 @@ export async function POST(request: NextRequest) {
 
     // Parse optional "type" query param for selective execution
     const url = new URL(request.url);
-    const forceType = url.searchParams.get('type'); // 'hourly' | 'daily' | 'weekly'
+    const forceType = url.searchParams.get('type'); // 'hourly' | 'daily' | 'weekly' | 'all'
+    const runAll = forceType === 'all';
 
     // ── 1. TASK DUE REMINDERS (tasks due in the next 24 hours) ──
-    if (!forceType || forceType === 'hourly') {
+    if (!forceType || forceType === 'hourly' || runAll) {
       try {
         results.taskDueReminders = await checkTaskDueReminders(db);
       } catch (err: any) {
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── 2. TASK OVERDUE ALERTS (tasks past their due date, not completed) ──
-    if (!forceType || forceType === 'hourly') {
+    if (!forceType || forceType === 'hourly' || runAll) {
       try {
         results.taskOverdueAlerts = await checkTaskOverdueAlerts(db);
       } catch (err: any) {
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── 3. MEETING REMINDERS (meetings starting in ~1 hour) ──
-    if (!forceType || forceType === 'hourly') {
+    if (!forceType || forceType === 'hourly' || runAll) {
       try {
         results.meetingReminders = await checkMeetingReminders(db);
       } catch (err: any) {
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── 4. AGENDA STARTING REMINDERS (agenda tasks starting soon) ──
-    if (!forceType || forceType === 'hourly') {
+    if (!forceType || forceType === 'hourly' || runAll) {
       try {
         results.agendaStartingReminders = await checkAgendaStartingReminders(db);
       } catch (err: any) {
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── 5. DAILY AGENDA REMINDER (today's agenda items) ──
-    if (!forceType || forceType === 'daily') {
+    if (!forceType || forceType === 'daily' || runAll) {
       try {
         results.dailyAgendaReminder = await checkDailyAgendaReminder(db);
       } catch (err: any) {
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── 6. WEEKLY SUMMARY (Mondays) ──
-    if (!forceType || forceType === 'weekly') {
+    if (!forceType || forceType === 'weekly' || runAll) {
       try {
         results.weeklySummary = await checkWeeklySummary(db);
       } catch (err: any) {

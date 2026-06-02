@@ -21,16 +21,8 @@
   ],
   "crons": [
     {
-      "path": "/api/notifications/cron?type=hourly",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/notifications/cron?type=daily",
+      "path": "/api/notifications/cron?type=all",
       "schedule": "0 12 * * *"
-    },
-    {
-      "path": "/api/notifications/cron?type=weekly",
-      "schedule": "0 13 * * 1"
     }
   ]
 }
