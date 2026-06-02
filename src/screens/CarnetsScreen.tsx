@@ -512,11 +512,12 @@ export default function CarnetsScreen() {
             <CarnetCard
               data={previewCarnet as CarnetData}
               tenantName={activeTenantName || undefined}
-              template={frontTemplate || undefined}
+              frontTemplate={frontTemplate || undefined}
+              backTemplate={backTemplate || undefined}
             />
           </div>
           <p className="text-[11px] text-[var(--muted-foreground)] text-center mt-2">
-            {frontTemplate ? 'Frente (template personalizado) · Reverso' : 'Frente · Reverso'}
+            {frontTemplate || backTemplate ? 'Frente · Reverso (diseño personalizado)' : 'Frente · Reverso'}
           </p>
 
           <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-[var(--border)]">

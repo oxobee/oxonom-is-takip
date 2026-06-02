@@ -129,16 +129,52 @@ export default function CarnetTemplateEditor() {
             return prev;
           });
         } else {
-          // Initial load: auto-load the default template
-          setCurrentTemplate(prev => {
-            if (prev) return prev; // Don't overwrite if already editing
-            const defaultFront = data.templates.find((t: CarnetTemplate) => t.isDefault && t.side === 'front');
-            const defaultBack = data.templates.find((t: CarnetTemplate) => t.isDefault && t.side === 'back');
-            if (side === 'front' && defaultFront) return defaultFront;
-            if (side === 'back' && defaultBack) return defaultBack;
-            if (data.templates.length > 0) return data.templates[0];
-            return null;
-          });
+          // Initial load: auto-create defaults if none exist, then load
+          if (data.templates.length === 0 && activeTenantId) {
+            // No templates exist yet — create default front & back
+            const defaultFront = createDefaultPortraitTemplate(activeTenantId);
+            const defaultBack = createDefaultBackTemplate(activeTenantId);
+            try {
+              const token2 = await authUser.getIdToken();
+              // Save default front
+              await fetch('/api/carnet-templates', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token2}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'save', tenantId: activeTenantId, template: defaultFront }),
+              });
+              // Save default back
+              await fetch('/api/carnet-templates', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token2}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'save', tenantId: activeTenantId, template: defaultBack }),
+              });
+              // Re-fetch to get the saved templates with IDs
+              const res2 = await fetch('/api/carnet-templates', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token2}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'list', tenantId: activeTenantId }),
+              });
+              const data2 = await res2.json();
+              if (data2.templates) {
+                setTemplates(data2.templates);
+                const defaultTpl = data2.templates.find((t: CarnetTemplate) => t.isDefault && t.side === side);
+                setCurrentTemplate(defaultTpl || data2.templates[0] || null);
+              }
+            } catch (e) {
+              console.error('[TemplateEditor] auto-create defaults error:', e);
+            }
+          } else {
+            // Templates exist — auto-load the default
+            setCurrentTemplate(prev => {
+              if (prev) return prev;
+              const defaultFront = data.templates.find((t: CarnetTemplate) => t.isDefault && t.side === 'front');
+              const defaultBack = data.templates.find((t: CarnetTemplate) => t.isDefault && t.side === 'back');
+              if (side === 'front' && defaultFront) return defaultFront;
+              if (side === 'back' && defaultBack) return defaultBack;
+              if (data.templates.length > 0) return data.templates[0];
+              return null;
+            });
+          }
         }
       }
     } catch (err) {
@@ -150,7 +186,9 @@ export default function CarnetTemplateEditor() {
   const [initialLoadDone, setInitialLoadDone] = useState(false);
   useEffect(() => {
     if (!initialLoadDone && activeTenantId && authUser) {
-      fetchTemplates().then(() => setInitialLoadDone(true));
+      fetchTemplates().then(() => { setInitialLoadDone(true); setLoading(false); });
+    } else if (!activeTenantId || !authUser) {
+      setLoading(false);
     }
   }, [activeTenantId, authUser, initialLoadDone]);
 
@@ -670,9 +708,17 @@ export default function CarnetTemplateEditor() {
             <h1 className="text-base font-bold text-[var(--foreground)]" style={{ fontFamily: "'DM Serif Display', serif" }}>
               Diseñador de Carnet
             </h1>
-            <p className="text-[11px] text-[var(--muted-foreground)]">
-              {currentTemplate?.name || 'Sin template'}
-            </p>
+            {currentTemplate ? (
+              <input
+                type="text"
+                value={currentTemplate.name}
+                onChange={e => setCurrentTemplate(prev => prev ? { ...prev, name: e.target.value } : prev)}
+                className="text-[11px] text-[var(--muted-foreground)] bg-transparent border-none outline-none p-0 w-40 hover:text-[var(--foreground)] focus:text-[var(--foreground)] cursor-text"
+                title="Click para editar nombre del template"
+              />
+            ) : (
+              <p className="text-[11px] text-[var(--muted-foreground)]">Sin template</p>
+            )}
           </div>
         </div>
 

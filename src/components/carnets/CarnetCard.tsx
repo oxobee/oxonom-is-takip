@@ -33,7 +33,11 @@ interface CarnetCardProps {
   tenantNit?: string;
   /** If true, renders at higher resolution for export */
   forExport?: boolean;
-  /** Custom template to render from (overrides hardcoded design) */
+  /** Template for front side */
+  frontTemplate?: CarnetTemplate;
+  /** Template for back side */
+  backTemplate?: CarnetTemplate;
+  /** @deprecated Use frontTemplate / backTemplate instead */
   template?: CarnetTemplate;
 }
 
@@ -138,442 +142,6 @@ function HeartIcon({ size = 10, color = GOLD }: { size?: number; color?: string 
   );
 }
 
-/* ═══════════════════════════════════════
-   MAIN COMPONENT
-   ═══════════════════════════════════════ */
-export default function CarnetCard({ data, tenantName, tenantSubtitle, tenantNit, forExport, template }: CarnetCardProps) {
-  useEffect(() => { ensureFont(); }, []);
-
-  // If template provided, render from template
-  if (template) {
-    return <TemplateCarnetCard data={data} template={template} tenantName={tenantName} forExport={forExport} />;
-  }
-
-  const displayName = tenantName || data.tenantName || 'ARCHII';
-  const displaySubtitle = tenantSubtitle || data.tenantSubtitle || '';
-  const displayNit = tenantNit || data.tenantNit || '';
-  const qrUrl = `${QR_BASE_URL}/${data.employeeCode}`;
-
-  const isValid = data.validUntil ? new Date(data.validUntil) >= new Date() : true;
-  const statusColor = isValid ? '#3D8B5E' : '#C0392B';
-  const statusText = isValid ? 'VIGENTE' : 'VENCIDO';
-
-  const formattedValidUntil = data.validUntil
-    ? new Date(data.validUntil).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })
-    : 'Sin fecha';
-
-  const formattedStartDate = data.startDate
-    ? new Date(data.startDate).toLocaleDateString('es-CO', { year: 'numeric', month: 'short' })
-    : '';
-
-  const formattedStartEnd = data.startDate && data.validUntil
-    ? `${formattedStartDate} – ${new Date(data.validUntil).toLocaleDateString('es-CO', { year: 'numeric', month: 'short' })}`
-    : formattedValidUntil;
-
-  const s = forExport ? 2 : 1; // scale factor
-
-  /* ─── Shared card base ─── */
-  const cardBase: React.CSSProperties = {
-    width: CARD_W * s,
-    height: CARD_H * s,
-    fontFamily: "'Montserrat', sans-serif",
-    position: 'relative',
-    overflow: 'hidden',
-    background: CREAM,
-    borderRadius: 12 * s,
-    border: `1.5px solid ${GOLD}`,
-    boxShadow: forExport ? 'none' : `0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)`,
-  };
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'row', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap', justifyContent: 'center' }}>
-      {/* ═══════ FRONT ═══════ */}
-      <div ref={forExport ? undefined : undefined} id="carnet-front" style={cardBase}>
-        {/* Left vertical gold stripe */}
-        <div style={{
-          position: 'absolute', top: 0, left: 0, bottom: 0,
-          width: 5 * s,
-          background: `linear-gradient(180deg, ${GOLD}, ${GOLD_DARK}, ${GOLD})`,
-        }} />
-
-        {/* Curved gold accent (bottom-left) */}
-        <svg
-          style={{ position: 'absolute', bottom: 0, left: 0, width: 80 * s, height: 120 * s, opacity: 0.12 }}
-          viewBox="0 0 80 120"
-          fill="none"
-        >
-          <path d="M0 120 Q0 60 40 40 Q80 20 80 0 L80 120 Z" fill={GOLD} />
-        </svg>
-
-        {/* Content area (with left padding for stripe) */}
-        <div style={{
-          padding: `${18 * s}px ${18 * s}px ${14 * s}px ${20 * s}px`,
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          position: 'relative',
-          zIndex: 1,
-        }}>
-          {/* Tenant name */}
-          <div style={{
-            fontWeight: 700,
-            fontSize: 14 * s,
-            color: TEXT_PRIMARY,
-            letterSpacing: 3 * s,
-            textTransform: 'uppercase',
-            textAlign: 'center',
-            lineHeight: 1.2,
-          }}>
-            {displayName}
-          </div>
-
-          {/* Tenant subtitle */}
-          {displaySubtitle && (
-            <div style={{
-              fontSize: 7 * s,
-              fontWeight: 500,
-              color: GOLD,
-              letterSpacing: 2 * s,
-              textTransform: 'uppercase',
-              marginTop: 2 * s,
-              textAlign: 'center',
-            }}>
-              {displaySubtitle}
-            </div>
-          )}
-
-          {/* Gold decorative line */}
-          <div style={{
-            width: 40 * s,
-            height: 1.5 * s,
-            background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`,
-            marginTop: 8 * s,
-            marginBottom: 4 * s,
-          }} />
-
-          {/* Photo */}
-          <div style={{
-            width: 96 * s,
-            height: 96 * s,
-            borderRadius: '50%',
-            border: `${2.5 * s}px solid ${GOLD}`,
-            overflow: 'hidden',
-            flexShrink: 0,
-            background: CREAM_DARK,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: 4 * s,
-            boxShadow: `0 2px 8px rgba(201,169,110,0.15)`,
-          }}>
-            {data.photoBase64 ? (
-              <img
-                src={data.photoBase64.startsWith('data:') ? data.photoBase64 : `data:image/jpeg;base64,${data.photoBase64}`}
-                alt={data.fullName}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <svg width={32 * s} height={32 * s} viewBox="0 0 24 24" fill="none" stroke={GOLD_LIGHT} strokeWidth="1.5">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-            )}
-          </div>
-
-          {/* Full name */}
-          <div style={{
-            fontWeight: 700,
-            fontSize: 11 * s,
-            color: TEXT_PRIMARY,
-            textTransform: 'uppercase',
-            textAlign: 'center',
-            lineHeight: 1.3,
-            marginTop: 8 * s,
-            letterSpacing: 0.8 * s,
-            maxWidth: 250 * s,
-          }}>
-            {data.fullName}
-          </div>
-
-          {/* Position */}
-          <div style={{
-            fontSize: 8 * s,
-            fontWeight: 500,
-            color: GOLD_DARK,
-            textTransform: 'uppercase',
-            letterSpacing: 1 * s,
-            marginTop: 2 * s,
-            textAlign: 'center',
-          }}>
-            {data.position}
-          </div>
-
-          {/* ID number box */}
-          <div style={{
-            marginTop: 8 * s,
-            padding: `${3 * s}px ${14 * s}px`,
-            border: `${1.5 * s}px solid ${GOLD}`,
-            borderRadius: 4 * s,
-            background: 'rgba(201,169,110,0.06)',
-          }}>
-            <span style={{
-              fontSize: 9 * s,
-              fontWeight: 600,
-              color: TEXT_PRIMARY,
-              letterSpacing: 1.5 * s,
-            }}>
-              ID: {data.employeeCode}
-            </span>
-          </div>
-
-          {/* Contact details */}
-          <div style={{
-            marginTop: 8 * s,
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 3.5 * s,
-            paddingLeft: 20 * s,
-          }}>
-            {data.phone && (
-              <ContactLine icon={<PhoneIcon size={9 * s} />} value={data.phone} scale={s} />
-            )}
-            {data.email && (
-              <ContactLine icon={<MailIcon size={9 * s} />} value={data.email} scale={s} />
-            )}
-            {data.city && (
-              <ContactLine icon={<MapPinIcon size={9 * s} />} value={data.city} scale={s} />
-            )}
-          </div>
-
-          {/* Spacer */}
-          <div style={{ flex: 1 }} />
-
-          {/* Footer: Tagline + Status */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-            marginTop: 6 * s,
-            paddingTop: 5 * s,
-            borderTop: `1px solid rgba(201,169,110,0.2)`,
-          }}>
-            <span style={{
-              fontSize: 5.5 * s,
-              fontStyle: 'italic',
-              color: TEXT_MUTED,
-              letterSpacing: 0.3 * s,
-            }}>
-              Identidad corporativa verificada
-            </span>
-            <span style={{
-              fontSize: 6 * s,
-              fontWeight: 700,
-              color: statusColor,
-              letterSpacing: 1 * s,
-            }}>
-              {statusText}
-            </span>
-          </div>
-        </div>
-
-        {/* Top-right gold corner accent */}
-        <div style={{
-          position: 'absolute', top: 0, right: 0,
-          width: 24 * s, height: 24 * s,
-          background: `linear-gradient(225deg, rgba(201,169,110,0.08) 50%, transparent 50%)`,
-        }} />
-      </div>
-
-      {/* ═══════ BACK ═══════ */}
-      <div id="carnet-back" style={{ ...cardBase }}>
-        {/* Left vertical gold stripe */}
-        <div style={{
-          position: 'absolute', top: 0, left: 0, bottom: 0,
-          width: 5 * s,
-          background: `linear-gradient(180deg, ${GOLD}, ${GOLD_DARK}, ${GOLD})`,
-        }} />
-
-        {/* Subtle geometric pattern (right side) */}
-        <svg
-          style={{ position: 'absolute', top: 0, right: 0, width: 120 * s, height: '100%', opacity: 0.05 }}
-          viewBox="0 0 120 500"
-          fill="none"
-        >
-          <line x1="20" y1="0" x2="120" y2="200" stroke={GOLD} strokeWidth="1" />
-          <line x1="40" y1="0" x2="120" y2="160" stroke={GOLD} strokeWidth="0.5" />
-          <line x1="60" y1="0" x2="120" y2="120" stroke={GOLD} strokeWidth="0.5" />
-          <line x1="0" y1="500" x2="120" y2="300" stroke={GOLD} strokeWidth="0.5" />
-          <line x1="0" y1="450" x2="100" y2="300" stroke={GOLD} strokeWidth="0.5" />
-        </svg>
-
-        {/* Content */}
-        <div style={{
-          padding: `${16 * s}px ${16 * s}px ${12 * s}px ${20 * s}px`,
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'relative',
-          zIndex: 1,
-        }}>
-          {/* Header */}
-          <div style={{ marginBottom: 8 * s }}>
-            <div style={{
-              fontWeight: 700,
-              fontSize: 10 * s,
-              color: TEXT_PRIMARY,
-              letterSpacing: 2 * s,
-              textTransform: 'uppercase',
-            }}>
-              {displayName}
-            </div>
-            {displaySubtitle && (
-              <div style={{
-                fontSize: 6.5 * s,
-                fontWeight: 500,
-                color: GOLD,
-                letterSpacing: 1.5 * s,
-                textTransform: 'uppercase',
-                marginTop: 1 * s,
-              }}>
-                {displaySubtitle}
-              </div>
-            )}
-          </div>
-
-          {/* Gold decorative line */}
-          <div style={{
-            width: 30 * s,
-            height: 1 * s,
-            background: GOLD,
-            marginBottom: 8 * s,
-          }} />
-
-          {/* Employee details with icons */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 * s }}>
-            {data.position && (
-              <BackDetailRow icon={<BriefcaseIcon size={9 * s} />} label="Cargo" value={data.position} scale={s} />
-            )}
-            {data.area && (
-              <BackDetailRow icon={<IdBadgeIcon size={9 * s} />} label="Area" value={data.area} scale={s} />
-            )}
-            {data.bloodType && (
-              <BackDetailRow icon={<DropletIcon size={9 * s} />} label="Tipo de sangre" value={data.bloodType} scale={s} />
-            )}
-            {data.eps && (
-              <BackDetailRow icon={<ShieldIcon size={9 * s} />} label="EPS" value={data.eps} scale={s} />
-            )}
-            {(data.startDate || data.validUntil) && (
-              <BackDetailRow icon={<ShieldIcon size={9 * s} />} label="Vigencia" value={formattedStartEnd} scale={s} highlight={isValid ? GOLD_DARK : '#C0392B'} />
-            )}
-          </div>
-
-          {/* QR Code */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginTop: 8 * s,
-          }}>
-            <div style={{
-              padding: 5 * s,
-              border: `${1.5 * s}px solid ${GOLD}`,
-              borderRadius: 6 * s,
-              background: '#ffffff',
-              boxShadow: `0 1px 4px rgba(201,169,110,0.1)`,
-            }}>
-              <QRCodeSVG
-                value={qrUrl}
-                size={68 * s}
-                level="M"
-                fgColor={TEXT_PRIMARY}
-                bgColor="#ffffff"
-              />
-            </div>
-            <span style={{
-              fontSize: 5 * s,
-              color: TEXT_MUTED,
-              textAlign: 'center',
-              letterSpacing: 0.3 * s,
-              marginTop: 3 * s,
-              fontWeight: 500,
-            }}>
-              Escanea para verificar identidad
-            </span>
-          </div>
-
-          {/* Emergency Contact */}
-          {(data.emergencyContact || data.emergencyPhone) && (
-            <div style={{
-              marginTop: 6 * s,
-              padding: `${6 * s}px ${10 * s}px`,
-              background: 'rgba(201,169,110,0.06)',
-              borderRadius: 6 * s,
-              border: `1px solid rgba(201,169,110,0.12)`,
-            }}>
-              <div style={{
-                fontSize: 6 * s,
-                fontWeight: 700,
-                color: GOLD_DARK,
-                letterSpacing: 1.5 * s,
-                textTransform: 'uppercase',
-                marginBottom: 2 * s,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 3 * s,
-              }}>
-                <HeartIcon size={8 * s} color={GOLD_DARK} />
-                Contacto de emergencia
-              </div>
-              {data.emergencyContact && (
-                <div style={{ fontSize: 8 * s, fontWeight: 500, color: TEXT_PRIMARY }}>
-                  {data.emergencyContact}
-                </div>
-              )}
-              {data.emergencyPhone && (
-                <div style={{ fontSize: 7.5 * s, color: TEXT_SECONDARY, marginTop: 1 * s }}>
-                  {data.emergencyPhone}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Spacer */}
-          <div style={{ flex: 1 }} />
-
-          {/* Footer: Company legal info */}
-          <div style={{
-            textAlign: 'center',
-            marginTop: 4 * s,
-            paddingTop: 5 * s,
-            borderTop: `1px solid rgba(201,169,110,0.15)`,
-          }}>
-            {displayNit && (
-              <div style={{
-                fontSize: 5.5 * s,
-                fontWeight: 500,
-                color: TEXT_MUTED,
-                letterSpacing: 0.5 * s,
-              }}>
-                NIT. {displayNit}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Bottom-right gold corner accent */}
-        <div style={{
-          position: 'absolute', bottom: 0, right: 0,
-          width: 32 * s, height: 32 * s,
-          background: `linear-gradient(225deg, transparent 50%, rgba(201,169,110,0.06) 50%)`,
-        }} />
-      </div>
-    </div>
-  );
-}
-
 /* ─── Sub-components ─── */
 
 function ContactLine({ icon, value, scale }: { icon: React.ReactNode; value: string; scale: number }) {
@@ -620,14 +188,511 @@ function BackDetailRow({ icon, label, value, scale, highlight }: { icon: React.R
 }
 
 /* ═══════════════════════════════════════
+   HARDCODED FRONT CARD
+   ═══════════════════════════════════════ */
+function HardcodedFrontCard({ data, tenantName, tenantSubtitle, tenantNit, forExport }: {
+  data: CarnetData;
+  tenantName?: string;
+  tenantSubtitle?: string;
+  tenantNit?: string;
+  forExport?: boolean;
+}) {
+  const displayName = tenantName || data.tenantName || 'ARCHII';
+  const displaySubtitle = tenantSubtitle || data.tenantSubtitle || '';
+  const displayNit = tenantNit || data.tenantNit || '';
+
+  const isValid = data.validUntil ? new Date(data.validUntil) >= new Date() : true;
+  const statusColor = isValid ? '#3D8B5E' : '#C0392B';
+  const statusText = isValid ? 'VIGENTE' : 'VENCIDO';
+
+  const s = forExport ? 2 : 1;
+
+  const cardBase: React.CSSProperties = {
+    width: CARD_W * s,
+    height: CARD_H * s,
+    fontFamily: "'Montserrat', sans-serif",
+    position: 'relative',
+    overflow: 'hidden',
+    background: CREAM,
+    borderRadius: 12 * s,
+    border: `1.5px solid ${GOLD}`,
+    boxShadow: forExport ? 'none' : `0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)`,
+  };
+
+  return (
+    <div id="carnet-front" style={cardBase}>
+      {/* Left vertical gold stripe */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, bottom: 0,
+        width: 5 * s,
+        background: `linear-gradient(180deg, ${GOLD}, ${GOLD_DARK}, ${GOLD})`,
+      }} />
+
+      {/* Curved gold accent (bottom-left) */}
+      <svg
+        style={{ position: 'absolute', bottom: 0, left: 0, width: 80 * s, height: 120 * s, opacity: 0.12 }}
+        viewBox="0 0 80 120"
+        fill="none"
+      >
+        <path d="M0 120 Q0 60 40 40 Q80 20 80 0 L80 120 Z" fill={GOLD} />
+      </svg>
+
+      {/* Content area (with left padding for stripe) */}
+      <div style={{
+        padding: `${18 * s}px ${18 * s}px ${14 * s}px ${20 * s}px`,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        position: 'relative',
+        zIndex: 1,
+      }}>
+        {/* Tenant name */}
+        <div style={{
+          fontWeight: 700,
+          fontSize: 14 * s,
+          color: TEXT_PRIMARY,
+          letterSpacing: 3 * s,
+          textTransform: 'uppercase',
+          textAlign: 'center',
+          lineHeight: 1.2,
+        }}>
+          {displayName}
+        </div>
+
+        {/* Tenant subtitle */}
+        {displaySubtitle && (
+          <div style={{
+            fontSize: 7 * s,
+            fontWeight: 500,
+            color: GOLD,
+            letterSpacing: 2 * s,
+            textTransform: 'uppercase',
+            marginTop: 2 * s,
+            textAlign: 'center',
+          }}>
+            {displaySubtitle}
+          </div>
+        )}
+
+        {/* Gold decorative line */}
+        <div style={{
+          width: 40 * s,
+          height: 1.5 * s,
+          background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`,
+          marginTop: 8 * s,
+          marginBottom: 4 * s,
+        }} />
+
+        {/* Photo */}
+        <div style={{
+          width: 96 * s,
+          height: 96 * s,
+          borderRadius: '50%',
+          border: `${2.5 * s}px solid ${GOLD}`,
+          overflow: 'hidden',
+          flexShrink: 0,
+          background: CREAM_DARK,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginTop: 4 * s,
+          boxShadow: `0 2px 8px rgba(201,169,110,0.15)`,
+        }}>
+          {data.photoBase64 ? (
+            <img
+              src={data.photoBase64.startsWith('data:') ? data.photoBase64 : `data:image/jpeg;base64,${data.photoBase64}`}
+              alt={data.fullName}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <svg width={32 * s} height={32 * s} viewBox="0 0 24 24" fill="none" stroke={GOLD_LIGHT} strokeWidth="1.5">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          )}
+        </div>
+
+        {/* Full name */}
+        <div style={{
+          fontWeight: 700,
+          fontSize: 11 * s,
+          color: TEXT_PRIMARY,
+          textTransform: 'uppercase',
+          textAlign: 'center',
+          lineHeight: 1.3,
+          marginTop: 8 * s,
+          letterSpacing: 0.8 * s,
+          maxWidth: 250 * s,
+        }}>
+          {data.fullName}
+        </div>
+
+        {/* Position */}
+        <div style={{
+          fontSize: 8 * s,
+          fontWeight: 500,
+          color: GOLD_DARK,
+          textTransform: 'uppercase',
+          letterSpacing: 1 * s,
+          marginTop: 2 * s,
+          textAlign: 'center',
+        }}>
+          {data.position}
+        </div>
+
+        {/* ID number box */}
+        <div style={{
+          marginTop: 8 * s,
+          padding: `${3 * s}px ${14 * s}px`,
+          border: `${1.5 * s}px solid ${GOLD}`,
+          borderRadius: 4 * s,
+          background: 'rgba(201,169,110,0.06)',
+        }}>
+          <span style={{
+            fontSize: 9 * s,
+            fontWeight: 600,
+            color: TEXT_PRIMARY,
+            letterSpacing: 1.5 * s,
+          }}>
+            ID: {data.employeeCode}
+          </span>
+        </div>
+
+        {/* Contact details */}
+        <div style={{
+          marginTop: 8 * s,
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 3.5 * s,
+          paddingLeft: 20 * s,
+        }}>
+          {data.phone && (
+            <ContactLine icon={<PhoneIcon size={9 * s} />} value={data.phone} scale={s} />
+          )}
+          {data.email && (
+            <ContactLine icon={<MailIcon size={9 * s} />} value={data.email} scale={s} />
+          )}
+          {data.city && (
+            <ContactLine icon={<MapPinIcon size={9 * s} />} value={data.city} scale={s} />
+          )}
+        </div>
+
+        {/* Spacer */}
+        <div style={{ flex: 1 }} />
+
+        {/* Footer: Tagline + Status */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+          marginTop: 6 * s,
+          paddingTop: 5 * s,
+          borderTop: `1px solid rgba(201,169,110,0.2)`,
+        }}>
+          <span style={{
+            fontSize: 5.5 * s,
+            fontStyle: 'italic',
+            color: TEXT_MUTED,
+            letterSpacing: 0.3 * s,
+          }}>
+            Identidad corporativa verificada
+          </span>
+          <span style={{
+            fontSize: 6 * s,
+            fontWeight: 700,
+            color: statusColor,
+            letterSpacing: 1 * s,
+          }}>
+            {statusText}
+          </span>
+        </div>
+      </div>
+
+      {/* Top-right gold corner accent */}
+      <div style={{
+        position: 'absolute', top: 0, right: 0,
+        width: 24 * s, height: 24 * s,
+        background: `linear-gradient(225deg, rgba(201,169,110,0.08) 50%, transparent 50%)`,
+      }} />
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   HARDCODED BACK CARD
+   ═══════════════════════════════════════ */
+function HardcodedBackCard({ data, tenantName, tenantSubtitle, tenantNit, forExport }: {
+  data: CarnetData;
+  tenantName?: string;
+  tenantSubtitle?: string;
+  tenantNit?: string;
+  forExport?: boolean;
+}) {
+  const displayName = tenantName || data.tenantName || 'ARCHII';
+  const displaySubtitle = tenantSubtitle || data.tenantSubtitle || '';
+  const displayNit = tenantNit || data.tenantNit || '';
+  const qrUrl = `${QR_BASE_URL}/${data.employeeCode}`;
+
+  const isValid = data.validUntil ? new Date(data.validUntil) >= new Date() : true;
+
+  const formattedValidUntil = data.validUntil
+    ? new Date(data.validUntil).toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' })
+    : 'Sin fecha';
+
+  const formattedStartDate = data.startDate
+    ? new Date(data.startDate).toLocaleDateString('es-CO', { year: 'numeric', month: 'short' })
+    : '';
+
+  const formattedStartEnd = data.startDate && data.validUntil
+    ? `${formattedStartDate} – ${new Date(data.validUntil).toLocaleDateString('es-CO', { year: 'numeric', month: 'short' })}`
+    : formattedValidUntil;
+
+  const s = forExport ? 2 : 1;
+
+  const cardBase: React.CSSProperties = {
+    width: CARD_W * s,
+    height: CARD_H * s,
+    fontFamily: "'Montserrat', sans-serif",
+    position: 'relative',
+    overflow: 'hidden',
+    background: CREAM,
+    borderRadius: 12 * s,
+    border: `1.5px solid ${GOLD}`,
+    boxShadow: forExport ? 'none' : `0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)`,
+  };
+
+  return (
+    <div id="carnet-back" style={cardBase}>
+      {/* Left vertical gold stripe */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, bottom: 0,
+        width: 5 * s,
+        background: `linear-gradient(180deg, ${GOLD}, ${GOLD_DARK}, ${GOLD})`,
+      }} />
+
+      {/* Subtle geometric pattern (right side) */}
+      <svg
+        style={{ position: 'absolute', top: 0, right: 0, width: 120 * s, height: '100%', opacity: 0.05 }}
+        viewBox="0 0 120 500"
+        fill="none"
+      >
+        <line x1="20" y1="0" x2="120" y2="200" stroke={GOLD} strokeWidth="1" />
+        <line x1="40" y1="0" x2="120" y2="160" stroke={GOLD} strokeWidth="0.5" />
+        <line x1="60" y1="0" x2="120" y2="120" stroke={GOLD} strokeWidth="0.5" />
+        <line x1="0" y1="500" x2="120" y2="300" stroke={GOLD} strokeWidth="0.5" />
+        <line x1="0" y1="450" x2="100" y2="300" stroke={GOLD} strokeWidth="0.5" />
+      </svg>
+
+      {/* Content */}
+      <div style={{
+        padding: `${16 * s}px ${16 * s}px ${12 * s}px ${20 * s}px`,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        zIndex: 1,
+      }}>
+        {/* Header */}
+        <div style={{ marginBottom: 8 * s }}>
+          <div style={{
+            fontWeight: 700,
+            fontSize: 10 * s,
+            color: TEXT_PRIMARY,
+            letterSpacing: 2 * s,
+            textTransform: 'uppercase',
+          }}>
+            {displayName}
+          </div>
+          {displaySubtitle && (
+            <div style={{
+              fontSize: 6.5 * s,
+              fontWeight: 500,
+              color: GOLD,
+              letterSpacing: 1.5 * s,
+              textTransform: 'uppercase',
+              marginTop: 1 * s,
+            }}>
+              {displaySubtitle}
+            </div>
+          )}
+        </div>
+
+        {/* Gold decorative line */}
+        <div style={{
+          width: 30 * s,
+          height: 1 * s,
+          background: GOLD,
+          marginBottom: 8 * s,
+        }} />
+
+        {/* Employee details with icons */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5 * s }}>
+          {data.position && (
+            <BackDetailRow icon={<BriefcaseIcon size={9 * s} />} label="Cargo" value={data.position} scale={s} />
+          )}
+          {data.area && (
+            <BackDetailRow icon={<IdBadgeIcon size={9 * s} />} label="Area" value={data.area} scale={s} />
+          )}
+          {data.bloodType && (
+            <BackDetailRow icon={<DropletIcon size={9 * s} />} label="Tipo de sangre" value={data.bloodType} scale={s} />
+          )}
+          {data.eps && (
+            <BackDetailRow icon={<ShieldIcon size={9 * s} />} label="EPS" value={data.eps} scale={s} />
+          )}
+          {(data.startDate || data.validUntil) && (
+            <BackDetailRow icon={<ShieldIcon size={9 * s} />} label="Vigencia" value={formattedStartEnd} scale={s} highlight={isValid ? GOLD_DARK : '#C0392B'} />
+          )}
+        </div>
+
+        {/* QR Code */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          marginTop: 8 * s,
+        }}>
+          <div style={{
+            padding: 5 * s,
+            border: `${1.5 * s}px solid ${GOLD}`,
+            borderRadius: 6 * s,
+            background: '#ffffff',
+            boxShadow: `0 1px 4px rgba(201,169,110,0.1)`,
+          }}>
+            <QRCodeSVG
+              value={qrUrl}
+              size={68 * s}
+              level="M"
+              fgColor={TEXT_PRIMARY}
+              bgColor="#ffffff"
+            />
+          </div>
+          <span style={{
+            fontSize: 5 * s,
+            color: TEXT_MUTED,
+            textAlign: 'center',
+            letterSpacing: 0.3 * s,
+            marginTop: 3 * s,
+            fontWeight: 500,
+          }}>
+            Escanea para verificar identidad
+          </span>
+        </div>
+
+        {/* Emergency Contact */}
+        {(data.emergencyContact || data.emergencyPhone) && (
+          <div style={{
+            marginTop: 6 * s,
+            padding: `${6 * s}px ${10 * s}px`,
+            background: 'rgba(201,169,110,0.06)',
+            borderRadius: 6 * s,
+            border: `1px solid rgba(201,169,110,0.12)`,
+          }}>
+            <div style={{
+              fontSize: 6 * s,
+              fontWeight: 700,
+              color: GOLD_DARK,
+              letterSpacing: 1.5 * s,
+              textTransform: 'uppercase',
+              marginBottom: 2 * s,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 3 * s,
+            }}>
+              <HeartIcon size={8 * s} color={GOLD_DARK} />
+              Contacto de emergencia
+            </div>
+            {data.emergencyContact && (
+              <div style={{ fontSize: 8 * s, fontWeight: 500, color: TEXT_PRIMARY }}>
+                {data.emergencyContact}
+              </div>
+            )}
+            {data.emergencyPhone && (
+              <div style={{ fontSize: 7.5 * s, color: TEXT_SECONDARY, marginTop: 1 * s }}>
+                {data.emergencyPhone}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Spacer */}
+        <div style={{ flex: 1 }} />
+
+        {/* Footer: Company legal info */}
+        <div style={{
+          textAlign: 'center',
+          marginTop: 4 * s,
+          paddingTop: 5 * s,
+          borderTop: `1px solid rgba(201,169,110,0.15)`,
+        }}>
+          {displayNit && (
+            <div style={{
+              fontSize: 5.5 * s,
+              fontWeight: 500,
+              color: TEXT_MUTED,
+              letterSpacing: 0.5 * s,
+            }}>
+              NIT. {displayNit}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom-right gold corner accent */}
+      <div style={{
+        position: 'absolute', bottom: 0, right: 0,
+        width: 32 * s, height: 32 * s,
+        background: `linear-gradient(225deg, transparent 50%, rgba(201,169,110,0.06) 50%)`,
+      }} />
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
+   MAIN COMPONENT
+   ═══════════════════════════════════════ */
+export default function CarnetCard({ data, tenantName, tenantSubtitle, tenantNit, forExport, template, frontTemplate, backTemplate }: CarnetCardProps) {
+  useEffect(() => { ensureFont(); }, []);
+
+  // Resolve effective templates: explicit front/back take priority, then fallback to deprecated template prop
+  const effectiveFront = frontTemplate || (template?.side === 'front' ? template : undefined);
+  const effectiveBack = backTemplate || (template?.side === 'back' ? template : undefined);
+
+  // If any custom template exists, render with template support
+  const hasAnyTemplate = !!(effectiveFront || effectiveBack);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'row', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap', justifyContent: 'center' }}>
+      {/* ═══════ FRONT ═══════ */}
+      {effectiveFront ? (
+        <TemplateCarnetCard data={data} template={effectiveFront} tenantName={tenantName} forExport={forExport} forceId="carnet-front" />
+      ) : (
+        <HardcodedFrontCard data={data} tenantName={tenantName} tenantSubtitle={tenantSubtitle} tenantNit={tenantNit} forExport={forExport} />
+      )}
+
+      {/* ═══════ BACK ═══════ */}
+      {effectiveBack ? (
+        <TemplateCarnetCard data={data} template={effectiveBack} tenantName={tenantName} forExport={forExport} forceId="carnet-back" />
+      ) : (
+        <HardcodedBackCard data={data} tenantName={tenantName} tenantSubtitle={tenantSubtitle} tenantNit={tenantNit} forExport={forExport} />
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════
    TEMPLATE-BASED RENDERING
    ═══════════════════════════════════════ */
 
-function TemplateCarnetCard({ data, template, tenantName, forExport }: {
+function TemplateCarnetCard({ data, template, tenantName, forExport, forceId }: {
   data: CarnetData;
   template: CarnetTemplate;
   tenantName?: string;
   forExport?: boolean;
+  /** Override the DOM id for the root element (useful for export functions that look for specific ids) */
+  forceId?: string;
 }) {
   const s = forExport ? 2 : 1;
   const qrUrl = `${QR_BASE_URL}/${data.employeeCode}`;
@@ -800,7 +865,7 @@ function TemplateCarnetCard({ data, template, tenantName, forExport }: {
   };
 
   return (
-    <div style={cardStyle} id={`carnet-${template.side}`}>
+    <div style={cardStyle} id={forceId || `carnet-${template.side}`}>
       {/* Background image */}
       {template.backgroundImage && (
         <img src={template.backgroundImage} alt="" style={{
