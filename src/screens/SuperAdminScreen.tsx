@@ -149,7 +149,6 @@ export default function SuperAdminScreen() {
 function DashboardTab({ handleAction, showToast, setLoading }: { handleAction: any; showToast: any; setLoading: any }) {
   const [stats, setStats] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [tenants, setTenants] = useState<any[]>([]);
   const [assigningUser, setAssigningUser] = useState<string | null>(null);
   const [selectedTenantForAssign, setSelectedTenantForAssign] = useState<string>('');
 
@@ -163,13 +162,10 @@ function DashboardTab({ handleAction, showToast, setLoading }: { handleAction: a
     }
   }, [handleAction]);
 
-  const loadTenants = useCallback(async () => {
-    const data = await handleAction('list-tenants', {}, '');
-    if (data) setTenants(data.tenants || []);
-  }, [handleAction]);
-
   useEffect(() => { loadDashboard(); }, [loadDashboard]);
-  useEffect(() => { loadTenants(); }, [loadTenants]);
+
+  // Derive tenants for dropdown from dashboard data (avoid extra list-tenants call)
+  const tenants: { id: string; name: string; code: string }[] = stats?.tenantSummaries || [];
 
   const assignOrphanToTenant = async (uid: string, userName: string) => {
     if (!selectedTenantForAssign) return showToast('Selecciona un tenant', 'error');

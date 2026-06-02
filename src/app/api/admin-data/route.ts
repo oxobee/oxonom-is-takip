@@ -131,27 +131,30 @@ export async function POST(request: NextRequest) {
         };
       });
 
-      // Get total count for pagination (approximate)
+      // Get total count for pagination (use .count().get() to avoid full scan)
       let totalCount = 0;
       try {
-        const countQuery = db
+        const countSnap = await db
           .collection("audit_logs")
-          .where("tenantId", "==", tenantId);
-        const countSnap = await countQuery.get();
-        totalCount = countSnap.size;
+          .where("tenantId", "==", tenantId)
+          .count()
+          .get();
+        totalCount = countSnap.data().count;
       } catch {
-        // If count fails, just skip it
+        // If count fails, use page-based estimate
+        totalCount = logs.length < pageSize ? (page - 1) * pageSize + logs.length : page * pageSize + 1;
       }
 
-      // Resolve user names
+      // Resolve user names (batched parallel lookups)
       const userIds = [...new Set(logs.map((l: any) => l.userId).filter(Boolean))] as string[];
       const userMap: Record<string, string> = {};
-      for (const uid of userIds) {
-        try {
-          const uDoc = await db.collection("users").doc(uid).get();
-          userMap[uid] = uDoc.exists ? uDoc.data()?.name || uid : uid;
-        } catch {
-          userMap[uid] = uid;
+      const batchSize = 20;
+      for (let i = 0; i < userIds.length; i += batchSize) {
+        const batch = userIds.slice(i, i + batchSize);
+        const docs = await Promise.all(batch.map((uid: string) => db.collection("users").doc(uid).get()));
+        for (const doc of docs) {
+          if (doc.exists) userMap[doc.id] = doc.data()?.name || doc.id;
+          else userMap[doc.id] = doc.id;
         }
       }
 
@@ -221,15 +224,16 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Get total count
+      // Get total count (use .count().get() to avoid full scan)
       let totalCount = 0;
       let unresolvedCount = 0;
       try {
-        const allSnap = await db.collection("error_reports").get();
-        totalCount = allSnap.size;
-        for (const doc of allSnap.docs) {
-          if (!doc.data().resolved) unresolvedCount++;
-        }
+        const [totalSnap, unresolvedSnap] = await Promise.all([
+          db.collection("error_reports").count().get(),
+          db.collection("error_reports").where("resolved", "==", false).count().get(),
+        ]);
+        totalCount = totalSnap.data().count;
+        unresolvedCount = unresolvedSnap.data().count;
       } catch {
         // skip
       }
@@ -271,15 +275,16 @@ export async function POST(request: NextRequest) {
         };
       });
 
-      // Get total count
+      // Get total count (use .count().get() to avoid full scan)
       let totalCount = 0;
       let reviewedCount = 0;
       try {
-        const allSnap = await db.collection("beta_feedback").get();
-        totalCount = allSnap.size;
-        for (const doc of allSnap.docs) {
-          if (doc.data().reviewed) reviewedCount++;
-        }
+        const [totalSnap, reviewedSnap] = await Promise.all([
+          db.collection("beta_feedback").count().get(),
+          db.collection("beta_feedback").where("reviewed", "==", true).count().get(),
+        ]);
+        totalCount = totalSnap.data().count;
+        reviewedCount = reviewedSnap.data().count;
       } catch {
         // skip
       }

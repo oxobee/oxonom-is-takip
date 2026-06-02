@@ -75,21 +75,21 @@ export async function POST(request: NextRequest) {
 
     // ===== DASHBOARD — Global Stats =====
     if (action === "dashboard") {
-      const [tenantsSnap, usersSnap, projectsSnap] = await Promise.all([
+      // Get full data for tenants and users (needed for orphan detection + summaries)
+      const [tenantsSnap, usersSnap] = await Promise.all([
         db.collection("tenants").get(),
         db.collection("users").get(),
-        db.collection("projects").get(),
       ]);
 
       const totalTenants = tenantsSnap.size;
       const totalUsers = usersSnap.size;
-      const totalProjects = projectsSnap.size;
 
-      // Count tasks, expenses, etc. with collection counts
-      const [tasksSnap, expensesSnap, meetingsSnap] = await Promise.all([
-        db.collection("tasks").get(),
-        db.collection("expenses").get(),
-        db.collection("meetings").get(),
+      // Use .count().get() for collections where we only need counts
+      const [totalProjects, totalTasks, totalExpenses, totalMeetings] = await Promise.all([
+        db.collection("projects").count().get().then((s: any) => s.data().count).catch(() => 0),
+        db.collection("tasks").count().get().then((s: any) => s.data().count).catch(() => 0),
+        db.collection("expenses").count().get().then((s: any) => s.data().count).catch(() => 0),
+        db.collection("meetings").count().get().then((s: any) => s.data().count).catch(() => 0),
       ]);
 
       // Build tenant summaries
@@ -116,9 +116,9 @@ export async function POST(request: NextRequest) {
         totalTenants,
         totalUsers,
         totalProjects,
-        totalTasks: tasksSnap.size,
-        totalExpenses: expensesSnap.size,
-        totalMeetings: meetingsSnap.size,
+        totalTasks,
+        totalExpenses,
+        totalMeetings,
         tenantSummaries,
         orphanUsersCount: orphanUsers.length,
         orphanUsers: orphanUsers.map((d: any) => ({
@@ -178,15 +178,9 @@ export async function POST(request: NextRequest) {
           projectCount = pSnap.data().count;
           taskCount = tSnap.data().count;
         } catch (e) {
-          // Fallback: use .get() if .count() not supported
-          try {
-            const [pSnap2, tSnap2] = await Promise.all([
-              db.collection("projects").where("tenantId", "==", doc.id).get(),
-              db.collection("tasks").where("tenantId", "==", doc.id).get(),
-            ]);
-            projectCount = pSnap2.size;
-            taskCount = tSnap2.size;
-          } catch (e2) { /* skip */ }
+          // If .count() not supported, skip counts rather than full scans
+          projectCount = 0;
+          taskCount = 0;
         }
 
         tenants.push({
@@ -370,18 +364,29 @@ export async function POST(request: NextRequest) {
       if (!tenantDoc.exists) return NextResponse.json({ error: "Tenant no encontrado" }, { status: 404 });
 
       const data = tenantDoc.data()!;
-      const membersResolved: any[] = [];
-      for (const uid of (data.members || [])) {
-        const uDoc = await db.collection("users").doc(uid).get();
-        membersResolved.push({
-          uid,
-          name: uDoc.exists ? uDoc.data()?.name : "Desconocido",
-          email: uDoc.exists ? uDoc.data()?.email : "N/A",
-          role: uDoc.exists ? uDoc.data()?.role : "Miembro",
-          photoURL: uDoc.exists ? uDoc.data()?.photoURL || "" : "",
-          isCreator: uid === data.createdBy,
-        });
+
+      // Batch user lookups instead of sequential N+1
+      const memberUids = (data.members || []);
+      const userMap: Record<string, any> = {};
+      const batchSize = 20;
+      for (let i = 0; i < memberUids.length; i += batchSize) {
+        const batch = memberUids.slice(i, i + batchSize);
+        const docs = await Promise.all(batch.map((uid: string) => db.collection("users").doc(uid).get()));
+        for (const doc of docs) {
+          if (doc.exists) userMap[doc.id] = doc.data();
+        }
       }
+      const membersResolved = memberUids.map((uid: string) => {
+        const uData = userMap[uid];
+        return {
+          uid,
+          name: uData?.name || "Desconocido",
+          email: uData?.email || "N/A",
+          role: uData?.role || "Miembro",
+          photoURL: uData?.photoURL || "",
+          isCreator: uid === data.createdBy,
+        };
+      });
 
       // Get all collections counts for this tenant
       const colNames = ["projects", "tasks", "expenses", "suppliers", "companies", "meetings", "galleryPhotos", "invProducts", "invCategories", "invMovements", "invTransfers", "timeEntries", "invoices", "comments"];
@@ -392,7 +397,7 @@ export async function POST(request: NextRequest) {
           collectionStats[col] = snap.data().count;
         } catch {
           try {
-            const snap = await db.collection(col).where("tenantId", "==", tenantId).limit(1).get();
+            const snap = await db.collection(col).where("tenantId", "==", tenantId).get();
             collectionStats[col] = snap.size;
           } catch {
             collectionStats[col] = 0;
@@ -1081,6 +1086,14 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Error interno";
     console.error("[SuperAdmin] Error:", message);
+
+    // Detect quota exhaustion
+    if (message.includes("RESOURCE_EXHAUSTED") || message.includes("quota exceeded")) {
+      return NextResponse.json({
+        error: "Cuota de Firebase excedida. Las operaciones de lectura se han limitado. Intente de nuevo más tarde o contacte al administrador."
+      }, { status: 429 });
+    }
+
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
