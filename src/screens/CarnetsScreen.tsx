@@ -781,7 +781,15 @@ export default function CarnetsScreen() {
           <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin' }}>
             {/* Photo */}
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[var(--af-accent)]/30 flex items-center justify-center bg-[var(--af-bg3)] flex-shrink-0">
+              <div
+                className={`w-20 h-20 rounded-full overflow-hidden border-2 border-[var(--af-accent)]/30 flex items-center justify-center bg-[var(--af-bg3)] flex-shrink-0 ${form.photoBase64 ? 'cursor-pointer hover:border-[var(--af-accent)]/60 transition-colors' : ''}`}
+                onClick={() => {
+                  if (form.photoBase64) {
+                    setCropperImage(form.photoBase64);
+                  }
+                }}
+                title={form.photoBase64 ? 'Click para re-encuadrar la foto' : ''}
+              >
                 {form.photoBase64 ? (
                   <img src={form.photoBase64.startsWith('data:') ? form.photoBase64 : `data:image/jpeg;base64,${form.photoBase64}`} alt="" className="w-full h-full object-cover" />
                 ) : (
@@ -794,12 +802,20 @@ export default function CarnetsScreen() {
                   <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
                 </label>
                 {form.photoBase64 && (
-                  <button
-                    onClick={() => setForm(prev => ({ ...prev, photoBase64: '' }))}
-                    className="ml-2 text-[11px] text-red-400 hover:underline cursor-pointer bg-transparent border-none"
-                  >
-                    Quitar
-                  </button>
+                  <div className="flex items-center gap-2 mt-1">
+                    <button
+                      onClick={() => setCropperImage(form.photoBase64!)}
+                      className="text-[11px] text-[var(--af-accent)] hover:underline cursor-pointer bg-transparent border-none"
+                    >
+                      Re-encuadrar
+                    </button>
+                    <button
+                      onClick={() => setForm(prev => ({ ...prev, photoBase64: '' }))}
+                      className="text-[11px] text-red-400 hover:underline cursor-pointer bg-transparent border-none"
+                    >
+                      Quitar
+                    </button>
+                  </div>
                 )}
                 <p className="text-[10px] text-[var(--muted-foreground)] mt-1">Máximo 5MB. Podrás encuadrar la foto.</p>
               </div>
