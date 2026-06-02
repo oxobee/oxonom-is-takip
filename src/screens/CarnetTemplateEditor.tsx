@@ -290,16 +290,15 @@ export default function CarnetTemplateEditor() {
       // But DON'T replace positions — keep the user's layout
       setCurrentTemplate(prev => {
         if (!prev) return prev;
+        const updatedLogo = templateToSave.logo && prev.logo
+          ? { ...prev.logo, image: templateToSave.logo.image || prev.logo.image }
+          : prev.logo;
         return {
           ...prev,
           id: data.id || prev.id,
-          // Only update image fields from the processed version, keep all positions
           backgroundImage: templateToSave.backgroundImage ?? prev.backgroundImage,
-          logo: templateToSave.logo ? {
-            ...prev.logo,
-            image: templateToSave.logo.image || prev.logo?.image,
-          } : prev.logo,
-        };
+          logo: updatedLogo,
+        } as CarnetTemplate;
       });
 
       // Refresh template list in sidebar (without replacing current template)
