@@ -16,6 +16,7 @@ import {
 
 // Lazy-load the designer to avoid bloating the main carnets bundle
 const CarnetTemplateEditor = dynamic(() => import('@/screens/CarnetTemplateEditor'), { ssr: false });
+const PhotoCropperModal = dynamic(() => import('@/components/carnets/PhotoCropperModal'), { ssr: false });
 
 interface CarnetRecord {
   id: string;
@@ -82,6 +83,9 @@ export default function CarnetsScreen() {
 
   // Designer state — opens as full-screen overlay within CarnetsScreen
   const [showDesigner, setShowDesigner] = useState(false);
+
+  // Photo cropper state
+  const [cropperImage, setCropperImage] = useState<string | null>(null);
 
   // Fetch carnets
   const fetchCarnets = useCallback(async () => {
@@ -261,28 +265,12 @@ export default function CarnetsScreen() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      const img = document.createElement('img');
-      img.onload = () => {
-        // Resize to max 200x200
-        const canvas = document.createElement('canvas');
-        const MAX = 200;
-        let w = img.width;
-        let h = img.height;
-        if (w > MAX || h > MAX) {
-          const ratio = Math.min(MAX / w, MAX / h);
-          w = Math.round(w * ratio);
-          h = Math.round(h * ratio);
-        }
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d')!;
-        ctx.drawImage(img, 0, 0, w, h);
-        const base64 = canvas.toDataURL('image/jpeg', 0.8);
-        setForm(prev => ({ ...prev, photoBase64: base64 }));
-      };
-      img.src = reader.result as string;
+      // Open the cropper modal instead of directly processing
+      setCropperImage(reader.result as string);
     };
     reader.readAsDataURL(file);
+    // Reset file input so same file can be re-selected
+    e.target.value = '';
   };
 
   const handleExportPDF = async (carnet: CarnetRecord) => {
@@ -813,7 +801,7 @@ export default function CarnetsScreen() {
                     Quitar
                   </button>
                 )}
-                <p className="text-[10px] text-[var(--muted-foreground)] mt-1">Máximo 5MB. Se redimensiona a 200×200px.</p>
+                <p className="text-[10px] text-[var(--muted-foreground)] mt-1">Máximo 5MB. Podrás encuadrar la foto.</p>
               </div>
             </div>
 
@@ -967,6 +955,19 @@ export default function CarnetsScreen() {
             submitDisabled={saving}
           />
         </CenterModal>
+      )}
+
+      {/* ═══ Photo Cropper Modal ═══ */}
+      {cropperImage && (
+        <PhotoCropperModal
+          imageSrc={cropperImage}
+          outputSize={400}
+          onCropComplete={(croppedBase64) => {
+            setForm(prev => ({ ...prev, photoBase64: croppedBase64 }));
+            setCropperImage(null);
+          }}
+          onCancel={() => setCropperImage(null)}
+        />
       )}
 
       {/* ═══ Designer Overlay (full-screen within Carnets) ═══ */}
