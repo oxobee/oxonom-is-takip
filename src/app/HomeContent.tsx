@@ -85,7 +85,6 @@ const DirectMessagesScreen = dynamic(() => import('@/screens/DirectMessagesScree
 const IntegrationsScreen = dynamic(() => import('@/screens/IntegrationsScreen'), { ssr: false });
 const AdminLogScreen = dynamic(() => import('@/screens/AdminLogScreen'), { ssr: false });
 const CarnetsScreen = dynamic(() => import('@/screens/CarnetsScreen'), { ssr: false });
-const CarnetTemplateEditor = dynamic(() => import('@/screens/CarnetTemplateEditor'), { ssr: false });
 
 function AppContent() {
   const {
@@ -159,7 +158,6 @@ function AppContent() {
     changeorders: 'Órdenes de Cambio', catalogs: 'Catálogos', fieldnotes: 'Notas de Campo',
     kanban: 'Tablero Kanban', integrations: 'Integraciones', adminlog: 'Logs del Sistema',
     carnets: 'Carnets',
-    'carnet-designer': 'Diseñador Carnet',
     weeklyAgenda: 'Agenda Semanal', timeTracking: 'Time Tracking',
     projectDetail: currentProject?.data.name || 'Proyecto',
   };
@@ -302,7 +300,6 @@ function AppContent() {
               {screen === 'integrations' && <IntegrationsScreen />}
               {screen === 'adminlog' && <AdminLogScreen />}
               {screen === 'carnets' && <CarnetsScreen />}
-              {screen === 'carnet-designer' && <CarnetTemplateEditor />}
               </ErrorBoundary>
             </motion.div>
           </AnimatePresence>

@@ -92,7 +92,6 @@ export default function Sidebar({
     { id: 'team', label: 'Equipo', icon: <Users size={18} className="stroke-current" aria-hidden="true" />, badge: teamUsers.length, category: 'admin' as NavCategory },
     { id: 'invoices', label: 'Facturas', icon: <Receipt size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
     { id: 'carnets', label: 'Carnets', icon: <CreditCard size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
-    { id: 'carnet-designer', label: 'Diseñador Carnet', icon: <Palette size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
     { id: 'companies', label: 'Empresas', icon: <Building2 size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
     { id: 'catalogs', label: 'Catálogos', icon: <BookOpen size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
     { id: 'integrations', label: 'Integraciones', icon: <Globe size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
