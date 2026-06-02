@@ -638,10 +638,11 @@ async function checkAgendaStartingReminders(db: any): Promise<{ sent: number; sk
     // Already started more than 2 min ago — skip
     if (minutesUntil < -2) continue;
 
-    // Get users to notify: assignee + participants
+    // Get users to notify: assignee + participants + creator
     const uids: string[] = [];
     if (task.assigneeId) uids.push(task.assigneeId);
     if (Array.isArray(task.agendaMeta.participantIds)) uids.push(...task.agendaMeta.participantIds);
+    if (task.createdBy && !uids.includes(task.createdBy)) uids.push(task.createdBy);
     const uniqueUids = [...new Set(uids)];
 
     const h12 = startHour === 0 || startHour === 12
@@ -650,16 +651,21 @@ async function checkAgendaStartingReminders(db: any): Promise<{ sent: number; sk
         ? `${startHour - 12}:00 pm`
         : `${startHour}:00 am`;
 
-    // Check each threshold independently so both can fire
+    // Check each threshold independently so multiple can fire
     const thresholds: { min: number; label: number }[] = [];
 
-    // 15-minute threshold: notify if within 60 min (cron runs hourly)
-    if (minutesUntil > 0 && minutesUntil <= 60) {
-      thresholds.push({ min: minutesUntil, label: 15 });
+    // 30-minute advance reminder: notify if within 30 min (cron runs every 5 min)
+    if (minutesUntil > 10 && minutesUntil <= 35) {
+      thresholds.push({ min: minutesUntil, label: 30 });
     }
 
-    // 5-minute threshold: notify if within 10 min
-    if (minutesUntil > 0 && minutesUntil <= 10) {
+    // 10-minute reminder: notify if within 10-15 min
+    if (minutesUntil > 3 && minutesUntil <= 15) {
+      thresholds.push({ min: minutesUntil, label: 10 });
+    }
+
+    // 5-minute urgent reminder: notify if within 3-8 min
+    if (minutesUntil > 0 && minutesUntil <= 8) {
       thresholds.push({ min: minutesUntil, label: 5 });
     }
 
@@ -686,13 +692,17 @@ async function checkAgendaStartingReminders(db: any): Promise<{ sent: number; sk
           body = `"${task.title}" a las ${h12}${task.priority ? ` · Prioridad: ${task.priority}` : ''}`;
           waPrefix = '🚀 ¡EMPIEZA AHORA!';
         } else if (threshold <= 5) {
-          title = `🔴 ¡Actividad empieza pronto: ${task.title}`;
+          title = `🔴 ¡Actividad en ${Math.round(mins)} min: ${task.title}`;
           body = `"${task.title}" a las ${h12}${task.priority ? ` · Prioridad: ${task.priority}` : ''}`;
-          waPrefix = '🔴 ¡EMPIEZA PRONTO!';
-        } else {
+          waPrefix = `🔴 ¡EMPIEZA EN ${Math.round(mins)} MIN!`;
+        } else if (threshold <= 10) {
           title = `⏰ Actividad en ~${Math.round(mins)} min: ${task.title}`;
           body = `"${task.title}" a las ${h12}${task.priority ? ` · Prioridad: ${task.priority}` : ''}`;
-          waPrefix = '⏰ Recordatorio de agenda';
+          waPrefix = '⏰ Recordatorio: actividad pronto';
+        } else {
+          title = `📋 Actividad en ~${Math.round(mins)} min: ${task.title}`;
+          body = `"${task.title}" a las ${h12}${task.priority ? ` · Prioridad: ${task.priority}` : ''}`;
+          waPrefix = '📋 Recordatorio de agenda';
         }
 
         // Push
