@@ -14,6 +14,7 @@ import { getFirebase, getFirebaseIdToken, type FirebaseUser } from '@/lib/fireba
 import * as fbActions from '@/lib/firestore-actions';
 import { OneDriveProvider } from '@/hooks/useOneDrive';
 import { useNotificationsContext } from '@/hooks/useNotifications';
+import { useAgendaReminders } from '@/hooks/useAgendaReminders';
 
 // Custom hooks available for future extraction:
 // import { useFirestoreData } from '@/hooks/useFirestoreData';
@@ -407,6 +408,11 @@ export default function AppProvider({ children }: { children: React.ReactNode })
               await notifyExternal.custom(d.uid, d.message);
               break;
             }
+            case 'agendaStarting': {
+              const d = entry.data;
+              await notifyExternal.agendaStarting(d.uid, d.title, d.startHour, d.minutesLeft);
+              break;
+            }
             default:
               console.warn('[Archii Notif] Unknown buffered type:', entry.type);
           }
@@ -419,6 +425,14 @@ export default function AppProvider({ children }: { children: React.ReactNode })
 
   // Destructure notification context for detection effects
   const { sendNotif, playNotifSound, vibrateNotif, notifPrefs, isTabVisibleRef, resetNotifOnTenantSwitch } = notifCtx;
+
+  // ===== AGENDA REMINDERS (extracted to useAgendaReminders.tsx) =====
+  useAgendaReminders({
+    tasks,
+    authUserId: authUser?.uid,
+    sendNotif,
+    bufferedNotify,
+  });
   // Alias for backward compat in detection effects
   const sendBrowserNotif = sendNotif;
 
