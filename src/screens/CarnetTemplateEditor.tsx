@@ -18,12 +18,15 @@ import {
   type QRTemplateElement,
   type ShapeTemplateElement,
   type ImageTemplateElement,
+  type TemplateImageElement,
   FONT_FAMILIES,
   CARD_FIELDS,
   createDefaultPortraitTemplate,
   createDefaultBackTemplate,
   compressImage,
+  compressImagePNG,
   compressBase64Image,
+  compressBase64ImagePNG,
 } from '@/lib/carnet-template-types';
 
 const QR_BASE_URL = 'https://archii-theta.vercel.app/carnet';
@@ -72,6 +75,7 @@ export default function CarnetTemplateEditor() {
   const [templates, setTemplates] = useState<CarnetTemplate[]>([]);
   const [currentTemplate, setCurrentTemplate] = useState<CarnetTemplate | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [logoSelected, setLogoSelected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [zoom, setZoom] = useState(1.2);
@@ -309,12 +313,40 @@ export default function CarnetTemplateEditor() {
         );
       }
 
-      // Process logo image
+      // Process logo image (preserve PNG transparency)
       if (templateToSave.logo?.image) {
-        const logoImage = await processImageForSave(
-          templateToSave.logo.image, 300, 300, 'carnet-templates/logos', 'logo'
-        );
-        templateToSave.logo = { ...templateToSave.logo, image: logoImage || '' };
+        // Try Storage first (preserves original format)
+        let logoProcessed = false;
+        if (templateToSave.logo.image.startsWith('data:')) {
+          try {
+            const url = await uploadImageToStorage(templateToSave.logo.image, 'carnet-templates/logos');
+            templateToSave.logo = { ...templateToSave.logo, image: url };
+            logoProcessed = true;
+          } catch (storageErr: any) {
+            console.warn('[Editor] Logo Storage upload failed, keeping PNG in Firestore');
+          }
+        }
+        if (!logoProcessed && templateToSave.logo.image.startsWith('data:image/png')) {
+          // PNG in Firestore — check if it fits, otherwise reduce size (still PNG)
+          const FIRESTORE_FIELD_LIMIT = 900000;
+          if (templateToSave.logo.image.length > FIRESTORE_FIELD_LIMIT) {
+            // Reduce PNG dimensions to fit
+            try {
+              const reduced = await compressBase64ImagePNG(templateToSave.logo.image, 150, 150);
+              templateToSave.logo = { ...templateToSave.logo, image: reduced };
+            } catch (e) {
+              console.warn('[Editor] Logo too large, even as reduced PNG');
+              templateToSave.logo = { ...templateToSave.logo, image: '' };
+            }
+          }
+          // else: PNG fits, keep as-is
+        } else if (!logoProcessed && templateToSave.logo.image.startsWith('data:')) {
+          // Non-PNG image, use standard processing
+          const logoImage = await processImageForSave(
+            templateToSave.logo.image, 300, 300, 'carnet-templates/logos', 'logo'
+          );
+          templateToSave.logo = { ...templateToSave.logo, image: logoImage || '' };
+        }
       }
 
       // Process element images (only modify the image field, preserve all positions)
@@ -490,12 +522,14 @@ export default function CarnetTemplateEditor() {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      // Compress: logos small, JPEG 80% quality
-      const compressed = await compressImage(file, 200, 200, 0.8);
+      // Compress as PNG to preserve transparency (no background)
+      const compressed = await compressImagePNG(file, 300, 300);
       setCurrentTemplate(prev => prev ? {
         ...prev,
-        logo: { x: 20, y: 8, width: 28, height: 28, image: compressed, visible: true, opacity: 1 },
+        logo: { x: 20, y: 8, width: 60, height: 60, image: compressed, visible: true, opacity: 1 },
       } : prev);
+      setLogoSelected(true);
+      setSelectedId(null);
     } catch (err) {
       console.error('[Editor] Logo upload error:', err);
       toast.error('Error al procesar logo');
@@ -816,7 +850,7 @@ export default function CarnetTemplateEditor() {
               <PaletteBtn icon={<Image size={14} />} label="Imagen" onClick={() => addElement('image')} />
               <PaletteBtn icon={<Upload size={14} />} label="Logo" onClick={() => document.getElementById('logo-upload')?.click()} />
             </div>
-            <input id="logo-upload" type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+            <input id="logo-upload" type="file" accept="image/png,image/svg+xml,image/webp,image/*" className="hidden" onChange={handleLogoUpload} />
           </div>
 
           {/* Background */}
@@ -848,15 +882,36 @@ export default function CarnetTemplateEditor() {
           {/* Elements list */}
           <div className="p-3 flex-1">
             <label className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-2 block">
-              Elementos ({currentTemplate?.elements.length || 0})
+              Elementos ({currentTemplate?.elements.length || 0}{currentTemplate?.logo?.image ? ' + logo' : ''})
             </label>
             <div className="space-y-0.5">
+              {/* Logo item */}
+              {currentTemplate?.logo?.image && (
+                <div
+                  onClick={() => { setLogoSelected(true); setSelectedId(null); }}
+                  className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] cursor-pointer transition-all ${
+                    logoSelected
+                      ? 'bg-[var(--af-accent)]/10 text-[var(--af-accent)]'
+                      : 'text-[var(--muted-foreground)] hover:bg-[var(--af-bg3)]'
+                  }`}
+                >
+                  <Upload size={12} />
+                  <span className="flex-1 truncate">Logo</span>
+                  <button
+                    onClick={(_e: any) => { _e.stopPropagation(); setCurrentTemplate(prev => prev ? { ...prev, logo: { ...prev.logo!, visible: !prev.logo!.visible } } : prev); }}
+                    className="w-4 h-4 flex items-center justify-center bg-transparent border-none cursor-pointer"
+                  >
+                    {currentTemplate.logo.visible ? <Eye size={10} /> : <EyeOff size={10} className="text-red-400" />}
+                  </button>
+                </div>
+              )}
+              {/* Regular elements */}
               {(currentTemplate?.elements || [])
                 .sort((a, b) => (b.zIndex ?? 1) - (a.zIndex ?? 1))
                 .map(el => (
                 <div
                   key={el.id}
-                  onClick={() => setSelectedId(el.id)}
+                  onClick={() => { setSelectedId(el.id); setLogoSelected(false); }}
                   className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] cursor-pointer transition-all ${
                     selectedId === el.id
                       ? 'bg-[var(--af-accent)]/10 text-[var(--af-accent)]'
@@ -881,7 +936,7 @@ export default function CarnetTemplateEditor() {
         <div
           ref={canvasContainerRef}
           className="flex-1 overflow-auto bg-[var(--af-bg3)] flex items-start justify-center p-8"
-          onClick={() => setSelectedId(null)}
+          onClick={() => { setSelectedId(null); setLogoSelected(false); }}
         >
           <div
             style={{
@@ -920,22 +975,56 @@ export default function CarnetTemplateEditor() {
                 />
               )}
 
-              {/* Logo */}
+              {/* Logo — Draggable & Resizable */}
               {currentTemplate?.logo?.visible && currentTemplate.logo.image && (
-                <img
-                  src={currentTemplate.logo.image}
-                  alt="Logo"
-                  style={{
-                    position: 'absolute',
-                    left: currentTemplate.logo.x,
-                    top: currentTemplate.logo.y,
-                    width: currentTemplate.logo.width,
-                    height: currentTemplate.logo.height,
-                    opacity: currentTemplate.logo.opacity,
-                    objectFit: 'contain',
-                    zIndex: 10,
+                <Rnd
+                  position={{ x: currentTemplate.logo.x, y: currentTemplate.logo.y }}
+                  size={{ width: currentTemplate.logo.width, height: currentTemplate.logo.height }}
+                  scale={zoom}
+                  onDragStop={(_e, d) => {
+                    setCurrentTemplate(prev => prev ? {
+                      ...prev,
+                      logo: { ...prev.logo!, x: d.x, y: d.y },
+                    } : prev);
                   }}
-                />
+                  onResizeStop={(_e, _dir, ref, _delta, pos) => {
+                    setCurrentTemplate(prev => prev ? {
+                      ...prev,
+                      logo: {
+                        ...prev.logo!,
+                        x: pos.x,
+                        y: pos.y,
+                        width: parseFloat(ref.style.width),
+                        height: parseFloat(ref.style.height),
+                      },
+                    } : prev);
+                  }}
+                  lockAspectRatio
+                  style={{ zIndex: 10 + (logoSelected ? 100 : 0) }}
+                  onClick={(_e: any) => { _e.stopPropagation(); setLogoSelected(true); setSelectedId(null); }}
+                >
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    outline: logoSelected ? '2px solid #4F8EF7' : '2px solid transparent',
+                    outlineOffset: '1px',
+                    borderRadius: 2,
+                    cursor: 'move',
+                    position: 'relative',
+                    opacity: currentTemplate.logo.opacity,
+                  }}>
+                    <img
+                      src={currentTemplate.logo.image}
+                      alt="Logo"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  </div>
+                </Rnd>
               )}
 
               {/* Elements */}
@@ -946,7 +1035,25 @@ export default function CarnetTemplateEditor() {
 
         {/* ─── Right Panel: Properties ─── */}
         <div className="w-64 border-l border-[var(--border)] bg-[var(--card)] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
-          {selectedElement ? (
+          {logoSelected && currentTemplate?.logo ? (
+            <LogoPropertiesPanel
+              logo={currentTemplate.logo}
+              onUpdate={(updates) => {
+                setCurrentTemplate(prev => prev ? {
+                  ...prev,
+                  logo: { ...prev.logo!, ...updates },
+                } : prev);
+              }}
+              onRemove={() => {
+                setCurrentTemplate(prev => prev ? {
+                  ...prev,
+                  logo: { ...prev.logo!, image: '', visible: false },
+                } : prev);
+                setLogoSelected(false);
+              }}
+              onReplace={() => document.getElementById('logo-upload')?.click()}
+            />
+          ) : selectedElement ? (
             <PropertiesPanel
               element={selectedElement}
               onUpdate={(updates) => updateElement(selectedId!, updates)}
@@ -979,6 +1086,106 @@ export default function CarnetTemplateEditor() {
 /* ═══════════════════════════════════════
    SUB-COMPONENTS
    ═══════════════════════════════════════ */
+
+/* ─── Logo Properties Panel ─── */
+function LogoPropertiesPanel({
+  logo,
+  onUpdate,
+  onRemove,
+  onReplace,
+}: {
+  logo: TemplateImageElement;
+  onUpdate: (updates: Partial<TemplateImageElement>) => void;
+  onRemove: () => void;
+  onReplace: () => void;
+}) {
+  return (
+    <div className="p-3 space-y-3">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <Upload size={14} className="text-[var(--af-accent)]" />
+          <span className="text-[12px] font-semibold text-[var(--foreground)]">Logo</span>
+        </div>
+        <button onClick={onRemove} title="Quitar logo" className="w-6 h-6 flex items-center justify-center rounded hover:bg-red-500/10 cursor-pointer bg-transparent border-none text-red-400">
+          <Trash2 size={12} />
+        </button>
+      </div>
+
+      {/* Preview */}
+      <div className="flex items-center justify-center p-3 bg-[var(--af-bg3)] rounded-xl">
+        <div
+          style={{
+            width: Math.min(logo.width, 120),
+            height: Math.min(logo.height, 120),
+            backgroundImage: `url(${logo.image})`,
+            backgroundSize: 'contain',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            // Checkerboard pattern to show transparency
+            backgroundColor: 'transparent',
+          }}
+          className="rounded border border-[var(--border)]"
+        />
+      </div>
+
+      {/* Replace logo */}
+      <button
+        onClick={onReplace}
+        className="af-btn-secondary flex items-center gap-1.5 text-[11px] px-3 py-2 w-full justify-center"
+      >
+        <Upload size={12} /> Cambiar logo
+      </button>
+
+      {/* Position & Size */}
+      <PropSection title="Posición y tamaño">
+        <div className="grid grid-cols-2 gap-1.5">
+          <PropInput label="X" type="number" value={Math.round(logo.x)} onChange={v => onUpdate({ x: v })} />
+          <PropInput label="Y" type="number" value={Math.round(logo.y)} onChange={v => onUpdate({ y: v })} />
+          <PropInput label="Ancho" type="number" value={Math.round(logo.width)} onChange={v => onUpdate({ width: v, height: v })} />
+          <PropInput label="Alto" type="number" value={Math.round(logo.height)} onChange={v => onUpdate({ width: v, height: v })} />
+        </div>
+      </PropSection>
+
+      {/* Opacity */}
+      <PropSection title="Opacidad">
+        <div className="flex items-center gap-2">
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={Math.round(logo.opacity * 100)}
+            onChange={e => onUpdate({ opacity: parseInt(e.target.value) / 100 })}
+            className="flex-1"
+          />
+          <span className="text-[11px] font-mono text-[var(--muted-foreground)] w-10 text-right">{Math.round(logo.opacity * 100)}%</span>
+        </div>
+      </PropSection>
+
+      {/* Visibility */}
+      <div className="flex gap-1.5">
+        <button
+          onClick={() => onUpdate({ visible: !logo.visible })}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-[10px] font-medium cursor-pointer border transition-all ${
+            logo.visible
+              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
+              : 'bg-red-500/10 text-red-400 border-red-500/30'
+          }`}
+        >
+          {logo.visible ? <Eye size={11} /> : <EyeOff size={11} />}
+          {logo.visible ? 'Visible' : 'Oculto'}
+        </button>
+      </div>
+
+      {/* Info */}
+      <div className="bg-[var(--af-bg3)] rounded-lg p-2.5 text-[10px] text-[var(--muted-foreground)] space-y-1">
+        <p>Arrastra el logo para moverlo.</p>
+        <p>Usa las esquinas para cambiar el tamaño.</p>
+        <p>Se recomienda usar imágenes PNG sin fondo.</p>
+      </div>
+    </div>
+  );
+}
 
 function PaletteBtn({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
   return (

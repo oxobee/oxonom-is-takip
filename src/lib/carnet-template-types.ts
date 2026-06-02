@@ -122,6 +122,125 @@ export function compressBase64Image(
   });
 }
 
+/**
+ * Compress an image file to a PNG base64 data URL, preserving transparency.
+ * Uses Canvas to resize but keeps PNG format so alpha channel is maintained.
+ * This is essential for logos and images that need transparent backgrounds.
+ *
+ * @param file - The image File to compress
+ * @param maxWidth - Maximum width in pixels (default: 300)
+ * @param maxHeight - Maximum height in pixels (default: 300)
+ * @returns Promise<string> - Compressed PNG base64 data URL
+ */
+export function compressImagePNG(
+  file: File,
+  maxWidth: number = 300,
+  maxHeight: number = 300
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        // Calculate new dimensions maintaining aspect ratio
+        let w = img.width;
+        let h = img.height;
+
+        if (w > maxWidth) {
+          h = Math.round((h * maxWidth) / w);
+          w = maxWidth;
+        }
+        if (h > maxHeight) {
+          w = Math.round((w * maxHeight) / h);
+          h = maxHeight;
+        }
+
+        // Draw on canvas and export as PNG (preserves transparency)
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Canvas context not available'));
+          return;
+        }
+        // Clear canvas to transparent before drawing
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+
+        // Convert to PNG (lossless, preserves transparency)
+        const dataUrl = canvas.toDataURL('image/png');
+
+        // If PNG is too large for Firestore (~900KB base64 ≈ 675KB raw),
+        // try reducing size or fall back to lower quality PNG
+        const base64Length = dataUrl.length - dataUrl.indexOf(',') - 1;
+        const estimatedBytes = Math.ceil(base64Length * 0.75);
+
+        if (estimatedBytes > 900000) {
+          // Try reducing dimensions further
+          const scale = Math.sqrt(900000 / estimatedBytes);
+          const newW = Math.round(w * scale);
+          const newH = Math.round(h * scale);
+          canvas.width = newW;
+          canvas.height = newH;
+          ctx.clearRect(0, 0, newW, newH);
+          ctx.drawImage(img, 0, 0, newW, newH);
+          const reduced = canvas.toDataURL('image/png');
+          resolve(reduced);
+        } else {
+          resolve(dataUrl);
+        }
+      };
+      img.onerror = () => reject(new Error('Error loading image'));
+      img.src = reader.result as string;
+    };
+    reader.onerror = () => reject(new Error('Error reading file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Compress a base64 PNG data URL to fit within Firestore's ~1MB field limit.
+ * Preserves transparency by keeping PNG format.
+ * Re-encodes at a smaller size if needed.
+ */
+export function compressBase64ImagePNG(
+  dataUrl: string,
+  maxWidth: number = 300,
+  maxHeight: number = 300
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width;
+      let h = img.height;
+
+      if (w > maxWidth) {
+        h = Math.round((h * maxWidth) / w);
+        w = maxWidth;
+      }
+      if (h > maxHeight) {
+        w = Math.round((w * maxHeight) / h);
+        h = maxHeight;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(dataUrl);
+        return;
+      }
+      ctx.clearRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
 /* ─── Carnet Template Types ─── */
 export interface CarnetTemplate {
   id?: string;
