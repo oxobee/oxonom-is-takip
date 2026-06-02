@@ -83,11 +83,13 @@ export default function CarnetTemplateEditor() {
 
   const selectedElement = currentTemplate?.elements.find(e => e.id === selectedId) || null;
 
+  /* ─── Deep clone helper ─── */
+  const deepClone = <T,>(obj: T): T => JSON.parse(JSON.stringify(obj));
+
   /* ─── Fetch templates ─── */
   const fetchTemplates = useCallback(async () => {
     if (!activeTenantId || !authUser) return;
     try {
-      setLoading(true);
       const token = await authUser.getIdToken();
       const res = await fetch('/api/carnet-templates', {
         method: 'POST',
@@ -97,25 +99,36 @@ export default function CarnetTemplateEditor() {
       const data = await res.json();
       if (data.templates) {
         setTemplates(data.templates);
-        // Auto-load the default front template
-        const defaultFront = data.templates.find((t: CarnetTemplate) => t.isDefault && t.side === 'front');
-        const defaultBack = data.templates.find((t: CarnetTemplate) => t.isDefault && t.side === 'back');
-        if (side === 'front' && defaultFront) {
-          setCurrentTemplate(defaultFront);
-        } else if (side === 'back' && defaultBack) {
-          setCurrentTemplate(defaultBack);
-        } else if (data.templates.length > 0) {
-          setCurrentTemplate(data.templates[0]);
-        }
+        // Only auto-load a template if we don't have one currently loaded
+        // This prevents overwriting the user's work after a save
+        setCurrentTemplate(prev => {
+          if (prev) {
+            // We already have a template loaded — update it from server if it exists
+            const updated = data.templates.find((t: CarnetTemplate) => t.id === prev.id);
+            if (updated) return updated; // Use server version (has correct id/timestamps)
+            return prev; // Keep current
+          }
+          // No template loaded — auto-load the default
+          const defaultFront = data.templates.find((t: CarnetTemplate) => t.isDefault && t.side === 'front');
+          const defaultBack = data.templates.find((t: CarnetTemplate) => t.isDefault && t.side === 'back');
+          if (side === 'front' && defaultFront) return defaultFront;
+          if (side === 'back' && defaultBack) return defaultBack;
+          if (data.templates.length > 0) return data.templates[0];
+          return null;
+        });
       }
     } catch (err) {
       console.error('[TemplateEditor] fetch error:', err);
-    } finally {
-      setLoading(false);
     }
   }, [activeTenantId, authUser, side]);
 
-  useEffect(() => { fetchTemplates(); }, [fetchTemplates]);
+  // Initial load only — don't re-fetch on side change while editing
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
+  useEffect(() => {
+    if (!initialLoadDone && activeTenantId && authUser) {
+      fetchTemplates().then(() => setInitialLoadDone(true));
+    }
+  }, [activeTenantId, authUser, initialLoadDone]);
 
   /* ─── Upload a base64 image to Firebase Storage, returns the public URL ─── */
   const uploadImageToStorage = async (
@@ -224,7 +237,8 @@ export default function CarnetTemplateEditor() {
     try {
       setSaving(true);
 
-      let templateToSave = { ...currentTemplate, side };
+      // Deep clone to avoid mutating the current working state
+      const templateToSave = deepClone({ ...currentTemplate, side });
 
       // Process background image
       if (templateToSave.backgroundImage) {
@@ -241,26 +255,22 @@ export default function CarnetTemplateEditor() {
         templateToSave.logo = { ...templateToSave.logo, image: logoImage || '' };
       }
 
-      // Process element images
-      const processedElements = await Promise.all(
-        templateToSave.elements.map(async (el) => {
-          if (el.type === 'image') {
-            const imgEl = el as ImageTemplateElement;
-            if (imgEl.image) {
-              const img = await processImageForSave(
-                imgEl.image, 500, 500, 'carnet-templates/elements', 'elemento'
-              );
-              return { ...el, image: img || '' } as ImageTemplateElement;
-            }
+      // Process element images (only modify the image field, preserve all positions)
+      for (let i = 0; i < templateToSave.elements.length; i++) {
+        const el = templateToSave.elements[i];
+        if (el.type === 'image') {
+          const imgEl = el as ImageTemplateElement;
+          if (imgEl.image) {
+            const img = await processImageForSave(
+              imgEl.image, 500, 500, 'carnet-templates/elements', 'elemento'
+            );
+            // Only update the image field — keep x, y, width, height, etc. intact
+            (templateToSave.elements[i] as ImageTemplateElement).image = img || '';
           }
-          return el;
-        })
-      );
-      templateToSave.elements = processedElements;
+        }
+      }
 
-      // Update current template with processed images
-      setCurrentTemplate(templateToSave);
-
+      // Save to Firestore
       const token = await authUser.getIdToken();
       const res = await fetch('/api/carnet-templates', {
         method: 'POST',
@@ -273,11 +283,26 @@ export default function CarnetTemplateEditor() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
+
       toast.success('Template guardado');
-      // Update template with new ID
-      if (data.id && !currentTemplate.id) {
-        setCurrentTemplate(prev => prev ? { ...prev, id: data.id } : prev);
-      }
+
+      // Update current template with the saved ID (if newly created)
+      // But DON'T replace positions — keep the user's layout
+      setCurrentTemplate(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          id: data.id || prev.id,
+          // Only update image fields from the processed version, keep all positions
+          backgroundImage: templateToSave.backgroundImage ?? prev.backgroundImage,
+          logo: templateToSave.logo ? {
+            ...prev.logo,
+            image: templateToSave.logo.image || prev.logo?.image,
+          } : prev.logo,
+        };
+      });
+
+      // Refresh template list in sidebar (without replacing current template)
       fetchTemplates();
     } catch (err: any) {
       toast.error(err.message || 'Error al guardar');
@@ -567,6 +592,7 @@ export default function CarnetTemplateEditor() {
     return (
       <Rnd
         key={el.id}
+        default={{ x: el.x, y: el.y, width: el.width, height: el.height }}
         position={{ x: el.x, y: el.y }}
         size={{ width: el.width, height: el.height }}
         onDragStop={(e, d) => updateElement(el.id, { x: d.x, y: d.y })}
@@ -636,7 +662,18 @@ export default function CarnetTemplateEditor() {
             {(['front', 'back'] as const).map(s => (
               <button
                 key={s}
-                onClick={() => setSide(s)}
+                onClick={() => {
+                  if (s !== side) {
+                    setSide(s);
+                    // Load the template for the new side
+                    const tplForSide = templates.find(t => t.side === s && t.isDefault)
+                      || templates.find(t => t.side === s);
+                    if (tplForSide) {
+                      setCurrentTemplate(tplForSide);
+                      setSelectedId(null);
+                    }
+                  }
+                }}
                 className={`px-3 py-1.5 text-[11px] font-medium cursor-pointer border-none transition-all ${
                   side === s
                     ? 'bg-[var(--af-accent)] text-white'
