@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { toast } from 'sonner';
 import CarnetCard, { exportPDF, exportPNG, type CarnetData } from '@/components/carnets/CarnetCard';
+import type { CarnetTemplate } from '@/lib/carnet-template-types';
 import CenterModal from '@/components/common/CenterModal';
 import { FormField, FormInput, FormSelect, ModalFooter } from '@/components/common/FormField';
 import {
@@ -61,6 +62,10 @@ export default function CarnetsScreen() {
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
 
+  // Template state
+  const [frontTemplate, setFrontTemplate] = useState<CarnetTemplate | null>(null);
+  const [backTemplate, setBackTemplate] = useState<CarnetTemplate | null>(null);
+
   // Form state
   const [form, setForm] = useState<Partial<CarnetRecord>>({});
 
@@ -113,6 +118,32 @@ export default function CarnetsScreen() {
 
   useEffect(() => { fetchCarnets(); }, [fetchCarnets]);
   useEffect(() => { fetchStats(); }, [fetchStats]);
+
+  // Fetch default carnet templates
+  const fetchTemplates = useCallback(async () => {
+    if (!activeTenantId || !authUser) return;
+    try {
+      const token = await authUser.getIdToken();
+      const res = await fetch('/api/carnet-templates', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'list', tenantId: activeTenantId }),
+      });
+      const data = await res.json();
+      if (data.templates) {
+        const frontDefault = data.templates.find((t: CarnetTemplate) => t.isDefault && t.side === 'front')
+          || data.templates.find((t: CarnetTemplate) => t.side === 'front');
+        const backDefault = data.templates.find((t: CarnetTemplate) => t.isDefault && t.side === 'back')
+          || data.templates.find((t: CarnetTemplate) => t.side === 'back');
+        if (frontDefault) setFrontTemplate(frontDefault);
+        if (backDefault) setBackTemplate(backDefault);
+      }
+    } catch (err) {
+      console.error('[Carnets] template fetch error:', err);
+    }
+  }, [activeTenantId, authUser]);
+
+  useEffect(() => { fetchTemplates(); }, [fetchTemplates]);
 
   // CRUD actions
   const apiCall = async (body: any) => {
@@ -481,10 +512,11 @@ export default function CarnetsScreen() {
             <CarnetCard
               data={previewCarnet as CarnetData}
               tenantName={activeTenantName || undefined}
+              template={frontTemplate || undefined}
             />
           </div>
           <p className="text-[11px] text-[var(--muted-foreground)] text-center mt-2">
-            Frente · Reverso
+            {frontTemplate ? 'Frente (template personalizado) · Reverso' : 'Frente · Reverso'}
           </p>
 
           <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-[var(--border)]">

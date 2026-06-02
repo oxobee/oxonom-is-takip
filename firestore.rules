@@ -452,8 +452,8 @@ service cloud.firestore {
       allow delete: if isSignedIn() && isTenantMember(resource.data.tenantId);
     }
 
-    // Carnets (Corporate ID Cards)
-    match /carnets/{carnetId} {
+    // Carnet Templates (Visual designer templates)
+    match /carnet-templates/{templateId} {
       allow read: if isSignedIn() && isTenantMember(resource.data.tenantId);
       allow create: if isSignedIn() && isTenantMember(request.resource.data.tenantId);
       allow update: if isSignedIn() && isTenantMember(resource.data.tenantId);
