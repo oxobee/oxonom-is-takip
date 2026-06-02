@@ -507,7 +507,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] font-mono">{t.code}</span>
                     </div>
                     <div className="text-[10px] text-[var(--muted-foreground)]">
-                      {t.memberCount} miembros · {t.projectCount} proyectos · {t.taskCount} tareas
+                      {t.memberCount} miembro{t.memberCount !== 1 ? 's' : ''}
                     </div>
                   </>
                 )}

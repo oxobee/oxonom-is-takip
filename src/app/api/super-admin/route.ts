@@ -150,40 +150,23 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      const tenants = [];
-      for (const doc of snap.docs) {
+      // Sin N+1: ya no se consultan projectCount/taskCount por cada tenant
+      // Esos datos están disponibles vía tenant-detail cuando el usuario hace clic en "Ver Detalle"
+      const tenants = snap.docs.map((doc: any) => {
         const data = doc.data();
-        const membersResolved: any[] = [];
-
-        for (const uid of (data.members || [])) {
+        const membersResolved: any[] = (data.members || []).map((uid: string) => {
           const uData = userMap[uid];
-          membersResolved.push({
+          return {
             uid,
             name: uData?.name || "Desconocido",
             email: uData?.email || "N/A",
             role: uData?.role || "Miembro",
             photoURL: uData?.photoURL || "",
             isCreator: uid === data.createdBy,
-          });
-        }
+          };
+        });
 
-        // Count tenant documents
-        let projectCount = 0;
-        let taskCount = 0;
-        try {
-          const [pSnap, tSnap] = await Promise.all([
-            db.collection("projects").where("tenantId", "==", doc.id).count().get(),
-            db.collection("tasks").where("tenantId", "==", doc.id).count().get(),
-          ]);
-          projectCount = pSnap.data().count;
-          taskCount = tSnap.data().count;
-        } catch (e) {
-          // If .count() not supported, skip counts rather than full scans
-          projectCount = 0;
-          taskCount = 0;
-        }
-
-        tenants.push({
+        return {
           id: doc.id,
           name: data.name || "Sin nombre",
           code: data.code || "",
@@ -191,11 +174,9 @@ export async function POST(request: NextRequest) {
           membersResolved,
           createdBy: data.createdBy || "",
           createdAt: data.createdAt?._seconds ? new Date(data.createdAt._seconds * 1000).toISOString() : null,
-          projectCount,
-          taskCount,
           memberCount: membersResolved.length,
-        });
-      }
+        };
+      });
 
       return NextResponse.json({ tenants });
     }
@@ -388,20 +369,28 @@ export async function POST(request: NextRequest) {
         };
       });
 
-      // Get all collections counts for this tenant
+      // Get all collections counts for this tenant — ejecución paralela con Promise.allSettled
       const colNames = ["projects", "tasks", "expenses", "suppliers", "companies", "meetings", "galleryPhotos", "invProducts", "invCategories", "invMovements", "invTransfers", "timeEntries", "invoices", "comments"];
+      const countResults = await Promise.allSettled(
+        colNames.map(col =>
+          db.collection(col).where("tenantId", "==", tenantId).count().get()
+            .then((s: any) => ({ col, count: s.data().count }))
+            .catch(() => ({ col, count: -1 }))
+        )
+      );
       const collectionStats: Record<string, number> = {};
-      for (const col of colNames) {
-        try {
-          const snap = await db.collection(col).where("tenantId", "==", tenantId).count().get();
-          collectionStats[col] = snap.data().count;
-        } catch {
+      for (const r of countResults) {
+        if (r.status === 'fulfilled' && r.value.count >= 0) {
+          collectionStats[r.value.col] = r.value.count;
+        }
+      }
+      // Fallback para .count() fallido — intentar .get() con limit
+      for (const r of countResults) {
+        if (r.status === 'fulfilled' && r.value.count === -1) {
           try {
-            const snap = await db.collection(col).where("tenantId", "==", tenantId).get();
-            collectionStats[col] = snap.size;
-          } catch {
-            collectionStats[col] = 0;
-          }
+            const snap = await db.collection(r.value.col).where("tenantId", "==", tenantId).limit(500).get();
+            collectionStats[r.value.col] = snap.size;
+          } catch { collectionStats[r.value.col] = 0; }
         }
       }
 
@@ -637,21 +626,28 @@ export async function POST(request: NextRequest) {
       if (!tenantId) return NextResponse.json({ error: "tenantId requerido" }, { status: 400 });
 
       const colNames = ["projects", "tasks", "expenses", "suppliers", "companies", "meetings", "galleryPhotos", "invProducts", "invCategories", "invMovements", "invTransfers", "timeEntries", "invoices", "comments", "generalMessages"];
-      const stats: Record<string, number> = {};
 
-      // Get actual counts for ALL collections using .count().get() (same approach as tenant-detail)
-      for (const col of colNames) {
-        try {
-          const snap = await db.collection(col).where("tenantId", "==", tenantId).count().get();
-          stats[col] = snap.data().count;
-        } catch {
-          // Fallback: use .get() if .count() not supported
+      // Ejecución paralela con Promise.allSettled (igual que tenant-detail)
+      const countResults = await Promise.allSettled(
+        colNames.map(col =>
+          db.collection(col).where("tenantId", "==", tenantId).count().get()
+            .then((s: any) => ({ col, count: s.data().count }))
+            .catch(() => ({ col, count: -1 }))
+        )
+      );
+      const stats: Record<string, number> = {};
+      for (const r of countResults) {
+        if (r.status === 'fulfilled' && r.value.count >= 0) {
+          stats[r.value.col] = r.value.count;
+        }
+      }
+      // Fallback para .count() fallido — intentar .get() con limit
+      for (const r of countResults) {
+        if (r.status === 'fulfilled' && r.value.count === -1) {
           try {
-            const snap = await db.collection(col).where("tenantId", "==", tenantId).get();
-            stats[col] = snap.size;
-          } catch {
-            stats[col] = 0;
-          }
+            const snap = await db.collection(r.value.col).where("tenantId", "==", tenantId).limit(500).get();
+            stats[r.value.col] = snap.size;
+          } catch { stats[r.value.col] = 0; }
         }
       }
 
