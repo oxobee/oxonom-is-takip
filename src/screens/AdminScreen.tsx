@@ -651,23 +651,89 @@ export default function AdminScreen() {
                 <div className="overflow-x-auto -mx-4 px-4 pb-2">
                   <table className="w-full text-[11px]">
                     <thead><tr className="border-b border-[var(--border)]">
-                      <th className="text-left py-2 px-2 text-[var(--muted-foreground)] font-medium sticky left-0 bg-[var(--af-bg3)] min-w-[120px]">Permiso</th>
+                      <th className="text-left py-2 px-2 text-[var(--muted-foreground)] font-medium sticky left-0 bg-[var(--af-bg3)] min-w-[160px]">Permiso</th>
                       {USER_ROLES.map(r => <th key={r} className="text-center py-2 px-1.5 text-[var(--muted-foreground)] font-medium whitespace-nowrap min-w-[70px]">{ROLE_ICONS[r]} {r}</th>)}
                     </tr></thead>
                     <tbody>
-                      {Object.entries(rolePerms).map(([permName, perms], i) => (<tr key={i} className="border-b border-[var(--border)]/50">
-                        <td className="py-2 px-2 font-medium sticky left-0 bg-[var(--af-bg3)]">{permName}</td>
-                        {USER_ROLES.map(r => {
-                          const has = (perms as string[]).includes(r);
-                          return (<td key={r} className="py-2 px-1.5 text-center">
-                            <button
-                              className={`w-6 h-6 rounded-md flex items-center justify-center mx-auto cursor-pointer border-none transition-all text-[13px] ${has ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/5 text-red-400/30 hover:bg-red-500/10'}`}
-                              onClick={() => toggleRolePerm(permName, r)}
-                              title={has ? 'Quitar permiso' : 'Dar permiso'}
-                            >{has ? '✓' : '✕'}</button>
-                          </td>);
-                        })}
-                      </tr>))}
+                      {(() => {
+                        // Group permissions by category for better readability
+                        const categories: { label: string; emoji: string; perms: string[] }[] = [
+                          { label: 'Dashboard & Proyectos', emoji: '📊', perms: ['Ver Dashboard','Crear proyectos','Editar proyectos','Eliminar proyectos'] },
+                          { label: 'Tareas', emoji: '✅', perms: ['Crear tareas','Asignar tareas','Ver tablero Kanban'] },
+                          { label: 'Time Tracking', emoji: '⏱️', perms: ['Time Tracking'] },
+                          { label: 'Presupuestos', emoji: '💰', perms: ['Ver presupuestos','Gestionar presupuestos'] },
+                          { label: 'Archivos & Galería', emoji: '📁', perms: ['Ver planos y archivos','Subir archivos','Ver galería','Subir fotos galería','Seguimiento obra'] },
+                          { label: 'Inventario', emoji: '📦', perms: ['Ver inventario','Gestionar inventario'] },
+                          { label: 'Calidad', emoji: '🔍', perms: ['Ver RFIs','Crear RFIs','Ver Submittals','Crear Submittals','Ver Punch List','Crear Punch List','Ver Órdenes de Cambio','Crear Órdenes de Cambio','Ver Notas de Campo','Crear Notas de Campo'] },
+                          { label: 'Administración', emoji: '⚙️', perms: ['Panel Admin','Gestionar equipo','Cambiar roles','Ver proveedores','Gestionar proveedores','Ver facturas','Gestionar facturas','Ver empresas','Gestionar empresas','Ver catálogos','Gestionar catálogos','Ver integraciones','Gestionar integraciones'] },
+                          { label: 'Carnets', emoji: '🪪', perms: ['Ver carnets','Crear carnets','Usar diseñador de carnets','Importar carnets Excel'] },
+                          { label: 'Comunicación', emoji: '💬', perms: ['Chat general','Mensajes directos'] },
+                          { label: 'Calendario & Reportes', emoji: '📅', perms: ['Ver calendario','Ver reportes','Exportar reportes'] },
+                          { label: 'Portal cliente', emoji: '🌐', perms: ['Portal cliente'] },
+                        ];
+                        const rows: React.ReactNode[] = [];
+                        categories.forEach((cat, ci) => {
+                          // Category header row
+                          rows.push(
+                            <tr key={`cat-${ci}`} className="border-b border-[var(--border)]/30">
+                              <td colSpan={USER_ROLES.length + 1} className="py-2 px-2 bg-[var(--card)] sticky left-0">
+                                <span className="text-[11px] font-bold text-[var(--af-accent)]">{cat.emoji} {cat.label}</span>
+                              </td>
+                            </tr>
+                          );
+                          // Permission rows
+                          cat.perms.forEach(permName => {
+                            const perms = rolePerms[permName];
+                            if (!perms) return;
+                            rows.push(
+                              <tr key={permName} className="border-b border-[var(--border)]/50">
+                                <td className="py-1.5 px-2 pl-5 font-medium sticky left-0 bg-[var(--af-bg3)]">{permName}</td>
+                                {USER_ROLES.map(r => {
+                                  const has = (perms as string[]).includes(r);
+                                  return (<td key={r} className="py-1.5 px-1.5 text-center">
+                                    <button
+                                      className={`w-6 h-6 rounded-md flex items-center justify-center mx-auto cursor-pointer border-none transition-all text-[13px] ${has ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/5 text-red-400/30 hover:bg-red-500/10'}`}
+                                      onClick={() => toggleRolePerm(permName, r)}
+                                      title={has ? 'Quitar permiso' : 'Dar permiso'}
+                                    >{has ? '✓' : '✕'}</button>
+                                  </td>);
+                                })}
+                              </tr>
+                            );
+                          });
+                        });
+                        // Add any uncategorized permissions
+                        const allCategorized = new Set(categories.flatMap(c => c.perms));
+                        const uncategorized = Object.keys(rolePerms).filter(p => !allCategorized.has(p));
+                        if (uncategorized.length > 0) {
+                          rows.push(
+                            <tr key="cat-other" className="border-b border-[var(--border)]/30">
+                              <td colSpan={USER_ROLES.length + 1} className="py-2 px-2 bg-[var(--card)] sticky left-0">
+                                <span className="text-[11px] font-bold text-[var(--af-accent)]">📋 Otros</span>
+                              </td>
+                            </tr>
+                          );
+                          uncategorized.forEach(permName => {
+                            const perms = rolePerms[permName];
+                            rows.push(
+                              <tr key={permName} className="border-b border-[var(--border)]/50">
+                                <td className="py-1.5 px-2 pl-5 font-medium sticky left-0 bg-[var(--af-bg3)]">{permName}</td>
+                                {USER_ROLES.map(r => {
+                                  const has = (perms as string[]).includes(r);
+                                  return (<td key={r} className="py-1.5 px-1.5 text-center">
+                                    <button
+                                      className={`w-6 h-6 rounded-md flex items-center justify-center mx-auto cursor-pointer border-none transition-all text-[13px] ${has ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/5 text-red-400/30 hover:bg-red-500/10'}`}
+                                      onClick={() => toggleRolePerm(permName, r)}
+                                      title={has ? 'Quitar permiso' : 'Dar permiso'}
+                                    >{has ? '✓' : '✕'}</button>
+                                  </td>);
+                                })}
+                              </tr>
+                            );
+                          });
+                        }
+                        return rows;
+                      })()}
                     </tbody>
                   </table>
                 </div>

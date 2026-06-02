@@ -162,19 +162,67 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   const [adminTooltipPos, setAdminTooltipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [adminPermSection, setAdminPermSection] = useState<string>('roles');
   const [rolePerms, setRolePerms] = useState<Record<string, string[]>>({
+    // ── Dashboard & Proyectos ──
     'Ver Dashboard': ['Admin','Director','Arquitecto','Interventor','Contratista','Cliente','Miembro'],
     'Crear proyectos': ['Admin','Director','Arquitecto'],
     'Editar proyectos': ['Admin','Director','Arquitecto'],
     'Eliminar proyectos': ['Admin','Director'],
+    // ── Tareas ──
     'Crear tareas': ['Admin','Director','Arquitecto','Interventor','Contratista'],
     'Asignar tareas': ['Admin','Director','Arquitecto'],
-    'Gestionar equipo': ['Admin','Director'],
-    'Cambiar roles': ['Admin'],
+    'Ver tablero Kanban': ['Admin','Director','Arquitecto','Interventor','Contratista'],
+    // ── Time Tracking ──
+    'Time Tracking': ['Admin','Director','Arquitecto','Contratista','Interventor'],
+    // ── Presupuestos ──
     'Ver presupuestos': ['Admin','Director','Arquitecto','Interventor','Cliente'],
+    'Gestionar presupuestos': ['Admin','Director'],
+    // ── Archivos & Galería ──
+    'Ver planos y archivos': ['Admin','Director','Arquitecto','Interventor','Contratista','Cliente'],
+    'Subir archivos': ['Admin','Director','Arquitecto','Contratista'],
+    'Ver galería': ['Admin','Director','Arquitecto','Interventor','Contratista','Cliente'],
+    'Subir fotos galería': ['Admin','Director','Arquitecto','Contratista','Interventor'],
+    'Seguimiento obra': ['Admin','Director','Arquitecto','Interventor','Contratista'],
+    // ── Inventario ──
     'Ver inventario': ['Admin','Director','Arquitecto','Contratista','Interventor'],
     'Gestionar inventario': ['Admin','Director','Contratista'],
+    // ── Calidad ──
+    'Ver RFIs': ['Admin','Director','Arquitecto','Interventor','Contratista'],
+    'Crear RFIs': ['Admin','Director','Arquitecto','Interventor'],
+    'Ver Submittals': ['Admin','Director','Arquitecto','Interventor','Contratista'],
+    'Crear Submittals': ['Admin','Director','Arquitecto'],
+    'Ver Punch List': ['Admin','Director','Arquitecto','Interventor','Contratista'],
+    'Crear Punch List': ['Admin','Director','Arquitecto','Interventor'],
+    'Ver Órdenes de Cambio': ['Admin','Director','Arquitecto','Interventor','Cliente'],
+    'Crear Órdenes de Cambio': ['Admin','Director'],
+    'Ver Notas de Campo': ['Admin','Director','Arquitecto','Interventor','Contratista'],
+    'Crear Notas de Campo': ['Admin','Director','Arquitecto','Contratista','Interventor'],
+    // ── Administración ──
     'Panel Admin': ['Admin','Director'],
+    'Gestionar equipo': ['Admin','Director'],
+    'Cambiar roles': ['Admin'],
+    'Ver proveedores': ['Admin','Director','Arquitecto','Interventor'],
+    'Gestionar proveedores': ['Admin','Director'],
+    'Ver facturas': ['Admin','Director','Interventor'],
+    'Gestionar facturas': ['Admin','Director'],
+    'Ver empresas': ['Admin','Director','Arquitecto'],
+    'Gestionar empresas': ['Admin','Director'],
+    'Ver catálogos': ['Admin','Director','Arquitecto','Interventor'],
+    'Gestionar catálogos': ['Admin','Director','Arquitecto'],
+    'Ver integraciones': ['Admin','Director'],
+    'Gestionar integraciones': ['Admin'],
+    // ── Carnets ──
+    'Ver carnets': ['Admin','Director','Arquitecto','Interventor'],
+    'Crear carnets': ['Admin','Director','Arquitecto'],
+    'Usar diseñador de carnets': ['Admin','Director'],
+    'Importar carnets Excel': ['Admin','Director'],
+    // ── Comunicación ──
     'Chat general': ['Admin','Director','Arquitecto','Interventor','Contratista','Cliente','Miembro'],
+    'Mensajes directos': ['Admin','Director','Arquitecto','Interventor','Contratista','Cliente','Miembro'],
+    // ── Calendario & Reportes ──
+    'Ver calendario': ['Admin','Director','Arquitecto','Interventor','Contratista','Cliente'],
+    'Ver reportes': ['Admin','Director','Arquitecto','Interventor'],
+    'Exportar reportes': ['Admin','Director'],
+    // ── Portal cliente ──
     'Portal cliente': ['Admin','Director','Cliente'],
   });
   const toggleRolePerm = (permName: string, role: string) => {
