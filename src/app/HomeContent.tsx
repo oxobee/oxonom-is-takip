@@ -81,7 +81,6 @@ const CatalogsScreen = dynamic(() => import('@/screens/CatalogsScreen'), { ssr: 
 const FieldNotesScreen = dynamic(() => import('@/screens/FieldNotesScreen'), { ssr: false });
 const KanbanBoardScreen = dynamic(() => import('@/screens/KanbanBoardScreen'), { ssr: false });
 const WeeklyAgendaScreen = dynamic(() => import('@/screens/WeeklyAgendaScreen'), { ssr: false });
-const DirectMessagesScreen = dynamic(() => import('@/screens/DirectMessagesScreen'), { ssr: false });
 const IntegrationsScreen = dynamic(() => import('@/screens/IntegrationsScreen'), { ssr: false });
 const AdminLogScreen = dynamic(() => import('@/screens/AdminLogScreen'), { ssr: false });
 const CarnetsScreen = dynamic(() => import('@/screens/CarnetsScreen'), { ssr: false });
@@ -150,7 +149,7 @@ function AppContent() {
 
   // Local screen title overrides (dynamic titles like projectDetail)
   const localScreenTitles: Record<string, string> = {
-    dashboard: 'Dashboard', projects: 'Proyectos', tasks: 'Tareas', chat: 'Mensajes', directmessages: 'Mensajes Directos',
+    dashboard: 'Dashboard', projects: 'Proyectos', tasks: 'Tareas', chat: 'Mensajes',
     budget: 'Presupuestos', files: 'Planos y archivos', gallery: 'Galería', inventory: 'Inventario',
     admin: 'Panel Admin', superAdmin: 'Super Admin', obra: 'Seguimiento obra', suppliers: 'Proveedores', team: 'Equipo',
     calendar: 'Calendario', portal: 'Portal cliente', profile: 'Mi Perfil', install: 'Instalar App',
@@ -253,8 +252,8 @@ function AppContent() {
         {/* Main content with screen rendering */}
         <main
           id="main-content"
-          className={`flex-1 flex flex-col overflow-hidden ${screen === 'chat' || screen === 'directmessages' ? 'p-0' : 'overflow-y-auto p-3 sm:p-4 md:p-6 lg:p-8 pb-[calc(60px+env(safe-area-inset-bottom,0px))] md:pb-6'}`}
-          style={{ maxHeight: screen === 'chat' || screen === 'directmessages' ? 'calc(100dvh - 60px)' : undefined }}
+          className={`flex-1 flex flex-col overflow-hidden ${screen === 'chat' ? 'p-0' : 'overflow-y-auto p-3 sm:p-4 md:p-6 lg:p-8 pb-[calc(60px+env(safe-area-inset-bottom,0px))] md:pb-6'}`}
+          style={{ maxHeight: screen === 'chat' ? 'calc(100dvh - 60px)' : undefined }}
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -271,7 +270,7 @@ function AppContent() {
               {screen === 'projectDetail' && <ProjectDetailScreen />}
               {screen === 'tasks' && <TasksScreen />}
               {screen === 'chat' && <ChatScreen />}
-              {screen === 'directmessages' && <DirectMessagesScreen />}
+
               {screen === 'budget' && <BudgetScreen />}
               {screen === 'files' && <FilesScreen />}
               {screen === 'obra' && <ObraScreen />}

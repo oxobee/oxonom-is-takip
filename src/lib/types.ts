@@ -797,6 +797,10 @@ export const CO_TYPE_LABELS: Record<string, string> = {
   'combinado': 'Combinado',
 };
 
+// FALLBACK admin emails for client-side gating.
+// The server uses process.env.ADMIN_EMAILS (api-auth.ts) as the source of truth.
+// The client fetches the real list from /api/admin-emails on init and falls back to this.
+// Keep in sync with the ADMIN_EMAILS env var.
 export const ADMIN_EMAILS = ['yecos11@gmail.com'];
 
 export const USER_ROLES = ['Admin', 'Director', 'Arquitecto', 'Interventor', 'Contratista', 'Cliente', 'Miembro'] as const;

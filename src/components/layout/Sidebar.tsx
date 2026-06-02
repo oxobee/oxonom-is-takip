@@ -71,7 +71,6 @@ export default function Sidebar({
     { id: 'projects', label: 'Proyectos', icon: <Folder size={18} className="stroke-current" aria-hidden="true" />, badge: projects.length, category: 'principal' as NavCategory },
     { id: 'tasks', label: 'Tareas', icon: <ClipboardCheck size={18} className="stroke-current" aria-hidden="true" />, badge: pendingCount > 0 ? pendingCount : undefined, category: 'principal' as NavCategory },
     { id: 'chat', label: 'Chat', icon: <MessageCircle size={18} className="stroke-current" aria-hidden="true" />, category: 'principal' as NavCategory },
-    { id: 'directmessages', label: 'Mensajes Directos', icon: <Mail size={18} className="stroke-current" aria-hidden="true" />, category: 'principal' as NavCategory },
     // ── Proyecto ──
     { id: 'timeTracking', label: 'Time Tracking', icon: <Timer size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },
     { id: 'budget', label: 'Presupuestos', icon: <DollarSign size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },

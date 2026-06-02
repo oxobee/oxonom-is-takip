@@ -86,6 +86,8 @@ export default function CarnetsScreen() {
 
   // Photo cropper state
   const [cropperImage, setCropperImage] = useState<string | null>(null);
+  // Counter to force re-render of photo preview after crop
+  const [photoKey, setPhotoKey] = useState(0);
 
   // Fetch carnets
   const fetchCarnets = useCallback(async () => {
@@ -772,7 +774,8 @@ export default function CarnetsScreen() {
       )}
 
       {/* ═══ Create/Edit Modal ═══ */}
-      {(isCreate || editCarnet) && (
+      {/* Hide the modal while the cropper is open to avoid Radix Dialog focus-trap blocking the cropper interactions */}
+      {(isCreate || editCarnet) && !cropperImage && (
         <CenterModal open onClose={() => { setEditCarnet(null); setIsCreate(false); setForm({}); }} maxWidth={600}>
           <h2 className="text-lg font-semibold mb-4">
             {isCreate ? 'Nuevo carnet' : 'Editar carnet'}
@@ -791,9 +794,9 @@ export default function CarnetsScreen() {
                 title={form.photoBase64 ? 'Click para re-encuadrar la foto' : ''}
               >
                 {form.photoBase64 ? (
-                  <img src={form.photoBase64.startsWith('data:') ? form.photoBase64 : `data:image/jpeg;base64,${form.photoBase64}`} alt="" className="w-full h-full object-cover" />
+                  <img key={photoKey} src={form.photoBase64.startsWith('data:') ? form.photoBase64 : `data:image/jpeg;base64,${form.photoBase64}`} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-2xl text-[var(--muted-foreground)]">👤</span>
+                  <span key={photoKey} className="text-2xl text-[var(--muted-foreground)]">👤</span>
                 )}
               </div>
               <div className="flex-1">
@@ -981,6 +984,7 @@ export default function CarnetsScreen() {
           onCropComplete={(croppedBase64) => {
             setForm(prev => ({ ...prev, photoBase64: croppedBase64 }));
             setCropperImage(null);
+            setPhotoKey(k => k + 1); // Force img re-render
           }}
           onCancel={() => setCropperImage(null)}
         />

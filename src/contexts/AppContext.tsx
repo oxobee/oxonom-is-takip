@@ -5,7 +5,7 @@ import { useUIStore } from '@/stores/ui-store';
 
 /* ===== MODULED IMPORTS ===== */
 import type { TeamUser, Project, Task, Expense, Supplier, Approval, WorkPhase, ProjectFile, OneDriveFile, GalleryPhoto, Comment, RFI, Submittal, PunchItem, Company, DailyLog, Meeting, ChangeOrder, Catalog, FieldNote } from '@/lib/types';
-import { ADMIN_EMAILS, ROLE_ICONS } from '@/lib/types';
+import { ADMIN_EMAILS as FALLBACK_ADMIN_EMAILS, ROLE_ICONS } from '@/lib/types';
 
 import { fmtCOP, fmtDate, fmtDateTime, fmtSize, getInitials, statusColor, prioColor, taskStColor, avatarColor, fmtRecTime, fmtDuration, fmtTimer, getWeekStart, fileToBase64, getPlatform, uniqueId, scrubUndefined } from '@/lib/helpers';
 import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
@@ -308,6 +308,23 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   const [showTenantSelector, setShowTenantSelector] = useState(false);
   const [activeTenantMembers, setActiveTenantMembers] = useState<string[]>([]); // UIDs of tenant members
 
+  // Server-verified admin emails (fetched from env var), with hardcoded fallback
+  const [adminEmails, setAdminEmails] = useState<string[]>(FALLBACK_ADMIN_EMAILS);
+
+  // Fetch admin emails from server on mount (keeps client in sync with env var)
+  useEffect(() => {
+    fetch('/api/admin-emails')
+      .then(r => r.json())
+      .then(data => {
+        if (data.adminEmails && data.adminEmails.length > 0) {
+          setAdminEmails(data.adminEmails);
+        }
+      })
+      .catch(() => {
+        // Fallback to hardcoded list if API unreachable
+      });
+  }, []);
+
   // Restore tenant selection from localStorage (will be validated against server after auth)
   useEffect(() => {
     try {
@@ -576,7 +593,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
           // Save user profile
           const ref = db.collection('users').doc(user.uid);
           const snap = await ref.get();
-          const isAdminEmail = ADMIN_EMAILS.includes(user.email);
+          const isAdminEmail = adminEmails.includes((user.email || '').toLowerCase());
 
           if (!snap.exists) {
             // ANTI-DUP: Check if another user doc already exists with this email
@@ -2728,7 +2745,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   const getUserRole = (uid: string) => { const u = teamUsers.find(x => x.id === uid); return u?.data?.role || 'Miembro'; };
   const myRole = getUserRole(authUser?.uid || '');
   // Admin check: also consider ADMIN_EMAILS directly in case Firestore update hasn't propagated yet
-  const isEmailAdmin = authUser ? ADMIN_EMAILS.includes(authUser.email || '') : false;
+  const isEmailAdmin = authUser ? adminEmails.includes((authUser.email || '').toLowerCase()) : false;
   const isAdmin = myRole === 'Admin' || myRole === 'Director' || isEmailAdmin;
 
   // User display helpers

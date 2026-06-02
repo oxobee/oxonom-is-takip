@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import Cropper from 'react-easy-crop';
 import type { Area, Point } from 'react-easy-crop';
 import { ZoomIn, ZoomOut, RotateCcw, Check, X } from 'lucide-react';
@@ -10,6 +11,9 @@ import { toast } from 'sonner';
  * Muestra la imagen con un área de recorte circular para encuadrar la cara.
  * Permite zoom, paneo y rotación.
  * Genera una imagen cuadrada recortada (lista para mostrarse en círculo).
+ *
+ * Renders via React Portal at document.body level to ensure it appears
+ * above any Radix Dialog / CenterModal that might be open underneath.
  */
 
 interface PhotoCropperModalProps {
@@ -65,8 +69,8 @@ export default function PhotoCropperModal({
     }
   }, [imageSrc, croppedAreaPixels, rotation, outputSize, onCropComplete]);
 
-  return (
-    <div className="fixed inset-0 z-[200] bg-black/80 backdrop-blur-sm flex items-center justify-center animate-fadeIn">
+  const modal = (
+    <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center animate-fadeIn">
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-2xl w-[95vw] max-w-[520px] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border)]">
@@ -164,12 +168,34 @@ export default function PhotoCropperModal({
       </div>
     </div>
   );
+
+  // Render via Portal so this always appears above any Radix Dialog / CenterModal
+  if (typeof window === 'undefined') return null;
+  return createPortal(modal, document.body);
+}
+
+/**
+ * rotateSize — Calcula el bounding box de una imagen rotada.
+ * Basado en la documentación oficial de react-easy-crop.
+ */
+function rotateSize(width: number, height: number, rotation: number): { width: number; height: number } {
+  const rotRad = (rotation * Math.PI) / 180;
+  return {
+    width: Math.abs(Math.cos(rotRad)) * width + Math.abs(Math.sin(rotRad)) * height,
+    height: Math.abs(Math.sin(rotRad)) * width + Math.abs(Math.cos(rotRad)) * height,
+  };
 }
 
 /**
  * getCroppedImg — Genera la imagen recortada usando canvas.
  * Implementación basada en la documentación oficial de react-easy-crop.
- * Usa la técnica de "safe area" para manejar rotación correctamente.
+ *
+ * Pasos:
+ * 1. Dibuja la imagen rotada en un canvas del tamaño del bounding box
+ * 2. Extrae los datos de imagen del canvas
+ * 3. Crea un canvas del tamaño del recorte y usa putImageData con offset
+ *    para posicionar la región seleccionada en (0,0)
+ * 4. Redimensiona al tamaño de salida deseado
  */
 async function getCroppedImg(
   imageSrc: string,
@@ -190,52 +216,55 @@ async function getCroppedImg(
 
   const rotRad = (rotation * Math.PI) / 180;
 
-  // Calcular el "safe area" — tamaño mínimo que contiene la imagen rotada
-  // Usamos 2x el tamaño máximo para asegurar que la imagen rotada quepa completa
-  const maxSize = Math.max(image.width, image.height);
-  const safeArea = 2 * ((maxSize / 2) * Math.sqrt(2));
+  // Calcular el bounding box de la imagen rotada
+  const { width: bBoxWidth, height: bBoxHeight } = rotateSize(image.width, image.height, rotation);
 
-  // Canvas del tamaño del safe area
-  canvas.width = safeArea;
-  canvas.height = safeArea;
+  // Dibujar la imagen rotada en un canvas del tamaño del bounding box
+  canvas.width = bBoxWidth;
+  canvas.height = bBoxHeight;
 
-  // Trasladar al centro del canvas, rotar, y dibujar la imagen centrada
   ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, safeArea, safeArea);
-  ctx.save();
-  ctx.translate(safeArea / 2, safeArea / 2);
+  ctx.fillRect(0, 0, bBoxWidth, bBoxHeight);
+  ctx.translate(bBoxWidth / 2, bBoxHeight / 2);
   ctx.rotate(rotRad);
-  ctx.translate(-safeArea / 2, -safeArea / 2);
-  ctx.drawImage(image, safeArea / 2 - image.width / 2, safeArea / 2 - image.height / 2);
-  ctx.restore();
+  ctx.translate(-image.width / 2, -image.height / 2);
+  ctx.drawImage(image, 0, 0);
 
-  // Extraer los datos de imagen del safe area
-  const data = ctx.getImageData(0, 0, safeArea, safeArea);
+  // Extraer los datos de la imagen completa rotada
+  const data = ctx.getImageData(0, 0, bBoxWidth, bBoxHeight);
 
-  // Ahora crear el canvas de salida con las dimensiones del recorte
+  // Crear canvas del tamaño del recorte y posicionar los datos
+  // putImageData coloca los datos empezando en (dx, dy), así que
+  // con offset (-pixelCrop.x, -pixelCrop.y) la región del recorte
+  // queda posicionada en (0, 0)
+  const cropCanvas = document.createElement('canvas');
+  const cropCtx = cropCanvas.getContext('2d')!;
+  cropCanvas.width = pixelCrop.width;
+  cropCanvas.height = pixelCrop.height;
+
+  cropCtx.putImageData(
+    data,
+    Math.round(-pixelCrop.x),
+    Math.round(-pixelCrop.y)
+  );
+
+  // Redimensionar al tamaño de salida deseado
   const outputCanvas = document.createElement('canvas');
   const outputCtx = outputCanvas.getContext('2d')!;
-
   outputCanvas.width = outputSize;
   outputCanvas.height = outputSize;
 
-  // Colocar los datos de la imagen y recortar la región seleccionada
-  // pixelCrop ya está en coordenadas de la imagen original (ajustadas por rotación)
-  outputCtx.putImageData(
-    data,
-    // Offset: posición del recorte relativa al safe area
-    Math.round(safeArea / 2 - pixelCrop.width / 2 - pixelCrop.x),
-    Math.round(safeArea / 2 - pixelCrop.height / 2 - pixelCrop.y)
+  outputCtx.drawImage(
+    cropCanvas,
+    0,
+    0,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    outputSize,
+    outputSize
   );
 
-  // Ahora redimensionar al tamaño de salida
-  const finalCanvas = document.createElement('canvas');
-  const finalCtx = finalCanvas.getContext('2d')!;
-
-  finalCanvas.width = outputSize;
-  finalCanvas.height = outputSize;
-
-  finalCtx.drawImage(outputCanvas, 0, 0, pixelCrop.width, pixelCrop.height, 0, 0, outputSize, outputSize);
-
-  return finalCanvas.toDataURL('image/jpeg', 0.9);
+  return outputCanvas.toDataURL('image/jpeg', 0.9);
 }
