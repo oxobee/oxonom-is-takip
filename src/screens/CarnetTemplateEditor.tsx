@@ -350,16 +350,44 @@ export default function CarnetTemplateEditor() {
       }
 
       // Process element images (only modify the image field, preserve all positions)
+      // Preserve PNG transparency similar to logo handling
       for (let i = 0; i < templateToSave.elements.length; i++) {
         const el = templateToSave.elements[i];
         if (el.type === 'image') {
           const imgEl = el as ImageTemplateElement;
           if (imgEl.image) {
-            const img = await processImageForSave(
-              imgEl.image, 500, 500, 'carnet-templates/elements', 'elemento'
-            );
-            // Only update the image field — keep x, y, width, height, etc. intact
-            (templateToSave.elements[i] as ImageTemplateElement).image = img || '';
+            // Try Storage first (preserves original format including transparency)
+            let imgProcessed = false;
+            if (imgEl.image.startsWith('data:')) {
+              try {
+                const url = await uploadImageToStorage(imgEl.image, 'carnet-templates/elements');
+                (templateToSave.elements[i] as ImageTemplateElement).image = url;
+                imgProcessed = true;
+              } catch (storageErr: any) {
+                console.warn('[Editor] Element image Storage upload failed, keeping PNG in Firestore');
+              }
+            }
+            if (!imgProcessed && imgEl.image.startsWith('data:image/png')) {
+              // PNG in Firestore — check if it fits, otherwise reduce size (still PNG)
+              const FIRESTORE_FIELD_LIMIT = 900000;
+              if (imgEl.image.length > FIRESTORE_FIELD_LIMIT) {
+                try {
+                  const reduced = await compressBase64ImagePNG(imgEl.image, 200, 200);
+                  (templateToSave.elements[i] as ImageTemplateElement).image = reduced;
+                } catch (e) {
+                  console.warn('[Editor] Element image too large, even as reduced PNG');
+                  (templateToSave.elements[i] as ImageTemplateElement).image = '';
+                }
+              }
+              // else: PNG fits, keep as-is
+            } else if (!imgProcessed && imgEl.image.startsWith('data:')) {
+              // Non-PNG image, use standard processing
+              const img = await processImageForSave(
+                imgEl.image, 500, 500, 'carnet-templates/elements', 'elemento'
+              );
+              (templateToSave.elements[i] as ImageTemplateElement).image = img || '';
+            }
+            // If already a URL, it stays unchanged
           }
         }
       }
@@ -476,7 +504,7 @@ export default function CarnetTemplateEditor() {
       case 'image':
         newEl = {
           id: newId, type: 'image', x: 40, y: 300, width: 60, height: 60,
-          image: '', objectFit: 'cover', borderRadius: 0,
+          image: '', objectFit: 'contain', borderRadius: 0,
           rotation: 0, opacity: 1, zIndex: 4, visible: true, locked: false,
         } as ImageTemplateElement;
         break;
@@ -509,8 +537,8 @@ export default function CarnetTemplateEditor() {
     const file = e.target.files?.[0];
     if (!file || !selectedId) return;
     try {
-      // Compress: element images smaller, JPEG 75% quality
-      const compressed = await compressImage(file, 400, 400, 0.75);
+      // Use PNG compression to preserve transparency (no background)
+      const compressed = await compressImagePNG(file, 500, 500);
       updateElement(selectedId, { image: compressed } as Partial<ImageTemplateElement>);
     } catch (err) {
       console.error('[Editor] Image upload error:', err);
@@ -665,7 +693,9 @@ export default function CarnetTemplateEditor() {
             width: '100%', height: '100%',
             borderRadius: iel.borderRadius,
             overflow: 'hidden',
-            background: '#EDE8E0',
+            // Only show placeholder background when no image is loaded
+            // This preserves transparency for PNG images without background
+            background: iel.image ? 'transparent' : '#EDE8E0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -999,7 +1029,6 @@ export default function CarnetTemplateEditor() {
                       },
                     } : prev);
                   }}
-                  lockAspectRatio
                   style={{ zIndex: 10 + (logoSelected ? 100 : 0) }}
                   onClick={(_e: any) => { _e.stopPropagation(); setLogoSelected(true); setSelectedId(null); }}
                 >
@@ -1142,8 +1171,8 @@ function LogoPropertiesPanel({
         <div className="grid grid-cols-2 gap-1.5">
           <PropInput label="X" type="number" value={Math.round(logo.x)} onChange={v => onUpdate({ x: v })} />
           <PropInput label="Y" type="number" value={Math.round(logo.y)} onChange={v => onUpdate({ y: v })} />
-          <PropInput label="Ancho" type="number" value={Math.round(logo.width)} onChange={v => onUpdate({ width: v, height: v })} />
-          <PropInput label="Alto" type="number" value={Math.round(logo.height)} onChange={v => onUpdate({ width: v, height: v })} />
+          <PropInput label="Ancho" type="number" value={Math.round(logo.width)} onChange={v => onUpdate({ width: v })} />
+          <PropInput label="Alto" type="number" value={Math.round(logo.height)} onChange={v => onUpdate({ height: v })} />
         </div>
       </PropSection>
 
@@ -1179,9 +1208,9 @@ function LogoPropertiesPanel({
 
       {/* Info */}
       <div className="bg-[var(--af-bg3)] rounded-lg p-2.5 text-[10px] text-[var(--muted-foreground)] space-y-1">
-        <p>Arrastra el logo para moverlo.</p>
-        <p>Usa las esquinas para cambiar el tamaño.</p>
-        <p>Se recomienda usar imágenes PNG sin fondo.</p>
+        <p>Arrastra el logo para moverlo a cualquier posición.</p>
+        <p>Usa las esquinas para cambiar el tamaño libremente.</p>
+        <p>Se recomienda usar imágenes PNG o SVG sin fondo para mejor resultado.</p>
       </div>
     </div>
   );
@@ -1544,7 +1573,7 @@ function ImageProps({ element, onUpdate, onImageUpload }: { element: ImageTempla
       <PropSection title="Imagen">
         <label className="af-btn-secondary flex items-center gap-1.5 text-[10px] px-2 py-1.5 cursor-pointer justify-center w-full">
           <Upload size={12} /> Subir imagen
-          <input type="file" accept="image/*" className="hidden" onChange={onImageUpload} />
+          <input type="file" accept="image/png,image/svg+xml,image/webp,image/*" className="hidden" onChange={onImageUpload} />
         </label>
         {element.image && (
           <div className="mt-1.5 flex items-center gap-2">
