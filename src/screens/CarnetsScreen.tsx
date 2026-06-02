@@ -89,11 +89,15 @@ export default function CarnetsScreen() {
   // Counter to force re-render of photo preview after crop
   const [photoKey, setPhotoKey] = useState(0);
 
-  // Fetch carnets
+  // Quota error state
+  const [quotaError, setQuotaError] = useState(false);
+
+  // Fetch carnets WITH stats (single API call, saves one Firestore read)
   const fetchCarnets = useCallback(async () => {
     if (!activeTenantId || !authUser) return;
     try {
       setLoading(true);
+      setQuotaError(false);
       const token = await authUser.getIdToken();
       const res = await fetch('/api/carnets', {
         method: 'POST',
@@ -105,12 +109,25 @@ export default function CarnetsScreen() {
           status: statusFilter === 'all' ? undefined : statusFilter,
           page,
           limit,
+          includeStats: true, // Get stats in the same call
         }),
       });
       const data = await res.json();
+
+      // Handle quota exhaustion
+      if (res.status === 429 || data.isQuotaError) {
+        setQuotaError(true);
+        toast.error('Cuota de Firebase excedida. Intente de nuevo más tarde.');
+        return;
+      }
+
       if (data.carnets) {
         setCarnets(data.carnets);
         setTotal(data.total || 0);
+      }
+      // Stats come from the same response
+      if (data.stats) {
+        setStats(data.stats);
       }
     } catch (err) {
       console.error('[Carnets] fetch error:', err);
@@ -119,7 +136,7 @@ export default function CarnetsScreen() {
     }
   }, [activeTenantId, authUser, search, statusFilter, page]);
 
-  // Fetch stats
+  // Fetch stats separately only when needed (e.g., after create/delete/toggle)
   const fetchStats = useCallback(async () => {
     if (!activeTenantId || !authUser) return;
     try {
@@ -130,6 +147,10 @@ export default function CarnetsScreen() {
         body: JSON.stringify({ action: 'stats', tenantId: activeTenantId }),
       });
       const data = await res.json();
+      if (res.status === 429 || data.isQuotaError) {
+        setQuotaError(true);
+        return;
+      }
       if (data.total !== undefined) setStats(data);
     } catch (err) {
       console.error('[Carnets] stats error:', err);
@@ -137,7 +158,6 @@ export default function CarnetsScreen() {
   }, [activeTenantId, authUser]);
 
   useEffect(() => { fetchCarnets(); }, [fetchCarnets]);
-  useEffect(() => { fetchStats(); }, [fetchStats]);
 
   // Fetch default carnet templates
   const fetchTemplates = useCallback(async () => {
@@ -150,6 +170,13 @@ export default function CarnetsScreen() {
         body: JSON.stringify({ action: 'list', tenantId: activeTenantId }),
       });
       const data = await res.json();
+
+      // Handle quota exhaustion
+      if (res.status === 429 || data.isQuotaError) {
+        setQuotaError(true);
+        return;
+      }
+
       if (data.templates) {
         const frontDefault = data.templates.find((t: CarnetTemplate) => t.isDefault && t.side === 'front')
           || data.templates.find((t: CarnetTemplate) => t.side === 'front');
@@ -312,6 +339,26 @@ export default function CarnetsScreen() {
 
   return (
     <div className="space-y-6 animate-fadeIn">
+      {/* ═══ Quota Error Banner ═══ */}
+      {quotaError && (
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3">
+          <AlertTriangle size={20} className="text-red-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-red-400">Cuota de Firebase excedida</p>
+            <p className="text-xs text-red-300/80 mt-1">
+              Las operaciones de lectura se han limitado temporalmente. Los carnets y diseños no se pueden cargar en este momento.
+              Intente de nuevo más tarde o contacte al administrador.
+            </p>
+          </div>
+          <button
+            onClick={() => { setQuotaError(false); fetchCarnets(); fetchTemplates(); }}
+            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500/20 text-red-300 hover:bg-red-500/30 transition-colors cursor-pointer border-none"
+          >
+            Reintentar
+          </button>
+        </div>
+      )}
+
       {/* ═══ Header ═══ */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

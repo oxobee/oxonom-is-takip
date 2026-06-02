@@ -197,6 +197,14 @@ export async function POST(req: NextRequest) {
     if (err.message === 'No autenticado') {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
     }
+    // Handle Firebase quota exhaustion
+    const code = err.code || '';
+    if (code === 'RESOURCE_EXHAUSTED' || err.message.includes('quota') || err.message.includes('Quota') || err.message.includes('RESOURCE_EXHAUSTED')) {
+      return NextResponse.json(
+        { error: 'Cuota de Firebase excedida. Intente de nuevo más tarde.', isQuotaError: true },
+        { status: 429 }
+      );
+    }
     return NextResponse.json({ error: err.message || 'Error interno' }, { status: 500 });
   }
 }

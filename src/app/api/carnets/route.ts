@@ -9,7 +9,8 @@ import { getAdminDb, getAdminFieldValue } from "@/lib/firebase-admin";
  * All data scoped by tenantId.
  *
  * Actions:
- *   - list:          List all carnets for the tenant (with optional search, status filter)
+ *   - list:          List carnets for the tenant (with optional search, status filter)
+ *                   Also returns stats when includeStats=true (saves a separate API call)
  *   - create:        Create a new carnet/employee record
  *   - update:        Update an existing carnet
  *   - delete:        Delete a carnet
@@ -18,6 +19,10 @@ import { getAdminDb, getAdminFieldValue } from "@/lib/firebase-admin";
  *   - stats:         Get dashboard stats (total, active, inactive, valid, expired)
  *   - get-by-code:   Get carnet by employee code (for public QR page, no auth required)
  */
+
+/* ─── In-memory cache for carnet stats (5-minute TTL) ─── */
+const statsCache = new Map<string, { data: any; expiresAt: number }>();
+const STATS_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 interface CarnetData {
   tenantId: string;
@@ -84,9 +89,9 @@ export async function POST(request: NextRequest) {
     const db = getAdminDb();
     const FieldValue = getAdminFieldValue();
 
-    // ===== LIST — All carnets for tenant =====
+    // ===== LIST — Carnets for tenant (optionally includes stats to avoid extra API call) =====
     if (action === "list") {
-      const { tenantId, search, status, page = 1, limit = 50 } = body;
+      const { tenantId, search, status, page = 1, limit = 50, includeStats = false } = body;
       if (!tenantId) {
         return NextResponse.json({ error: "tenantId requerido" }, { status: 400 });
       }
@@ -96,6 +101,26 @@ export async function POST(request: NextRequest) {
       const snap = await db.collection("carnets")
         .where("tenantId", "==", tenantId)
         .get();
+
+      // Compute stats from the same snapshot (avoids a second Firestore read)
+      let statsData: any = undefined;
+      if (includeStats) {
+        const now = new Date();
+        let totalAll = snap.size;
+        let active = 0, inactive = 0, valid = 0, expired = 0;
+        snap.docs.forEach((doc: any) => {
+          const data = doc.data();
+          if (data.isActive) active++; else inactive++;
+          if (data.validUntil) {
+            if (new Date(data.validUntil) >= now) valid++; else expired++;
+          } else {
+            valid++;
+          }
+        });
+        statsData = { total: totalAll, active, inactive, valid, expired };
+        // Cache the stats for 5 minutes
+        statsCache.set(tenantId, { data: statsData, expiresAt: Date.now() + STATS_CACHE_TTL });
+      }
 
       let carnets = snap.docs.map((doc: any) => ({ id: doc.id, ...doc.data() }));
 
@@ -130,7 +155,9 @@ export async function POST(request: NextRequest) {
       const start = (page - 1) * limit;
       const paginated = carnets.slice(start, start + limit);
 
-      return NextResponse.json({ carnets: paginated, total, page, limit });
+      const response: Record<string, any> = { carnets: paginated, total, page, limit };
+      if (statsData) response.stats = statsData;
+      return NextResponse.json(response);
     }
 
     // ===== CREATE — New carnet =====
@@ -399,6 +426,12 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "tenantId requerido" }, { status: 400 });
       }
 
+      // Check cache first to avoid unnecessary Firestore reads
+      const cached = statsCache.get(tenantId);
+      if (cached && cached.expiresAt > Date.now()) {
+        return NextResponse.json(cached.data);
+      }
+
       const snap = await db.collection("carnets")
         .where("tenantId", "==", tenantId)
         .get();
@@ -424,7 +457,11 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      return NextResponse.json({ total, active, inactive, valid, expired });
+      const statsResult = { total, active, inactive, valid, expired };
+      // Cache for 5 minutes
+      statsCache.set(tenantId, { data: statsResult, expiresAt: Date.now() + STATS_CACHE_TTL });
+
+      return NextResponse.json(statsResult);
     }
 
     return NextResponse.json({ error: "Acción no reconocida" }, { status: 400 });
@@ -437,6 +474,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Se requiere crear un índice de Firestore. Por favor contacta al administrador.', details: message },
         { status: 500 }
+      );
+    }
+    // Return helpful error for quota exhaustion
+    if (code === 'RESOURCE_EXHAUSTED' || message.includes('quota') || message.includes('Quota') || message.includes('RESOURCE_EXHAUSTED')) {
+      return NextResponse.json(
+        { error: 'Cuota de Firebase excedida. Las operaciones de lectura se han limitado. Intente de nuevo más tarde.', isQuotaError: true },
+        { status: 429 }
       );
     }
     return NextResponse.json({ error: message }, { status: 500 });

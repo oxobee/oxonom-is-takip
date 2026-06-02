@@ -3,6 +3,15 @@ import { requireAdmin, AuthError } from "@/lib/api-auth";
 import { getAdminDb, getAdminFieldValue, getAdminAuth, isAdminInitialized } from "@/lib/firebase-admin";
 import { getAllFlags } from "@/lib/feature-flags";
 
+/* ─── In-memory cache for expensive queries (3-minute TTL) ─── */
+const apiCache = new Map<string, { data: any; expiresAt: number }>();
+const CACHE_TTL = 3 * 60 * 1000; // 3 minutes
+
+/** Invalidate all cached data — call after any write operation */
+function invalidateCache() {
+  apiCache.clear();
+}
+
 /**
  * POST /api/super-admin
  *
@@ -75,6 +84,13 @@ export async function POST(request: NextRequest) {
 
     // ===== DASHBOARD — Global Stats =====
     if (action === "dashboard") {
+      // Check cache first — dashboard data rarely changes
+      const cacheKey = `dashboard`;
+      const cached = apiCache.get(cacheKey);
+      if (cached && cached.expiresAt > Date.now()) {
+        return NextResponse.json(cached.data);
+      }
+
       // Get full data for tenants and users (needed for orphan detection + summaries)
       const [tenantsSnap, usersSnap] = await Promise.all([
         db.collection("tenants").get(),
@@ -112,7 +128,7 @@ export async function POST(request: NextRequest) {
       });
       const orphanUsers = usersSnap.docs.filter((d: any) => !usersInAnyTenant.has(d.id));
 
-      return NextResponse.json({
+      const dashboardData = {
         totalTenants,
         totalUsers,
         totalProjects,
@@ -127,11 +143,21 @@ export async function POST(request: NextRequest) {
           email: d.data()?.email || "",
           role: d.data()?.role || "Miembro",
         })),
-      });
+      };
+      // Cache the dashboard response
+      apiCache.set('dashboard', { data: dashboardData, expiresAt: Date.now() + CACHE_TTL });
+      return NextResponse.json(dashboardData);
     }
 
     // ===== LIST TENANTS =====
     if (action === "list-tenants") {
+      // Check cache first
+      const cacheKey = 'list-tenants';
+      const cached = apiCache.get(cacheKey);
+      if (cached && cached.expiresAt > Date.now()) {
+        return NextResponse.json(cached.data);
+      }
+
       const snap = await db.collection("tenants").orderBy("createdAt", "desc").get();
       const allTenants = snap.docs.map((doc: any) => {
         const data = doc.data();
@@ -178,7 +204,10 @@ export async function POST(request: NextRequest) {
         };
       });
 
-      return NextResponse.json({ tenants });
+      const tenantsResponse = { tenants };
+      // Cache the list-tenants response
+      apiCache.set('list-tenants', { data: tenantsResponse, expiresAt: Date.now() + CACHE_TTL });
+      return NextResponse.json(tenantsResponse);
     }
 
     // ===== CREATE TENANT =====
@@ -252,6 +281,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      invalidateCache();
       return NextResponse.json({
         tenantId: tenantRef.id,
         name: name.trim(),
@@ -306,6 +336,7 @@ export async function POST(request: NextRequest) {
       }
 
       await db.collection("tenants").doc(tenantId).delete();
+      invalidateCache();
       return NextResponse.json({ deleted: tenantName, tenantId });
     }
 
@@ -333,6 +364,7 @@ export async function POST(request: NextRequest) {
       }
 
       await db.collection("tenants").doc(tenantId).update(updates);
+      invalidateCache();
       return NextResponse.json({ updated: true, ...updates });
     }
 
@@ -423,6 +455,13 @@ export async function POST(request: NextRequest) {
 
     // ===== LIST ALL USERS =====
     if (action === "list-all-users") {
+      // Check cache first
+      const cacheKey = 'list-all-users';
+      const cached = apiCache.get(cacheKey);
+      if (cached && cached.expiresAt > Date.now()) {
+        return NextResponse.json(cached.data);
+      }
+
       const usersSnap = await db.collection("users").orderBy("createdAt", "desc").get();
 
       // Build a map of user UID → user doc data for role lookups
@@ -467,7 +506,10 @@ export async function POST(request: NextRequest) {
         };
       });
 
-      return NextResponse.json({ users });
+      const usersResponse = { users };
+      // Cache the list-all-users response
+      apiCache.set('list-all-users', { data: usersResponse, expiresAt: Date.now() + CACHE_TTL });
+      return NextResponse.json(usersResponse);
     }
 
     // ===== UPDATE USER ROLE =====
@@ -486,6 +528,7 @@ export async function POST(request: NextRequest) {
       const oldRole = userDoc.data()?.role || "Miembro";
       await db.collection("users").doc(targetUid).update({ role: newRole });
 
+      invalidateCache();
       return NextResponse.json({ updated: true, uid: targetUid, oldRole, newRole });
     }
 
@@ -527,6 +570,7 @@ export async function POST(request: NextRequest) {
         console.warn(`[SuperAdmin] Could not disable Auth user: ${e.message}`);
       }
 
+      invalidateCache();
       return NextResponse.json({ deleted: true, email: userData.email, removedFromTenants: tenantsSnap.size });
     }
 
@@ -552,6 +596,7 @@ export async function POST(request: NextRequest) {
       const userName = uDoc.exists ? uDoc.data()?.name || "Desconocido" : "Desconocido";
       const userEmail = uDoc.exists ? uDoc.data()?.email || "" : "";
 
+      invalidateCache();
       return NextResponse.json({ added: true, tenantName: tenantData.name, userName, userEmail });
     }
 
@@ -576,6 +621,7 @@ export async function POST(request: NextRequest) {
         members: FieldValue.arrayRemove(targetUid),
       });
 
+      invalidateCache();
       return NextResponse.json({ removed: true, tenantName: tenantData.name });
     }
 
@@ -599,6 +645,7 @@ export async function POST(request: NextRequest) {
       }
 
       await db.collection("tenants").doc(tenantId).update({ code });
+      invalidateCache();
       return NextResponse.json({ code, tenantId });
     }
 
@@ -617,6 +664,7 @@ export async function POST(request: NextRequest) {
 
       await db.collection("tenants").doc(tenantId).update({ createdBy: newOwnerUid });
 
+      invalidateCache();
       return NextResponse.json({ transferred: true, tenantName: tenantData.name, newOwnerUid });
     }
 
@@ -756,6 +804,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: `Tipo de acción masiva no reconocida: ${type}` }, { status: 400 });
       }
 
+      invalidateCache();
       return NextResponse.json({ type, processed: results.length, succeeded: results.filter((r: any) => r.success).length, failed: results.filter((r: any) => !r.success).length, results });
     }
 
@@ -985,6 +1034,7 @@ export async function POST(request: NextRequest) {
         [flagKey]: { enabled, description },
       }, { merge: true });
 
+      invalidateCache();
       return NextResponse.json({ updated: true, flagKey, enabled });
     }
 
@@ -1047,16 +1097,16 @@ export async function POST(request: NextRequest) {
         checks.firestoreWrite = false;
       }
 
-      // 5. Count total docs in key collections
+      // 5. Count total docs in key collections using efficient .count() aggregation
       try {
-        const [tenantsSnap, usersSnap, projectsSnap] = await Promise.all([
-          db.collection("tenants").get(),
-          db.collection("users").get(),
-          db.collection("projects").get(),
+        const [tenantsCount, usersCount, projectsCount] = await Promise.all([
+          db.collection("tenants").count().get().then((s: any) => s.data().count).catch(() => 0),
+          db.collection("users").count().get().then((s: any) => s.data().count).catch(() => 0),
+          db.collection("projects").count().get().then((s: any) => s.data().count).catch(() => 0),
         ]);
-        checks.totalTenants = tenantsSnap.size;
-        checks.totalUsers = usersSnap.size;
-        checks.totalProjects = projectsSnap.size;
+        checks.totalTenants = tenantsCount;
+        checks.totalUsers = usersCount;
+        checks.totalProjects = projectsCount;
       } catch {
         // Keep zeros
       }
