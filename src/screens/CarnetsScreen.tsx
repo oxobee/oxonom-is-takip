@@ -10,6 +10,7 @@ import {
   Search, Plus, Eye, Edit3, Trash2, Copy, ToggleLeft, ToggleRight,
   Download, FileText, Image, Printer, Users, UserCheck, UserX,
   ShieldCheck, AlertTriangle, CreditCard, X, Upload, Palette,
+  FileSpreadsheet, CheckCircle2, AlertCircle, Loader2,
 } from 'lucide-react';
 
 interface CarnetRecord {
@@ -68,6 +69,12 @@ export default function CarnetsScreen() {
 
   // Form state
   const [form, setForm] = useState<Partial<CarnetRecord>>({});
+
+  // Import state
+  const [showImport, setShowImport] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<any>(null);
+  const [importFile, setImportFile] = useState<File | null>(null);
 
   // Fetch carnets
   const fetchCarnets = useCallback(async () => {
@@ -318,7 +325,13 @@ export default function CarnetsScreen() {
             Gestión de carnets corporativos
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => { setShowImport(true); setImportResult(null); setImportFile(null); }}
+            className="af-btn-secondary flex items-center gap-2 text-sm px-4 py-2.5"
+          >
+            <FileSpreadsheet size={16} /> Importar Excel
+          </button>
           <button
             onClick={() => setScreen('carnet-designer')}
             className="af-btn-secondary flex items-center gap-2 text-sm px-4 py-2.5"
@@ -496,6 +509,217 @@ export default function CarnetsScreen() {
             </div>
           )}
         </div>
+      )}
+
+      {/* ═══ Import Modal ═══ */}
+      {showImport && (
+        <CenterModal open onClose={() => { setShowImport(false); setImportResult(null); setImportFile(null); }} maxWidth={650}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Importar carnets desde Excel</h2>
+            <button onClick={() => { setShowImport(false); setImportResult(null); setImportFile(null); }} className="w-8 h-8 rounded-lg hover:bg-[var(--af-bg3)] flex items-center justify-center cursor-pointer bg-transparent border-none">
+              <X size={18} className="text-[var(--muted-foreground)]" />
+            </button>
+          </div>
+
+          {!importResult ? (
+            <div className="space-y-4">
+              {/* Instructions */}
+              <div className="bg-[var(--af-bg3)] rounded-xl p-4 text-[12px] text-[var(--muted-foreground)] space-y-2">
+                <p className="font-semibold text-[var(--foreground)] text-[13px]">Formato del archivo:</p>
+                <p>El archivo Excel debe tener columnas con los datos del personal. Las columnas se detectan automáticamente por nombre.</p>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
+                  <span><span className="font-semibold text-[var(--af-accent)]">Nombre Completo</span> — obligatorio</span>
+                  <span><span className="font-semibold">Cargo / Posición</span></span>
+                  <span><span className="font-semibold">Código Empleado</span></span>
+                  <span><span className="font-semibold">Área / Departamento</span></span>
+                  <span><span className="font-semibold">Tipo de Sangre</span></span>
+                  <span><span className="font-semibold">Ciudad</span></span>
+                  <span><span className="font-semibold">Teléfono</span></span>
+                  <span><span className="font-semibold">Email</span></span>
+                  <span><span className="font-semibold">EPS</span></span>
+                  <span><span className="font-semibold">Contacto de Emergencia</span></span>
+                  <span><span className="font-semibold">Teléfono Emergencia</span></span>
+                  <span><span className="font-semibold">Fecha Ingreso / Vigencia</span></span>
+                </div>
+              </div>
+
+              {/* File upload */}
+              <div
+                className="border-2 border-dashed border-[var(--border)] rounded-xl p-8 text-center hover:border-[var(--af-accent)]/40 transition-colors cursor-pointer"
+                onClick={() => document.getElementById('excel-upload')?.click()}
+                onDragOver={e => { e.preventDefault(); e.stopPropagation(); }}
+                onDrop={e => {
+                  e.preventDefault();
+                  const f = e.dataTransfer.files[0];
+                  if (f && (f.name.endsWith('.xlsx') || f.name.endsWith('.xls') || f.name.endsWith('.csv'))) {
+                    setImportFile(f);
+                  } else {
+                    toast.error('Solo se aceptan archivos Excel (.xlsx, .xls)');
+                  }
+                }}
+              >
+                {importFile ? (
+                  <div className="space-y-2">
+                    <FileSpreadsheet size={36} className="mx-auto text-[var(--af-accent)]" />
+                    <p className="font-medium text-[var(--foreground)] text-sm">{importFile.name}</p>
+                    <p className="text-[11px] text-[var(--muted-foreground)]">{(importFile.size / 1024).toFixed(1)} KB — Click para cambiar</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Upload size={36} className="mx-auto text-[var(--muted-foreground)]" />
+                    <p className="font-medium text-[var(--foreground)] text-sm">Arrastra tu archivo Excel aquí</p>
+                    <p className="text-[11px] text-[var(--muted-foreground)]">o haz click para seleccionar (.xlsx, .xls)</p>
+                  </div>
+                )}
+                <input
+                  id="excel-upload"
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  className="hidden"
+                  onChange={e => {
+                    const f = e.target.files?.[0];
+                    if (f) setImportFile(f);
+                  }}
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  onClick={() => { setShowImport(false); setImportFile(null); }}
+                  className="af-btn-secondary text-sm px-4 py-2.5"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!importFile || !authUser || !activeTenantId) return;
+                    try {
+                      setImporting(true);
+                      const token = await authUser.getIdToken();
+                      const formData = new FormData();
+                      formData.append('file', importFile);
+                      formData.append('tenantId', activeTenantId);
+                      const res = await fetch('/api/carnets/import', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` },
+                        body: formData,
+                      });
+                      const data = await res.json();
+                      if (!res.ok) {
+                        toast.error(data.error || 'Error al importar');
+                        setImporting(false);
+                        return;
+                      }
+                      setImportResult(data);
+                      fetchCarnets();
+                      fetchStats();
+                      toast.success(`${data.created} carnet${data.created !== 1 ? 's' : ''} importado${data.created !== 1 ? 's' : ''}`);
+                    } catch (err: any) {
+                      toast.error(err.message || 'Error al importar');
+                    } finally {
+                      setImporting(false);
+                    }
+                  }}
+                  disabled={!importFile || importing}
+                  className="af-btn-primary flex items-center gap-2 text-sm px-4 py-2.5 disabled:opacity-50"
+                >
+                  {importing ? (
+                    <><Loader2 size={16} className="animate-spin" /> Importando...</>
+                  ) : (
+                    <><FileSpreadsheet size={16} /> Importar</>
+                  )}
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Import Results */
+            <div className="space-y-4">
+              {/* Summary cards */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-center">
+                  <CheckCircle2 size={20} className="mx-auto text-emerald-500 mb-1" />
+                  <div className="text-xl font-bold text-emerald-500">{importResult.created}</div>
+                  <div className="text-[10px] text-emerald-600">Creados</div>
+                </div>
+                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-center">
+                  <AlertCircle size={20} className="mx-auto text-red-400 mb-1" />
+                  <div className="text-xl font-bold text-red-400">{importResult.errors}</div>
+                  <div className="text-[10px] text-red-500">Errores</div>
+                </div>
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-center">
+                  <AlertTriangle size={20} className="mx-auto text-amber-500 mb-1" />
+                  <div className="text-xl font-bold text-amber-500">{importResult.skipped}</div>
+                  <div className="text-[10px] text-amber-600">Omitidos</div>
+                </div>
+              </div>
+
+              {/* Imported records list */}
+              {importResult.results?.length > 0 && (
+                <div className="max-h-[40vh] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-[var(--border)]">
+                        <th className="text-left px-3 py-2 text-[10px] font-semibold text-[var(--muted-foreground)] uppercase">Código</th>
+                        <th className="text-left px-3 py-2 text-[10px] font-semibold text-[var(--muted-foreground)] uppercase">Nombre</th>
+                        <th className="text-left px-3 py-2 text-[10px] font-semibold text-[var(--muted-foreground)] uppercase">Cargo</th>
+                        <th className="text-left px-3 py-2 text-[10px] font-semibold text-[var(--muted-foreground)] uppercase">Datos Faltantes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {importResult.results.map((r: any, idx: number) => (
+                        <tr key={idx} className="border-b border-[var(--border)] last:border-0">
+                          <td className="px-3 py-2 font-mono text-[11px] text-[var(--af-accent)]">{r.employeeCode}</td>
+                          <td className="px-3 py-2 text-[13px] font-medium text-[var(--foreground)]">{r.fullName}</td>
+                          <td className="px-3 py-2 text-[12px] text-[var(--muted-foreground)]">{r.position || '—'}</td>
+                          <td className="px-3 py-2">
+                            {r.missingFields?.length > 0 ? (
+                              <div className="flex flex-wrap gap-1">
+                                {r.missingFields.map((f: string) => (
+                                  <span key={f} className="inline-block px-1.5 py-0.5 rounded text-[9px] font-medium bg-amber-500/10 text-amber-600 border border-amber-500/20">{f}</span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-[10px] text-emerald-500 font-medium">Completo</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Error details */}
+              {importResult.errorDetails?.length > 0 && (
+                <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-3">
+                  <p className="text-[11px] font-semibold text-red-400 mb-2">Errores:</p>
+                  {importResult.errorDetails.map((e: any, idx: number) => (
+                    <p key={idx} className="text-[11px] text-red-400">Fila {e.row}: {e.fullName} — {e.error}</p>
+                  ))}
+                </div>
+              )}
+
+              {/* Unmapped columns warning */}
+              {importResult.unmappedColumns?.length > 0 && (
+                <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-3">
+                  <p className="text-[11px] font-semibold text-amber-500 mb-1">Columnas no reconocidas:</p>
+                  <p className="text-[11px] text-amber-600">{importResult.unmappedColumns.join(', ')}</p>
+                </div>
+              )}
+
+              {/* Close */}
+              <div className="flex justify-end pt-2">
+                <button
+                  onClick={() => { setShowImport(false); setImportResult(null); setImportFile(null); }}
+                  className="af-btn-primary text-sm px-4 py-2.5"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          )}
+        </CenterModal>
       )}
 
       {/* ═══ Preview Modal ═══ */}
