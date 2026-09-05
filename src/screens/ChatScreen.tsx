@@ -295,12 +295,12 @@ export default function ChatScreen() {
           {/* DM conversations section */}
           <div className="mt-1">
             <div className="flex items-center justify-between px-3 py-2">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Ayajlar Directos</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Direkt Mesajlar</span>
               <button
-                aria-label="Nuevo mensaje directo"
+                aria-label="Yeni direkt mesaj"
                 className="w-5 h-5 rounded-md flex items-center justify-center cursor-pointer border-none bg-transparent hover:bg-[var(--af-bg3)] transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                 onClick={() => { setShowNewDmDialog(true); setNewDmSearch(''); }}
-                title="Nuevo mensaje directo"
+                title="Yeni direkt mesaj"
               >
                 <Plus size={14} aria-hidden="true"/>
               </button>

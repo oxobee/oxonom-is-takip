@@ -70,7 +70,7 @@ export default function Sidebar({
     { id: 'profile', label: 'Profilim', icon: <User size={18} className="stroke-current" aria-hidden="true" />, category: 'principal' as NavCategory },
     { id: 'projects', label: 'Projeler', icon: <Folder size={18} className="stroke-current" aria-hidden="true" />, badge: projects.length, category: 'principal' as NavCategory },
     { id: 'tasks', label: 'Görevler', icon: <ClipboardCheck size={18} className="stroke-current" aria-hidden="true" />, badge: pendingCount > 0 ? pendingCount : undefined, category: 'principal' as NavCategory },
-    { id: 'chat', label: 'Sohbet & Ayajlar', icon: <MessageCircle size={18} className="stroke-current" aria-hidden="true" />, category: 'principal' as NavCategory },
+    { id: 'chat', label: 'Ekip Sohbeti', icon: <MessageCircle size={18} className="stroke-current" aria-hidden="true" />, category: 'principal' as NavCategory },
     // ── Proje & Saha ──
     { id: 'timeTracking', label: 'Zaman Takibi', icon: <Timer size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },
     { id: 'budget', label: 'Bütçe & Harcamalar', icon: <DollarSign size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },

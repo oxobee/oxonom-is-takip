@@ -149,16 +149,16 @@ function AppContent() {
 
   // Local screen title overrides (dynamic titles like projectDetail)
   const localScreenTitles: Record<string, string> = {
-    dashboard: 'Dashboard', projects: 'Proyectos', tasks: 'Tareas', chat: 'Mensajes',
-    budget: 'Presupuestos', files: 'Planos y archivos', gallery: 'Galería', inventory: 'Inventario',
-    admin: 'Panel Admin', superAdmin: 'Super Admin', obra: 'Seguimiento obra', suppliers: 'Proveedores', team: 'Equipo',
-    calendar: 'Calendario', portal: 'Portal cliente', profile: 'Mi Perfil', install: 'Instalar App',
-    companies: 'Empresas', rfis: 'RFIs', submittals: 'Submittals', punchList: 'Punch List',
-    changeorders: 'Órdenes de Cambio', catalogs: 'Catálogos', fieldnotes: 'Notas de Campo',
-    kanban: 'Tablero Kanban', integrations: 'Integraciones', adminlog: 'Logs del Sistema',
-    carnets: 'Carnets',
-    weeklyAgenda: 'Agenda Semanal', timeTracking: 'Time Tracking',
-    projectDetail: currentProject?.data.name || 'Proyecto',
+    dashboard: 'Panel', projects: 'Projeler', tasks: 'Görevler', chat: 'Ekip Sohbeti',
+    budget: 'Bütçe & Harcamalar', files: 'Planlar ve Dosyalar', gallery: 'Fotoğraf Galerisi', inventory: 'Envanter & Stok',
+    admin: 'Yönetim Paneli', superAdmin: 'Süper Yönetici', obra: 'Şantiye Takibi', suppliers: 'Tedarikçiler', team: 'Ekip Üyeleri',
+    calendar: 'Takvim', portal: 'Müşteri Portalı', profile: 'Profilim', install: 'Uygulamayı Yükle',
+    companies: 'Şirketler & Firmalar', rfis: 'Bilgi Talepleri (RFI)', submittals: 'Onay Belgeleri', punchList: 'Eksik & Kusur Listesi',
+    changeorders: 'Değişiklik Emirleri', catalogs: 'Kataloglar', fieldnotes: 'Saha Notları',
+    kanban: 'Kanban Panosu', integrations: 'Entegrasyonlar', adminlog: 'Sistem Günlükleri',
+    carnets: 'Dijital Kimlik Kartları',
+    weeklyAgenda: 'Haftalık Ajanda', timeTracking: 'Zaman Takibi',
+    projectDetail: currentProject?.data.name || 'Proje Detayı',
   };
 
   return (

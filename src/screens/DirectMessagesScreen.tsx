@@ -596,9 +596,9 @@ export default function DirectMessagesScreen() {
               <div className="w-24 h-24 rounded-2xl bg-[var(--af-bg3)] flex items-center justify-center mx-auto mb-4">
                 <span className="text-5xl">✉️</span>
               </div>
-              <div className="text-[15px] font-semibold text-[var(--foreground)] mb-1">Ayajlar Directos</div>
+              <div className="text-[15px] font-semibold text-[var(--foreground)] mb-1">Direkt Mesajlar</div>
               <div className="text-[12px] text-[var(--af-text3)] leading-relaxed">
-                Selecciona una conversación o inicia una nueva para comunicarte directamente con tu equipo
+                Ekibinizle doğrudan iletişim kurmak için bir konuşma seçin veya yeni bir mesaj başlatın
               </div>
             </div>
           </div>

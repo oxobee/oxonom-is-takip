@@ -651,24 +651,24 @@ export default function AdminScreen() {
                 <div className="overflow-x-auto -mx-4 px-4 pb-2">
                   <table className="w-full text-[11px]">
                     <thead><tr className="border-b border-[var(--border)]">
-                      <th className="text-left py-2 px-2 text-[var(--muted-foreground)] font-medium sticky left-0 bg-[var(--af-bg3)] min-w-[160px]">Permiso</th>
+                      <th className="text-left py-2 px-2 text-[var(--muted-foreground)] font-medium sticky left-0 bg-[var(--af-bg3)] min-w-[160px]">Yetki</th>
                       {USER_ROLES.map(r => <th key={r} className="text-center py-2 px-1.5 text-[var(--muted-foreground)] font-medium whitespace-nowrap min-w-[70px]">{ROLE_ICONS[r]} {r}</th>)}
                     </tr></thead>
                     <tbody>
                       {(() => {
                         // Group permissions by category for better readability
                         const categories: { label: string; emoji: string; perms: string[] }[] = [
-                          { label: 'Dashboard & Proyectos', emoji: '📊', perms: ['Ver Dashboard','Proje Oluşturs','Projeyi Düzenles','Projeyi Sils'] },
-                          { label: 'Tareas', emoji: '✅', perms: ['Görev Oluşturs','Asignar tareas','Ver tablero Kanban'] },
+                          { label: 'Panel & Projeler', emoji: '📊', perms: ['Paneli Görüntüle','Proje Oluştur','Projeleri Düzenle','Projeleri Sil'] },
+                          { label: 'Görevler', emoji: '✅', perms: ['Görev Oluştur','Görev Ata','Kanban Panosunu Görüntüle'] },
                           { label: 'Zaman Takibi', emoji: '⏱️', perms: ['Zaman Takibi'] },
-                          { label: 'Bütçes', emoji: '💰', perms: ['Ver presupuestos','Gestionar presupuestos'] },
-                          { label: 'Dosyalar & Galeri', emoji: '📁', perms: ['Ver planos y archivos','Dosya Yükles','Ver galería','Fotoğraf Yükles galería','Şantiye Takibi'] },
-                          { label: 'Envanter', emoji: '📦', perms: ['Ver inventario','Gestionar inventario'] },
-                          { label: 'Calidad', emoji: '🔍', perms: ['Ver RFIs','Crear RFIs','Ver Submittals','Crear Submittals','Ver Punch List','Crear Punch List','Ver Órdenes de Cambio','Crear Órdenes de Cambio','Ver Notlar de Campo','Crear Notlar de Campo'] },
-                          { label: 'Administración', emoji: '⚙️', perms: ['Yönetim Paneli','Gestionar equipo','Cambiar roles','Ver proveedores','Gestionar proveedores','Ver facturas','Gestionar facturas','Ver empresas','Gestionar empresas','Ver catálogos','Gestionar catálogos','Ver integraciones','Gestionar integraciones'] },
-                          { label: 'Kimlik & Belgeler', emoji: '🪪', perms: ['Ver carnets','Crear carnets','Usar diseñador de carnets','İçe Aktar carnets Excel'] },
-                          { label: 'Comunicación', emoji: '💬', perms: ['Chat general','Direkt Ayajlar'] },
-                          { label: 'Calendario & Raporlar', emoji: '📅', perms: ['Ver calendario','Ver reportes','Dışa Aktar reportes'] },
+                          { label: 'Bütçe & Harcamalar', emoji: '💰', perms: ['Bütçeleri Görüntüle','Bütçeleri Yönet'] },
+                          { label: 'Dosyalar & Galeri', emoji: '📁', perms: ['Plan ve Dosyaları Görüntüle','Dosya Yükle','Galeriyi Görüntüle','Galeriye Fotoğraf Ekle','Şantiye Takibi'] },
+                          { label: 'Envanter', emoji: '📦', perms: ['Envanteri Görüntüle','Envanteri Yönet'] },
+                          { label: 'Kalite & Saha', emoji: '🔍', perms: ['RFI Görüntüle','RFI Oluştur','Onay Belgelerini Görüntüle','Onay Belgesi Oluştur','Kusur Listesini Görüntüle','Kusur Listesi Oluştur','Değişiklik Emirlerini Görüntüle','Değişiklik Emri Oluştur','Saha Notlarını Görüntüle','Saha Notu Oluştur'] },
+                          { label: 'Yönetim', emoji: '⚙️', perms: ['Yönetim Paneli','Ekibi Yönet','Rolleri Değiştir','Tedarikçileri Görüntüle','Tedarikçileri Yönet','Faturaları Görüntüle','Faturaları Yönet','Firmaları Görüntüle','Firmaları Yönet','Katalogları Görüntüle','Katalogları Yönet','Entegrasyonları Görüntüle','Entegrasyonları Yönet'] },
+                          { label: 'Kimlik Kartları', emoji: '🪪', perms: ['Kimlik Kartlarını Görüntüle','Kimlik Kartı Oluştur','Kart Tasarımcısını Kullan','Excel\'den Kart İçe Aktar'] },
+                          { label: 'İletişim', emoji: '💬', perms: ['Genel Sohbet','Direkt Mesajlar'] },
+                          { label: 'Takvim & Raporlar', emoji: '📅', perms: ['Takvimi Görüntüle','Raporları Görüntüle','Raporları Dışa Aktar'] },
                           { label: 'Müşteri Portalı', emoji: '🌐', perms: ['Müşteri Portalı'] },
                         ];
                         const rows: React.ReactNode[] = [];

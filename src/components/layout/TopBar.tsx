@@ -57,7 +57,7 @@ export default function TopBar() {
 
   // Local screen title overrides (dynamic titles like projectDetail)
   const localScreenTitles: Record<string, string> = {
-    dashboard: 'Panel', projects: 'Projeler', tasks: 'Görevler', chat: 'Ekip Ayajları',
+    dashboard: 'Panel', projects: 'Projeler', tasks: 'Görevler', chat: 'Ekip Sohbeti',
     budget: 'Bütçe & Harcamalar', files: 'Planlar ve Dosyalar', gallery: 'Fotoğraf Galerisi', inventory: 'Envanter & Stok',
     admin: 'Yönetim Paneli', superAdmin: 'Süper Yönetici', obra: 'Şantiye Takibi', suppliers: 'Tedarikçiler', team: 'Ekip Üyeleri',
     calendar: 'Takvim', portal: 'Müşteri Portalı', profile: 'Profilim', install: 'Uygulamayı Yükle',

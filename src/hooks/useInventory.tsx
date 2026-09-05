@@ -245,8 +245,8 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     const productData = product ? { ...product.data } : null;
     setPendingDeleteAction({
       open: true,
-      title: 'Eliminar producto',
-      description: 'Emin misiniz de que deseas eliminar este producto del inventario?',
+      title: 'Ürünü Sil',
+      description: 'Bu ürünü envanterden silmek istediğinizden emin misiniz?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
@@ -255,7 +255,7 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
             toast.success('Producto eliminado', {
               duration: 5000,
               action: {
-                label: 'Deshacer',
+                label: 'Geri Al',
                 onClick: async () => {
                   try {
                     await getFirebase().firestore().collection('invProducts').doc(id).set(scrubUndefined({ ...productData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
@@ -299,8 +299,8 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     const categoryData = category ? { ...category.data } : null;
     setPendingDeleteAction({
       open: true,
-      title: 'Eliminar categoría',
-      description: 'Emin misiniz de que deseas eliminar esta categoría?',
+      title: 'Kategoriyi Sil',
+      description: 'Bu kategoriyi silmek istediğinizden emin misiniz?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
@@ -309,7 +309,7 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
             toast.success('Categoría eliminada', {
               duration: 5000,
               action: {
-                label: 'Deshacer',
+                label: 'Geri Al',
                 onClick: async () => {
                   try {
                     await getFirebase().firestore().collection('invCategories').doc(id).set(scrubUndefined({ ...categoryData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
@@ -359,8 +359,8 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     const movementData = movement ? { ...movement.data } : null;
     setPendingDeleteAction({
       open: true,
-      title: 'Eliminar movimiento',
-      description: 'Emin misiniz de que deseas eliminar este movimiento de inventario?',
+      title: 'Hareketi Sil',
+      description: 'Bu envanter hareketini silmek istediğinizden emin misiniz?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
@@ -369,7 +369,7 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
             toast.success('Movimiento eliminado', {
               duration: 5000,
               action: {
-                label: 'Deshacer',
+                label: 'Geri Al',
                 onClick: async () => {
                   try {
                     await getFirebase().firestore().collection('invMovements').doc(id).set(scrubUndefined({ ...movementData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
@@ -426,8 +426,8 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     const transferData = transfer ? { ...transfer.data } : null;
     setPendingDeleteAction({
       open: true,
-      title: 'Eliminar transferencia',
-      description: 'Emin misiniz de que deseas eliminar este registro de transferencia?',
+      title: 'Transferi Sil',
+      description: 'Bu transfer kaydını silmek istediğinizden emin misiniz?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
@@ -436,7 +436,7 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
             toast.success('Transferencia eliminada', {
               duration: 5000,
               action: {
-                label: 'Deshacer',
+                label: 'Geri Al',
                 onClick: async () => {
                   try {
                     await getFirebase().firestore().collection('invTransfers').doc(id).set(scrubUndefined({ ...transferData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));

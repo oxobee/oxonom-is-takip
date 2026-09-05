@@ -162,68 +162,68 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   const [adminTooltipPos, setAdminTooltipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [adminPermSection, setAdminPermSection] = useState<string>('roles');
   const [rolePerms, setRolePerms] = useState<Record<string, string[]>>({
-    // ── Dashboard & Proyectos ──
-    'Ver Dashboard': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri','Üye'],
-    'Crear proyectos': ['Admin','Director','Mimar'],
-    'Editar proyectos': ['Admin','Director','Mimar'],
-    'Eliminar proyectos': ['Admin','Director'],
-    // ── Tareas ──
-    'Crear tareas': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
-    'Asignar tareas': ['Admin','Director','Mimar'],
-    'Ver tablero Kanban': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
-    // ── Time Tracking ──
-    'Time Tracking': ['Admin','Director','Mimar','Yüklenici','Denetçi'],
-    // ── Presupuestos ──
-    'Ver presupuestos': ['Admin','Director','Mimar','Denetçi','Müşteri'],
-    'Gestionar presupuestos': ['Admin','Director'],
-    // ── Archivos & Galería ──
-    'Ver planos y archivos': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri'],
-    'Subir archivos': ['Admin','Director','Mimar','Yüklenici'],
-    'Ver galería': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri'],
-    'Subir fotos galería': ['Admin','Director','Mimar','Yüklenici','Denetçi'],
-    'Seguimiento obra': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
-    // ── Inventario ──
-    'Ver inventario': ['Admin','Director','Mimar','Yüklenici','Denetçi'],
-    'Gestionar inventario': ['Admin','Director','Yüklenici'],
-    // ── Calidad ──
-    'Ver RFIs': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
-    'Crear RFIs': ['Admin','Director','Mimar','Denetçi'],
-    'Ver Submittals': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
-    'Crear Submittals': ['Admin','Director','Mimar'],
-    'Ver Punch List': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
-    'Crear Punch List': ['Admin','Director','Mimar','Denetçi'],
-    'Ver Órdenes de Cambio': ['Admin','Director','Mimar','Denetçi','Müşteri'],
-    'Crear Órdenes de Cambio': ['Admin','Director'],
-    'Ver Notas de Campo': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
-    'Crear Notas de Campo': ['Admin','Director','Mimar','Yüklenici','Denetçi'],
-    // ── Administración ──
-    'Panel Admin': ['Admin','Director'],
-    'Gestionar equipo': ['Admin','Director'],
-    'Cambiar roles': ['Admin'],
-    'Ver proveedores': ['Admin','Director','Mimar','Denetçi'],
-    'Gestionar proveedores': ['Admin','Director'],
-    'Ver facturas': ['Admin','Director','Denetçi'],
-    'Gestionar facturas': ['Admin','Director'],
-    'Ver empresas': ['Admin','Director','Mimar'],
-    'Gestionar empresas': ['Admin','Director'],
-    'Ver catálogos': ['Admin','Director','Mimar','Denetçi'],
-    'Gestionar catálogos': ['Admin','Director','Mimar'],
-    'Ver integraciones': ['Admin','Director'],
-    'Gestionar integraciones': ['Admin'],
-    // ── Carnets ──
-    'Ver carnets': ['Admin','Director','Mimar','Denetçi'],
-    'Crear carnets': ['Admin','Director','Mimar'],
-    'Usar diseñador de carnets': ['Admin','Director'],
-    'Importar carnets Excel': ['Admin','Director'],
-    // ── Comunicación ──
-    'Chat general': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri','Üye'],
-    'Mensajes directos': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri','Üye'],
-    // ── Calendario & Reportes ──
-    'Ver calendario': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri'],
-    'Ver reportes': ['Admin','Director','Mimar','Denetçi'],
-    'Exportar reportes': ['Admin','Director'],
-    // ── Portal cliente ──
-    'Portal cliente': ['Admin','Director','Müşteri'],
+    // ── Panel & Projeler ──
+    'Paneli Görüntüle': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri','Üye'],
+    'Proje Oluştur': ['Admin','Director','Mimar'],
+    'Projeleri Düzenle': ['Admin','Director','Mimar'],
+    'Projeleri Sil': ['Admin','Director'],
+    // ── Görevler ──
+    'Görev Oluştur': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
+    'Görev Ata': ['Admin','Director','Mimar'],
+    'Kanban Panosunu Görüntüle': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
+    // ── Zaman Takibi ──
+    'Zaman Takibi': ['Admin','Director','Mimar','Yüklenici','Denetçi'],
+    // ── Bütçe & Harcamalar ──
+    'Bütçeleri Görüntüle': ['Admin','Director','Mimar','Denetçi','Müşteri'],
+    'Bütçeleri Yönet': ['Admin','Director'],
+    // ── Dosyalar & Galeri ──
+    'Plan ve Dosyaları Görüntüle': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri'],
+    'Dosya Yükle': ['Admin','Director','Mimar','Yüklenici'],
+    'Galeriyi Görüntüle': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri'],
+    'Galeriye Fotoğraf Ekle': ['Admin','Director','Mimar','Yüklenici','Denetçi'],
+    'Şantiye Takibi': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
+    // ── Envanter ──
+    'Envanteri Görüntüle': ['Admin','Director','Mimar','Yüklenici','Denetçi'],
+    'Envanteri Yönet': ['Admin','Director','Yüklenici'],
+    // ── Kalite & Saha ──
+    'RFI Görüntüle': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
+    'RFI Oluştur': ['Admin','Director','Mimar','Denetçi'],
+    'Onay Belgelerini Görüntüle': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
+    'Onay Belgesi Oluştur': ['Admin','Director','Mimar'],
+    'Kusur Listesini Görüntüle': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
+    'Kusur Listesi Oluştur': ['Admin','Director','Mimar','Denetçi'],
+    'Değişiklik Emirlerini Görüntüle': ['Admin','Director','Mimar','Denetçi','Müşteri'],
+    'Değişiklik Emri Oluştur': ['Admin','Director'],
+    'Saha Notlarını Görüntüle': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
+    'Saha Notu Oluştur': ['Admin','Director','Mimar','Yüklenici','Denetçi'],
+    // ── Yönetim ──
+    'Yönetim Paneli': ['Admin','Director'],
+    'Ekibi Yönet': ['Admin','Director'],
+    'Rolleri Değiştir': ['Admin'],
+    'Tedarikçileri Görüntüle': ['Admin','Director','Mimar','Denetçi'],
+    'Tedarikçileri Yönet': ['Admin','Director'],
+    'Faturaları Görüntüle': ['Admin','Director','Denetçi'],
+    'Faturaları Yönet': ['Admin','Director'],
+    'Firmaları Görüntüle': ['Admin','Director','Mimar'],
+    'Firmaları Yönet': ['Admin','Director'],
+    'Katalogları Görüntüle': ['Admin','Director','Mimar','Denetçi'],
+    'Katalogları Yönet': ['Admin','Director','Mimar'],
+    'Entegrasyonları Görüntüle': ['Admin','Director'],
+    'Entegrasyonları Yönet': ['Admin'],
+    // ── Kimlik Kartları ──
+    'Kimlik Kartlarını Görüntüle': ['Admin','Director','Mimar','Denetçi'],
+    'Kimlik Kartı Oluştur': ['Admin','Director','Mimar'],
+    'Kart Tasarımcısını Kullan': ['Admin','Director'],
+    'Excel\'den Kart İçe Aktar': ['Admin','Director'],
+    // ── İletişim ──
+    'Genel Sohbet': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri','Üye'],
+    'Direkt Mesajlar': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri','Üye'],
+    // ── Takvim & Raporlar ──
+    'Takvimi Görüntüle': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri'],
+    'Raporları Görüntüle': ['Admin','Director','Mimar','Denetçi'],
+    'Raporları Dışa Aktar': ['Admin','Director'],
+    // ── Müşteri Portalı ──
+    'Müşteri Portalı': ['Admin','Director','Müşteri'],
   });
   const toggleRolePerm = (permName: string, role: string) => {
     setRolePerms(prev => {
@@ -2056,12 +2056,12 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         toast.success('Proyecto eliminado', {
           duration: 5000,
           action: {
-            label: 'Deshacer',
+            label: 'Geri Al',
             onClick: async () => {
               try {
                 await getFirebase().firestore().collection('projects').doc(id).set(scrubUndefined({ ...projectData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
                 toast.success('Proyecto restaurado');
-              } catch (err) { console.error('[Archii] undo deleteProject:', err); toast.error('Error al restaurar'); }
+              } catch (err) { console.error('[Archii] undo deleteProject:', err); toast.error('Geri yüklenirken hata oluştu'); }
             },
           },
         });
@@ -2160,13 +2160,13 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         const undoId = toast.success('Tarea eliminada', {
           duration: 5000,
           action: {
-            label: 'Deshacer',
+            label: 'Geri Al',
             onClick: async () => {
               try {
                 const db = getFirebase().firestore();
                 await db.collection('tasks').doc(id).set(scrubUndefined({ ...taskData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
                 toast.success('Tarea restaurada');
-              } catch (err) { console.error('[Archii] undo deleteTask:', err); toast.error('Error al restaurar'); }
+              } catch (err) { console.error('[Archii] undo deleteTask:', err); toast.error('Geri yüklenirken hata oluştu'); }
             },
           },
         });
@@ -2233,29 +2233,29 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     const expenseData = expense ? { ...expense.data } : null;
     setPendingDeleteAction({
       open: true,
-      title: 'Eliminar gasto',
-      description: 'Emin misiniz de que deseas eliminar este gasto?',
+      title: 'Harcamayı Sil',
+      description: 'Bu harcamayı silmek istediğinizden emin misiniz?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('expenses').doc(id).delete();
           if (expenseData) {
-            toast.success('Gasto eliminado', {
+            toast.success('Harcama silindi', {
               duration: 5000,
               action: {
-                label: 'Deshacer',
+                label: 'Geri Al',
                 onClick: async () => {
                   try {
                     await getFirebase().firestore().collection('expenses').doc(id).set(scrubUndefined({ ...expenseData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
-                    toast.success('Gasto restaurado');
-                  } catch (err) { console.error('[Archii] undo deleteExpense:', err); toast.error('Error al restaurar'); }
+                    toast.success('Harcama geri yüklendi');
+                  } catch (err) { console.error('[Archii] undo deleteExpense:', err); toast.error('Geri yüklenirken hata oluştu'); }
                 },
               },
             });
           } else {
-            showToast('Eliminado');
+            showToast('Silindi');
           }
-        } catch (err) { console.error("[Archii]", err); showToast('Error al eliminar', 'error'); }
+        } catch (err) { console.error("[Archii]", err); showToast('Silinirken hata oluştu', 'error'); }
       },
     });
   };
@@ -2268,8 +2268,8 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     const raw = { name, category: forms.supCategory || 'Otro', phone: forms.supPhone || '', email: forms.supEmail || '', address: forms.supAddress || '', website: forms.supWebsite || '', notes: forms.supNotes || '', rating: Number(forms.supRating) || 5, tenantId: activeTenantId || '', createdAt: getFirebase().firestore.FieldValue.serverTimestamp(), createdBy: authUser.uid };
     const data = scrubUndefined(raw);
     try {
-      if (editingId) { await db.collection('suppliers').doc(editingId).update(data); showToast('Proveedor actualizado'); }
-      else { await db.collection('suppliers').add(data); showToast('Proveedor creado'); }
+      if (editingId) { await db.collection('suppliers').doc(editingId).update(data); showToast('Tedarikçi güncellendi'); }
+      else { await db.collection('suppliers').add(data); showToast('Tedarikçi oluşturuldu'); }
       closeModal('supplier'); setForms(p => ({ ...p, supName: '', supCategory: '', supPhone: '', supEmail: '', supAddress: '', supWebsite: '', supNotes: '', supRating: '5' }));
     } catch (err) { console.error('[Archii]', err); showToast('Error', 'error'); }
   };
@@ -2279,29 +2279,29 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     const supplierData = supplier ? { ...supplier.data } : null;
     setPendingDeleteAction({
       open: true,
-      title: 'Eliminar proveedor',
-      description: 'Emin misiniz de que deseas eliminar este proveedor?',
+      title: 'Tedarikçiyi Sil',
+      description: 'Bu tedarikçiyi silmek istediğinizden emin misiniz?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('suppliers').doc(id).delete();
           if (supplierData) {
-            toast.success('Proveedor eliminado', {
+            toast.success('Tedarikçi silindi', {
               duration: 5000,
               action: {
-                label: 'Deshacer',
+                label: 'Geri Al',
                 onClick: async () => {
                   try {
                     await getFirebase().firestore().collection('suppliers').doc(id).set(scrubUndefined({ ...supplierData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
-                    toast.success('Proveedor restaurado');
-                  } catch (err) { console.error('[Archii] undo deleteSupplier:', err); toast.error('Error al restaurar'); }
+                    toast.success('Tedarikçi geri yüklendi');
+                  } catch (err) { console.error('[Archii] undo deleteSupplier:', err); toast.error('Geri yüklenirken hata oluştu'); }
                 },
               },
             });
           } else {
-            showToast('Eliminado');
+            showToast('Silindi');
           }
-        } catch (err) { console.error("[Archii]", err); showToast('Error al eliminar', 'error'); }
+        } catch (err) { console.error("[Archii]", err); showToast('Silinirken hata oluştu', 'error'); }
       },
     });
   };
@@ -2315,8 +2315,8 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       const db = getFirebase().firestore();
       const raw = { name, nit: forms.compNit || '', legalName: forms.compLegal || '', address: forms.compAddress || '', phone: forms.compPhone || '', email: forms.compEmail || '', tenantId: activeTenantId || '', createdAt: getFirebase().firestore.FieldValue.serverTimestamp(), updatedAt: getFirebase().firestore.FieldValue.serverTimestamp(), createdBy: authUser.uid };
       const data = scrubUndefined(raw);
-      if (editingId) { await db.collection('companies').doc(editingId).update(data); showToast('Empresa actualizada'); }
-      else { await db.collection('companies').add(data); showToast('Empresa creada'); }
+      if (editingId) { await db.collection('companies').doc(editingId).update(data); showToast('Firma güncellendi'); }
+      else { await db.collection('companies').add(data); showToast('Firma oluşturuldu'); }
       closeModal('company'); setEditingId(null);
     } catch (err) { console.error('[Archii] saveCompany error:', err); showToast('Error al guardar', 'error'); }
   };
@@ -2326,27 +2326,27 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     const companyData = company ? { ...company.data } : null;
     setPendingDeleteAction({
       open: true,
-      title: 'Eliminar empresa',
-      description: 'Emin misiniz de que deseas eliminar esta empresa?',
+      title: 'Firmayı Sil',
+      description: 'Bu firmayı silmek istediğinizden emin misiniz?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('companies').doc(id).delete();
           if (companyData) {
-            toast.success('Empresa eliminada', {
+            toast.success('Firma silindi', {
               duration: 5000,
               action: {
-                label: 'Deshacer',
+                label: 'Geri Al',
                 onClick: async () => {
                   try {
                     await getFirebase().firestore().collection('companies').doc(id).set(scrubUndefined({ ...companyData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
-                    toast.success('Empresa restaurada');
-                  } catch (err) { console.error('[Archii] undo deleteCompany:', err); toast.error('Error al restaurar'); }
+                    toast.success('Firma geri yüklendi');
+                  } catch (err) { console.error('[Archii] undo deleteCompany:', err); toast.error('Geri yüklenirken hata oluştu'); }
                 },
               },
             });
           } else {
-            showToast('Empresa eliminada');
+            showToast('Firma silindi');
           }
         } catch (err) {
           console.error("[Archii]", err);
@@ -2362,12 +2362,12 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     const file = e.target?.files?.[0];
     if (!file || !selectedProjectId || !authUser) return;
     if (file.size > 10 * 1024 * 1024) { showToast('El archivo no puede superar 10 MB', 'error'); return; }
-    showToast('Subiendo archivo...');
+    showToast('Dosya yükleniyor...');
     try {
       const base64 = await fileToBase64(file);
       const db = getFirebase().firestore();
       await db.collection('projects').doc(selectedProjectId).collection('files').add(scrubUndefined({ name: file.name, type: file.type, size: file.size, data: base64, createdAt: getFirebase().firestore.FieldValue.serverTimestamp(), uploadedBy: authUser.uid }));
-      showToast('Archivo subido');
+      showToast('Dosya yüklendi');
     } catch (err: any) { showToast('Error al subir: ' + (err.message || ''), 'error'); }
     e.target.value = '';
   };
@@ -2376,25 +2376,25 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     const { id: fileId, name: fileName, ...fileRest } = file;
     setPendingDeleteAction({
       open: true,
-      title: 'Eliminar archivo',
-      description: `Emin misiniz de que deseas eliminar "${file.name || 'este archivo'}"?`,
+      title: 'Dosyayı Sil',
+      description: `"${file.name || 'Bu dosyayı'}" silmek istediğinizden emin misiniz?`, 
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('files').doc(file.id).delete();
-          toast.success('Archivo eliminado', {
+          toast.success('Dosya silindi', {
             duration: 5000,
             action: {
-              label: 'Deshacer',
+              label: 'Geri Al',
               onClick: async () => {
                 try {
                   await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('files').doc(file.id).set(scrubUndefined({ ...fileRest, name: fileName, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
-                  toast.success('Archivo restaurado');
-                } catch (err) { console.error('[Archii] undo deleteFile:', err); toast.error('Error al restaurar'); }
+                  toast.success('Dosya geri yüklendi');
+                } catch (err) { console.error('[Archii] undo deleteFile:', err); toast.error('Geri yüklenirken hata oluştu'); }
               },
             },
           });
-        } catch (err) { console.error('[Archii] deleteFile error:', err); showToast('Error al eliminar', 'error'); }
+        } catch (err) { console.error('[Archii] deleteFile error:', err); showToast('Silinirken hata oluştu', 'error'); }
       },
     });
   };
@@ -2557,29 +2557,29 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     const approval = (selectedProjectId ? (await getFirebase().firestore().collection('projects').doc(selectedProjectId).collection('approvals').doc(id).get()).data() : null) as any;
     setPendingDeleteAction({
       open: true,
-      title: 'Eliminar aprobación',
-      description: 'Emin misiniz de que deseas eliminar esta solicitud de aprobación?',
+      title: 'Onay Talebini Sil',
+      description: 'Bu onay talebini silmek istediğinizden emin misiniz?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('approvals').doc(id).delete();
           if (approval) {
-            toast.success('Aprobación eliminada', {
+            toast.success('Onay talebi silindi', {
               duration: 5000,
               action: {
-                label: 'Deshacer',
+                label: 'Geri Al',
                 onClick: async () => {
                   try {
                     await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('approvals').doc(id).set(scrubUndefined({ ...approval, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
-                    toast.success('Aprobación restaurada');
-                  } catch (err) { console.error('[Archii] undo deleteApproval:', err); toast.error('Error al restaurar'); }
+                    toast.success('Onay talebi geri yüklendi');
+                  } catch (err) { console.error('[Archii] undo deleteApproval:', err); toast.error('Geri yüklenirken hata oluştu'); }
                 },
               },
             });
           } else {
             showToast('Eliminada');
           }
-        } catch (err) { console.error("[Archii]", err); showToast('Error al eliminar', 'error'); }
+        } catch (err) { console.error("[Archii]", err); showToast('Silinirken hata oluştu', 'error'); }
       },
     });
   };
@@ -2629,12 +2629,12 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         toast.success('Bitácora eliminada', {
           duration: 5000,
           action: {
-            label: 'Deshacer',
+            label: 'Geri Al',
             onClick: async () => {
               try {
                 await getFirebase().firestore().collection('projects').doc(selectedProjectId!).collection('dailyLogs').doc(logId).set(scrubUndefined({ ...logData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
                 toast.success('Bitácora restaurada');
-              } catch (err) { console.error('[Archii] undo deleteDailyLog:', err); toast.error('Error al restaurar'); }
+              } catch (err) { console.error('[Archii] undo deleteDailyLog:', err); toast.error('Geri yüklenirken hata oluştu'); }
             },
           },
         });
@@ -2645,7 +2645,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         setDailyLogTab('list');
         setSelectedLogId(null);
       }
-    } catch (err) { console.error('[Archii] deleteDailyLog error:', err); showToast('Error al eliminar', 'error'); }
+    } catch (err) { console.error('[Archii] deleteDailyLog error:', err); showToast('Silinirken hata oluştu', 'error'); }
   };
 
   const openEditLog = (log: DailyLog) => {
@@ -2770,7 +2770,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   const screenTitles: Record<string, string> = {
     dashboard: 'Panel', profile: 'Profilim', projects: 'Projeler', tasks: 'Görevler',
     kanban: 'Kanban Panosu', timeTracking: 'Zaman Takibi', chat: 'Ekip Sohbeti',
-    directmessages: 'Direkt Ayajlar', budget: 'Bütçe & Harcamalar', files: 'Planlar ve Dosyalar',
+    directmessages: 'Direkt Mesajlar', budget: 'Bütçe & Harcamalar', files: 'Planlar ve Dosyalar',
     obra: 'Şantiye Takibi', suppliers: 'Tedarikçiler', team: 'Ekip Üyeleri',
     companies: 'Şirketler & Firmalar', invoices: 'Faturalar', calendar: 'Takvim',
     weeklyAgenda: 'Haftalık Ajanda', portal: 'Müşteri Portalı', gallery: 'Fotoğraf Galerisi',
@@ -2915,7 +2915,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
             toast.success(`${snap.size} reuniones recurrentes eliminadas`, {
               duration: 5000,
               action: {
-                label: 'Deshacer',
+                label: 'Geri Al',
                 onClick: async () => {
                   try {
                     // Restore all deleted meetings from the snapshot
@@ -2926,39 +2926,39 @@ export default function AppProvider({ children }: { children: React.ReactNode })
                     });
                     await batch.commit();
                     toast.success('Reuniones recurrentes restauradas');
-                  } catch (err) { console.error('[Archii] undo deleteMeeting recurring:', err); toast.error('Error al restaurar'); }
+                  } catch (err) { console.error('[Archii] undo deleteMeeting recurring:', err); toast.error('Geri yüklenirken hata oluştu'); }
                 },
               },
             });
-          } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
+          } catch (err) { console.error('[Archii]', err); showToast('Silinirken hata oluştu', 'error'); }
         },
       });
     } else {
       setPendingDeleteAction({
         open: true,
-        title: 'Eliminar reunión',
-        description: 'Emin misiniz de que deseas eliminar esta reunión?',
+        title: 'Toplantıyı Sil',
+        description: 'Bu toplantıyı silmek istediğinizden emin misiniz?',
         onConfirm: async () => {
           setPendingDeleteAction(null);
           try {
             await getFirebase().firestore().collection('meetings').doc(id).delete();
             if (mData) {
-              toast.success('Reunión eliminada', {
+              toast.success('Toplantı silindi', {
                 duration: 5000,
                 action: {
-                  label: 'Deshacer',
+                  label: 'Geri Al',
                   onClick: async () => {
                     try {
                       await getFirebase().firestore().collection('meetings').doc(id).set(scrubUndefined({ ...mData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
-                      toast.success('Reunión restaurada');
-                    } catch (err) { console.error('[Archii] undo deleteMeeting:', err); toast.error('Error al restaurar'); }
+                      toast.success('Toplantı geri yüklendi');
+                    } catch (err) { console.error('[Archii] undo deleteMeeting:', err); toast.error('Geri yüklenirken hata oluştu'); }
                   },
                 },
               });
             } else {
-              showToast('Reunión eliminada');
+              showToast('Toplantı silindi');
             }
-          } catch (err) { console.error('[Archii]', err); showToast('Error al eliminar', 'error'); }
+          } catch (err) { console.error('[Archii]', err); showToast('Silinirken hata oluştu', 'error'); }
         },
       });
     }
@@ -2988,8 +2988,8 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       const ts = getFirebase().firestore.FieldValue.serverTimestamp();
       const raw = { projectId: forms.galleryProject || '', categoryName: forms.galleryCategory || 'Otro', caption: forms.galleryCaption || '', imageData, tenantId: activeTenantId || '', createdAt: ts, createdBy: authUser.uid };
       const data = scrubUndefined(raw);
-      if (editingId) { await db.collection('galleryPhotos').doc(editingId).update(data); showToast('Foto actualizada'); }
-      else { await db.collection('galleryPhotos').add(data); showToast('Foto agregada a galería'); }
+      if (editingId) { await db.collection('galleryPhotos').doc(editingId).update(data); showToast('Fotoğraf güncellendi'); }
+      else { await db.collection('galleryPhotos').add(data); showToast('Fotoğraf galeriye eklendi'); }
       closeModal('gallery'); setEditingId(null); setForms(p => ({ ...p, galleryImageData: '', galleryProject: '', galleryCategory: 'Otro', galleryCaption: '' }));
     } catch (err) { console.error('[Archii] saveGalleryPhoto error:', err); showToast('Error al guardar foto', 'error'); }
   };
@@ -2999,29 +2999,29 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     const photoData = photo ? { ...photo.data } : null;
     setPendingDeleteAction({
       open: true,
-      title: 'Eliminar foto',
-      description: 'Emin misiniz de que deseas eliminar esta foto de la galería?',
+      title: 'Fotoğrafı Sil',
+      description: 'Bu fotoğrafı galeriden silmek istediğinizden emin misiniz?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
           await getFirebase().firestore().collection('galleryPhotos').doc(id).delete();
           if (photoData) {
-            toast.success('Foto eliminada', {
+            toast.success('Fotoğraf silindi', {
               duration: 5000,
               action: {
-                label: 'Deshacer',
+                label: 'Geri Al',
                 onClick: async () => {
                   try {
                     await getFirebase().firestore().collection('galleryPhotos').doc(id).set(scrubUndefined({ ...photoData, updatedAt: getFirebase().firestore.FieldValue.serverTimestamp() }));
-                    toast.success('Foto restaurada');
-                  } catch (err) { console.error('[Archii] undo deleteGalleryPhoto:', err); toast.error('Error al restaurar'); }
+                    toast.success('Fotoğraf geri yüklendi');
+                  } catch (err) { console.error('[Archii] undo deleteGalleryPhoto:', err); toast.error('Geri yüklenirken hata oluştu'); }
                 },
               },
             });
           } else {
             showToast('Foto eliminada');
           }
-        } catch (err) { console.error("[Archii]", err); showToast('Error al eliminar', 'error'); }
+        } catch (err) { console.error("[Archii]", err); showToast('Silinirken hata oluştu', 'error'); }
       },
     });
   };

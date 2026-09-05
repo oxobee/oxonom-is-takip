@@ -689,7 +689,7 @@ export default function ProjectDetailScreen() {
                                       <div className="flex items-center gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                                         <button aria-label="Descargar archivo" onClick={() => od.downloadOneDriveFile(f.id, f.name)} className="text-[10px] px-1.5 py-0.5 rounded hover:bg-[var(--card)] cursor-pointer bg-transparent border-none"><Download size={11} aria-hidden="true"/></button>
                                         <button aria-label="Renombrar archivo" onClick={() => { od.setOdRenaming(f.id); od.setOdRenameName(f.name); }} className="text-[10px] px-1.5 py-0.5 rounded hover:bg-[var(--card)] cursor-pointer bg-transparent border-none"><Pencil size={11} aria-hidden="true"/></button>
-                                        <button aria-label="Eliminar archivo" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar archivo de OneDrive', description: 'Emin misiniz de que desea eliminar este archivo de OneDrive?' })) { od.deleteFromOneDrive(f.id, od.odCurrentFolder); } }} className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 cursor-pointer border-none hover:bg-red-500/20"><Trash2 size={11} aria-hidden="true"/></button>
+                                        <button aria-label="Eliminar archivo" onClick={async () => { if (await confirmDialog.confirm({ title: 'OneDrive\'dan Sil', description: 'Bu dosyayı OneDrive\'dan silmek istediğinizden emin misiniz?' })) { od.deleteFromOneDrive(f.id, od.odCurrentFolder); } }} className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 cursor-pointer border-none hover:bg-red-500/20"><Trash2 size={11} aria-hidden="true"/></button>
                                       </div>
                                     )}
                                   </div>
@@ -733,7 +733,7 @@ export default function ProjectDetailScreen() {
                                           <button aria-label="Renombrar archivo" onClick={() => { od.setOdRenaming(f.id); od.setOdRenameName(f.name); }} className="text-[10px] px-1 py-0.5 rounded hover:bg-[var(--af-bg4)] cursor-pointer bg-transparent border-none" title="Renombrar"><Pencil size={10} aria-hidden="true"/></button>
                                         </>
                                       )}
-                                      <button aria-label="Eliminar archivo" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar de OneDrive', description: 'Emin misiniz de que deseas eliminar este archivo de OneDrive?' })) { od.deleteFromOneDrive(f.id, od.odCurrentFolder); } }} className="text-[10px] px-1 py-0.5 rounded bg-red-500/10 text-red-400 cursor-pointer border-none hover:bg-red-500/20" title="Sil"><Trash2 size={10} aria-hidden="true"/></button>
+                                      <button aria-label="Eliminar archivo" onClick={async () => { if (await confirmDialog.confirm({ title: 'OneDrive\'dan Sil', description: 'Bu dosyayı OneDrive\'dan silmek istediğinizden emin misiniz?' })) { od.deleteFromOneDrive(f.id, od.odCurrentFolder); } }} className="text-[10px] px-1 py-0.5 rounded bg-red-500/10 text-red-400 cursor-pointer border-none hover:bg-red-500/20" title="Sil"><Trash2 size={10} aria-hidden="true"/></button>
                                     </div>
                                   </div>
                                 ))}
