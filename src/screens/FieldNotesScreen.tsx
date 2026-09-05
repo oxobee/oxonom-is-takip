@@ -212,7 +212,7 @@ export default function FieldNotesScreen() {
   const handleDelete = async (note: any) => {
     const ok = await confirmDialog.confirm({
       title: 'Eliminar nota',
-      description: '¿Estás seguro de eliminar esta nota de campo?',
+      description: 'Emin misiniz de eliminar esta nota de campo?',
     });
     if (!ok) return;
     try {

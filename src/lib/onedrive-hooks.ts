@@ -150,7 +150,7 @@ export function useTenantOneDrive(tenantId: string | null) {
       }
     } catch (err) {
       console.error('[Tenant OD] Load files error:', err);
-      setError('Error al cargar archivos. Verifica tu conexión.');
+      setError('Yükleme hatası archivos. Verifica tu conexión.');
       setErrorType('network');
     } finally {
       setLoading(false);
@@ -447,7 +447,7 @@ export function usePersonalOneDrive() {
       }
     } catch (err) {
       console.error('[Personal OD] Load error:', err);
-      setError('Error al cargar archivos. Verifica tu conexión.');
+      setError('Yükleme hatası archivos. Verifica tu conexión.');
       setErrorType('network');
     } finally {
       setLoading(false);

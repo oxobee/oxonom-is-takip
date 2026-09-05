@@ -116,12 +116,12 @@ export default function TeamScreen() {
                 <div className="flex-shrink-0 flex flex-col gap-1.5 items-end">
                   {canChangeCompany && !isMe ? (
                     <select className="bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2 py-1 text-[10px] text-[var(--foreground)] outline-none cursor-pointer max-w-[140px]" value={user.data.companyId || ''} onChange={e => updateUserCompany(user.id, e.target.value)} title="Asignar empresa">
-                      <option value="">Sin empresa</option>
+                      <option value="">Firmasız</option>
                       {companies.map(c => <option key={c.id} value={c.id}>{c.data.name}</option>)}
                     </select>
                   ) : canChangeCompany && isMe ? (
                     <select className="bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2 py-1 text-[10px] text-[var(--foreground)] outline-none cursor-pointer max-w-[140px]" value={user.data.companyId || ''} onChange={e => updateUserCompany(user.id, e.target.value)} title="Tu empresa">
-                      <option value="">Sin empresa</option>
+                      <option value="">Firmasız</option>
                       {companies.map(c => <option key={c.id} value={c.id}>{c.data.name}</option>)}
                     </select>
                   ) : null}

@@ -285,7 +285,7 @@ export default function TasksScreen() {
 
   // === Monthly trend (tasks created & completed, last 6 months) ===
   const monthlyTrend = useMemo(() => {
-    const data: { name: string; creadas: number; completadas: number }[] = [];
+    const data: { name: string; creadas: number; tamamlandı: number }[] = [];
     for (let i = 5; i >= 0; i--) {
       const d = new Date();
       d.setMonth(d.getMonth() - i);
@@ -298,7 +298,7 @@ export default function TasksScreen() {
         const d = toDate(t.data.completedAt);
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}` === key;
       }).length;
-      data.push({ name: MONTHS[d.getMonth()], creadas: created, completadas: completed });
+      data.push({ name: MONTHS[d.getMonth()], creadas: created, tamamlandı: completed });
     }
     return data;
   }, [tasks]);
@@ -391,9 +391,9 @@ export default function TasksScreen() {
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <CheckCircle2 size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
-            Tareas
+            Görevler
           </h2>
-          <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{activeTasks.length} activas{completedTasks.length > 0 ? ` · ${completedTasks.length} completadas` : ''}{filteredTasks.length !== tasks.length ? ` · ${filteredTasks.length} filtradas` : ''}</p>
+          <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{activeTasks.length} activas{completedTasks.length > 0 ? ` · ${completedTasks.length} tamamlandı` : ''}{filteredTasks.length !== tasks.length ? ` · ${filteredTasks.length} filtradas` : ''}</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {/* Export buttons */}
@@ -420,7 +420,7 @@ export default function TasksScreen() {
             <button
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-medium cursor-pointer border transition-colors ${showCompleted ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] hover:bg-[var(--af-bg3)] hover:text-[var(--foreground)]'}`}
               onClick={() => setShowCompleted(!showCompleted)}
-              title={showCompleted ? 'Tamamlananları Gizle' : 'Ver historial de completadas'}
+              title={showCompleted ? 'Tamamlananları Gizle' : 'Ver historial de tamamlandı'}
             >
               {showCompleted ? <EyeOff size={14} aria-hidden="true"/> : <Archive size={14} aria-hidden="true"/>}
               <span className="hidden sm:inline">Historial</span>
@@ -463,7 +463,7 @@ export default function TasksScreen() {
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Buscar tarea, etiqueta..."
+              placeholder="Görev veya etiket ara..."
               className="w-full bg-[var(--card)] border border-[var(--border)] rounded-lg pl-9 pr-3 py-2 text-[13px] text-[var(--foreground)] outline-none focus:border-[var(--af-accent)] transition-colors"
             />
             {searchQuery && (
@@ -489,7 +489,7 @@ export default function TasksScreen() {
             onClick={() => setShowFilters(!showFilters)}
           >
             <Filter size={14} aria-hidden="true"/>
-            Filtros
+            Filtreler
             {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-[var(--af-accent)]" />}
           </button>
         </div>
@@ -498,41 +498,41 @@ export default function TasksScreen() {
           <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 animate-fadeIn">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               <div>
-                <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Estado</label>
+                <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Durum</label>
                 <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer">
-                  <option value="">Todos</option>
+                  <option value="">Tümü</option>
                   {KANBAN_COLS.map(c => <option key={c.status} value={c.status}>{c.status}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Prioridad</label>
+                <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Öncelik</label>
                 <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer">
-                  <option value="">Todas</option>
+                  <option value="">Tümü</option>
                   <option value="Yüksek">Yüksek</option>
                   <option value="Orta">Orta</option>
                   <option value="Düşük">Düşük</option>
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Asignado</label>
+                <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Sorumlu</label>
                 <select value={filterAssignee} onChange={e => setFilterAssignee(e.target.value)} className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer">
-                  <option value="">Todos</option>
+                  <option value="">Tümü</option>
                   {assignees.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Fase</label>
+                <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Aşama</label>
                 <select value={filterPhase} onChange={e => setFilterPhase(e.target.value)} className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer">
-                  <option value="">Todas</option>
+                  <option value="">Tümü</option>
                   {phaseOptions.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Desde</label>
+                <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Başlangıç</label>
                 <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer" />
               </div>
               <div>
-                <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Hasta</label>
+                <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Bitiş</label>
                 <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer" />
               </div>
             </div>
@@ -548,15 +548,15 @@ export default function TasksScreen() {
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1">Toplam Görev</div>
           <div className="text-lg font-bold text-[var(--af-accent)]">{kpis.total}</div>
-          <div className="text-[10px] text-[var(--muted-foreground)]">{kpis.createdThisWeek} esta semana</div>
+          <div className="text-[10px] text-[var(--muted-foreground)]">{kpis.createdThisWeek} bu hafta</div>
         </div>
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
-          <div className="text-[11px] text-[var(--muted-foreground)] mb-1">Tasa de completado</div>
+          <div className="text-[11px] text-[var(--muted-foreground)] mb-1">Tamamlanma Oranı</div>
           <div className="text-lg font-bold flex items-center gap-1">
             <TrendingUp size={14} className={kpis.completionRate >= 50 ? 'text-emerald-400' : 'text-amber-400'} aria-hidden="true"/>
             <span className={kpis.completionRate >= 50 ? 'text-emerald-400' : 'text-amber-400'}>{kpis.completionRate}%</span>
           </div>
-          <div className="text-[10px] text-[var(--muted-foreground)]">{kpis.completed} completadas</div>
+          <div className="text-[10px] text-[var(--muted-foreground)]">{kpis.completed} tamamlandı</div>
         </div>
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1">Devam Ediyor</div>
@@ -565,25 +565,25 @@ export default function TasksScreen() {
         <div className={`bg-[var(--card)] border rounded-xl p-4 ${kpis.overdue > 0 ? 'border-red-500/30 bg-red-500/5' : 'border-[var(--border)]'}`}>
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
             {kpis.overdue > 0 && <AlertTriangle size={10} className="text-red-400" aria-hidden="true"/>}
-            Gecikmişs
+            Geciken
           </div>
           <div className={`text-lg font-bold ${kpis.overdue > 0 ? 'text-red-400' : ''}`}>{kpis.overdue}</div>
         </div>
         <div className={`bg-[var(--card)] border rounded-xl p-4 ${kpis.highPrioActive > 0 ? 'border-amber-500/30 bg-amber-500/5' : 'border-[var(--border)]'}`}>
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
             <Target size={10} className="text-amber-400" aria-hidden="true"/>
-            Yüksek prioridad
+            Yüksek Öncelikli
           </div>
           <div className={`text-lg font-bold ${kpis.highPrioActive > 0 ? 'text-amber-400' : ''}`}>{kpis.highPrioActive}</div>
-          <div className="text-[10px] text-[var(--muted-foreground)]">pendientes</div>
+          <div className="text-[10px] text-[var(--muted-foreground)]">bekliyor</div>
         </div>
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
             <Users size={10} aria-hidden="true"/>
-            Equipo activo
+            Aktif Ekip
           </div>
           <div className="text-lg font-bold">{memberProductivity.length}</div>
-          <div className="text-[10px] text-[var(--muted-foreground)]">miembros con tareas</div>
+          <div className="text-[10px] text-[var(--muted-foreground)]">görevli üye</div>
         </div>
       </div>
 
@@ -591,7 +591,7 @@ export default function TasksScreen() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Pie chart: Status distribution */}
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
-          <div className="text-[15px] font-semibold mb-3">Distribucion por Estado</div>
+          <div className="text-[15px] font-semibold mb-3">Duruma Göre Dağılım</div>
           {kpis.total === 0 ? (
             <div className="text-center py-10 text-[var(--af-text3)] text-sm">Veri yok</div>
           ) : (
@@ -622,12 +622,12 @@ export default function TasksScreen() {
           <div className="flex items-center justify-between mb-3">
             <div className="text-[15px] font-semibold flex items-center gap-2">
               <BarChart3 size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
-              Tendencia Mensual
+              Aylık Dağılım Trendi
             </div>
-            <span className="text-[10px] text-[var(--muted-foreground)] px-2 py-0.5 rounded-full bg-[var(--af-bg4)]">6 meses</span>
+            <span className="text-[10px] text-[var(--muted-foreground)] px-2 py-0.5 rounded-full bg-[var(--af-bg4)]">6 Ay</span>
           </div>
-          {monthlyTrend.every(d => d.creadas === 0 && d.completadas === 0) ? (
-            <div className="text-center py-10 text-[var(--af-text3)] text-sm">Veri yok en los ultimos 6 meses</div>
+          {monthlyTrend.every(d => d.creadas === 0 && d.tamamlandı === 0) ? (
+            <div className="text-center py-10 text-[var(--af-text3)] text-sm">Veri yok en los ultimos 6 Ay</div>
           ) : (
             <ResponsiveContainer width="100%" height={170}>
               <BarChart data={monthlyTrend} margin={{ top: 5, right: 10, left: -15, bottom: 5 }}>
@@ -636,7 +636,7 @@ export default function TasksScreen() {
                 <YAxis tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTooltipContent />} cursor={{ fill: 'rgba(212,184,122,0.06)' }} />
                 <Bar dataKey="creadas" name="Creadas" fill="#3b82f6" radius={[3, 3, 0, 0]} barSize={16} />
-                <Bar dataKey="completadas" name="Tamamlandıs" fill="#10b981" radius={[3, 3, 0, 0]} barSize={16} />
+                <Bar dataKey="tamamlandı" name="Tamamlandıs" fill="#10b981" radius={[3, 3, 0, 0]} barSize={16} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -648,7 +648,7 @@ export default function TasksScreen() {
         <div>
           <div className="text-[15px] font-semibold mb-3 flex items-center gap-2">
             <Users size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
-            Productividad por Üye
+            Üye Bazlı Üretkenlik
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {memberProductivity.map((m) => (
@@ -674,8 +674,8 @@ export default function TasksScreen() {
                   />
                 </div>
                 <div className="flex items-center justify-between text-[10px] text-[var(--muted-foreground)]">
-                  <span>{m.done} completadas</span>
-                  <span>{m.overdue > 0 ? <span className="text-red-400">{m.overdue} vencida{m.overdue !== 1 ? 's' : ''}</span> : 'Sin vencidas'}</span>
+                  <span>{m.done} tamamlandı</span>
+                  <span>{m.overdue > 0 ? <span className="text-red-400">{m.overdue} vencida{m.overdue !== 1 ? 's' : ''}</span> : 'Gecikme yok'}</span>
                 </div>
               </div>
             ))}
@@ -693,10 +693,10 @@ export default function TasksScreen() {
               <KanbanSquare size={24} className="text-[var(--af-text3)]" aria-hidden="true"/>
             </div>
             <div className="text-[15px] font-medium text-[var(--muted-foreground)]">
-              {hasActiveFilters ? 'Sonuç bulunamadı' : 'Sin tareas'}
+              {hasActiveFilters ? 'Sonuç bulunamadı' : 'Görev bulunamadı'}
             </div>
             <div className="text-xs mt-1">
-              {hasActiveFilters ? 'Intenta con otros filtros' : 'Crea tu primera tarea para empezar'}
+              {hasActiveFilters ? 'Farklı filtre kriterleri deneyin' : 'Başlamak için ilk görevinizi oluşturun'}
             </div>
           </div>
         ) : (
@@ -706,7 +706,7 @@ export default function TasksScreen() {
               <div className="text-center py-8">
                 <div className="inline-flex items-center gap-2 text-[var(--muted-foreground)] text-sm">
                   <CheckCircle2 size={16} className="text-emerald-400" aria-hidden="true"/>
-                  Tüm Görevler estan completadas
+                  Tüm Görevler estan tamamlandı
                 </div>
               </div>
             )}
@@ -945,10 +945,10 @@ export default function TasksScreen() {
               <KanbanSquare size={24} className="text-[var(--af-text3)]" aria-hidden="true"/>
             </div>
             <div className="text-[15px] font-medium text-[var(--muted-foreground)]">
-              {hasActiveFilters ? 'Sonuç bulunamadı' : 'Sin tareas'}
+              {hasActiveFilters ? 'Sonuç bulunamadı' : 'Görev bulunamadı'}
             </div>
             <div className="text-xs mt-1">
-              {hasActiveFilters ? 'Intenta con otros filtros' : 'Crea tu primera tarea para empezar'}
+              {hasActiveFilters ? 'Farklı filtre kriterleri deneyin' : 'Başlamak için ilk görevinizi oluşturun'}
             </div>
           </div>
         ) : (

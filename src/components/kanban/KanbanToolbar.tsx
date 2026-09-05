@@ -198,7 +198,7 @@ export default function KanbanToolbar({
             >
               <option value="">Todos</option>
               {teamUsers.map((u: any) => (
-                <option key={u.id} value={u.id}>{u.data?.name || u.name || 'Sin nombre'}</option>
+                <option key={u.id} value={u.id}>{u.data?.name || u.name || 'İsimsiz Kullanıcı'}</option>
               ))}
             </select>
           </div>

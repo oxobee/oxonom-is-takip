@@ -673,7 +673,7 @@ export default function FilesScreen() {
         {projects.length === 0 ? (
           <div className="text-center py-6 text-[var(--af-text3)]">
             <div className="text-2xl mb-1">📋</div>
-            <div className="text-xs">Sin proyectos aún</div>
+            <div className="text-xs">Projesizs aún</div>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">

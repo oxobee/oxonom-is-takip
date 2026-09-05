@@ -207,7 +207,7 @@ export default function CompaniesScreen() {
         <div className="text-center py-16">
           <div className="text-4xl mb-3">🏢</div>
           <div className="text-[15px] font-medium text-[var(--muted-foreground)] mb-1">No hay empresas registradas</div>
-          <div className="text-[13px] text-[var(--af-text3)]">Crea tu primera empresa para organizar proyectos</div>
+          <div className="text-[13px] text-[var(--af-text3)]">İlk kaydınızı oluşturun empresa para organizar proyectos</div>
         </div>
       )}
 
@@ -246,7 +246,7 @@ export default function CompaniesScreen() {
                       🏢
                     </div>
                     <div className="min-w-0">
-                      <div className="text-sm font-semibold truncate">{c.data.name || 'Sin nombre'}</div>
+                      <div className="text-sm font-semibold truncate">{c.data.name || 'İsimsiz Kullanıcı'}</div>
                       {c.data.nit && (
                         <div className="text-[10px] text-[var(--muted-foreground)]">NIT: {c.data.nit}</div>
                       )}
@@ -303,7 +303,7 @@ export default function CompaniesScreen() {
                 {/* Footer: status badge + view projects */}
                 <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between">
                   <span className={`text-[10px] px-2 py-0.5 rounded-full ${stats.count > 0 ? 'bg-[var(--af-accent)]/10 text-[var(--af-accent)]' : 'bg-[var(--af-bg4)] text-[var(--muted-foreground)]'}`}>
-                    {stats.count > 0 ? `${stats.count} proyecto${stats.count !== 1 ? 's' : ''}` : 'Sin proyectos'}
+                    {stats.count > 0 ? `${stats.count} proyecto${stats.count !== 1 ? 's' : ''}` : 'Projesizs'}
                   </span>
                   {stats.count > 0 && (
                     <button

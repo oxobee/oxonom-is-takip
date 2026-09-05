@@ -145,7 +145,7 @@ export default function SubmittalsScreen() {
                   <div className="hidden md:flex gap-1.5 flex-shrink-0">
                     <button aria-label="Editar" className="px-1.5 py-0.5 rounded bg-[var(--af-bg4)] text-xs cursor-pointer" onClick={() => handleEdit(s)}><Pencil size={12} aria-hidden="true"/></button>
                     <button aria-label="Eliminar" className="px-1.5 py-0.5 rounded bg-red-500/10 text-xs cursor-pointer" onClick={async () => {
-                      const ok = await confirmDialog.confirm({ title: 'Eliminar submittal', description: '¿Estás seguro de eliminar este submittal?' });
+                      const ok = await confirmDialog.confirm({ title: 'Eliminar submittal', description: 'Emin misiniz de eliminar este submittal?' });
                       if (!ok) return;
                       const snapshot = { ...s.data };
                       await fbActions.deleteSubmittal(s.id, showToast, activeTenantId);
@@ -157,7 +157,7 @@ export default function SubmittalsScreen() {
                       actions={[
                         { label: 'Editar submittal', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => handleEdit(s) },
                         { label: 'Eliminar submittal', icon: <Trash2 size={14} aria-hidden="true"/>, variant: 'danger', separator: true, onClick: async () => {
-                          const ok = await confirmDialog.confirm({ title: 'Eliminar submittal', description: '¿Estás seguro de eliminar este submittal?' });
+                          const ok = await confirmDialog.confirm({ title: 'Eliminar submittal', description: 'Emin misiniz de eliminar este submittal?' });
                           if (!ok) return;
                           const snapshot = { ...s.data };
                           await fbActions.deleteSubmittal(s.id, showToast, activeTenantId);

@@ -126,7 +126,7 @@ export default function ProjectsScreen() {
           <div className="w-14 h-14 rounded-2xl bg-[var(--af-bg3)] flex items-center justify-center mx-auto mb-3">
             <FolderKanban size={24} className="text-[var(--af-text3)]" aria-hidden="true"/>
           </div>
-          <div className="text-[15px] font-medium text-[var(--muted-foreground)]">Sin proyectos</div>
+          <div className="text-[15px] font-medium text-[var(--muted-foreground)]">Projesizs</div>
           <div className="text-xs mt-1">{data.hasActiveFilters || data.forms.projFilter ? 'No se encontraron resultados con los filtros aplicados' : 'Crea tu primer proyecto para empezar'}</div>
         </div>
       )}

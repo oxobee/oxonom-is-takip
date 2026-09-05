@@ -83,14 +83,14 @@ export default function InventoryProducts({
                   {/* Desktop: edit/delete buttons */}
                   <div className="hidden md:flex items-center gap-2 flex-shrink-0">
                     <button aria-label="Editar" className="w-8 h-8 rounded-lg bg-[var(--card)] border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer" onClick={() => openEditInvProduct(p)}><Pencil size={14} className="stroke-current" aria-hidden="true"/></button>
-                    <button aria-label="Eliminar" className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar producto', description: '¿Estás seguro? El producto será eliminado permanentemente.' })) deleteInvProduct(p.id); }}><Trash2 size={14} className="stroke-current" aria-hidden="true"/></button>
+                    <button aria-label="Eliminar" className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar producto', description: 'Emin misiniz? El producto será eliminado permanentemente.' })) deleteInvProduct(p.id); }}><Trash2 size={14} className="stroke-current" aria-hidden="true"/></button>
                   </div>
                   {/* Mobile: OverflowMenu */}
                   <div className="md:hidden flex-shrink-0">
                     <OverflowMenu
                       actions={[
                         { label: 'Editar producto', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => openEditInvProduct(p) },
-                        { label: 'Eliminar producto', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirm({ title: 'Eliminar producto', description: '¿Estás seguro? El producto será eliminado permanentemente.' })) deleteInvProduct(p.id); }, variant: 'danger', separator: true },
+                        { label: 'Eliminar producto', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirm({ title: 'Eliminar producto', description: 'Emin misiniz? El producto será eliminado permanentemente.' })) deleteInvProduct(p.id); }, variant: 'danger', separator: true },
                       ]}
                       side="left"
                       align="end"

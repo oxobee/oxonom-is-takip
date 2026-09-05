@@ -54,16 +54,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             ⚠️
           </div>
           <h3 className="text-[15px] font-semibold mb-2 text-foreground">
-            Error al cargar
+            Yükleme Hatası
           </h3>
           <p className="text-xs text-muted-foreground max-w-[300px] mb-4">
-            {this.state.error?.message || 'Algo salió mal. Intenta de nuevo.'}
+            {this.state.error?.message || 'Bir şeyler ters gitti. Lütfen tekrar deneyin.'}
           </p>
           <button
             onClick={this.handleRetry}
             className="px-5 py-2 rounded-[10px] border border-[var(--af-accent)]/30 bg-[var(--af-accent)]/10 text-[var(--af-accent)] text-[13px] font-medium cursor-pointer hover:bg-[var(--af-accent)]/20 transition-colors"
           >
-            Reintentar
+            Tekrar Dene
           </button>
         </div>
       );

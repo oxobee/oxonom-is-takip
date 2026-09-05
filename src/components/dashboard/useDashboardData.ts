@@ -150,7 +150,7 @@ export function useDashboardData() {
     });
     return Object.entries(byUser).filter(([_, v]) => v.total > 0).sort((a, b) => b[1].active - a[1].active).slice(0, 8).map(([uid, data]) => {
       const user = teamUsers.find((u: TeamUser) => u.id === uid);
-      return { name: (user?.data.name || 'Sin nombre').split(' ')[0], activas: data.active, completadas: data.done, pendientes: data.total - data.active - data.done };
+      return { name: (user?.data.name || 'İsimsiz Kullanıcı').split(' ')[0], activas: data.active, completadas: data.done, pendientes: data.total - data.active - data.done };
     });
   }, [rangeTasks, teamUsers]);
 

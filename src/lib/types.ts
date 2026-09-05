@@ -590,22 +590,28 @@ export interface PhaseTemplate {
   order: number;
 }
 
+const DISENO_PHASES: PhaseTemplate[] = [
+  { key: 'conceptualizacion', name: 'Konsept Tasarım', description: 'Mimari konsept ve müşteri ihtiyaçlarının belirlenmesi', order: 1 },
+  { key: 'idea_basica', name: 'Avan Proje', description: 'İlk eskizler ve mekan yerleşim şemaları', order: 2 },
+  { key: 'anteproyecto', name: 'Kesin Proje', description: 'Planlar, kesitler ve cephe çizimlerinin geliştirilmesi', order: 3 },
+  { key: 'proyecto', name: 'Uygulama Projesi', description: 'Uygulama paftaları, teknik şartnameler ve metrajlar', order: 4 },
+  { key: 'detalles', name: 'Sistem Detayları', description: 'İmalat ve montaj detayları, mekanik ve elektrik projeleri', order: 5 },
+];
+
+const EJECUCION_PHASES: PhaseTemplate[] = [
+  { key: 'preliminares', name: 'Hazırlık & Saha Kurulumu', description: 'Röleve, aplikasyon, şantiye mobilizasyonu ve güvenlik', order: 1 },
+  { key: 'excavaciones', name: 'Hafriyat & Temel', description: 'Zemin kazısı, temel yalıtımı ve temel betonu', order: 2 },
+  { key: 'obra_gris', name: 'Kaba Yapı', description: 'Taşıyıcı sistem, duvarlar, döşemeler, kolon ve kirişler', order: 3 },
+  { key: 'obra_blanca', name: 'İnce Yapı & Tesisat', description: 'Sıva, şap, zemin kaplamaları ve boya işleri', order: 4 },
+  { key: 'carpinteria', name: 'Doğrama & Sabit Mobilya', description: 'Ahşap, alüminyum doğramalar, kapılar ve özel mobilyalar', order: 5 },
+  { key: 'interiorismo', name: 'İç Mekan & Teslim', description: 'Aydınlatma, son kat imalatlar, temizlik ve proje teslimi', order: 6 },
+];
+
 export const PROJECT_TYPE_PHASES: Record<string, PhaseTemplate[]> = {
-  'Diseño': [
-    { key: 'conceptualizacion', name: 'Conceptualización', description: 'Definición del concepto arquitectónico y necesidades del cliente', order: 1 },
-    { key: 'idea_basica', name: 'Idea Básica', description: 'Bocetos iniciales y esquemas de distribución', order: 2 },
-    { key: 'anteproyecto', name: 'Anteproyecto', description: 'Desarrollo del esquema con plantas, cortes y fachadas preliminares', order: 3 },
-    { key: 'proyecto', name: 'Proyecto', description: 'Planos ejecutivos, memorias técnicas y especificaciones', order: 4 },
-    { key: 'detalles', name: 'Detalles', description: 'Detalles constructivos, cartel structural e instalaciones', order: 5 },
-  ],
-  'Ejecución': [
-    { key: 'preliminares', name: 'Preliminares', description: 'Localización, replanteo, campamentos, vías de acceso', order: 1 },
-    { key: 'excavaciones', name: 'Excavaciones', description: 'Movimiento de tierras, zapatas y cimentaciones', order: 2 },
-    { key: 'obra_gris', name: 'Obra Gris', description: 'Estructura, muros, losas, columnas y vigas', order: 3 },
-    { key: 'obra_blanca', name: 'Obra Blanca', description: 'Enlucidos, pisos, aplanados, pintura', order: 4 },
-    { key: 'carpinteria', name: 'Carpintería', description: 'Carpintería en madera, muebles a medida, puertas', order: 5 },
-    { key: 'interiorismo', name: 'Interiorismo', description: 'Acabados finales, decoración, iluminación y entrega', order: 6 },
-  ],
+  'Diseño': DISENO_PHASES,
+  'Tasarım': DISENO_PHASES,
+  'Ejecución': EJECUCION_PHASES,
+  'Uygulama': EJECUCION_PHASES,
 };
 
 export const PROJECT_TYPES = ['Diseño', 'Ejecución', 'Ambos'] as const;

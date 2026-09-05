@@ -206,7 +206,7 @@ export function formatArchiiToGitHubIssue(task: {
   let body = '';
   if (task.description) body += `${task.description}\n\n`;
   if (task.projectName) body += `**Proyecto:** ${task.projectName}\n`;
-  if (task.dueDate) body += `**Fecha límite:** ${task.dueDate}\n`;
+  if (task.dueDate) body += `**Bitiş Tarihi:** ${task.dueDate}\n`;
   body += `\n---\n*Sincronizado desde Archii*`;
 
   return {

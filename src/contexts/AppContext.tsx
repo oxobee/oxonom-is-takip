@@ -2234,7 +2234,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar gasto',
-      description: '¿Estás seguro de que deseas eliminar este gasto?',
+      description: 'Emin misiniz de que deseas eliminar este gasto?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
@@ -2280,7 +2280,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar proveedor',
-      description: '¿Estás seguro de que deseas eliminar este proveedor?',
+      description: 'Emin misiniz de que deseas eliminar este proveedor?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
@@ -2327,7 +2327,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar empresa',
-      description: '¿Estás seguro de que deseas eliminar esta empresa?',
+      description: 'Emin misiniz de que deseas eliminar esta empresa?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
@@ -2377,7 +2377,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar archivo',
-      description: `¿Estás seguro de que deseas eliminar "${file.name || 'este archivo'}"?`,
+      description: `Emin misiniz de que deseas eliminar "${file.name || 'este archivo'}"?`,
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
@@ -2558,7 +2558,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar aprobación',
-      description: '¿Estás seguro de que deseas eliminar esta solicitud de aprobación?',
+      description: 'Emin misiniz de que deseas eliminar esta solicitud de aprobación?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
@@ -2937,7 +2937,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       setPendingDeleteAction({
         open: true,
         title: 'Eliminar reunión',
-        description: '¿Estás seguro de que deseas eliminar esta reunión?',
+        description: 'Emin misiniz de que deseas eliminar esta reunión?',
         onConfirm: async () => {
           setPendingDeleteAction(null);
           try {
@@ -3000,7 +3000,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar foto',
-      description: '¿Estás seguro de que deseas eliminar esta foto de la galería?',
+      description: 'Emin misiniz de que deseas eliminar esta foto de la galería?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {

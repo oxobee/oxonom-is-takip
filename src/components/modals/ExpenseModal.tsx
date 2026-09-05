@@ -35,7 +35,7 @@ export default function ExpenseModal({ open, onClose }: { open: boolean; onClose
             value={forms.expProject || ''}
             onChange={(e) => setForms(p => ({ ...p, expProject: e.target.value }))}
           >
-            <option value="">— Sin proyecto —</option>
+            <option value="">— Projesiz —</option>
             {projects.map((p: any) => (
               <option key={p.id} value={p.id}>{p.data?.name || p.name}</option>
             ))}

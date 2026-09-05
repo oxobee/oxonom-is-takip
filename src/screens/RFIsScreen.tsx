@@ -152,7 +152,7 @@ export default function RFIsScreen() {
                     </select>
                     <button aria-label="Editar" className="px-1.5 py-0.5 rounded bg-[var(--af-bg4)] text-xs cursor-pointer" onClick={() => handleEdit(r)}><Pencil size={12} aria-hidden="true"/></button>
                     <button aria-label="Eliminar" className="px-1.5 py-0.5 rounded bg-red-500/10 text-xs cursor-pointer" onClick={async () => {
-                      const ok = await confirmDialog.confirm({ title: 'Eliminar RFI', description: '¿Estás seguro de eliminar este RFI?' });
+                      const ok = await confirmDialog.confirm({ title: 'Eliminar RFI', description: 'Emin misiniz de eliminar este RFI?' });
                       if (!ok) return;
                       const snapshot = { ...r.data };
                       await fbActions.deleteRFI(r.id, showToast, activeTenantId);
@@ -164,7 +164,7 @@ export default function RFIsScreen() {
                       actions={[
                         { label: 'Editar RFI', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => handleEdit(r) },
                         { label: 'Eliminar RFI', icon: <Trash2 size={14} aria-hidden="true"/>, variant: 'danger', separator: true, onClick: async () => {
-                          const ok = await confirmDialog.confirm({ title: 'Eliminar RFI', description: '¿Estás seguro de eliminar este RFI?' });
+                          const ok = await confirmDialog.confirm({ title: 'Eliminar RFI', description: 'Emin misiniz de eliminar este RFI?' });
                           if (!ok) return;
                           const snapshot = { ...r.data };
                           await fbActions.deleteRFI(r.id, showToast, activeTenantId);

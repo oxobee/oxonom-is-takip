@@ -273,7 +273,7 @@ export function OneDriveProvider({
       if (data?.value) {
         setOneDriveFiles(data.value);
       }
-    } catch { showToast('Error al cargar archivos', 'error'); }
+    } catch { showToast('Yükleme hatası archivos', 'error'); }
     setMsLoading(false);
   }, [msAccessToken, graphApiGet, showToast]);
 

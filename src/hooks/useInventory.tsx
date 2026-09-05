@@ -246,7 +246,7 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar producto',
-      description: '¿Estás seguro de que deseas eliminar este producto del inventario?',
+      description: 'Emin misiniz de que deseas eliminar este producto del inventario?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
@@ -300,7 +300,7 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar categoría',
-      description: '¿Estás seguro de que deseas eliminar esta categoría?',
+      description: 'Emin misiniz de que deseas eliminar esta categoría?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
@@ -360,7 +360,7 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar movimiento',
-      description: '¿Estás seguro de que deseas eliminar este movimiento de inventario?',
+      description: 'Emin misiniz de que deseas eliminar este movimiento de inventario?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {
@@ -427,7 +427,7 @@ export function InventoryProvider({ children }: { children: React.ReactNode }) {
     setPendingDeleteAction({
       open: true,
       title: 'Eliminar transferencia',
-      description: '¿Estás seguro de que deseas eliminar este registro de transferencia?',
+      description: 'Emin misiniz de que deseas eliminar este registro de transferencia?',
       onConfirm: async () => {
         setPendingDeleteAction(null);
         try {

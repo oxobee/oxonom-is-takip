@@ -143,7 +143,7 @@ export default function InstallScreen() {
                   { icon: '⚡', title: 'Acceso rápido', desc: 'Icono en pantalla de inicio o escritorio' },
                   { icon: '📱', title: 'App nativa', desc: 'Sin barra de navegador, pantalla completa' },
                   { icon: '📴', title: 'Funciona offline', desc: 'Accede a tus datos sin conexión a internet' },
-                  { icon: '🔔', title: 'Notificaciones', desc: 'Recibe alertas de tareas y mensajes nuevos' },
+                  { icon: '🔔', title: 'Notificaciones', desc: 'Bildirimleri al de tareas y mensajes nuevos' },
                 ].map((f, i) => (
                   <div key={i} className="bg-[var(--af-bg3)] rounded-lg p-3 text-center">
                     <div className="text-2xl mb-2">{f.icon}</div>

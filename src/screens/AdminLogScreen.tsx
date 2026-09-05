@@ -104,7 +104,7 @@ export default function AdminLogScreen() {
       setAuditLogs(items);
     } catch (err: any) {
       console.error('[AdminLog] Error cargando auditoría:', err);
-      showToast('Error al cargar registros de auditoría', 'error');
+      showToast('Yükleme hatası registros de auditoría', 'error');
     } finally {
       setLoadingAudit(false);
     }
@@ -126,7 +126,7 @@ export default function AdminLogScreen() {
       setErrorReports(items);
     } catch (err: any) {
       console.error('[AdminLog] Error cargando errores:', err);
-      showToast('Error al cargar reportes de errores', 'error');
+      showToast('Yükleme hatası reportes de errores', 'error');
     } finally {
       setLoadingErrors(false);
     }
@@ -148,7 +148,7 @@ export default function AdminLogScreen() {
       setFeedbackItems(items);
     } catch (err: any) {
       console.error('[AdminLog] Error cargando feedback:', err);
-      showToast('Error al cargar feedback beta', 'error');
+      showToast('Yükleme hatası feedback beta', 'error');
     } finally {
       setLoadingFeedback(false);
     }

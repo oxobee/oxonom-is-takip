@@ -66,7 +66,7 @@ export default function DashboardCharts({
           </button>
         </div>
         {teamWorkload.length === 0 ? (
-          <div className="text-center py-10 text-[var(--af-text3)] text-sm">Sin tareas asignadas al equipo</div>
+          <div className="text-center py-10 text-[var(--af-text3)] text-sm">Görev bulunamadı asignadas al equipo</div>
         ) : (
           <ResponsiveContainer width="100%" height={170}>
             <BarChart data={teamWorkload} margin={{ top: 5, right: 10, left: -15, bottom: 5 }}>

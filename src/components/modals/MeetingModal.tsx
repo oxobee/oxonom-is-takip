@@ -75,7 +75,7 @@ export default function MeetingModal({ open, onClose }: { open: boolean; onClose
             value={forms.meetProject || ''}
             onChange={(e) => setForms(p => ({ ...p, meetProject: e.target.value }))}
           >
-            <option value="">— Sin proyecto —</option>
+            <option value="">— Projesiz —</option>
             {projects.map((p: any) => (
               <option key={p.id} value={p.id}>{p.data?.name || p.name}</option>
             ))}

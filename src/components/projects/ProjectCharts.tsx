@@ -59,7 +59,7 @@ export default function ProjectCharts({
           <span className="text-[10px] text-[var(--muted-foreground)] px-2 py-0.5 rounded-full bg-[var(--af-bg4)]">6 meses</span>
         </div>
         {monthlyCreated.every(d => d.total === 0) ? (
-          <div className="text-center py-10 text-[var(--af-text3)] text-sm">Sin proyectos creados en los últimos 6 meses</div>
+          <div className="text-center py-10 text-[var(--af-text3)] text-sm">Projesizs creados en los últimos 6 meses</div>
         ) : (
           <ResponsiveContainer width="100%" height={170}>
             <BarChart data={monthlyCreated} margin={{ top: 5, right: 10, left: -15, bottom: 5 }}>

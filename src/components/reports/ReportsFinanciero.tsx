@@ -57,7 +57,7 @@ export default function ReportsFinanciero({ projects, expenses, invoices, timeEn
           try { exportBudgetPDF({ expenses, projects }); showToast('PDF descargado'); } catch { showToast('Error', 'error'); }
         }}><FileText size={12} className="inline mr-1" aria-hidden="true"/>PDF</button>
       </div>
-      {budgetVsRealData.length === 0 ? <div className="text-sm text-[var(--muted-foreground)]">Sin proyectos con presupuesto</div> : (
+      {budgetVsRealData.length === 0 ? <div className="text-sm text-[var(--muted-foreground)]">Projesizs con presupuesto</div> : (
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={budgetVsRealData} margin={{ top: 5, right: 10, left: -15, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--af-bg4)" vertical={false} />

@@ -35,7 +35,7 @@ export default function ReportsObra({ projects, rfis, submittals, punchItems, da
     const rfiProjectData = Object.entries(rfiByProject)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 6)
-      .map(([pid, count]) => ({ name: (projects.find(p => p.id === pid)?.data?.name || 'Sin proyecto').slice(0, 15), rfis: count }));
+      .map(([pid, count]) => ({ name: (projects.find(p => p.id === pid)?.data?.name || 'Projesiz').slice(0, 15), rfis: count }));
 
     const subDraft = submittals.filter(s => s.data.status === 'Taslak').length;
     const subReview = submittals.filter(s => s.data.status === 'İncelemede').length;

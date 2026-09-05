@@ -57,14 +57,14 @@ export default function InventoryMovements({
                 {/* Desktop: quantity + delete */}
                 <div className="hidden md:flex items-center gap-2">
                   <div className="text-right"><div className={`text-sm font-bold ${m.data.type === 'Entrada' ? 'text-emerald-400' : 'text-red-400'}`}>{m.data.type === 'Entrada' ? '+' : '-'}{m.data.quantity}</div><div className="text-[10px] text-[var(--muted-foreground)]">{m.data.date || ''}</div></div>
-                  <button aria-label="Eliminar" className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar movimiento', description: '¿Estás seguro?' })) deleteInvMovement(m.id); }}><Trash2 size={14} className="stroke-current" aria-hidden="true"/></button>
+                  <button aria-label="Eliminar" className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar movimiento', description: 'Emin misiniz?' })) deleteInvMovement(m.id); }}><Trash2 size={14} className="stroke-current" aria-hidden="true"/></button>
                 </div>
                 {/* Mobile: quantity + OverflowMenu */}
                 <div className="md:hidden flex items-center gap-2">
                   <div className="text-right"><div className={`text-sm font-bold ${m.data.type === 'Entrada' ? 'text-emerald-400' : 'text-red-400'}`}>{m.data.type === 'Entrada' ? '+' : '-'}{m.data.quantity}</div><div className="text-[10px] text-[var(--muted-foreground)]">{m.data.date || ''}</div></div>
                   <OverflowMenu
                     actions={[
-                      { label: 'Eliminar movimiento', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirm({ title: 'Eliminar movimiento', description: '¿Estás seguro?' })) deleteInvMovement(m.id); }, variant: 'danger' },
+                      { label: 'Eliminar movimiento', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirm({ title: 'Eliminar movimiento', description: 'Emin misiniz?' })) deleteInvMovement(m.id); }, variant: 'danger' },
                     ]}
                     side="left"
                     align="end"

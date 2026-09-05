@@ -172,7 +172,7 @@ export default function ChangeOrdersScreen() {
         <EmptyState
           emoji="📝"
           title="Sin órdenes de cambio"
-          description={canCreate ? 'Crea tu primera orden de cambio' : 'No hay órdenes de cambio registradas'}
+          description={canCreate ? 'İlk kaydınızı oluşturun orden de cambio' : 'No hay órdenes de cambio registradas'}
           actionLabel={canCreate ? 'Nueva orden' : undefined}
           onAction={canCreate ? handleCreate : undefined}
         />

@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
         const data = d.data();
         return {
           id: d.id,
-          name: data.name || "Sin nombre",
+          name: data.name || "İsimsiz Kullanıcı",
           code: data.code || "",
           memberCount: (data.members || []).length,
           createdBy: data.createdBy || "",
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
         orphanUsersCount: orphanUsers.length,
         orphanUsers: orphanUsers.map((d: any) => ({
           uid: d.id,
-          name: d.data()?.name || "Sin nombre",
+          name: d.data()?.name || "İsimsiz Kullanıcı",
           email: d.data()?.email || "",
           role: d.data()?.role || "Miembro",
         })),
@@ -194,7 +194,7 @@ export async function POST(request: NextRequest) {
 
         return {
           id: doc.id,
-          name: data.name || "Sin nombre",
+          name: data.name || "İsimsiz Kullanıcı",
           code: data.code || "",
           members: data.members || [],
           membersResolved,
@@ -300,7 +300,7 @@ export async function POST(request: NextRequest) {
       if (!tenantDoc.exists) return NextResponse.json({ error: "Tenant no encontrado" }, { status: 404 });
 
       const tenantData = tenantDoc.data()!;
-      const tenantName = tenantData.name || "Sin nombre";
+      const tenantName = tenantData.name || "İsimsiz Kullanıcı";
 
       if (deleteData) {
         // Delete all tenant-scoped data
@@ -432,7 +432,7 @@ export async function POST(request: NextRequest) {
         const projSnap = await db.collection("projects").where("tenantId", "==", tenantId).orderBy("createdAt", "desc").limit(50).get();
         projects = projSnap.docs.map((d: any) => ({
           id: d.id,
-          name: d.data()!.name || "Sin nombre",
+          name: d.data()!.name || "İsimsiz Kullanıcı",
           status: d.data()!.status || "",
           progress: d.data()!.progress || 0,
           client: d.data()!.client || "",
@@ -486,7 +486,7 @@ export async function POST(request: NextRequest) {
           const tenantRole = isSuperAdmin ? "Super Admin" : userRole;
           userTenantMap[uid].push({
             tenantId: doc.id,
-            tenantName: data.name || "Sin nombre",
+            tenantName: data.name || "İsimsiz Kullanıcı",
             role: tenantRole,
           });
         }
@@ -496,7 +496,7 @@ export async function POST(request: NextRequest) {
         const data = d.data()!;
         return {
           uid: d.id,
-          name: data.name || "Sin nombre",
+          name: data.name || "İsimsiz Kullanıcı",
           email: data.email || "",
           role: data.role || "Miembro",
           photoURL: data.photoURL || "",
@@ -852,7 +852,7 @@ export async function POST(request: NextRequest) {
           const batch = tenantIdsToResolve.slice(i, i + batchSize);
           const docs = await Promise.all(batch.map((tid: string) => db.collection("tenants").doc(tid).get()));
           for (const doc of docs) {
-            if (doc.exists) tenantMap[doc.id] = doc.data()?.name || "Sin nombre";
+            if (doc.exists) tenantMap[doc.id] = doc.data()?.name || "İsimsiz Kullanıcı";
           }
         }
       }
@@ -860,7 +860,7 @@ export async function POST(request: NextRequest) {
       const resolvedLogs = logs.map((l: any) => ({
         ...l,
         userName: l.userName || userMap[l.userId] || "Desconocido",
-        tenantName: l.tenantId ? (tenantMap[l.tenantId] || "Sin nombre") : undefined,
+        tenantName: l.tenantId ? (tenantMap[l.tenantId] || "İsimsiz Kullanıcı") : undefined,
       }));
 
       return NextResponse.json({ logs: resolvedLogs });

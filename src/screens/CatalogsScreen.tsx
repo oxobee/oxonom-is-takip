@@ -144,7 +144,7 @@ export default function CatalogsScreen() {
   const handleDelete = async (c: Catalog) => {
     const ok = await confirmDialog.confirm({
       title: 'Eliminar catálogo',
-      description: `¿Estás seguro de eliminar "${c.data.name}"? Esta acción no se puede deshacer.`,
+      description: `Emin misiniz de eliminar "${c.data.name}"? Esta acción no se puede deshacer.`,
     });
     if (!ok) return;
     try {

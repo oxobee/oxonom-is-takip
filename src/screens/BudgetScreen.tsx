@@ -340,7 +340,7 @@ export default function BudgetScreen() {
           <div className="flex items-center justify-between mb-3">
             <div className="text-[15px] font-semibold flex items-center gap-2">
               <BarChart3 size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
-              Tendencia Mensual
+              Aylık Dağılım Trendi
             </div>
             <span className="text-[10px] text-[var(--muted-foreground)] px-2 py-0.5 rounded-full bg-[var(--af-bg4)]">6 meses</span>
           </div>
@@ -439,7 +439,7 @@ export default function BudgetScreen() {
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
                     <Receipt size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
-                    <span className="text-[15px] font-semibold">{proj?.data.name || 'Sin proyecto'}</span>
+                    <span className="text-[15px] font-semibold">{proj?.data.name || 'Projesiz'}</span>
                     <span className="text-[10px] text-[var(--muted-foreground)] px-1.5 py-0.5 rounded-full bg-[var(--af-bg4)]">{exps.length} gasto{exps.length !== 1 ? 's' : ''}</span>
                   </div>
                   <span className="text-[14px] font-semibold text-[var(--af-accent)]">{fmtCOP(total)}</span>
@@ -460,7 +460,7 @@ export default function BudgetScreen() {
                     {/* Desktop: action buttons */}
                     <div className="hidden md:flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <button className="text-xs px-1.5 py-1 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] cursor-pointer hover:bg-[var(--af-accent)]/20" onClick={() => openEditExpense(e)}>✎</button>
-                      <button className="text-xs px-1.5 py-1 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Harcamayı Sil', description: '¿Estás seguro? El gasto será eliminado permanentemente.' })) deleteExpense(e.id); }}>✕</button>
+                      <button className="text-xs px-1.5 py-1 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Harcamayı Sil', description: 'Emin misiniz? El gasto será eliminado permanentemente.' })) deleteExpense(e.id); }}>✕</button>
                     </div>
                     {/* Mobile: OverflowMenu */}
                     <div className="md:hidden flex-shrink-0">
@@ -474,7 +474,7 @@ export default function BudgetScreen() {
                           {
                             label: 'Harcamayı Sil',
                             icon: <Trash2 size={14} aria-hidden="true"/>,
-                            onClick: async () => { if (await confirmDialog.confirm({ title: 'Harcamayı Sil', description: '¿Estás seguro? El gasto será eliminado permanentemente.' })) deleteExpense(e.id); },
+                            onClick: async () => { if (await confirmDialog.confirm({ title: 'Harcamayı Sil', description: 'Emin misiniz? El gasto será eliminado permanentemente.' })) deleteExpense(e.id); },
                             variant: 'danger',
                           },
                         ]}

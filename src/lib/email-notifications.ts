@@ -173,7 +173,7 @@ export const notifyEmail = {
         ${infoRow('📌', 'Tarea', taskTitle)}
         ${infoRow('📁', 'Proyecto', projectName)}
         ${infoRow(prioEmoji, 'Prioridad', priority || 'Sin definir', prioColor)}
-        ${dueDate ? infoRow('📅', 'Fecha límite', fmtDate(dueDate)) : ''}
+        ${dueDate ? infoRow('📅', 'Bitiş Tarihi', fmtDate(dueDate)) : ''}
         ${assignedBy ? infoRow('👤', 'Asignado por', assignedBy) : ''}
       </table>
       <p style="color:${BRAND.muted};font-size:14px;margin:0;">Revisa los detalles y empieza a trabajar en esta tarea desde Archii.</p>`;

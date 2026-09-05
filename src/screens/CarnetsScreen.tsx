@@ -354,7 +354,7 @@ export default function CarnetsScreen() {
             onClick={() => { setQuotaError(false); fetchCarnets(); fetchTemplates(); }}
             className="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-500/20 text-red-300 hover:bg-red-500/30 transition-colors cursor-pointer border-none"
           >
-            Reintentar
+            Yeniden Dene
           </button>
         </div>
       )}

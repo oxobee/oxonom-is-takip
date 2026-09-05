@@ -139,7 +139,7 @@ export function formatTaskEvent(
   const fields: { label: string; value: string }[] = [];
   if (task.priority) fields.push({ label: 'Prioridad', value: `${priorityEmoji[task.priority] || ''} ${task.priority}` });
   if (task.status) fields.push({ label: 'Estado', value: `${statusEmoji[task.status] || ''} ${task.status}` });
-  if (task.dueDate) fields.push({ label: 'Fecha límite', value: `📅 ${task.dueDate}` });
+  if (task.dueDate) fields.push({ label: 'Bitiş Tarihi', value: `📅 ${task.dueDate}` });
   if (task.assigneeName) fields.push({ label: 'Asignado', value: `👤 ${task.assigneeName}` });
   if (task.projectName) fields.push({ label: 'Proyecto', value: `📁 ${task.projectName}` });
 

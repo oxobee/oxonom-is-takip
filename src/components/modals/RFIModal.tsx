@@ -63,7 +63,7 @@ export default function RFIModal({ open, onClose }: { open: boolean; onClose: ()
               {teamUsers.map((u: any) => <option key={u.id} value={u.id}>{u.data.name}</option>)}
             </FormSelect>
           </FormField>
-          <FormField label="Fecha límite">
+          <FormField label="Bitiş Tarihi">
             <FormInput type="date" value={forms.rfiDueDate || ''} onChange={(e) => setForms(p => ({ ...p, rfiDueDate: e.target.value }))} />
           </FormField>
         </div>

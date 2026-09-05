@@ -81,7 +81,7 @@ export default function InvoicesScreen() {
           </div>
           {/* Invoice List */}
           {filteredInvoices.length === 0 ? (
-            <EmptyState emoji="🧾" title="Sin facturas" description="Crea tu primera factura para empezar" />
+            <EmptyState emoji="🧾" title="Sin facturas" description="İlk kaydınızı oluşturun factura para empezar" />
           ) : (
               <div className="space-y-2">
                 {filteredInvoices.map(inv => {
@@ -110,7 +110,7 @@ export default function InvoicesScreen() {
                       {inv.data.status === 'Enviada' && <button className="px-2 py-1.5 rounded text-xs cursor-pointer bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20" onClick={() => fbActions.updateInvoiceStatus(inv.id, 'Ödendi', showToast, activeTenantId)}>Pagar</button>}
                       {inv.data.status === 'Enviada' && <button className="px-2 py-1.5 rounded text-xs cursor-pointer bg-red-500/10 text-red-400 hover:bg-red-500/20" onClick={() => fbActions.updateInvoiceStatus(inv.id, 'Gecikmiş', showToast, activeTenantId)}>Vencer</button>}
                       <button aria-label="Eliminar" className="px-2 py-1.5 rounded text-xs cursor-pointer bg-red-500/10 text-red-400 hover:bg-red-500/20" onClick={async () => {
-                        const ok = await confirm({ title: 'Faturayı Sil', description: '¿Estás seguro de eliminar esta factura?' });
+                        const ok = await confirm({ title: 'Faturayı Sil', description: 'Emin misiniz de eliminar esta factura?' });
                         if (!ok) return;
                         const snapshot = { ...inv.data };
                         await fbActions.deleteInvoice(inv.id, showToast, activeTenantId);
@@ -127,7 +127,7 @@ export default function InvoicesScreen() {
                           ...(inv.data.status === 'Enviada' ? [{ label: 'Marcar como pagada', onClick: () => fbActions.updateInvoiceStatus(inv.id, 'Ödendi', showToast, activeTenantId) }] : []),
                           ...(inv.data.status === 'Enviada' ? [{ label: 'Marcar como vencida', onClick: () => fbActions.updateInvoiceStatus(inv.id, 'Gecikmiş', showToast, activeTenantId) }] : []),
                           { label: 'Faturayı Sil', icon: <Trash2 size={14} aria-hidden="true"/>, variant: 'danger' as const, separator: true, onClick: async () => {
-                            const ok = await confirm({ title: 'Faturayı Sil', description: '¿Estás seguro de eliminar esta factura?' });
+                            const ok = await confirm({ title: 'Faturayı Sil', description: 'Emin misiniz de eliminar esta factura?' });
                             if (!ok) return;
                             const snapshot = { ...inv.data };
                             await fbActions.deleteInvoice(inv.id, showToast, activeTenantId);

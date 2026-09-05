@@ -22,7 +22,7 @@ export default function DashboardTeamQuickView({
       </div>
       <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin' }}>
         {teamWorkload.length === 0 ? (
-          <div className="text-center py-6 text-[var(--af-text3)] text-[11px]">Sin tareas asignadas</div>
+          <div className="text-center py-6 text-[var(--af-text3)] text-[11px]">Görev bulunamadı asignadas</div>
         ) : (
           teamWorkload.map((w, i) => {
             const total = w.activas + w.completadas + w.pendientes;

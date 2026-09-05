@@ -393,7 +393,7 @@ export default function PortalScreen() {
           ) : (
             <>
               <div className="text-3xl mb-2">📋</div>
-              <div className="text-[14px] font-medium text-[var(--muted-foreground)] mb-1">Sin proyectos</div>
+              <div className="text-[14px] font-medium text-[var(--muted-foreground)] mb-1">Projesizs</div>
               <div className="text-[11px] text-[var(--af-text3)]">Los proyectos aparecen aqui cuando se creen nuevos</div>
             </>
           )}

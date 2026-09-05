@@ -716,7 +716,7 @@ export async function POST(request: NextRequest) {
         if (!memberUids.includes(doc.id)) {
           availableUsers.push({
             uid: doc.id,
-            name: doc.data()?.name || "Sin nombre",
+            name: doc.data()?.name || "İsimsiz Kullanıcı",
             email: doc.data()?.email || "",
           });
         }

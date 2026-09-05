@@ -62,7 +62,7 @@ export default function PunchItemModal({ open, onClose }: { open: boolean; onClo
               {teamUsers.map((u: any) => <option key={u.id} value={u.id}>{u.data.name}</option>)}
             </FormSelect>
           </FormField>
-          <FormField label="Fecha límite">
+          <FormField label="Bitiş Tarihi">
             <FormInput type="date" value={forms.punchDueDate || ''} onChange={(e) => setForms(p => ({ ...p, punchDueDate: e.target.value }))} />
           </FormField>
         </div>

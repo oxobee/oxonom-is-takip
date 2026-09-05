@@ -51,14 +51,14 @@ export default function InventoryTransfers({
                 {/* Desktop: status badge + delete */}
                 <div className="hidden md:flex items-center gap-2">
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${t.data.status === 'Tamamlandı' ? 'bg-emerald-500/15 text-emerald-400' : t.data.status === 'En tránsito' ? 'bg-blue-500/15 text-blue-400' : t.data.status === 'Cancelada' ? 'bg-red-500/15 text-red-400' : 'bg-amber-500/15 text-amber-400'}`}>{t.data.status}</span>
-                  <button aria-label="Eliminar" className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar transferencia', description: '¿Estás seguro?' })) deleteInvTransfer(t.id); }}><Trash2 size={14} className="stroke-current" aria-hidden="true"/></button>
+                  <button aria-label="Eliminar" className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar transferencia', description: 'Emin misiniz?' })) deleteInvTransfer(t.id); }}><Trash2 size={14} className="stroke-current" aria-hidden="true"/></button>
                 </div>
                 {/* Mobile: status badge + OverflowMenu */}
                 <div className="md:hidden flex items-center gap-2">
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${t.data.status === 'Tamamlandı' ? 'bg-emerald-500/15 text-emerald-400' : t.data.status === 'En tránsito' ? 'bg-blue-500/15 text-blue-400' : t.data.status === 'Cancelada' ? 'bg-red-500/15 text-red-400' : 'bg-amber-500/15 text-amber-400'}`}>{t.data.status}</span>
                   <OverflowMenu
                     actions={[
-                      { label: 'Eliminar transferencia', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirm({ title: 'Eliminar transferencia', description: '¿Estás seguro?' })) deleteInvTransfer(t.id); }, variant: 'danger' },
+                      { label: 'Eliminar transferencia', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirm({ title: 'Eliminar transferencia', description: 'Emin misiniz?' })) deleteInvTransfer(t.id); }, variant: 'danger' },
                     ]}
                     side="left"
                     align="end"

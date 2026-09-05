@@ -9,11 +9,11 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
   const { forms, setForms, editingId, closeModal, saveProject, companies } = useApp();
   const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
 
-  const projectType = forms.projType || 'Ejecución';
+  const projectType = forms.projType || 'Uygulama';
 
   // Fases disponibles según el tipo seleccionado
   const availablePhases = useMemo(() => {
-    const types = projectType === 'Ambos' ? ['Diseño', 'Ejecución'] : [projectType];
+    const types = (projectType === 'Ambos' || projectType === 'Her İkisi') ? ['Tasarım', 'Uygulama'] : [projectType];
     const phases: { type: string; key: string; name: string; description: string }[] = [];
     for (const t of types) {
       for (const tpl of (PROJECT_TYPE_PHASES[t] || [])) {
@@ -41,7 +41,7 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
   };
 
   const handleSubmit = () => {
-    const nameValid = validateRequired('projName', forms.projName || '', 'Nombre');
+    const nameValid = validateRequired('projName', forms.projName || '', 'Proje Adı');
     if (!nameValid) return;
     saveProject();
   };
@@ -51,26 +51,26 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
       <h2 className="text-lg font-semibold mb-4">{editingId ? 'Projeyi Düzenle' : 'Yeni Proje'}</h2>
 
       <div className="space-y-3">
-        <FormField label="Nombre" required error={errors.projName}>
+        <FormField label="Proje Adı" required error={errors.projName}>
           <FormInput
             value={forms.projName || ''}
             onChange={(e) => { setForms(p => ({ ...p, projName: e.target.value })); clearError('projName'); }}
-            onBlur={() => onBlurRequired('projName', forms.projName || '', 'Nombre')}
-            placeholder="Nombre del proyecto"
+            onBlur={() => onBlurRequired('projName', forms.projName || '', 'Proje Adı')}
+            placeholder="Proje adını girin"
             error={errors.projName}
           />
         </FormField>
 
         <div className="grid grid-cols-2 gap-3">
-          <FormField label="Estado">
+          <FormField label="Durum">
             <FormSelect
               value={forms.projStatus || 'Harcama Kalemi'}
               onChange={(e) => setForms(p => ({ ...p, projStatus: e.target.value }))}
             >
-              <option value="Harcama Kalemi">Harcama Kalemi</option>
-              <option value="Diseno">Diseño</option>
-              <option value="Ejecucion">Ejecución</option>
-              <option value="Terminado">Terminado</option>
+              <option value="Planlama">Planlama</option>
+              <option value="Tasarım">Tasarım</option>
+              <option value="Uygulama">Uygulama</option>
+              <option value="Tamamlandı">Tamamlandı</option>
             </FormSelect>
           </FormField>
 
@@ -79,9 +79,9 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
               value={projectType}
               onChange={(e) => setForms(p => ({ ...p, projType: e.target.value, enabledPhases: [] }))}
             >
-              <option value="Diseño">Diseño</option>
-              <option value="Ejecución">Ejecución</option>
-              <option value="Ambos">Ambos</option>
+              <option value="Tasarım">Tasarım</option>
+              <option value="Uygulama">Uygulama</option>
+              <option value="Her İkisi">Her İkisi</option>
             </FormSelect>
           </FormField>
         </div>
@@ -98,12 +98,12 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
                 className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--af-accent)]/10 text-[var(--af-accent)] cursor-pointer border-none hover:bg-[var(--af-accent)]/20"
                 onClick={toggleAll}
               >
-                {allEnabled ? 'Desactivar todas' : 'Activar todas'}
+                {allEnabled ? 'Tümünü Kaldır' : 'Tümünü Seç'}
               </button>
             </div>
-            {['Diseño', 'Ejecución'].filter(t => projectType === 'Ambos' || t === projectType).map(type => (
+            {['Tasarım', 'Uygulama'].filter(t => projectType === 'Ambos' || t === projectType).map(type => (
               <div key={type} className="mb-2 last:mb-0">
-                <div className={`text-[10px] font-semibold uppercase tracking-wider mb-1 ${type === 'Diseño' ? 'text-violet-400' : 'text-amber-400'}`}>
+                <div className={`text-[10px] font-semibold uppercase tracking-wider mb-1 ${(type === 'Diseño' || type === 'Tasarım') ? 'text-violet-400' : 'text-amber-400'}`}>
                   {type}
                 </div>
                 <div className="grid grid-cols-2 gap-1.5">
@@ -115,7 +115,7 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
                         type="button"
                         className={`text-left px-2.5 py-1.5 rounded-lg text-[11px] border cursor-pointer transition-all ${
                           isOn
-                            ? type === 'Diseño'
+                            ? (type === 'Diseño' || type === 'Tasarım')
                               ? 'bg-violet-500/10 text-violet-300 border-violet-500/30'
                               : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
                             : 'bg-transparent text-[var(--muted-foreground)] border-[var(--border)] opacity-50'
@@ -131,7 +131,7 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
               </div>
             ))}
             <div className="text-[10px] text-[var(--af-text3)] mt-2">
-              Puedes activar/desactivar fases en cualquier momento desde el proyecto
+              Aşamaları proje içerisinden dilediğiniz zaman etkinleştirebilir veya kapatabilirsiniz
             </div>
           </div>
         )}
@@ -140,7 +140,7 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
           <FormInput
             value={forms.projClient || ''}
             onChange={(e) => setForms(p => ({ ...p, projClient: e.target.value }))}
-            placeholder="Nombre del cliente"
+            placeholder="Müşteri adını girin"
             list="company-names-datalist"
           />
           <datalist id="company-names-datalist">
@@ -154,7 +154,7 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
           <FormInput
             value={forms.projLocation || ''}
             onChange={(e) => setForms(p => ({ ...p, projLocation: e.target.value }))}
-            placeholder="Konum del proyecto"
+            placeholder="Proje konumunu girin"
           />
         </FormField>
 
@@ -170,7 +170,7 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
               }));
             }}
           >
-            <option value="">— Sin empresa —</option>
+            <option value="">— Firma Seçilmedi —</option>
             {companies.map((c: Company) => (
               <option key={c.id} value={c.id}>{c.data.name}</option>
             ))}
@@ -203,11 +203,11 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
           </FormField>
         </div>
 
-        <FormField label="Descripción">
+        <FormField label="Açıklama">
           <FormTextarea
             value={forms.projDesc || ''}
             onChange={(e) => setForms(p => ({ ...p, projDesc: e.target.value }))}
-            placeholder="Descripción del proyecto"
+            placeholder="Proje açıklamasını girin..."
             rows={3}
           />
         </FormField>

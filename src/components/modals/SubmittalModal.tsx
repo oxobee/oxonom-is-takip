@@ -54,7 +54,7 @@ export default function SubmittalModal({ open, onClose }: { open: boolean; onClo
               {teamUsers.map((u: any) => <option key={u.id} value={u.id}>{u.data.name}</option>)}
             </FormSelect>
           </FormField>
-          <FormField label="Fecha límite">
+          <FormField label="Bitiş Tarihi">
             <FormInput type="date" value={forms.subDueDate || ''} onChange={(e) => setForms(p => ({ ...p, subDueDate: e.target.value }))} />
           </FormField>
         </div>

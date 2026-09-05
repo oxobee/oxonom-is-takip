@@ -183,7 +183,7 @@ export default function WeeklyAgendaScreen() {
 
   const userMap = useMemo(() => {
     const m: Record<string, { name: string; photoUrl?: string }> = {};
-    teamUsers.forEach(u => { m[u.id] = { name: u.data?.name || 'Sin nombre', photoUrl: u.data?.photoURL }; });
+    teamUsers.forEach(u => { m[u.id] = { name: u.data?.name || 'İsimsiz Kullanıcı', photoUrl: u.data?.photoURL }; });
     if (authUser?.uid) m[authUser.uid] = { name: authUser.displayName || authUser.email || 'Yo', photoUrl: authUser.photoURL || undefined };
     return m;
   }, [teamUsers, authUser]);
@@ -604,7 +604,7 @@ export default function WeeklyAgendaScreen() {
         console.error('[oxonom iş takip Agenda] Error loading notes:', err);
         if (!cancelled) {
           setNotesLoaded(true);
-          toast.error('Error al cargar las notas de la semana');
+          toast.error('Yükleme hatası las notas de la semana');
         }
       }
     };
@@ -673,7 +673,7 @@ export default function WeeklyAgendaScreen() {
     filtered.forEach(t => {
       const p = t.data.priority || 'Orta';
       const s = t.data.status || 'Yapılacak';
-      const pr = t.data.projectId ? (projectMap[t.data.projectId] || 'Sin proyecto') : 'Sin proyecto';
+      const pr = t.data.projectId ? (projectMap[t.data.projectId] || 'Projesiz') : 'Projesiz';
       byPriority[p] = (byPriority[p] || 0) + 1;
       byStatus[s] = (byStatus[s] || 0) + 1;
       byProject[pr] = (byProject[pr] || 0) + 1;
@@ -1662,7 +1662,7 @@ export default function WeeklyAgendaScreen() {
                     </label>
                     <select value={form.projectId} onChange={e => setForm(f => ({ ...f, projectId: e.target.value }))}
                       className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none text-[var(--foreground)]">
-                      <option value="">Sin proyecto</option>
+                      <option value="">Projesiz</option>
                       {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
                     </select>
                   </div>
@@ -1907,7 +1907,7 @@ export default function WeeklyAgendaScreen() {
                             <div className="flex-1 min-w-0">
                               <p className="text-xs font-medium truncate text-[var(--foreground)]">{t.data.title}</p>
                               <p className="text-[9px] truncate text-[var(--muted-foreground)]">
-                                {projectMap[t.data.projectId] || 'Sin proyecto'} &middot; {userMap[t.data.assigneeId]?.name || 'Atanmamış'}
+                                {projectMap[t.data.projectId] || 'Projesiz'} &middot; {userMap[t.data.assigneeId]?.name || 'Atanmamış'}
                               </p>
                             </div>
                             {isSelected && (
@@ -1933,7 +1933,7 @@ export default function WeeklyAgendaScreen() {
                       <div className={`rounded-lg p-3 ${pc.bg} border-l-4 ${pc.border}`}>
                         <p className="text-xs font-semibold mb-1 text-[var(--foreground)]">{selTask.data.title}</p>
                         <div className="flex items-center gap-3 text-[10px] text-[var(--muted-foreground)]">
-                          <span className="flex items-center gap-1"><FolderOpen className="w-2.5 h-2.5" aria-hidden="true"/>{projectMap[selTask.data.projectId] || 'Sin proyecto'}</span>
+                          <span className="flex items-center gap-1"><FolderOpen className="w-2.5 h-2.5" aria-hidden="true"/>{projectMap[selTask.data.projectId] || 'Projesiz'}</span>
                           <span className="flex items-center gap-1"><User className="w-2.5 h-2.5" aria-hidden="true"/>{userMap[selTask.data.assigneeId]?.name || 'Atanmamış'}</span>
                           <span className={pc.text}>{selTask.data.priority}</span>
                         </div>

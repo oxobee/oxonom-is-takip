@@ -152,7 +152,7 @@ export default function CalendarScreen() {
                     </span>
                   </div>
                   {selectedDayTasks.length === 0 ? (
-                    <div className="text-center py-6 text-[var(--af-text3)]"><div className="text-2xl mb-1">📅</div><div className="text-sm">Sin tareas pendientes para este día</div></div>
+                    <div className="text-center py-6 text-[var(--af-text3)]"><div className="text-2xl mb-1">📅</div><div className="text-sm">Görev bulunamadı pendientes para este día</div></div>
                   ) : (
                     <div className="space-y-2">
                       {selectedDayTasks.sort((a, b) => {

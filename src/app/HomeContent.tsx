@@ -218,13 +218,13 @@ function AppContent() {
           <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-[var(--af-accent)]/10 via-[var(--af-accent)]/5 to-transparent border-b border-[var(--af-accent)]/20 animate-fadeIn">
             <Bell size={20} className="stroke-[var(--af-accent)] flex-shrink-0" aria-hidden="true"/>
             <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-medium">Activar notificaciones</div>
-              <div className="text-[11px] text-[var(--muted-foreground)]">Recibe alertas de chat, tareas, reuniones, inventario y más — incluso cuando la app esté cerrada</div>
+              <div className="text-[13px] font-medium">Sistem Bildirimlerini Aç</div>
+              <div className="text-[11px] text-[var(--muted-foreground)]">Uygulama kapalıyken bile mesaj, görev, toplantı ve envanter bildirimlerini anında alın</div>
             </div>
             <button className="px-4 py-2 bg-[var(--af-accent)] text-background rounded-lg text-[12px] font-semibold cursor-pointer hover:bg-[var(--af-accent2)] transition-colors border-none flex-shrink-0" onClick={requestNotifPermission}>
-              Activar ahora
+              Şimdi Aç
             </button>
-            <button aria-label="Descartar" className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[var(--af-bg4)] text-[var(--muted-foreground)] cursor-pointer flex-shrink-0 border-none bg-transparent" onClick={dismissNotifBanner}>
+            <button aria-label="Kapat" className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[var(--af-bg4)] text-[var(--muted-foreground)] cursor-pointer flex-shrink-0 border-none bg-transparent" onClick={dismissNotifBanner}>
               <X size={16} className="stroke-current" aria-hidden="true"/>
             </button>
           </div>

@@ -11,7 +11,7 @@ export function useEntityResolvers(projects: any[], teamUsers: any[]) {
   const projectMap = useMemo(() => {
     const map = new Map<string, string>();
     for (const p of projects) {
-      map.set(p.id, p?.data?.name || 'Sin proyecto');
+      map.set(p.id, p?.data?.name || 'Projesiz');
     }
     return map;
   }, [projects]);
@@ -24,7 +24,7 @@ export function useEntityResolvers(projects: any[], teamUsers: any[]) {
     return map;
   }, [teamUsers]);
 
-  const getProjectName = (pid: string) => projectMap.get(pid) || 'Sin proyecto';
+  const getProjectName = (pid: string) => projectMap.get(pid) || 'Projesiz';
 
   const getUserName = (uid: string) => userMap.get(uid) || uid;
 

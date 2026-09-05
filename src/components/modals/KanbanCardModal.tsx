@@ -176,7 +176,7 @@ export default function KanbanCardModal({
         {/* Due date */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
-            Fecha limite
+            Bitiş Tarihi
           </label>
           <div className={`px-3 py-2 rounded-lg text-[13px] ${
             overdue ? 'bg-red-500/10 text-red-400' : 'bg-[var(--af-bg3)] text-[var(--foreground)]'

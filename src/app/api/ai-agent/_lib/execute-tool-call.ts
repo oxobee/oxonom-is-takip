@@ -178,7 +178,7 @@ export async function executeToolCall(
 
         const lines = members.map(
           (m: any) =>
-            `- **${m.data.name || "Sin nombre"}** (${m.data.role || "Miembro"}) — ${m.data.email || "Sin email"} [ID: ${m.id}]`
+            `- **${m.data.name || "İsimsiz Kullanıcı"}** (${m.data.role || "Miembro"}) — ${m.data.email || "Sin email"} [ID: ${m.id}]`
         );
         return `Equipo (${members.length} miembros):\n${lines.join("\n")}`;
       }

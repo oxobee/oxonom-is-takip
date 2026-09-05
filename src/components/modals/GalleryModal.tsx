@@ -47,7 +47,7 @@ export default function GalleryModal({ open, onClose }: { open: boolean; onClose
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
         <FormField label="Proyecto" required error={errors.galleryProject}>
           <FormSelect value={forms.galleryProject || ''} onChange={e => { setForms(p => ({ ...p, galleryProject: e.target.value })); clearError('galleryProject'); }} onBlur={() => onBlurRequired('galleryProject', forms.galleryProject || '', 'Proyecto')} error={errors.galleryProject}>
-            <option value="">Sin proyecto</option>
+            <option value="">Projesiz</option>
             {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
           </FormSelect>
         </FormField>

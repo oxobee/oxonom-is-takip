@@ -55,7 +55,7 @@ export default function CarnetPublicPage() {
         }
         setData(result);
       } catch (err) {
-        setError('Error al cargar el carnet');
+        setError('Yükleme hatası el carnet');
       } finally {
         setLoading(false);
       }

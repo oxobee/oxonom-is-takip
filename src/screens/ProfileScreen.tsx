@@ -712,7 +712,7 @@ export default function ProfileScreen() {
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--af-bg4)] text-[var(--muted-foreground)]">{computed.activityTimeline.length}</span>
             </div>
             {computed.activityTimeline.length === 0 ? (
-              <div className="text-center py-8 text-[var(--af-text3)]"><div className="text-2xl mb-1">📋</div><div className="text-[12px]">Sin tareas completadas aún</div></div>
+              <div className="text-center py-8 text-[var(--af-text3)]"><div className="text-2xl mb-1">📋</div><div className="text-[12px]">Görev bulunamadı completadas aún</div></div>
             ) : (
               <div className="relative max-h-[400px] overflow-y-auto">
                 <div className="absolute left-[11px] top-2 bottom-2 w-px bg-[var(--border)]" />

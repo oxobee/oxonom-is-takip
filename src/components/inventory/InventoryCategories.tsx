@@ -38,14 +38,14 @@ export default function InventoryCategories({
                   {/* Desktop: edit/delete buttons */}
                   <div className="hidden md:flex gap-1">
                     <button aria-label="Editar" className="w-8 h-8 rounded-lg bg-[var(--card)] border border-[var(--border)] flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer" onClick={() => openEditInvCategory(c)}><Pencil size={14} aria-hidden="true"/></button>
-                    <button aria-label="Eliminar" className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar categoría', description: '¿Estás seguro? La categoría será eliminada permanentemente.' })) deleteInvCategory(c.id); }}><Trash2 size={14} aria-hidden="true"/></button>
+                    <button aria-label="Eliminar" className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer" onClick={async () => { if (await confirm({ title: 'Eliminar categoría', description: 'Emin misiniz? La categoría será eliminada permanentemente.' })) deleteInvCategory(c.id); }}><Trash2 size={14} aria-hidden="true"/></button>
                   </div>
                   {/* Mobile: OverflowMenu */}
                   <div className="md:hidden flex-shrink-0">
                     <OverflowMenu
                       actions={[
                         { label: 'Editar categoría', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => openEditInvCategory(c) },
-                        { label: 'Eliminar categoría', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirm({ title: 'Eliminar categoría', description: '¿Estás seguro? La categoría será eliminada permanentemente.' })) deleteInvCategory(c.id); }, variant: 'danger', separator: true },
+                        { label: 'Eliminar categoría', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirm({ title: 'Eliminar categoría', description: 'Emin misiniz? La categoría será eliminada permanentemente.' })) deleteInvCategory(c.id); }, variant: 'danger', separator: true },
                       ]}
                       side="left"
                       align="end"

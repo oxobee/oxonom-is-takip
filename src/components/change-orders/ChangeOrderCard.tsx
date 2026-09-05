@@ -97,7 +97,7 @@ export default function ChangeOrderCard({ co, getProjectName, onEdit, onDelete, 
             <Pencil size={12} aria-hidden="true"/>
           </button>
           <button aria-label="Eliminar" className="hidden md:block px-1.5 py-1.5 rounded bg-red-500/10 text-xs cursor-pointer" onClick={async () => {
-            const ok = await confirmDialog.confirm({ title: 'Eliminar orden', description: '¿Estás seguro de eliminar esta orden de cambio?' });
+            const ok = await confirmDialog.confirm({ title: 'Eliminar orden', description: 'Emin misiniz de eliminar esta orden de cambio?' });
             if (!ok) return;
             onDelete(co);
           }}>
@@ -108,7 +108,7 @@ export default function ChangeOrderCard({ co, getProjectName, onEdit, onDelete, 
               actions={[
                 { label: 'Editar', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => onEdit(co) },
                 { label: 'Eliminar', icon: <Trash2 size={14} aria-hidden="true"/>, variant: 'danger' as const, separator: true, onClick: async () => {
-                  const ok = await confirmDialog.confirm({ title: 'Eliminar orden', description: '¿Estás seguro de eliminar esta orden de cambio?' });
+                  const ok = await confirmDialog.confirm({ title: 'Eliminar orden', description: 'Emin misiniz de eliminar esta orden de cambio?' });
                   if (!ok) return;
                   onDelete(co);
                 }},

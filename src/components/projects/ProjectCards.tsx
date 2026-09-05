@@ -91,14 +91,14 @@ export default function ProjectCards({
               {/* Desktop edit/delete */}
               <div className="hidden md:flex gap-1.5" onClick={e => e.stopPropagation()}>
                 <button aria-label="Projeyi Düzenle" className="px-2.5 py-1.5 rounded bg-[var(--af-bg4)] text-xs cursor-pointer hover:bg-[var(--af-bg3)]" onClick={() => openEditProject(p)}><Pencil size={13} aria-hidden="true"/></button>
-                <button aria-label="Projeyi Sil" className="px-2.5 py-1.5 rounded bg-red-500/10 text-xs cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Projeyi Sil', description: `¿Estás seguro de eliminar "${d.name}"? Esta acción no se puede deshacer.` })) deleteProject(p.id); }}><Trash2 size={13} aria-hidden="true"/></button>
+                <button aria-label="Projeyi Sil" className="px-2.5 py-1.5 rounded bg-red-500/10 text-xs cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Projeyi Sil', description: `Emin misiniz de eliminar "${d.name}"? Esta acción no se puede deshacer.` })) deleteProject(p.id); }}><Trash2 size={13} aria-hidden="true"/></button>
               </div>
               {/* Mobile overflow */}
               <div className="md:hidden" onClick={e => e.stopPropagation()}>
                 <OverflowMenu
                   actions={[
                     { label: 'Projeyi Düzenle', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => openEditProject(p) },
-                    { label: 'Projeyi Sil', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirmDialog.confirm({ title: 'Projeyi Sil', description: `¿Estás seguro de eliminar "${d.name}"?` })) deleteProject(p.id); }, variant: 'danger', separator: true },
+                    { label: 'Projeyi Sil', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirmDialog.confirm({ title: 'Projeyi Sil', description: `Emin misiniz de eliminar "${d.name}"?` })) deleteProject(p.id); }, variant: 'danger', separator: true },
                   ]}
                   side="left"
                   align="end"

@@ -88,7 +88,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
   const doneSubtasks = subtasks.filter(s => s.done).length;
 
   const handleSubmit = () => {
-    const titleValid = validateRequired('taskTitle', forms.taskTitle || '', 'Titulo');
+    const titleValid = validateRequired('taskTitle', forms.taskTitle || '', 'Görev Başlığı');
     if (!titleValid) return;
     saveTask();
   };
@@ -98,31 +98,31 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
       <h2 className="text-lg font-semibold mb-4">{editingId ? 'Görevi Düzenle' : 'Yeni Görev'}</h2>
 
       <div className="space-y-3">
-        <FormField label="Titulo" required error={errors.taskTitle}>
+        <FormField label="Görev Başlığı" required error={errors.taskTitle}>
           <FormInput
             value={forms.taskTitle || ''}
             onChange={(e) => { setForms((p: Record<string, any>) => ({ ...p, taskTitle: e.target.value })); clearError('taskTitle'); }}
-            onBlur={() => onBlurRequired('taskTitle', forms.taskTitle || '', 'Titulo')}
-            placeholder="Titulo de la tarea"
+            onBlur={() => onBlurRequired('taskTitle', forms.taskTitle || '', 'Görev Başlığı')}
+            placeholder="Görev başlığını girin"
             error={errors.taskTitle}
           />
         </FormField>
 
-        <FormField label="Descripcion">
+        <FormField label="Açıklama">
           <FormTextarea
             value={forms.taskDescription || ''}
             onChange={(e) => setForms((p: Record<string, any>) => ({ ...p, taskDescription: e.target.value }))}
-            placeholder="Descripcion de la tarea"
+            placeholder="Görev detaylarını ve açıklamasını girin..."
             rows={3}
           />
         </FormField>
 
-        <FormField label="Proyecto">
+        <FormField label="Proje">
           <FormSelect
             value={forms.taskProject || ''}
             onChange={(e) => setForms((p: Record<string, any>) => ({ ...p, taskProject: e.target.value, taskPhase: '' }))}
           >
-            <option value="">— Sin proyecto —</option>
+            <option value="">— Proje Seçilmedi —</option>
             {projects.map((p: any) => (
               <option key={p.id} value={p.id}>{p.data?.name || p.name}</option>
             ))}
@@ -131,12 +131,12 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
 
         {/* Fase — works for ANY project selected, not just the active one */}
         {forms.taskProject && effectivePhases.length > 0 && (
-          <FormField label="Fase">
+          <FormField label="Aşama">
             <FormSelect
               value={forms.taskPhase || ''}
               onChange={(e) => setForms((p: Record<string, any>) => ({ ...p, taskPhase: e.target.value }))}
             >
-              <option value="">— Sin fase —</option>
+              <option value="">— Aşama Seçilmedi —</option>
               {effectivePhases
                 .filter((ph: any) => ph.data.enabled !== false)
                 .map((ph: any) => (
@@ -147,7 +147,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
         )}
 
         {/* Responsables multiples */}
-        <FormField label="Responsables">
+        <FormField label="Sorumlular">
           <div className="space-y-2">
             {/* Chips de responsables seleccionados */}
             {assignees.length > 0 && (
@@ -160,10 +160,10 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
                       key={uid}
                       className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-[var(--af-accent)]/15 text-[var(--af-accent)] border border-[var(--af-accent)]/20"
                     >
-                      {name}{uid === authUser?.uid ? ' (Tu)' : ''}
+                      {name}{uid === authUser?.uid ? ' (Sen)' : ''}
                       <button
                         type="button"
-                        aria-label="Quitar asignado"
+                        aria-label="Sorumluyu kaldır"
                         className="ml-0.5 hover:text-red-400 cursor-pointer bg-transparent border-none p-0"
                         onClick={() => removeAssignee(uid)}
                       >
@@ -179,16 +179,16 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
             <div className="border border-[var(--border)] rounded-lg overflow-hidden max-h-[180px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
               <div className="px-2.5 py-2 bg-[var(--af-bg3)] border-b border-[var(--border)] flex items-center gap-1.5 text-[11px] text-[var(--muted-foreground)] font-medium">
                 <Users size={12} aria-hidden="true"/>
-                {assignees.length === 0 ? 'Seleccionar responsables' : `${assignees.length} responsable${assignees.length > 1 ? 's' : ''} seleccionado${assignees.length > 1 ? 's' : ''}`}
+                {assignees.length === 0 ? 'Sorumlu kişileri seçin' : `${assignees.length} responsable${assignees.length > 1 ? 's' : ''} seleccionado${assignees.length > 1 ? 's' : ''}`}
               </div>
               {teamUsers.length === 0 && (
                 <div className="px-3 py-3 text-[12px] text-[var(--muted-foreground)] text-center">
-                  Üye bulunamadı en el equipo
+                  Ekipte üye bulunamadı
                 </div>
               )}
               {teamUsers.map((u: any) => {
                 const uid = u.id;
-                const name = u.data?.name || u.name || 'Sin nombre';
+                const name = u.data?.name || u.name || 'İsimsiz Kullanıcı';
                 const isChecked = assignees.includes(uid);
                 return (
                   <label
@@ -201,7 +201,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
                       onChange={() => toggleAssignee(uid)}
                       className="w-3.5 h-3.5 rounded border-[var(--input)] text-[var(--af-accent)] cursor-pointer accent-[var(--af-accent)]"
                     />
-                    <span className="text-[12px] text-[var(--foreground)] flex-1">{name}{uid === authUser?.uid ? ' (Tu)' : ''}</span>
+                    <span className="text-[12px] text-[var(--foreground)] flex-1">{name}{uid === authUser?.uid ? ' (Sen)' : ''}</span>
                   </label>
                 );
               })}
@@ -210,7 +210,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
         </FormField>
 
         <div className="grid grid-cols-3 gap-3">
-          <FormField label="Prioridad">
+          <FormField label="Öncelik">
             <FormSelect
               value={forms.taskPriority || 'Orta'}
               onChange={(e) => setForms((p: Record<string, any>) => ({ ...p, taskPriority: e.target.value }))}
@@ -221,19 +221,19 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
             </FormSelect>
           </FormField>
 
-          <FormField label="Estado">
+          <FormField label="Durum">
             <FormSelect
               value={forms.taskStatus || 'Yapılacak'}
               onChange={(e) => setForms((p: Record<string, any>) => ({ ...p, taskStatus: e.target.value }))}
             >
               <option value="Yapılacak">Yapılacak</option>
               <option value="Devam Ediyor">Devam Ediyor</option>
-              <option value="Revision">Revision</option>
+              <option value="İncelemede">İncelemede</option>
               <option value="Tamamlandı">Tamamlandı</option>
             </FormSelect>
           </FormField>
 
-          <FormField label="Horas est.">
+          <FormField label="Tahmini Süre (Saat)">
             <FormInput
               type="number"
               min="0"
@@ -245,7 +245,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
           </FormField>
         </div>
 
-        <FormField label="Fecha limite">
+        <FormField label="Bitiş / Teslim Tarihi">
           <FormInput
             type="date"
             value={forms.taskDue || ''}
@@ -254,7 +254,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
         </FormField>
 
         {/* Tags */}
-        <FormField label={`Etiquetas ${tags.length > 0 ? `(${tags.length})` : ''}`}>
+        <FormField label={`Etiketler ${tags.length > 0 ? `(${tags.length})` : ''}`}>
           <div className="space-y-2">
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 p-2 bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg min-h-[36px]">
@@ -267,7 +267,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
                     {tag}
                     <button
                       type="button"
-                      aria-label="Quitar etiqueta"
+                      aria-label="Etiketi kaldır"
                       className="ml-0.5 hover:text-red-400 cursor-pointer bg-transparent border-none p-0"
                       onClick={() => removeTag(tag)}
                     >
@@ -283,7 +283,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
                 value={tagInput}
                 onChange={e => setTagInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
-                placeholder="Agregar etiqueta..."
+                placeholder="Etiket ekle..."
                 className="flex-1 text-[12px] bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]/50"
               />
               <button
@@ -339,7 +339,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
       <ModalFooter
         onCancel={() => closeModal('task')}
         onSubmit={handleSubmit}
-        submitLabel={isSavingTask ? 'Guardando...' : editingId ? 'Güncelle' : 'Görev Oluştur'}
+        submitLabel={isSavingTask ? 'Kaydediliyor...' : editingId ? 'Güncelle' : 'Görev Oluştur'}
         submitDisabled={isSavingTask}
       />
     </CenterModal>

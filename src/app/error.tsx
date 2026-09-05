@@ -19,7 +19,7 @@ export default function Error({
       <div className="flex flex-col items-center text-center max-w-[420px] w-full">
         {/* Logo */}
         <h1 className="font-[family-name:var(--font-dm-serif)] text-[1.75rem] text-[var(--af-accent)] mb-2 tracking-[-0.01em] leading-tight">
-          Archii
+          oxonom iş takip
         </h1>
 
         {/* Divider */}
@@ -32,12 +32,12 @@ export default function Error({
 
         {/* Heading */}
         <h2 className="text-xl font-semibold text-foreground mb-2 leading-tight">
-          Algo salió mal
+          Bir şeyler ters gitti
         </h2>
 
         {/* Description */}
         <p className="text-sm text-muted-foreground mb-2 leading-relaxed max-w-[320px]">
-          Intenta recargar la página
+          Lütfen sayfayı yenilemeyi deneyin
         </p>
 
         {/* Error message */}
@@ -53,7 +53,7 @@ export default function Error({
           className="inline-flex items-center justify-center gap-2 px-7 py-3 text-sm font-medium text-white bg-[var(--af-accent)] rounded-lg cursor-pointer transition-all hover:bg-[var(--af-accent2)] hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] active:scale-[0.97]"
         >
           <RefreshCw size={16} className="stroke-current" aria-hidden="true" />
-          Reintentar
+          Yeniden Dene
         </button>
       </div>
     </div>

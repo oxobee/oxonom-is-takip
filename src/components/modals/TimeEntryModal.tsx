@@ -41,7 +41,7 @@ export default function TimeEntryModal({ open, onClose }: { open: boolean; onClo
             value={forms.tePhase || ''}
             onChange={(e) => setForms(p => ({ ...p, tePhase: e.target.value }))}
           >
-            <option value="">— Sin fase —</option>
+            <option value="">— Aşamasız —</option>
             {DEFAULT_PHASES.map(ph => (
               <option key={ph} value={ph}>{ph}</option>
             ))}

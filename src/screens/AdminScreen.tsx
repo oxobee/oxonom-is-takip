@@ -158,7 +158,7 @@ export default function AdminScreen() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) { showToast(data.error || 'Error al cargar auditoría', 'error'); setAuditLoading(false); return; }
+      if (!res.ok) { showToast(data.error || 'Yükleme hatası auditoría', 'error'); setAuditLoading(false); return; }
       setAuditLogs(append ? prev => [...prev, ...data.logs] : data.logs);
       setAuditHasMore(data.hasMore);
       setAuditTotal(data.totalCount);
@@ -186,7 +186,7 @@ export default function AdminScreen() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) { showToast(data.error || 'Error al cargar errores', 'error'); setErrorsLoading(false); return; }
+      if (!res.ok) { showToast(data.error || 'Yükleme hatası errores', 'error'); setErrorsLoading(false); return; }
       setErrorGroups(data.grouped || []);
       setErrorsHasMore(data.hasMore);
       setErrorsTotal(data.totalCount);
@@ -214,7 +214,7 @@ export default function AdminScreen() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) { showToast(data.error || 'Error al cargar feedback', 'error'); setFeedbackLoading(false); return; }
+      if (!res.ok) { showToast(data.error || 'Yükleme hatası feedback', 'error'); setFeedbackLoading(false); return; }
       setFeedbackEntries(data.entries || []);
       setFeedbackHasMore(data.hasMore);
       setFeedbackTotal(data.totalCount);
@@ -444,7 +444,7 @@ export default function AdminScreen() {
                         <div className="w-[180px] min-w-[180px] flex items-center gap-2 px-3 border-r border-[var(--border)]" style={{ minHeight: rowH }}>
                           <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0 ${avatarColor(member.id)}`}>{getInitials(member.data?.name || '?')}</div>
                           <div className="min-w-0">
-                            <div className="text-[11px] font-semibold truncate">{member.data?.name || 'Sin nombre'}</div>
+                            <div className="text-[11px] font-semibold truncate">{member.data?.name || 'İsimsiz Kullanıcı'}</div>
                             <div className="text-[10px] text-[var(--muted-foreground)]">{member.data?.role || 'Üye'} · {member.tasks.length} tareas</div>
                           </div>
                           {hasOverlap && <span className="ml-auto text-[10px] text-red-400">⚠</span>}
@@ -467,7 +467,7 @@ export default function AdminScreen() {
                               <span className="text-[10px] font-medium truncate flex-1">{task.data.title}</span>
                             </div>);
                           }))}
-                          {member.tasks.length === 0 && <div className="absolute inset-0 flex items-center justify-center text-[11px] text-[var(--muted-foreground)]/50 italic">Sin tareas</div>}
+                          {member.tasks.length === 0 && <div className="absolute inset-0 flex items-center justify-center text-[11px] text-[var(--muted-foreground)]/50 italic">Görev bulunamadı</div>}
                         </div>
                       </div>);
                     })}
@@ -822,7 +822,7 @@ export default function AdminScreen() {
                       </div>);
                     })}
                     {mTasks.length > 4 && <div className="text-[10px] text-[var(--muted-foreground)] text-center pt-1">+{mTasks.length - 4} más</div>}
-                  </div>) : (<div className="text-center py-4 text-[11px] text-[var(--muted-foreground)]">Sin tareas activas</div>)}
+                  </div>) : (<div className="text-center py-4 text-[11px] text-[var(--muted-foreground)]">Görev bulunamadı activas</div>)}
                 </div>);
               })}
             </div>
