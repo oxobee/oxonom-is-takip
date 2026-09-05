@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useApp } from '@/contexts/AppContext';
-import { getAuthHeaders } from '@/lib/firebase-service';
+import { getAuthHeaders, getFirebase } from '@/lib/firebase-service';
 import { Building2, Plus, ArrowRight, Users, Copy, Check, Sparkles, Crown, UserCheck, Shield, Database, AlertTriangle } from 'lucide-react';
 
 interface Tenant {
@@ -36,48 +36,62 @@ export default function TenantSelectionScreen() {
     }
   }, [tenants.length]);
 
+  // Generate unique random tenant code
+  const generateCode = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    return code;
+  };
+
   // Load user's tenants
   const loadTenants = useCallback(async () => {
     try {
-      const headers = await getAuthHeaders();
-      const res = await fetch('/api/tenants', {
-        method: 'POST',
-        headers: { ...headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'list' }),
-      });
-      const data = await res.json();
-      if (data.tenants) {
-        setTenants(data.tenants);
-        // AUTO-FIX: If user appears as Üye in any tenant they should own,
-        // force the role fix from the server side
-        const anyMemberRole = data.tenants.some((t: any) => t.role === 'Üye');
-        if (anyMemberRole) {
-          fetch('/api/tenants', {
-            method: 'POST',
-            headers: { ...headers, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'fix-my-role' }),
-          }).then(fixRes => fixRes.json()).then(fixData => {
-            if (fixData && (fixData.fixed?.length > 0 || fixData.already?.length > 0)) {
-              // Reload tenants to get corrected roles
-              if (fixData.fixed?.length > 0) {
-                fetch('/api/tenants', {
-                  method: 'POST',
-                  headers: { ...headers, 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ action: 'list' }),
-                }).then(r => r.json()).then(d => {
-                  if (d.tenants) setTenants(d.tenants);
-                });
-              }
-            }
-          }).catch(() => {});
+      // 1. Try API first
+      try {
+        const headers = await getAuthHeaders();
+        const res = await fetch('/api/tenants', {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'list' }),
+        });
+        const data = await res.json();
+        if (data.tenants && Array.isArray(data.tenants)) {
+          setTenants(data.tenants);
+          setLoading(false);
+          return;
         }
+      } catch (_apiErr) {
+        // Fallback to client Firestore
+      }
+
+      // 2. Direct client Firestore fallback
+      if (authUser?.uid) {
+        const fb = getFirebase();
+        const db = fb.firestore();
+        const snap = await db.collection('tenants').where('members', 'array-contains', authUser.uid).get();
+        const clientTenants: Tenant[] = snap.docs.map((d: any) => {
+          const data = d.data();
+          const isCreator = data.createdBy === authUser.uid;
+          const isSuperAdmin = isCreator || (data.superAdmins || []).includes(authUser.uid);
+          return {
+            id: d.id,
+            name: data.name || '',
+            code: data.code || '',
+            members: data.members || [],
+            createdBy: data.createdBy || '',
+            createdAt: data.createdAt,
+            role: isSuperAdmin ? 'Süper Yönetici' : 'Üye',
+          };
+        });
+        setTenants(clientTenants);
       }
     } catch (err) {
       console.error('[TenantSelection] Error loading tenants:', err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [authUser]);
 
   useEffect(() => {
     loadTenants();
@@ -94,34 +108,68 @@ export default function TenantSelectionScreen() {
   const handleCreate = async () => {
     const name = newTenantName.trim();
     if (name.length < 2) {
-      showToast('El nombre debe tener al menos 2 caracteres', 'error');
+      showToast('Çalışma alanı adı en az 2 karakter olmalıdır', 'error');
       return;
     }
     setCreating(true);
     setMigratedCounts(null);
     try {
-      const headers = await getAuthHeaders();
-      const res = await fetch('/api/tenants', {
-        method: 'POST',
-        headers: { ...headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'create', name, migrateExisting }),
-      });
-      const data = await res.json();
-      if (data.error) {
-        showToast(data.error, 'error');
-        return;
+      // 1. Try API first
+      let createdData: any = null;
+      try {
+        const headers = await getAuthHeaders();
+        const res = await fetch('/api/tenants', {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'create', name, migrateExisting }),
+        });
+        const data = await res.json();
+        if (data && data.tenantId) {
+          createdData = data;
+        }
+      } catch (_apiErr) {
+        // Fallback
       }
-      if (data.migratedCounts) {
-        setMigratedCounts(data.migratedCounts);
-        const total = Object.values(data.migratedCounts).reduce((sum: number, v: any) => sum + (v > 0 ? v : 0), 0);
-        showToast(`Espacio "${data.name}" creado con ${total} datos migrados`);
+
+      // 2. Client-side Firestore creation if API didn't return tenantId
+      if (!createdData && authUser) {
+        const fb = getFirebase();
+        const db = fb.firestore();
+        const code = generateCode();
+        const FieldValue = fb.FieldValue;
+        const tenantRef = await db.collection('tenants').add({
+          name,
+          code,
+          members: [authUser.uid],
+          createdBy: authUser.uid,
+          superAdmins: [authUser.uid],
+          createdAt: FieldValue.serverTimestamp(),
+        });
+        // Update user default tenant
+        await db.collection('users').doc(authUser.uid).set({
+          defaultTenantId: tenantRef.id,
+          defaultTenantName: name,
+          defaultTenantRole: 'Süper Yönetici',
+          updatedAt: FieldValue.serverTimestamp(),
+        }, { merge: true }).catch(() => {});
+
+        createdData = {
+          tenantId: tenantRef.id,
+          name,
+          code,
+          role: 'Süper Yönetici',
+        };
+      }
+
+      if (createdData) {
+        showToast(`"${createdData.name}" çalışma alanı oluşturuldu — Süper Yöneticisiniz`);
+        switchTenant(createdData.tenantId, createdData.name, createdData.role || 'Süper Yönetici');
       } else {
-        showToast(`Espacio "${data.name}" creado — Eres Süper Yönetici`);
+        showToast('Çalışma alanı oluşturulamadı, lütfen tekrar deneyin', 'error');
       }
-      switchTenant(data.tenantId, data.name, data.role || 'Süper Yönetici');
-    } catch (err) {
+    } catch (err: any) {
       console.error('[TenantSelection] Create error:', err);
-      showToast('Error al crear espacio', 'error');
+      showToast('Çalışma alanı oluşturulurken bir hata oluştu: ' + (err?.message || ''), 'error');
     } finally {
       setCreating(false);
     }
@@ -130,32 +178,60 @@ export default function TenantSelectionScreen() {
   const handleJoin = async () => {
     const code = joinCode.trim().toUpperCase();
     if (code.length < 4) {
-      setJoinError('Ingresa un código válido');
+      setJoinError('Geçerli bir davet kodu giriniz');
       return;
     }
     setJoining(true);
     setJoinError('');
     try {
-      const headers = await getAuthHeaders();
-      const res = await fetch('/api/tenants', {
-        method: 'POST',
-        headers: { ...headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'join', code }),
-      });
-      const data = await res.json();
-      if (data.error) {
-        setJoinError(data.error);
-        return;
+      let joinData: any = null;
+      try {
+        const headers = await getAuthHeaders();
+        const res = await fetch('/api/tenants', {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'join', code }),
+        });
+        const data = await res.json();
+        if (data && data.tenantId) {
+          joinData = data;
+        } else if (data.error && !data.error.includes('servidor') && !data.error.includes('Server')) {
+          setJoinError(data.error);
+          return;
+        }
+      } catch (_apiErr) {}
+
+      // Client-side fallback for join
+      if (!joinData && authUser) {
+        const fb = getFirebase();
+        const db = fb.firestore();
+        const snap = await db.collection('tenants').where('code', '==', code).limit(1).get();
+        if (snap.empty) {
+          setJoinError('Davet kodu bulunamadı. Lütfen kontrol edip tekrar deneyin.');
+          return;
+        }
+        const tDoc = snap.docs[0];
+        const tData = tDoc.data();
+        const members = tData.members || [];
+        if (!members.includes(authUser.uid)) {
+          await db.collection('tenants').doc(tDoc.id).update({
+            members: fb.FieldValue.arrayUnion(authUser.uid),
+          });
+        }
+        joinData = {
+          tenantId: tDoc.id,
+          name: tData.name,
+          role: 'Üye',
+        };
       }
-      if (data.alreadyMember) {
-        showToast(`Ya eres miembro de "${data.name}"`);
-      } else {
-        showToast(`Te uniste a "${data.name}" como ${data.role || 'Üye'}`);
+
+      if (joinData) {
+        showToast(`"${joinData.name}" alanına katıldınız`);
+        switchTenant(joinData.tenantId, joinData.name, joinData.role || 'Üye');
       }
-      switchTenant(data.tenantId, data.name, data.role || 'Üye');
-    } catch (err) {
+    } catch (err: any) {
       console.error('[TenantSelection] Join error:', err);
-      setJoinError('Error al unirse al espacio');
+      setJoinError('Çalışma alanına katılırken bir hata oluştu: ' + (err?.message || ''));
     } finally {
       setJoining(false);
     }
