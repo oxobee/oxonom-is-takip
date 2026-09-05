@@ -404,7 +404,7 @@ export default function CatalogsScreen() {
 
           {/* Description */}
           <div>
-            <label className={labelCls}>Descripción</label>
+            <label className={labelCls}>Açıklama</label>
             <textarea className={`${inputCls} min-h-[70px] resize-y`} placeholder="Descripción del catálogo..." value={formDescription} onChange={e => setFormDescription(e.target.value)} />
           </div>
 

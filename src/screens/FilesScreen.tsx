@@ -68,7 +68,7 @@ function FileBrowser({
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted-foreground)]" aria-hidden="true"/>
           <input
             type="text"
-            placeholder="Buscar archivos..."
+            placeholder="Dosyalarda ara..."
             value={od.searchQuery}
             onChange={e => od.setSearchQuery(e.target.value)}
             className="w-full pl-8 pr-3 py-2 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] text-[13px] text-[var(--foreground)] placeholder:text-[var(--af-text3)] focus:outline-none focus:border-[var(--af-accent)] transition-colors"
@@ -152,7 +152,7 @@ function FileBrowser({
           <span className="text-lg">📁</span>
           <input
             type="text"
-            placeholder="Nombre de la carpeta..."
+            placeholder="Klasör adı..."
             value={od.newFolderName}
             onChange={e => od.setNewFolderName(e.target.value)}
             onKeyDown={e => {
@@ -215,7 +215,7 @@ function FileBrowser({
         <div className="absolute inset-0 z-10 bg-[var(--af-accent)]/5 border-2 border-dashed border-[var(--af-accent)] rounded-xl flex items-center justify-center pointer-events-none">
           <div className="text-center">
             <div className="text-3xl mb-2">📂</div>
-            <div className="text-sm text-[var(--af-accent)] font-medium">Soltar archivos aquí</div>
+            <div className="text-sm text-[var(--af-accent)] font-medium">Dosyaları buraya bırakın</div>
           </div>
         </div>
       )}
@@ -240,10 +240,10 @@ function FileBrowser({
         <div className="text-center py-12 text-[var(--af-text3)]">
           <div className="text-4xl mb-2">{od.searchQuery ? '🔍' : '📂'}</div>
           <div className="text-sm">
-            {od.searchQuery ? 'No se encontraron resultados' : 'Carpeta vacía'}
+            {od.searchQuery ? 'Sonuç bulunamadı' : 'Klasör boş'}
           </div>
           {!od.searchQuery && (
-            <div className="text-xs mt-1">Arrastra archivos aquí o usa el botón Subir</div>
+            <div className="text-xs mt-1">Dosyaları buraya sürükleyin veya Yükle butonunu kullanın</div>
           )}
         </div>
       )}
@@ -299,7 +299,7 @@ function FileBrowser({
                     <button
                       onClick={e => { e.stopPropagation(); onDeleteFile ? onDeleteFile(item.id, item.name) : od.deleteFile(item.id, item.name); }}
                       className="p-1 rounded bg-[var(--af-bg4)] hover:bg-red-500/20 text-[var(--muted-foreground)] hover:text-red-400 transition-colors"
-                      title="Eliminar"
+                      title="Sil"
                     >
                       <Trash2 className="w-3 h-3" aria-hidden="true"/>
                     </button>
@@ -410,7 +410,7 @@ function FileBrowser({
                       <button
                         onClick={e => { e.stopPropagation(); onDeleteFile ? onDeleteFile(item.id, item.name) : od.deleteFile(item.id, item.name); }}
                         className="p-1.5 rounded-lg hover:bg-red-500/10 text-[var(--muted-foreground)] hover:text-red-400 transition-colors"
-                        title="Eliminar"
+                        title="Sil"
                       >
                         <Trash2 className="w-4 h-4" aria-hidden="true"/>
                       </button>
@@ -518,7 +518,7 @@ export default function FilesScreen() {
 
   // Disconnect tenant MS account
   const handleTenantDisconnect = async () => {
-    if (!await confirmDialog.confirm({ title: 'Desconectar Microsoft', description: '¿Desconectar la cuenta de Microsoft del equipo? Los archivos permanecerán en OneDrive.' })) return;
+    if (!await confirmDialog.confirm({ title: 'Microsoft Bağlantısını Kes', description: 'Ekip Microsoft hesabının bağlantısı kesilsin mi? Dosyalarınız OneDrive üzerinde kalmaya devam edecektir.' })) return;
     if (!activeTenantId) return;
     try {
       const token = await getFirebaseIdToken();
@@ -554,7 +554,7 @@ export default function FilesScreen() {
               <FolderOpen size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
               Dosyalar
             </h2>
-            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Gestiona archivos del equipo y personales</p>
+            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Ekip ve kişisel dosyalarınızı yönetin</p>
           </div>
         </div>
 
@@ -568,7 +568,7 @@ export default function FilesScreen() {
                 : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
             }`}
           >
-            🏢 Dosyalar del Equipo
+            🏢 Ekip Dosyaları
           </button>
           <button
             onClick={() => setActiveTab('personal')}
@@ -578,7 +578,7 @@ export default function FilesScreen() {
                 : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
             }`}
           >
-            👤 Mi OneDrive
+            👤 Kişisel OneDrive
           </button>
         </div>
       </div>

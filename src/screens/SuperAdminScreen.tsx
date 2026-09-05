@@ -527,7 +527,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
                 <button onClick={() => regenerateCode(t.id)} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-purple-500/10 text-purple-400 transition-colors" title="Regenerar código">
                   <Key size={14} aria-hidden="true"/>
                 </button>
-                <button onClick={() => deleteTenant(t.id, t.name)} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-red-500/10 text-red-400 transition-colors" title="Eliminar">
+                <button onClick={() => deleteTenant(t.id, t.name)} className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-red-500/10 text-red-400 transition-colors" title="Sil">
                   <Trash2 size={14} aria-hidden="true"/>
                 </button>
               </div>

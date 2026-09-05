@@ -263,7 +263,7 @@ export default function CompaniesScreen() {
                     <button
                       className="w-7 h-7 rounded-lg flex items-center justify-center cursor-pointer border-none bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
                       onClick={() => deleteCompany(c.id)}
-                      title="Eliminar"
+                      title="Sil"
                     >
                       <Trash2 size={12} aria-hidden="true"/>
                     </button>

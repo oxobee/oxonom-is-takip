@@ -66,12 +66,12 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
   useEffect(() => { loadMembers(); }, [loadMembers]);
 
   const handleAddAllUsers = async () => {
-    if (!(await confirmDialog.confirm({ title: 'Agregar todos los usuarios', description: 'Se agregarán TODOS los usuarios registrados al tenant. ¿Continuar?' }))) return;
+    if (!(await confirmDialog.confirm({ title: 'Tüm Kullanıcıları Ekle', description: 'Kayıtlı TÜM kullanıcılar bu çalışma alanına eklenecektir. Devam edilsin mi?' }))) return;
     setActionLoading(true);
     try {
       const data = await apiCall({ action: 'add-all-users', tenantId });
       if (data.error) { showToast(data.error, 'error'); return; }
-      showToast(`${data.added} usuarios agregados. Total: ${data.newTotalMembers}`);
+      showToast(`${data.added} kullanıcı eklendi. Toplam: ${data.newTotalMembers}`);
       await loadMembers();
     } catch (err: any) {
       showToast('Error: ' + err.message, 'error');
@@ -81,7 +81,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
   };
 
   const handleAddSelected = async () => {
-    if (selectedUsers.size === 0) { showToast('Selecciona al menos un usuario', 'warning'); return; }
+    if (selectedUsers.size === 0) { showToast('Lütfen en az bir kullanıcı seçin', 'warning'); return; }
     setActionLoading(true);
     try {
       const emails = availableUsers
@@ -89,7 +89,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
         .map(u => u.email);
       const data = await apiCall({ action: 'add-members', tenantId, emails });
       if (data.error) { showToast(data.error, 'error'); return; }
-      showToast(`${data.added} miembros agregados`);
+      showToast(`${data.added} üye eklendi`);
       setSelectedUsers(new Set());
       await loadMembers();
     } catch (err: any) {
@@ -101,7 +101,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
 
   const handleAddByEmail = async () => {
     const emails = emailInput.split(',').map(e => e.trim()).filter(e => e.length > 0);
-    if (emails.length === 0) { showToast('Ingresa al menos un email', 'warning'); return; }
+    if (emails.length === 0) { showToast('Lütfen en az bir e-posta girin', 'warning'); return; }
     setActionLoading(true);
     try {
       const data = await apiCall({ action: 'add-members', tenantId, emails });
@@ -120,12 +120,12 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
   };
 
   const handleRemoveMember = async (uid: string, name: string) => {
-    if (!(await confirmDialog.confirm({ title: 'Üyeyi Sil', description: `¿Eliminar a ${name} del tenant?` }))) return;
+    if (!(await confirmDialog.confirm({ title: 'Üyeyi Çıkar', description: `${name} adlı kullanıcı bu çalışma alanından çıkarılsın mı?` }))) return;
     setActionLoading(true);
     try {
       const data = await apiCall({ action: 'remove-member', tenantId, memberUid: uid });
       if (data.error) { showToast(data.error, 'error'); return; }
-      showToast(`${name} eliminado del tenant`);
+      showToast(`${name} çalışma alanından çıkarıldı`);
       await loadMembers();
     } catch (err: any) {
       console.error('[ManageMembers] remove-member error:', err);
@@ -154,7 +154,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
   };
 
   const copyCode = () => {
-    navigator.clipboard.writeText(tenantCode).then(() => showToast('Codigo copiado al portapapeles'));
+    navigator.clipboard.writeText(tenantCode).then(() => showToast('Kod panoya kopyalandı'));
   };
 
   const filteredAvailable = availableUsers.filter(u =>
@@ -201,7 +201,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
           <div>
-            <h2 id="manage-members-title" className="text-lg font-bold text-[var(--foreground)]">Gestionar Üyes</h2>
+            <h2 id="manage-members-title" className="text-lg font-bold text-[var(--foreground)]">Üyeleri Yönet</h2>
             <p className="text-sm text-[var(--muted-foreground)]">{tenantName}</p>
           </div>
           <button onClick={onClose} aria-label="Kapat modal" className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-xl p-1 cursor-pointer">✕</button>
@@ -210,9 +210,9 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
         {/* Tabs */}
         <div className="flex border-b border-[var(--border)]">
           {[
-            { key: 'members' as const, label: `Üyes (${members.length})` },
-            { key: 'add' as const, label: `Agregar (${availableUsers.length})` },
-            { key: 'code' as const, label: 'Codigo' },
+            { key: 'members' as const, label: `Üyeler (${members.length})` },
+            { key: 'add' as const, label: `Ekle (${availableUsers.length})` },
+            { key: 'code' as const, label: 'Katılım Kodu' },
           ].map(t => (
             <button
               key={t.key}
@@ -235,7 +235,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
           ) : tab === 'members' ? (
             <div className="space-y-2">
               {members.length === 0 ? (
-                <p className="text-[var(--muted-foreground)] text-center py-8">Üye bulunamadı en este tenant</p>
+                <p className="text-[var(--muted-foreground)] text-center py-8">Bu çalışma alanında üye bulunamadı</p>
               ) : (
                 members.map((m: any) => (
                   <div key={m.uid} className="flex items-center gap-3 p-3 rounded-xl bg-[var(--af-bg3)] border border-[var(--border)]">
@@ -260,7 +260,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
                         onClick={() => handleRemoveMember(m.uid, m.name)}
                         disabled={actionLoading}
                         className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-red-400 hover:bg-red-500/15 border border-red-500/20 transition-colors cursor-pointer flex-shrink-0"
-                        title="Eliminar del tenant"
+                        title="Çalışma alanından çıkar"
                       >
                         <Trash2 size={12} aria-hidden="true"/>
                         Quitar
@@ -275,7 +275,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
                   disabled={actionLoading}
                   className="w-full mt-3 py-3 rounded-xl bg-[var(--af-accent)] hover:opacity-90 text-[var(--primary-foreground)] text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer border-none"
                 >
-                  {actionLoading ? 'Agregando...' : `Agregar todos los usuarios (${availableUsers.length})`}
+                  {actionLoading ? 'Ekleniyor...' : `Tüm Kullanıcıları Ekle (${availableUsers.length})`}
                 </button>
               )}
             </div>
@@ -284,21 +284,21 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
               {/* Add by selecting from available users */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-[var(--foreground)]">Usuarios disponibles</label>
+                  <label className="text-sm font-medium text-[var(--foreground)]">Mevcut Kullanıcılar</label>
                   <button onClick={selectAllVisible} className="text-xs text-[var(--af-accent)] hover:opacity-80 cursor-pointer">
                     Seleccionar todos los visibles
                   </button>
                 </div>
                 <input
                   type="text"
-                  placeholder="Buscar por nombre o email..."
+                  placeholder="İsim veya e-posta ile ara..."
                   value={searchAvailable}
                   onChange={e => setSearchAvailable(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg bg-[var(--af-bg3)] border border-[var(--input)] text-[var(--foreground)] text-sm placeholder-[var(--af-text3)] focus:outline-none focus:border-[var(--af-accent)] mb-2"
                 />
                 <div className="max-h-40 overflow-y-auto space-y-1">
                   {filteredAvailable.length === 0 ? (
-                    <p className="text-[var(--af-text3)] text-sm text-center py-4">No hay usuarios disponibles</p>
+                    <p className="text-[var(--af-text3)] text-sm text-center py-4">Mevcut kullanıcı yok</p>
                   ) : (
                     filteredAvailable.map(u => (
                       <label
@@ -327,7 +327,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
                     disabled={actionLoading}
                     className="w-full mt-2 py-2.5 rounded-lg bg-[var(--af-accent)] hover:opacity-90 text-[var(--primary-foreground)] text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer border-none"
                   >
-                    {actionLoading ? 'Agregando...' : `Agregar ${selectedUsers.size} seleccionado(s)`}
+                    {actionLoading ? 'Ekleniyor...' : `${selectedUsers.size} Seçileni Ekle`}
                   </button>
                 )}
               </div>
@@ -335,13 +335,13 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
               {/* Divider */}
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-px bg-[var(--border)]" />
-                <span className="text-xs text-[var(--af-text3)]">o agregar por email</span>
+                <span className="text-xs text-[var(--af-text3)]">veya e-posta ile ekle</span>
                 <div className="flex-1 h-px bg-[var(--border)]" />
               </div>
 
               {/* Add by email */}
               <div>
-                <label className="text-sm font-medium text-[var(--foreground)] block mb-1">Emails (separados por coma)</label>
+                <label className="text-sm font-medium text-[var(--foreground)] block mb-1">E-postalar (virgülle ayırarak)</label>
                 <input
                   type="text"
                   placeholder="correo@ejemplo.com, otro@ejemplo.com"
@@ -354,14 +354,14 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
                   disabled={actionLoading || !emailInput.trim()}
                   className="w-full mt-2 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer border-none"
                 >
-                  {actionLoading ? 'Agregando...' : 'Agregar por email'}
+                  {actionLoading ? 'Ekleniyor...' : 'E-posta ile Ekle'}
                 </button>
               </div>
             </div>
           ) : (
             /* Code tab */
             <div className="text-center py-6">
-              <p className="text-[var(--muted-foreground)] text-sm mb-4">Comparte este codigo para que otros se unan al tenant:</p>
+              <p className="text-[var(--muted-foreground)] text-sm mb-4">Başkalarının bu alana katılabilmesi için bu kodu paylaşın:</p>
               <div className="flex items-center justify-center gap-3">
                 <div className="px-6 py-4 rounded-xl bg-[var(--af-bg3)] border border-[var(--border)]">
                   <span className="text-3xl font-bold text-[var(--foreground)] tracking-[0.3em]">{tenantCode}</span>
@@ -369,12 +369,12 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
                 <button
                   onClick={copyCode}
                   className="p-3 rounded-xl bg-[var(--af-accent)] hover:opacity-90 text-[var(--primary-foreground)] transition-colors cursor-pointer border-none"
-                  title="Copiar codigo"
+                  title="Kodu Kopyala"
                 >
                   <Copy size={20} aria-hidden="true"/>
                 </button>
               </div>
-              <p className="text-[var(--af-text3)] text-xs mt-4">Los nuevos miembros entraran como Üye</p>
+              <p className="text-[var(--af-text3)] text-xs mt-4">Yeni katılan üyeler Üye rolünde olacaktır</p>
             </div>
           )}
         </div>

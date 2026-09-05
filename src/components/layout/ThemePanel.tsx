@@ -23,8 +23,8 @@ export default function ThemePanel({ onClose }: ThemePanelProps) {
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
           <div>
-            <h2 className="text-lg font-bold text-[var(--foreground)]">Temas</h2>
-            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Personaliza la apariencia de oxonom iş takip</p>
+            <h2 className="text-lg font-bold text-[var(--foreground)]">Temalar</h2>
+            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">oxonom iş takip görünümünü özelleştirin</p>
           </div>
           <button
             onClick={onClose}
@@ -39,7 +39,7 @@ export default function ThemePanel({ onClose }: ThemePanelProps) {
 
           {/* Light Themes */}
           <div>
-            <h3 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Modo Claro</h3>
+            <h3 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Açık Mod</h3>
             <div className="grid grid-cols-1 gap-2">
               {groups.light.map(t => (
                 <ThemeCard
@@ -54,7 +54,7 @@ export default function ThemePanel({ onClose }: ThemePanelProps) {
 
           {/* Dark Themes */}
           <div>
-            <h3 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Modo Oscuro</h3>
+            <h3 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Karanlık Mod</h3>
             <div className="grid grid-cols-1 gap-2">
               {groups.dark.map(t => (
                 <ThemeCard
@@ -70,7 +70,7 @@ export default function ThemePanel({ onClose }: ThemePanelProps) {
           {/* Info */}
           <div className="text-center pt-2">
             <p className="text-[10px] text-[var(--af-text3)]">
-              Selecciona un tema para cambiar la apariencia inmediatamente. La preferencia se guarda automaticamente.
+              Görünümü anında değiştirmek için bir tema seçin. Tercihiniz otomatik olarak kaydedilir.
             </p>
           </div>
         </div>

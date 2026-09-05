@@ -311,7 +311,7 @@ export default function BudgetScreen() {
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
           <div className="text-[15px] font-semibold mb-3">Distribución por Categoría</div>
           {byCategory.length === 0 ? (
-            <div className="text-center py-10 text-[var(--af-text3)] text-sm">Sin datos</div>
+            <div className="text-center py-10 text-[var(--af-text3)] text-sm">Veri yok</div>
           ) : (
             <>
               <ResponsiveContainer width="100%" height={160}>
@@ -345,7 +345,7 @@ export default function BudgetScreen() {
             <span className="text-[10px] text-[var(--muted-foreground)] px-2 py-0.5 rounded-full bg-[var(--af-bg4)]">6 meses</span>
           </div>
           {monthlyTrend.every(d => d.total === 0) ? (
-            <div className="text-center py-10 text-[var(--af-text3)] text-sm">Sin datos en los últimos 6 meses</div>
+            <div className="text-center py-10 text-[var(--af-text3)] text-sm">Veri yok en los últimos 6 meses</div>
           ) : (
             <ResponsiveContainer width="100%" height={170}>
               <BarChart data={monthlyTrend} margin={{ top: 5, right: 10, left: -15, bottom: 5 }}>

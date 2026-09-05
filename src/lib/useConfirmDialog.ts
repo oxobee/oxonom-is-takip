@@ -15,8 +15,8 @@ const initialState: ConfirmState = {
   open: false,
   title: '',
   description: '',
-  confirmLabel: 'Confirmar',
-  cancelLabel: 'Cancelar',
+  confirmLabel: 'Onayla',
+  cancelLabel: 'İptal',
   destructive: true,
 };
 
@@ -39,8 +39,8 @@ export function useConfirmDialog() {
         open: true,
         title: options.title,
         description: options.description || '',
-        confirmLabel: options.confirmLabel || 'Confirmar',
-        cancelLabel: options.cancelLabel || 'Cancelar',
+        confirmLabel: options.confirmLabel || 'Onayla',
+        cancelLabel: options.cancelLabel || 'İptal',
         destructive: options.destructive !== false,
       });
     });

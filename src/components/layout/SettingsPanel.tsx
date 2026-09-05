@@ -38,9 +38,9 @@ export default function SettingsPanel() {
   if (!open) return null;
 
   const tabs = [
-    { id: 'appearance' as const, label: 'Apariencia', Icon: Palette },
-    { id: 'notifications' as const, label: 'Notificaciones', Icon: Bell },
-    { id: 'account' as const, label: 'Cuenta', Icon: User },
+    { id: 'appearance' as const, label: 'Görünüm', Icon: Palette },
+    { id: 'notifications' as const, label: 'Bildirimler', Icon: Bell },
+    { id: 'account' as const, label: 'Hesap', Icon: User },
   ];
 
   return (
@@ -115,7 +115,7 @@ export default function SettingsPanel() {
               </div>
               <div>
                 <h2 className="text-lg font-bold">Ayarlar</h2>
-                <p className="text-[11px] text-[var(--muted-foreground)]">Personaliza tu experiencia en oxonom iş takip</p>
+                <p className="text-[11px] text-[var(--muted-foreground)]">oxonom iş takip deneyiminizi özelleştirin</p>
               </div>
             </div>
             <button
@@ -169,7 +169,7 @@ function AppearanceTab({ onThemeChange }: { onThemeChange?: () => void }) {
     <div className="space-y-6 p-4 md:p-0">
       {/* Quick toggle */}
       <div>
-        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Modo rapido</div>
+        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Hızlı Mod</div>
         <button
           onClick={toggleTheme}
           className="w-full flex items-center justify-between p-4 rounded-xl border border-[var(--border)] bg-[var(--af-bg3)] cursor-pointer hover:bg-[var(--af-bg4)] transition-all active:scale-[0.98]"
@@ -177,8 +177,8 @@ function AppearanceTab({ onThemeChange }: { onThemeChange?: () => void }) {
           <div className="flex items-center gap-3">
             {isDark ? <Sun size={20} className="text-amber-400" aria-hidden="true"/> : <Moon size={20} className="text-blue-400" aria-hidden="true"/>}
             <div>
-              <div className="text-sm font-medium">{isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}</div>
-              <div className="text-[11px] text-[var(--muted-foreground)]">Tema actual: {THEME_REGISTRY.find(t => t.id === theme)?.label || theme}</div>
+              <div className="text-sm font-medium">{isDark ? 'Açık moda geç' : 'Karanlık moda geç'}</div>
+              <div className="text-[11px] text-[var(--muted-foreground)]">Mevcut Tema: {THEME_REGISTRY.find(t => t.id === theme)?.label || theme}</div>
             </div>
           </div>
           <div className={`w-12 h-7 rounded-full p-0.5 transition-colors ${isDark ? 'bg-blue-500' : 'bg-amber-400'}`}>
@@ -189,7 +189,7 @@ function AppearanceTab({ onThemeChange }: { onThemeChange?: () => void }) {
 
       {/* Light Themes */}
       <div>
-        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Temas claros</div>
+        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Açık Temalar</div>
         <div className="space-y-2">
           {groups.light.map(t => (
             <ThemeCard
@@ -204,7 +204,7 @@ function AppearanceTab({ onThemeChange }: { onThemeChange?: () => void }) {
 
       {/* Dark Themes */}
       <div>
-        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Temas oscuros</div>
+        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Karanlık Temalar</div>
         <div className="space-y-2">
           {groups.dark.map(t => (
             <ThemeCard
@@ -219,7 +219,7 @@ function AppearanceTab({ onThemeChange }: { onThemeChange?: () => void }) {
 
       <div className="text-center pt-2 pb-4">
         <p className="text-[11px] text-[var(--af-text3)]">
-          La preferencia se guarda automaticamente
+          Tercihleriniz otomatik olarak kaydedilir
         </p>
       </div>
     </div>
@@ -259,7 +259,7 @@ function ThemeCard({ themeDef, isActive, onSelect }: {
           <span className="text-[13px] font-semibold text-[var(--foreground)]">{themeDef.label}</span>
           {isActive && (
             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--af-accent)]/15 text-[var(--af-accent)] border border-[var(--af-accent)]/30">
-              ACTIVO
+              AKTİF
             </span>
           )}
         </div>
@@ -309,11 +309,11 @@ function NotificationsTab() {
 
   const categories = [
     { key: 'chat', label: 'Chat', Icon: MessageCircle, color: 'blue' },
-    { key: 'tasks', label: 'Tareas', Icon: ClipboardList, color: 'purple' },
-    { key: 'meetings', label: 'Reuniones', Icon: Calendar, color: 'amber' },
+    { key: 'tasks', label: 'Görevler', Icon: ClipboardList, color: 'purple' },
+    { key: 'meetings', label: 'Toplantılar', Icon: Calendar, color: 'amber' },
     { key: 'approvals', label: 'Onaylar', Icon: CheckCircle, color: 'pink' },
     { key: 'inventory', label: 'Envanter', Icon: Package, color: 'emerald' },
-    { key: 'projects', label: 'Proyectos', Icon: Folder, color: 'cyan' },
+    { key: 'projects', label: 'Projeler', Icon: Folder, color: 'cyan' },
     { key: 'rfis', label: 'RFIs', Icon: CircleHelp, color: 'orange' },
     { key: 'submittals', label: 'Submittals', Icon: FileCheck, color: 'teal' },
     { key: 'punchList', label: 'Punch List', Icon: ListChecks, color: 'rose' },
@@ -329,8 +329,8 @@ function NotificationsTab() {
               <Bell size={18} className="text-amber-400" aria-hidden="true"/>
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-medium">Notificaciones del sistema</div>
-              <div className="text-[11px] text-[var(--muted-foreground)]">Activa las notificaciones del navegador para recibir alertas incluso con la app cerrada</div>
+              <div className="text-[13px] font-medium">Sistem Bildirimleri</div>
+              <div className="text-[11px] text-[var(--muted-foreground)]">Uygulama kapalıyken bile bildirim almak için tarayıcı izinlerini açın</div>
             </div>
             <button
               className="px-4 py-2 bg-amber-500 text-white rounded-lg text-[12px] font-semibold cursor-pointer hover:bg-amber-600 transition-colors border-none flex-shrink-0 min-h-[40px]"
@@ -344,7 +344,7 @@ function NotificationsTab() {
 
       {/* Sound toggle */}
       <div>
-        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Sonido</div>
+        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Ses</div>
         <button
           onClick={() => setNotifSound(!notifSound)}
           className={`w-full flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all active:scale-[0.98] ${
@@ -355,7 +355,7 @@ function NotificationsTab() {
         >
           <div className="flex items-center gap-3">
             {notifSound ? <Volume2 size={18} className="text-[var(--af-accent)]" aria-hidden="true"/> : <VolumeX size={18} className="text-[var(--muted-foreground)]" aria-hidden="true"/>}
-            <div className="text-sm font-medium">Sonido de notificaciones</div>
+            <div className="text-sm font-medium">Bildirim Sesi</div>
           </div>
           <div className={`w-12 h-7 rounded-full p-0.5 transition-colors ${notifSound ? 'bg-[var(--af-accent)]' : 'bg-[var(--af-bg4)]'}`}>
             <div className={`w-6 h-6 rounded-full bg-white shadow-sm transition-transform ${notifSound ? 'translate-x-5' : 'translate-x-0'}`} />
@@ -365,7 +365,7 @@ function NotificationsTab() {
 
       {/* Category toggles */}
       <div>
-        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Categorias de alertas</div>
+        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Bildirim Kategorileri</div>
         <div className="grid grid-cols-1 gap-1.5">
           {categories.map(cat => (
             <button
@@ -391,8 +391,8 @@ function NotificationsTab() {
 
       {/* External channels */}
       <div>
-        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Kanallar externos</div>
-        <div className="text-[11px] text-[var(--muted-foreground)] mb-3">Recibir alertas fuera de la app:</div>
+        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Harici Kanallar</div>
+        <div className="text-[11px] text-[var(--muted-foreground)] mb-3">Uygulama dışından bildirim al:</div>
         <div className="grid grid-cols-1 gap-2">
           <button
             onClick={() => toggleChannel('whatsapp')}
@@ -424,7 +424,7 @@ function NotificationsTab() {
             }`}>
               <Mail size={14} className={channelPrefs.email ? 'stroke-blue-400' : 'stroke-[var(--muted-foreground)]'} aria-hidden="true"/>
             </div>
-            <span className="flex-1 text-left text-[13px] font-medium">Correo electronico</span>
+            <span className="flex-1 text-left text-[13px] font-medium">E-posta</span>
             {channelPrefs.email && <Check size={16} className="stroke-blue-400" strokeWidth={3} aria-hidden="true"/>}
           </button>
 
@@ -446,7 +446,7 @@ function NotificationsTab() {
               {pushRegistering ? <Loader size={14} className="animate-spin stroke-[var(--muted-foreground)]" aria-hidden="true"/> : <Smartphone size={14} className={channelPrefs.push ? 'stroke-purple-400' : 'stroke-[var(--muted-foreground)]'} aria-hidden="true"/>}
             </div>
             <span className="flex-1 text-left text-[13px] font-medium">
-              {pushRegistering ? 'Activando...' : 'Push notifications'}
+              {pushRegistering ? 'Etkinleştiriliyor...' : 'Anlık Bildirimler (Push)'}
             </span>
             {channelPrefs.push && !pushRegistering && <Check size={16} className="stroke-purple-400" strokeWidth={3} aria-hidden="true"/>}
           </button>
@@ -454,7 +454,7 @@ function NotificationsTab() {
           {!pushSupported && (
             <div className="text-[11px] text-[var(--af-text3)] flex items-center gap-1.5 px-1">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-              Push requiere configuracion del servidor (VAPID keys)
+              Push için sunucu yapılandırması gerekir (VAPID keys)
             </div>
           )}
         </div>
@@ -465,17 +465,17 @@ function NotificationsTab() {
         {notifPermission === 'granted' ? (
           <>
             <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0" aria-hidden="true"/>
-            <span className="text-[12px] text-[var(--muted-foreground)]">Notificaciones del sistema activas</span>
+            <span className="text-[12px] text-[var(--muted-foreground)]">Sistem Bildirimleri activas</span>
           </>
         ) : notifPermission === 'denied' ? (
           <>
             <XCircle size={16} className="text-red-400 flex-shrink-0" aria-hidden="true"/>
-            <span className="text-[12px] text-[var(--muted-foreground)]">Notificaciones del sistema bloqueadas por el navegador</span>
+            <span className="text-[12px] text-[var(--muted-foreground)]">Sistem Bildirimleri bloqueadas por el navegador</span>
           </>
         ) : (
           <>
             <Bell size={16} className="text-amber-400 flex-shrink-0" aria-hidden="true"/>
-            <span className="text-[12px] text-[var(--muted-foreground)]">Notificaciones del sistema sin activar</span>
+            <span className="text-[12px] text-[var(--muted-foreground)]">Sistem Bildirimleri sin activar</span>
           </>
         )}
       </div>
@@ -519,13 +519,13 @@ function AccountTab({ onClose }: { onClose: () => void }) {
         </div>
         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--border)]">
           <Building2 size={12} className="text-[var(--muted-foreground)]" aria-hidden="true"/>
-          <span className="text-[11px] text-[var(--muted-foreground)] truncate">{activeTenantName || 'Sin espacio'}</span>
+          <span className="text-[11px] text-[var(--muted-foreground)] truncate">{activeTenantName || 'Seçili alan yok'}</span>
         </div>
       </div>
 
       {/* Menu items */}
       <div>
-        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Acciones rapidas</div>
+        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Hızlı İşlemler</div>
         <div className="space-y-1.5">
           <button
             onClick={() => { navigateTo('profile'); onClose(); }}
@@ -536,7 +536,7 @@ function AccountTab({ onClose }: { onClose: () => void }) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-[13px] font-medium">Profilim</div>
-              <div className="text-[11px] text-[var(--muted-foreground)]">Nombre, foto, informacion personal</div>
+              <div className="text-[11px] text-[var(--muted-foreground)]">İsim, profil resmi ve kişisel bilgiler</div>
             </div>
             <ChevronRight size={16} className="text-[var(--muted-foreground)] flex-shrink-0" aria-hidden="true"/>
           </button>
@@ -549,8 +549,8 @@ function AccountTab({ onClose }: { onClose: () => void }) {
               <Shield size={14} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-medium">Permisos y Roles</div>
-              <div className="text-[11px] text-[var(--muted-foreground)]">Gestionar permisos del equipo</div>
+              <div className="text-[13px] font-medium">Yetkiler ve Roller</div>
+              <div className="text-[11px] text-[var(--muted-foreground)]">Ekip izinlerini ve rollerini yönetin</div>
             </div>
             <ChevronRight size={16} className="text-[var(--muted-foreground)] flex-shrink-0" aria-hidden="true"/>
           </button>
@@ -563,8 +563,8 @@ function AccountTab({ onClose }: { onClose: () => void }) {
               <Building2 size={14} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-medium">Cambiar espacio</div>
-              <div className="text-[11px] text-[var(--muted-foreground)]">Seleccionar otro workspace</div>
+              <div className="text-[13px] font-medium">Çalışma Alanını Değiştir</div>
+              <div className="text-[11px] text-[var(--muted-foreground)]">Farklı bir çalışma alanı seçin</div>
             </div>
             <ChevronRight size={16} className="text-[var(--muted-foreground)] flex-shrink-0" aria-hidden="true"/>
           </button>
@@ -578,7 +578,7 @@ function AccountTab({ onClose }: { onClose: () => void }) {
           className="w-full flex items-center justify-center gap-2 p-3.5 rounded-xl bg-red-500/5 border border-red-500/20 hover:bg-red-500/10 cursor-pointer transition-all active:scale-[0.98] min-h-[48px]"
         >
           <LogOut size={16} className="text-red-400" aria-hidden="true"/>
-          <span className="text-[13px] font-medium text-red-400">Kapat sesion</span>
+          <span className="text-[13px] font-medium text-red-400">Çıkış Yap</span>
         </button>
       </div>
     </div>

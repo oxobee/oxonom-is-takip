@@ -342,8 +342,8 @@ function AppContent() {
         onOpenChange={(open) => { if (!open) setPendingDeleteAction(null); }}
         title={pendingDeleteAction?.title || ''}
         description={pendingDeleteAction?.description}
-        confirmLabel={(pendingDeleteAction as any)?.confirmLabel || 'Eliminar'}
-        cancelLabel="Cancelar"
+        confirmLabel={(pendingDeleteAction as any)?.confirmLabel || 'Onayla'}
+        cancelLabel={(pendingDeleteAction as any)?.cancelLabel || 'İptal'}
         destructive
         onConfirm={() => { pendingDeleteAction?.onConfirm(); }}
       />

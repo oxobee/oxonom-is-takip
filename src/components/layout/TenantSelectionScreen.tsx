@@ -228,7 +228,7 @@ export default function TenantSelectionScreen() {
     e.stopPropagation();
     navigator.clipboard.writeText(code).then(() => {
       setCopiedCode(code);
-      showToast('Código copiado al portapapeles');
+      showToast('Davet kodu panoya kopyalandı');
       setTimeout(() => setCopiedCode(null), 2000);
     });
   };

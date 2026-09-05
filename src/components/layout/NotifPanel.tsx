@@ -15,7 +15,7 @@ export default function NotifPanel() {
     clearNotifHistory, unreadCount,
   } = useNotificationsContext();
 
-  // Kanallar externos
+  // Harici Kanallar
   const [channelPrefs, setChannelPrefs] = useState({ whatsapp: true, email: true, push: true });
   const [pushSupported, setPushSupported] = useState(false);
   const [pushRegistering, setPushRegistering] = useState(false);
@@ -75,14 +75,14 @@ export default function NotifPanel() {
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Notificaciones"
+        aria-label="Bildirimler"
         className="absolute right-2 sm:right-4 z-[60] w-[calc(100vw-16px)] sm:w-[400px] max-h-[85dvh] bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-2xl overflow-hidden animate-fadeIn flex flex-col" style={{ top: 'calc(60px + env(safe-area-inset-top, 0px))', animation: 'fadeIn 0.2s ease' }}
       >
         {/* Header */}
         <div className="p-4 border-b border-[var(--border)] flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <div className="text-[15px] font-semibold">Notificaciones</div>
+              <div className="text-[15px] font-semibold">Bildirimler</div>
               {unreadCount > 0 && <span className="min-w-[20px] h-[20px] flex items-center justify-center text-[10px] font-bold bg-red-500 text-white rounded-full px-1">{unreadCount}</span>}
             </div>
             <div className="flex items-center gap-2">
@@ -99,15 +99,15 @@ export default function NotifPanel() {
           {/* Category filter tabs */}
           <div className="flex gap-1.5 overflow-x-auto pb-0.5 -mx-1 px-1">
             {[
-              { key: 'all', label: 'Todo', Icon: Bell },
+              { key: 'all', label: 'Tümü', Icon: Bell },
               { key: 'chat', label: 'Chat', Icon: MessageCircle },
-              { key: 'task', label: 'Tareas', Icon: ClipboardList },
-              { key: 'meeting', label: 'Reuniones', Icon: Calendar },
+              { key: 'task', label: 'Görevler', Icon: ClipboardList },
+              { key: 'meeting', label: 'Toplantılar', Icon: Calendar },
               { key: 'agenda', label: 'Agenda', Icon: CalendarClock },
               { key: 'inventory', label: 'Envanter', Icon: Package },
-              { key: 'project', label: 'Proyectos', Icon: Folder },
-              { key: 'approval', label: 'Aprob.', Icon: CheckCircle },
-              { key: 'reminder', label: 'Record.', Icon: Clock },
+              { key: 'project', label: 'Projeler', Icon: Folder },
+              { key: 'approval', label: 'Onaylar', Icon: CheckCircle },
+              { key: 'reminder', label: 'Hatırlatıcı', Icon: Clock },
             ].map(f => (
               <button
                 key={f.key}
@@ -124,8 +124,8 @@ export default function NotifPanel() {
             <div className="flex items-center gap-3">
               <Bell size={20} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
               <div className="flex-1">
-                <div className="text-[13px] font-medium">Activar notificaciones del sistema</div>
-                <div className="text-[11px] text-[var(--muted-foreground)]">Para recibir alertas incluso con la app cerrada</div>
+                <div className="text-[13px] font-medium">Sistem Bildirimlerini Aç</div>
+                <div className="text-[11px] text-[var(--muted-foreground)]">Uygulama kapalıyken bile bildirim almak için</div>
               </div>
               <button className="px-3 py-1.5 bg-[var(--af-accent)] text-background rounded-lg text-[11px] font-semibold cursor-pointer hover:bg-[var(--af-accent2)] transition-colors border-none flex-shrink-0" onClick={requestNotifPermission}>
                 Activar
@@ -141,8 +141,8 @@ export default function NotifPanel() {
             if (filtered.length === 0) return (
               <div className="p-8 text-center">
                 <Bell size={28} className="stroke-[var(--muted-foreground)] mb-2" aria-hidden="true"/>
-                <div className="text-sm text-[var(--muted-foreground)]">{notifFilterCat === 'all' ? 'Sin notificaciones' : 'Sin notificaciones de esta categoría'}</div>
-                <div className="text-[11px] text-[var(--af-text3)] mt-1">Las alertas aparecerán aquí</div>
+                <div className="text-sm text-[var(--muted-foreground)]">{notifFilterCat === 'all' ? 'Henüz bildirim bulunmuyor' : 'Bu kategoride bildirim bulunmuyor'}</div>
+                <div className="text-[11px] text-[var(--af-text3)] mt-1">Bildirimleriniz burada listelenecektir</div>
               </div>
             );
             return filtered.slice(0, 50).map((n: any) => (
@@ -169,10 +169,10 @@ export default function NotifPanel() {
                       const d = new Date(n.timestamp);
                       const now = new Date();
                       const diff = now.getTime() - d.getTime();
-                      if (diff < 60000) return 'Ahora mismo';
-                      if (diff < 3600000) return `Hace ${Math.floor(diff / 60000)} min`;
-                      if (diff < 86400000) return `Hace ${Math.floor(diff / 3600000)} h`;
-                      return d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
+                      if (diff < 60000) return 'Az önce';
+                      if (diff < 3600000) return `${Math.floor(diff / 60000)} dk önce`;
+                      if (diff < 86400000) return `${Math.floor(diff / 3600000)} sa önce`;
+                      return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
                     })()}
                   </div>
                 </div>
@@ -186,19 +186,19 @@ export default function NotifPanel() {
         <div className="p-3 border-t border-[var(--border)] bg-[var(--af-bg3)] flex-shrink-0">
           {/* Toggle external channels */}
           <div className="flex items-center justify-between mb-2">
-            <div className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Configurar alertas</div>
+            <div className="text-[10px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Bildirim Ayarları</div>
             <button
               className="flex items-center gap-1 px-2 py-1 rounded-md text-[10px] text-[var(--muted-foreground)] cursor-pointer hover:text-[var(--foreground)] hover:bg-[var(--af-bg4)] transition-all"
               onClick={() => setShowChannels(!showChannels)}
             >
-              <Settings size={10} aria-hidden="true"/> Kanallar externos
+              <Settings size={10} aria-hidden="true"/> Harici Kanallar
             </button>
           </div>
 
           {/* External channels panel (collapsible) */}
           {showChannels && (
             <div className="mb-2 p-2.5 bg-[var(--card)] rounded-lg border border-[var(--border)]">
-              <div className="text-[10px] text-[var(--muted-foreground)] mb-2">Recibir notificaciones fuera de la app:</div>
+              <div className="text-[10px] text-[var(--muted-foreground)] mb-2">Uygulama dışından bildirim al:</div>
               <div className="grid grid-cols-3 gap-1.5">
                 <button
                   className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] cursor-pointer transition-all ${channelPrefs.whatsapp ? 'bg-green-500/10 text-green-400 border border-green-500/30' : 'bg-[var(--af-bg3)] text-[var(--muted-foreground)] border border-[var(--border)]'}`}
@@ -233,7 +233,7 @@ export default function NotifPanel() {
               </div>
               {!pushSupported && (
                 <div className="text-[10px] text-[var(--af-text3)] mt-1.5 flex items-center gap-1">
-                  <Radio size={9} aria-hidden="true"/> Push requiere configuración del servidor (VAPID keys)
+                  <Radio size={9} aria-hidden="true"/> Push için sunucu yapılandırması gerekir (VAPID keys)
                 </div>
               )}
             </div>
@@ -243,12 +243,12 @@ export default function NotifPanel() {
           <div className="grid grid-cols-3 gap-1.5">
             {[
               { key: 'chat', label: 'Chat', Icon: MessageCircle },
-              { key: 'tasks', label: 'Tareas', Icon: ClipboardList },
-              { key: 'meetings', label: 'Reuniones', Icon: Calendar },
+              { key: 'tasks', label: 'Görevler', Icon: ClipboardList },
+              { key: 'meetings', label: 'Toplantılar', Icon: Calendar },
               { key: 'agenda', label: 'Agenda', Icon: CalendarClock },
               { key: 'approvals', label: 'Onaylar', Icon: CheckCircle },
               { key: 'inventory', label: 'Envanter', Icon: Package },
-              { key: 'projects', label: 'Proyectos', Icon: Folder },
+              { key: 'projects', label: 'Projeler', Icon: Folder },
               { key: 'rfis', label: 'RFIs', Icon: CircleHelp },
               { key: 'submittals', label: 'Submittals', Icon: FileCheck },
               { key: 'punchList', label: 'Punch List', Icon: ListChecks },
@@ -268,9 +268,9 @@ export default function NotifPanel() {
               <button
                 className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-[11px] cursor-pointer transition-all ${notifSound ? 'bg-[var(--af-accent)]/10 text-[var(--af-accent)] border border-[var(--af-accent)]/30' : 'bg-[var(--card)] text-[var(--muted-foreground)] border border-[var(--border)]'}`}
                 onClick={() => setNotifSound(!notifSound)}
-              ><Volume2 size={12} className="inline mr-0.5" aria-hidden="true"/> Sonido</button>
+              ><Volume2 size={12} className="inline mr-0.5" aria-hidden="true"/> Ses</button>
               <span className="text-[10px] text-[var(--af-text3)]">
-                {notifPermission === 'granted' ? <><CheckCircle size={10} className="inline mr-0.5 text-emerald-400" aria-hidden="true"/> OS activas</> : notifPermission === 'denied' ? <><XCircle size={10} className="inline mr-0.5 text-red-400" aria-hidden="true"/> OS bloqueadas</> : <><Loader size={10} className="inline mr-0.5 animate-spin" aria-hidden="true"/> Sin activar OS</>}
+                {notifPermission === 'granted' ? <><CheckCircle size={10} className="inline mr-0.5 text-emerald-400" aria-hidden="true"/> Sistemde aktif</> : notifPermission === 'denied' ? <><XCircle size={10} className="inline mr-0.5 text-red-400" aria-hidden="true"/> Tarayıcı engelledi</> : <><Loader size={10} className="inline mr-0.5 animate-spin" aria-hidden="true"/> Etkinleştirilmedi</>}
               </span>
             </div>
             <span className="text-[10px] text-[var(--af-text3)]">

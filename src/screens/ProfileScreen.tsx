@@ -352,7 +352,6 @@ export default function ProfileScreen() {
   // ─── Render ─────────────────────────────────────────
   return (
     <div className="animate-fadeIn space-y-4">
-      <ConfirmDialog open={logoutOpen} title="Kapat Sesión" message="¿Estás seguro de que deseas cerrar sesión? Se perderá el progreso no guardado." onConfirm={() => { setLogoutOpen(false); doLogout(); }} onCancel={() => setLogoutOpen(false)} />
 
       {/* ═══ HEADER CARD ═══ */}
       <div className="bg-gradient-to-br from-[var(--card)] to-[var(--af-bg3)] border border-[var(--border)] rounded-xl sm:rounded-2xl p-3.5 sm:p-5 relative overflow-hidden">
@@ -820,12 +819,12 @@ export default function ProfileScreen() {
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-base">🚪</div>
                 <div>
-                  <div className="text-[13px] font-medium">Kapat Sesión</div>
-                  <div className="text-[10px] text-[var(--muted-foreground)]">Salir de tu cuenta en oxonom iş takip</div>
+                  <div className="text-[13px] font-medium">Çıkış Yap</div>
+                  <div className="text-[10px] text-[var(--muted-foreground)]">oxonom iş takip hesabınızdan güvenle çıkış yapın</div>
                 </div>
               </div>
-              <button className="px-5 py-2.5 rounded-lg border border-red-500/30 text-red-400 text-[13px] font-medium cursor-pointer hover:bg-red-500/10 transition-colors flex items-center gap-2" onClick={() => setLogoutOpen(true)}>
-                Kapat Sesión
+              <button className="px-5 py-2.5 rounded-lg border border-red-500/30 text-red-400 text-[13px] font-medium cursor-pointer hover:bg-red-500/10 transition-colors flex items-center gap-2" onClick={() => doLogout()}>
+                Çıkış Yap
               </button>
             </div>
           </div>

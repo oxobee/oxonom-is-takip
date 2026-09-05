@@ -301,7 +301,7 @@ export default function TimeTrackingScreen() {
               </div>
               <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
                 <h3 className="text-[15px] font-semibold mb-4">Horas por Proyecto</h3>
-                {Object.keys(byProject).length === 0 ? <div className="text-sm text-[var(--muted-foreground)]">Sin datos</div> : (
+                {Object.keys(byProject).length === 0 ? <div className="text-sm text-[var(--muted-foreground)]">Veri yok</div> : (
                   <div className="space-y-2">
                     {Object.entries(byProject).sort((a, b) => b[1] - a[1]).map(([pid, mins]) => {
                       const proj = projects.find(p => p.id === pid);
@@ -315,7 +315,7 @@ export default function TimeTrackingScreen() {
               </div>
               <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
                 <h3 className="text-[15px] font-semibold mb-4">Horas por Fase</h3>
-                {Object.keys(byPhase).length === 0 ? <div className="text-sm text-[var(--muted-foreground)]">Sin datos</div> : (
+                {Object.keys(byPhase).length === 0 ? <div className="text-sm text-[var(--muted-foreground)]">Veri yok</div> : (
                   <div className="space-y-2">
                     {Object.entries(byPhase).sort((a, b) => b[1] - a[1]).map(([phase, mins]) => (
                       <div key={phase} className="flex items-center gap-2">

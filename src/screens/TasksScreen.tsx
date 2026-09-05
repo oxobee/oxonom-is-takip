@@ -593,7 +593,7 @@ export default function TasksScreen() {
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
           <div className="text-[15px] font-semibold mb-3">Distribucion por Estado</div>
           {kpis.total === 0 ? (
-            <div className="text-center py-10 text-[var(--af-text3)] text-sm">Sin datos</div>
+            <div className="text-center py-10 text-[var(--af-text3)] text-sm">Veri yok</div>
           ) : (
             <>
               <ResponsiveContainer width="100%" height={160}>
@@ -627,7 +627,7 @@ export default function TasksScreen() {
             <span className="text-[10px] text-[var(--muted-foreground)] px-2 py-0.5 rounded-full bg-[var(--af-bg4)]">6 meses</span>
           </div>
           {monthlyTrend.every(d => d.creadas === 0 && d.completadas === 0) ? (
-            <div className="text-center py-10 text-[var(--af-text3)] text-sm">Sin datos en los ultimos 6 meses</div>
+            <div className="text-center py-10 text-[var(--af-text3)] text-sm">Veri yok en los ultimos 6 meses</div>
           ) : (
             <ResponsiveContainer width="100%" height={170}>
               <BarChart data={monthlyTrend} margin={{ top: 5, right: 10, left: -15, bottom: 5 }}>
@@ -1064,7 +1064,7 @@ export default function TasksScreen() {
                               <button
                                 className="w-6 h-6 rounded flex items-center justify-center bg-[var(--card)]/90 backdrop-blur-sm text-[var(--af-text3)] hover:text-red-400 hover:bg-red-500/10 cursor-pointer transition-colors border border-[var(--border)]"
                                 onClick={async e => { e.stopPropagation(); if (await confirmDialog.confirm({ title: 'Görevi Sil', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}
-                                title="Eliminar"
+                                title="Sil"
                               >
                                 <Trash2 size={11} aria-hidden="true"/>
                               </button>

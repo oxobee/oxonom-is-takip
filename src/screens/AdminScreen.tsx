@@ -339,8 +339,8 @@ export default function AdminScreen() {
       {!isAdmin && (
         <div className="animate-fadeIn p-6 text-center">
           <div className="text-4xl mb-3">🔒</div>
-          <div className="text-lg font-semibold">Acceso restringido</div>
-          <div className="text-sm text-[var(--muted-foreground)] mt-1">Solo administradores y directores pueden acceder a este panel</div>
+          <div className="text-lg font-semibold">Yetkisiz Erişim</div>
+          <div className="text-sm text-[var(--muted-foreground)] mt-1">Bu panele yalnızca yöneticiler ve direktörler erişebilir</div>
         </div>
       )}
 
@@ -353,20 +353,20 @@ export default function AdminScreen() {
                 <ShieldCheck size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
                 Yönetim Paneli
               </h2>
-              <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Gestión administrativa del equipo</p>
+              <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Ekip ve sistem yönetim araçları</p>
             </div>
           </div>
 
           {/* Sub-tabs */}
           <div className="flex gap-1 bg-[var(--af-bg3)] rounded-lg p-1 overflow-x-auto scrollbar-none">
             {[
-              { id: 'timeline' as const, label: '📊 Timeline' },
-              { id: 'dashboard' as const, label: '📈 Dashboard' },
-              { id: 'permissions' as const, label: '🔐 Permisos' },
-              { id: 'team' as const, label: '👥 Equipo' },
-              { id: 'audit' as const, label: '🔍 Auditoría' },
-              { id: 'errors' as const, label: `🐛 Errores${unresolvedCount > 0 ? ` (${unresolvedCount})` : ''}` },
-              { id: 'feedback' as const, label: '💬 Feedback Beta' },
+              { id: 'timeline' as const, label: '📊 Zaman Çizelgesi' },
+              { id: 'dashboard' as const, label: '📈 Kontrol Paneli' },
+              { id: 'permissions' as const, label: '🔐 Yetkiler ve İzinler' },
+              { id: 'team' as const, label: '👥 Ekip' },
+              { id: 'audit' as const, label: '🔍 Denetim Günlüğü' },
+              { id: 'errors' as const, label: `🐛 Hata Kayıtları${unresolvedCount > 0 ? ` (${unresolvedCount})` : ''}` },
+              { id: 'feedback' as const, label: '💬 Geri Bildirimler' },
             ].map(tab => (
               <button key={tab.id} className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap cursor-pointer transition-all ${adminTab === tab.id ? 'bg-[var(--af-accent)] text-background' : 'bg-[var(--af-bg3)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]'}`} onClick={() => setAdminTab(tab.id)}>{tab.label}</button>
             ))}
@@ -873,7 +873,7 @@ export default function AdminScreen() {
                   <option value="">Todas las acciones</option>
                   <option value="create">Crear</option>
                   <option value="update">Güncelle</option>
-                  <option value="delete">Eliminar</option>
+                  <option value="delete">Sil</option>
                   <option value="archive">Archivar</option>
                   <option value="restore">Restaurar</option>
                   <option value="import">İçe Aktar</option>
@@ -885,7 +885,7 @@ export default function AdminScreen() {
               {auditLoading && auditLogs.length === 0 ? (
                 <div className="flex items-center justify-center py-16">
                   <Loader2 size={24} className="animate-spin text-[var(--af-accent)]" />
-                  <span className="ml-2 text-sm text-[var(--muted-foreground)]">Cargando auditoría...</span>
+                  <span className="ml-2 text-sm text-[var(--muted-foreground)]">Denetim günlüğü yükleniyor...</span>
                 </div>
               ) : auditLogs.length === 0 ? (
                 <div className="text-center py-16">
@@ -1013,7 +1013,7 @@ export default function AdminScreen() {
                         onClick={() => fetchAuditLogs(auditPage + 1, true)}
                         disabled={auditLoading}
                       >
-                        {auditLoading ? 'Cargando...' : 'Cargar más'}
+                        {auditLoading ? 'Yükleniyor...' : 'Cargar más'}
                       </button>
                     </div>
                   )}
@@ -1072,7 +1072,7 @@ export default function AdminScreen() {
               {errorsLoading && errorGroups.length === 0 ? (
                 <div className="flex items-center justify-center py-16">
                   <Loader2 size={24} className="animate-spin text-[var(--af-accent)]" />
-                  <span className="ml-2 text-sm text-[var(--muted-foreground)]">Cargando errores...</span>
+                  <span className="ml-2 text-sm text-[var(--muted-foreground)]">Hatalar yükleniyor...</span>
                 </div>
               ) : errorGroups.length === 0 ? (
                 <div className="text-center py-16">
@@ -1195,7 +1195,7 @@ export default function AdminScreen() {
                     onClick={() => fetchErrors(errorsPage + 1)}
                     disabled={errorsLoading}
                   >
-                    {errorsLoading ? 'Cargando...' : 'Cargar más'}
+                    {errorsLoading ? 'Yükleniyor...' : 'Cargar más'}
                   </button>
                 </div>
               )}
@@ -1252,7 +1252,7 @@ export default function AdminScreen() {
               {feedbackLoading && feedbackEntries.length === 0 ? (
                 <div className="flex items-center justify-center py-16">
                   <Loader2 size={24} className="animate-spin text-[var(--af-accent)]" />
-                  <span className="ml-2 text-sm text-[var(--muted-foreground)]">Cargando feedback...</span>
+                  <span className="ml-2 text-sm text-[var(--muted-foreground)]">Geri bildirimler yükleniyor...</span>
                 </div>
               ) : feedbackEntries.length === 0 ? (
                 <div className="text-center py-16">
@@ -1352,7 +1352,7 @@ export default function AdminScreen() {
                     onClick={() => fetchFeedback(feedbackPage + 1)}
                     disabled={feedbackLoading}
                   >
-                    {feedbackLoading ? 'Cargando...' : 'Cargar más'}
+                    {feedbackLoading ? 'Yükleniyor...' : 'Cargar más'}
                   </button>
                 </div>
               )}

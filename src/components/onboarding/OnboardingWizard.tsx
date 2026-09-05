@@ -13,67 +13,67 @@ import { useMotionPreference } from '@/hooks/useMotionPreference';
 const STEPS: { id: OnboardingStep; title: string; subtitle: string; Icon: any; features: string[] }[] = [
   {
     id: 'welcome',
-    title: 'Hoş Geldiniz a oxonom iş takip',
-    subtitle: 'Tu plataforma de gestion de proyectos de construccion',
+    title: "oxonom iş takip'e Hoş Geldiniz",
+    subtitle: 'Proje, şantiye ve iş takip yönetim platformunuz',
     Icon: Crown,
     features: [
-      'Gestion integral de proyectos y obras',
-      'Asistente IA para automatizar tareas',
-      'Colaboracion en tiempo real con tu equipo',
-      'Control de presupuestos e inventarios',
-      'Seguimiento de RFIs, Submittals y Punch Lists',
+      'Kapsamlı proje ve şantiye yönetimi',
+      'Görevleri otomatikleştiren yapay zeka asistanı',
+      'Ekibinizle gerçek zamanlı iş birliği',
+      'Bütçe, harcama ve envanter kontrolü',
+      'RFI, onay belgeleri ve kusur listesi takibi',
     ],
   },
   {
     id: 'create-project',
-    title: 'Crea tu primer proyecto',
-    subtitle: 'Organiza tu obra con estructura y claridad',
+    title: 'İlk Projenizi Oluşturun',
+    subtitle: 'Şantiye ve işlerinizi net bir yapıyla organize edin',
     Icon: FolderPlus,
     features: [
-      'Define nombre, cliente y ubicacion del proyecto',
-      'Establece fases y cronogramas de trabajo',
-      'Asigna presupuestos por categoria',
-      'Sube planos y documentos de referencia',
-      'Configura notificaciones para tu equipo',
+      'Proje adı, müşteri ve konumu tanımlayın',
+      'Çalışma aşamalarını ve zaman çizelgelerini belirleyin',
+      'Kategori bazında bütçeler atayın',
+      'Planları ve referans belgelerini yükleyin',
+      'Ekibiniz için bildirimleri yapılandırın',
     ],
   },
   {
     id: 'explore-dashboard',
-    title: 'Explora el Dashboard',
-    subtitle: 'Ten visibilidad completa de todas tus obras',
+    title: 'Yönetim Panelini Keşfedin',
+    subtitle: 'Tüm projeleriniz ve işleriniz üzerinde tam görünürlük sağlayın',
     Icon: LayoutDashboard,
     features: [
-      'KPIs en tiempo real de tus proyectos activos',
-      'Vista de tareas pendientes y progreso general',
-      'Control de presupuesto ejecutado vs. planificado',
-      'Galeria fotografica del avance de obra',
-      'Acceso rapido a todas las secciones clave',
+      'Aktif projelerinizin anlık KPI göstergeleri',
+      'Bekleyen görevler ve genel ilerleme görünümü',
+      'Gerçekleşen bütçe ve planlanan maliyet kontrolü',
+      'İş ilerlemesine ait fotoğraf galerisi',
+      'Tüm kilit bölümlere hızlı erişim',
     ],
   },
   {
     id: 'invite-team',
-    title: 'Invita a tu equipo',
-    subtitle: 'Colabora con todos los actores del proyecto',
+    title: 'Ekibinizi Davet Edin',
+    subtitle: 'Projedeki tüm paydaşlarla birlikte çalışın',
     Icon: Users,
     features: [
-      'Comparte el codigo de tu espacio de trabajo',
-      'Roles: Süper Yönetici y Üye',
-      'Chat integrado por proyecto',
-      'Asignacion de tareas con seguimiento',
-      'Notificaciones en tiempo real',
+      'Çalışma alanı davet kodunuzu paylaşın',
+      'Roller: Süper Yönetici ve Ekip Üyeleri',
+      'Proje bazlı entegre mesajlaşma',
+      'Takip edilebilir görev atamaları',
+      'Gerçek zamanlı anlık bildirimler',
     ],
   },
   {
     id: 'try-ai',
-    title: 'Descubre tu Asistente IA',
-    subtitle: 'Potencia tu productividad con inteligencia artificial',
+    title: 'Oxonom Asistanı Keşfedin',
+    subtitle: 'Yapay zeka gücüyle üretkenliğinizi artırın',
     Icon: Bot,
     features: [
-      'Crea tareas y proyectos con lenguaje natural',
-      'Analiza presupuestos y detecta anomalias',
-      'Responde preguntas sobre tu proyecto',
-      'Genera reportes automaticamente',
-      'Sugerencias inteligentes basadas en tus datos',
+      'Doğal dil ile görev ve projeler oluşturun',
+      'Bütçeleri analiz edin ve tutarsızlıkları tespit edin',
+      'Projelerinizle ilgili soruları anında yanıtlar',
+      'Otomatik raporlar oluşturun',
+      'Verilerinize dayalı akıllı öneriler alın',
     ],
   },
 ];
@@ -174,7 +174,7 @@ export default function OnboardingWizard() {
                   onClick={handleSkip}
                   className="text-[12px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors cursor-pointer bg-transparent border-none px-2 py-1 rounded-lg hover:bg-[var(--af-bg3)]"
                 >
-                  Saltar tour
+                  Turu Atla
                 </button>
               </div>
 
@@ -253,7 +253,7 @@ export default function OnboardingWizard() {
                 <div className="flex items-center gap-3">
                   {!isFirst && (
                     <button
-                      aria-label="Paso anterior"
+                      aria-label="Önceki adım"
                       onClick={() => {
                         setDirection(-1);
                         const prev = STEP_ORDER[currentIdx - 1];
@@ -271,11 +271,11 @@ export default function OnboardingWizard() {
                     {isLast ? (
                       <>
                         <Rocket size={16} aria-hidden="true"/>
-                        Comenzar
+                        Başla
                       </>
                     ) : (
                       <>
-                        Siguiente
+                        İleri
                         <ArrowRight size={16} aria-hidden="true"/>
                       </>
                     )}

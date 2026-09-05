@@ -511,6 +511,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     title: string;
     description: string;
     confirmLabel?: string;
+    cancelLabel?: string;
     onConfirm: () => void;
   } | null>(null);
   const openModal = useCallback((n: string) => setModals(p => ({ ...p, [n]: true })), []);
@@ -1997,9 +1998,24 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   const doLogout = () => {
     setPendingDeleteAction({
       open: true,
-      title: 'Cerrar sesión',
-      description: '¿Estás seguro de que deseas cerrar sesión?',
-      onConfirm: () => { setPendingDeleteAction(null); getFirebase().auth().signOut(); },
+      title: 'Çıkış Yap',
+      description: 'Oturumunuzu kapatmak istediğinizden emin misiniz? Kaydedilmemiş değişiklikler kaybolabilir.',
+      confirmLabel: 'Çıkış Yap',
+      cancelLabel: 'İptal',
+      onConfirm: async () => {
+        setPendingDeleteAction(null);
+        try {
+          localStorage.removeItem('archii-active-tenant');
+          localStorage.removeItem('archii-active-tenant-name');
+          localStorage.removeItem('archii-active-tenant-role');
+          localStorage.removeItem('archii-last-tenant');
+          await getFirebase().auth().signOut();
+          window.location.reload();
+        } catch (e) {
+          console.error('Logout error:', e);
+          window.location.reload();
+        }
+      },
     });
   };
 

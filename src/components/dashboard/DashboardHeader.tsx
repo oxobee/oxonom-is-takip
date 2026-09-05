@@ -53,10 +53,10 @@ export default function DashboardHeader({
                 <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">{unreadCount > 9 ? '9+' : unreadCount}</span>
               </div>
             )}
-            <button className="flex items-center gap-1 text-[10px] text-[var(--muted-foreground)] cursor-pointer hover:text-[var(--af-accent)] transition-colors px-2 py-1.5 rounded-lg bg-[var(--af-bg4)] border border-[var(--border)]" onClick={() => { try { exportGeneralReportPDF({ projects, tasks, expenses, invoices, teamUsers, timeEntries }); showToast('Reporte PDF descargado'); } catch { showToast('Error', 'error'); } }}>
+            <button className="flex items-center gap-1 text-[10px] text-[var(--muted-foreground)] cursor-pointer hover:text-[var(--af-accent)] transition-colors px-2 py-1.5 rounded-lg bg-[var(--af-bg4)] border border-[var(--border)]" onClick={() => { try { exportGeneralReportPDF({ projects, tasks, expenses, invoices, teamUsers, timeEntries }); showToast('PDF raporu indirildi'); } catch { showToast('Error', 'error'); } }}>
               <FileText size={11} aria-hidden="true"/> PDF
             </button>
-            <button className="flex items-center gap-1 text-[10px] text-[var(--muted-foreground)] cursor-pointer hover:text-[var(--af-accent)] transition-colors px-2 py-1.5 rounded-lg bg-[var(--af-bg4)] border border-[var(--border)]" onClick={() => { try { exportProjectsExcel(projects, tasks, expenses); showToast('Excel descargado'); } catch { showToast('Error', 'error'); } }}>
+            <button className="flex items-center gap-1 text-[10px] text-[var(--muted-foreground)] cursor-pointer hover:text-[var(--af-accent)] transition-colors px-2 py-1.5 rounded-lg bg-[var(--af-bg4)] border border-[var(--border)]" onClick={() => { try { exportProjectsExcel(projects, tasks, expenses); showToast('Excel dosyası indirildi'); } catch { showToast('Error', 'error'); } }}>
               <Download size={11} aria-hidden="true"/> Excel
             </button>
           </div>
@@ -67,37 +67,37 @@ export default function DashboardHeader({
           {overdueCount > 0 && (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 border border-red-500/20 cursor-pointer hover:bg-red-500/15 transition-colors" onClick={() => navigateTo('tasks')}>
               <AlertTriangle size={12} className="text-red-400" aria-hidden="true"/>
-              <span className="text-[11px] text-red-400 font-medium">{overdueCount} tarea{overdueCount !== 1 ? 's' : ''} vencida{overdueCount !== 1 ? 's' : ''}</span>
+              <span className="text-[11px] text-red-400 font-medium">{overdueCount} gecikmiş görev</span>
             </div>
           )}
           {todayMeetings.length > 0 && (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 cursor-pointer hover:bg-purple-500/15 transition-colors" onClick={() => navigateTo('calendar')}>
               <CalendarDays size={12} className="text-purple-400" aria-hidden="true"/>
-              <span className="text-[11px] text-purple-400 font-medium">{todayMeetings.length} reunión{todayMeetings.length !== 1 ? 'es' : ''} hoy</span>
+              <span className="text-[11px] text-purple-400 font-medium">Bugün {todayMeetings.length} toplantı</span>
             </div>
           )}
           {todayDueTasks.length > 0 && (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 cursor-pointer hover:bg-amber-500/15 transition-colors" onClick={() => navigateTo('tasks')}>
               <Clock size={12} className="text-amber-400" aria-hidden="true"/>
-              <span className="text-[11px] text-amber-400 font-medium">{todayDueTasks.length} vence{todayDueTasks.length !== 1 ? 'n' : ''} hoy</span>
+              <span className="text-[11px] text-amber-400 font-medium">Bugün biten {todayDueTasks.length} görev</span>
             </div>
           )}
           {overdueRFIs > 0 && (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 cursor-pointer hover:bg-blue-500/15 transition-colors" onClick={() => navigateTo('rfis')}>
               <CircleHelp size={12} className="text-blue-400" aria-hidden="true"/>
-              <span className="text-[11px] text-blue-400 font-medium">{overdueRFIs} RFI{overdueRFIs !== 1 ? 's' : ''} vencida{overdueRFIs !== 1 ? 's' : ''}</span>
+              <span className="text-[11px] text-blue-400 font-medium">{overdueRFIs} gecikmiş RFI talebi</span>
             </div>
           )}
           {overdueInvoices > 0 && (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 cursor-pointer hover:bg-amber-500/15 transition-colors" onClick={() => navigateTo('invoices')}>
               <DollarSign size={12} className="text-amber-400" aria-hidden="true"/>
-              <span className="text-[11px] text-amber-400 font-medium">{overdueInvoices} factura{overdueInvoices !== 1 ? 's' : ''} vencida{overdueInvoices !== 1 ? 's' : ''}</span>
+              <span className="text-[11px] text-amber-400 font-medium">{overdueInvoices} vadesi geçmiş fatura</span>
             </div>
           )}
           {overdueCount === 0 && todayMeetings.length === 0 && todayDueTasks.length === 0 && overdueRFIs === 0 && overdueInvoices === 0 && (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
               <CheckCircle2 size={12} className="text-emerald-400" aria-hidden="true"/>
-              <span className="text-[11px] text-emerald-400 font-medium">Todo al día</span>
+              <span className="text-[11px] text-emerald-400 font-medium">Her şey güncel ve yolunda</span>
             </div>
           )}
         </div>

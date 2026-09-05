@@ -207,7 +207,7 @@ export function useDashboardData() {
   }, []);
 
   // Date formatted in Spanish
-  const dateFormatted = today.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const dateFormatted = today.toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
   // ─── Weekly Agenda Data ───
   const agendaTasks = useMemo(() =>
@@ -219,7 +219,7 @@ export function useDashboardData() {
     const start = agendaWeekDates[0];
     const end = agendaWeekDates[6];
     const opts: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' };
-    return `${start.toLocaleDateString('es-CO', opts)} — ${end.toLocaleDateString('es-CO', opts)}`;
+    return `${start.toLocaleDateString('tr-TR', opts)} — ${end.toLocaleDateString('tr-TR', opts)}`;
   }, [agendaWeekDates]);
   const agendaTodayKey = agendaDateKey(new Date());
   const agendaProjectMap = useMemo(() => {

@@ -211,26 +211,26 @@ export default function ProjectDetailScreen() {
 
             {/* 2. KPI CARDS */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {/* Card 1: Tareas pendientes */}
+              {/* Card 1: Bekleyen Görevler */}
               <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3">
                 <div className="text-lg font-bold">{pendingCount}</div>
-                <div className="text-[11px] text-[var(--muted-foreground)]">Tareas pendientes</div>
+                <div className="text-[11px] text-[var(--muted-foreground)]">Bekleyen Görevler</div>
               </div>
-              {/* Card 2: Tareas vencidas */}
+              {/* Card 2: Geciken Görevler */}
               <div className={`border rounded-xl p-3 ${overdueCount > 0 ? 'bg-red-500/5 border-red-500/20' : 'bg-[var(--card)] border-[var(--border)]'}`}>
                 <div className={`text-lg font-bold ${overdueCount > 0 ? 'text-red-400' : ''}`}>{overdueCount}</div>
-                <div className="text-[11px] text-[var(--muted-foreground)]">Tareas vencidas</div>
+                <div className="text-[11px] text-[var(--muted-foreground)]">Geciken Görevler</div>
               </div>
-              {/* Card 3: RFIs abiertos */}
+              {/* Card 3: Açık RFI'lar */}
               <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3">
                 <div className="text-lg font-bold text-blue-400">{openRFIs}</div>
-                <div className="text-[11px] text-[var(--muted-foreground)]">RFIs abiertos</div>
+                <div className="text-[11px] text-[var(--muted-foreground)]">Açık RFI'lar</div>
               </div>
               {/* Card 4: Bütçe */}
               <div className={`border rounded-xl p-3 ${budgetExceeded ? 'bg-red-500/5 border-red-500/20' : 'bg-[var(--card)] border-[var(--border)]'}`}>
                 <div className={`text-lg font-bold ${budgetExceeded ? 'text-red-400' : 'text-[var(--af-accent)]'}`}>{budgetPct}%</div>
                 <div className="text-[11px] text-[var(--muted-foreground)]">
-                  {budgetExceeded ? `Excedido` : `Bütçe`}
+                  {budgetExceeded ? `Aşıldı` : `Bütçe`}
                   <span className="block text-[10px]">{fmtCOP(projectSpent)} / {fmtCOP(projectBudget)}</span>
                 </div>
               </div>
@@ -239,13 +239,13 @@ export default function ProjectDetailScreen() {
             {/* 3. TAB BAR (9 tabs) */}
             <div className="flex gap-1 bg-[var(--af-bg3)] rounded-lg p-1 w-fit overflow-x-auto -mx-1 px-1 scrollbar-none">
               {[
-                { id: 'Resumen', icon: '' },
-                { id: 'Tareas', icon: '' },
-                { id: 'Cronograma', icon: '📊' },
-                { id: 'Calidad', icon: '' },
-                { id: 'Comentarios', icon: '' },
+                { id: 'Özet', icon: '' },
+                { id: 'Görevler', icon: '' },
+                { id: 'Zaman Çizelgesi', icon: '📊' },
+                { id: 'Kalite', icon: '' },
+                { id: 'Yorumlar', icon: '' },
                 { id: 'Dosyalar', icon: '' },
-                { id: 'Obra', icon: '' },
+                { id: 'Şantiye', icon: '' },
                 { id: 'Raporlar', icon: '' },
                 { id: 'Portal', icon: '🌐' },
               ].map(tab => (
@@ -256,7 +256,7 @@ export default function ProjectDetailScreen() {
             </div>
 
             {/* 4. TAB: Resumen (enriched) */}
-            {forms.detailTab === 'Resumen' && (
+            {(forms.detailTab === 'Özet' || forms.detailTab === 'Resumen') && (
             <div className="space-y-4">
               {/* Quick info grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -269,11 +269,11 @@ export default function ProjectDetailScreen() {
                   <div className="text-sm font-medium truncate">{currentProject.data.location || '—'}</div>
                 </div>
                 <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3">
-                  <div className="text-[10px] text-[var(--muted-foreground)] mb-1">Inicio</div>
+                  <div className="text-[10px] text-[var(--muted-foreground)] mb-1">Başlangıç</div>
                   <div className="text-sm font-medium">{currentProject.data.startDate || '—'}</div>
                 </div>
                 <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3">
-                  <div className="text-[10px] text-[var(--muted-foreground)] mb-1">Entrega</div>
+                  <div className="text-[10px] text-[var(--muted-foreground)] mb-1">Bitiş/Teslim</div>
                   <div className="text-sm font-medium">{currentProject.data.endDate || '—'}</div>
                 </div>
               </div>
@@ -281,7 +281,7 @@ export default function ProjectDetailScreen() {
               {/* Description */}
               {currentProject.data.description && (
                 <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
-                  <div className="text-[13px] font-semibold mb-2">Descripción</div>
+                  <div className="text-[13px] font-semibold mb-2">Açıklama</div>
                   <div className="text-sm text-[var(--muted-foreground)] leading-relaxed">{currentProject.data.description}</div>
                 </div>
               )}
@@ -311,7 +311,7 @@ export default function ProjectDetailScreen() {
 
               {/* Recent tasks (overdue first, then by due date) */}
               <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
-                <div className="text-[13px] font-semibold mb-3">Tareas pendientes ({pendingCount})</div>
+                <div className="text-[13px] font-semibold mb-3">Bekleyen Görevler ({pendingCount})</div>
                 {pendingTasks.length === 0 ? (
                   <div className="text-center py-4 text-[var(--af-text3)] text-sm">Sin tareas pendientes</div>
                 ) : (
@@ -346,7 +346,7 @@ export default function ProjectDetailScreen() {
             )}
 
             {/* 5. TAB: Tareas */}
-            {forms.detailTab === 'Tareas' && (<div>
+            {(forms.detailTab === 'Görevler' || forms.detailTab === 'Tareas') && (<div>
               <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
                 <div className="text-sm text-[var(--muted-foreground)]">{projectTasks.length} tareas en este proyecto</div>
                 <button className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer border-none" onClick={() => { setForms(p => ({ ...p, taskTitle: '', taskProject: selectedProjectId, taskDue: new Date().toISOString().split('T')[0], taskStatus: 'Yapılacak' })); openModal('task'); }}>+ Yeni Görev</button>
@@ -382,7 +382,7 @@ export default function ProjectDetailScreen() {
             </div>)}
 
             {/* 6. TAB: Calidad (with Calidad | Finanzas sub-tabs) */}
-            {forms.detailTab === 'Calidad' && (() => {
+            {(forms.detailTab === 'Kalite' || forms.detailTab === 'Calidad') && (() => {
               const punchDone = projPunch.filter((pi: PunchItem) => pi.data.status === 'Completado').length;
               const punchPct = projPunch.length > 0 ? Math.round((punchDone / projPunch.length) * 100) : 0;
               return (<div>
@@ -733,7 +733,7 @@ export default function ProjectDetailScreen() {
                                           <button aria-label="Renombrar archivo" onClick={() => { od.setOdRenaming(f.id); od.setOdRenameName(f.name); }} className="text-[10px] px-1 py-0.5 rounded hover:bg-[var(--af-bg4)] cursor-pointer bg-transparent border-none" title="Renombrar"><Pencil size={10} aria-hidden="true"/></button>
                                         </>
                                       )}
-                                      <button aria-label="Eliminar archivo" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar de OneDrive', description: '¿Estás seguro de que deseas eliminar este archivo de OneDrive?' })) { od.deleteFromOneDrive(f.id, od.odCurrentFolder); } }} className="text-[10px] px-1 py-0.5 rounded bg-red-500/10 text-red-400 cursor-pointer border-none hover:bg-red-500/20" title="Eliminar"><Trash2 size={10} aria-hidden="true"/></button>
+                                      <button aria-label="Eliminar archivo" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar de OneDrive', description: '¿Estás seguro de que deseas eliminar este archivo de OneDrive?' })) { od.deleteFromOneDrive(f.id, od.odCurrentFolder); } }} className="text-[10px] px-1 py-0.5 rounded bg-red-500/10 text-red-400 cursor-pointer border-none hover:bg-red-500/20" title="Sil"><Trash2 size={10} aria-hidden="true"/></button>
                                     </div>
                                   </div>
                                 ))}
@@ -795,7 +795,7 @@ export default function ProjectDetailScreen() {
                         <div className="flex gap-2 mt-2">
                           <button className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-md text-xs font-medium cursor-pointer hover:bg-emerald-500 hover:text-white transition-all" onClick={() => updateApproval(a.id, 'Onaylandı')}>✓ Aprobar</button>
                           <button className="bg-red-500/10 text-red-400 border border-red-500/30 px-3 py-1 rounded-md text-xs font-medium cursor-pointer hover:bg-red-500 hover:text-white transition-all" onClick={() => updateApproval(a.id, 'Reddedildi')}>✕ Rechazar</button>
-                          <button className="ml-auto text-xs text-[var(--af-text3)] cursor-pointer hover:text-red-400" onClick={() => deleteApproval(a.id)}>Eliminar</button>
+                          <button className="ml-auto text-xs text-[var(--af-text3)] cursor-pointer hover:text-red-400" onClick={() => deleteApproval(a.id)}>Sil</button>
                         </div>
                       )}
                     </div>
@@ -805,7 +805,7 @@ export default function ProjectDetailScreen() {
             </div>)}
 
             {/* 8. TAB: Obra — Fases por tipo (Diseño/Ejecución) + Timeline + Gantt + Bitácora */}
-            {forms.detailTab === 'Obra' && (<div>
+            {(forms.detailTab === 'Şantiye' || forms.detailTab === 'Obra') && (<div>
               {/* View tabs */}
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                 <div className="flex gap-1 bg-[var(--af-bg3)] rounded-lg p-1">
@@ -1173,7 +1173,7 @@ export default function ProjectDetailScreen() {
                                 <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--af-bg3)] text-[var(--muted-foreground)] cursor-pointer border-none bg-transparent transition-colors" onClick={() => openEditLog(log)} title="Editar">
                                   <Pencil className="w-3.5 h-3.5" aria-hidden="true"/>
                                 </button>
-                                <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-500/10 text-[var(--muted-foreground)] hover:text-red-400 cursor-pointer border-none bg-transparent transition-colors" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar bitácora', description: '¿Eliminar este registro de bitácora?' })) deleteDailyLog(log.id); }} title="Eliminar">
+                                <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-500/10 text-[var(--muted-foreground)] hover:text-red-400 cursor-pointer border-none bg-transparent transition-colors" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar bitácora', description: '¿Eliminar este registro de bitácora?' })) deleteDailyLog(log.id); }} title="Sil">
                                   <Trash2 className="w-3.5 h-3.5" aria-hidden="true"/>
                                 </button>
                               </div>
@@ -1441,7 +1441,7 @@ export default function ProjectDetailScreen() {
             </div>)}
 
             {/* 9. TAB: Cronograma */}
-            {forms.detailTab === 'Cronograma' && (<div className="space-y-4">
+            {(forms.detailTab === 'Zaman Çizelgesi' || forms.detailTab === 'Cronograma') && (<div className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
                 <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3"><div className="text-lg font-bold">{enabledPhases.length}</div><div className="text-[11px] text-[var(--muted-foreground)]">Fases activas</div></div>
                 <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3"><div className="text-lg font-bold">{ganttData.totalDays}</div><div className="text-[11px] text-[var(--muted-foreground)]">Dias totales</div></div>
@@ -1465,7 +1465,7 @@ export default function ProjectDetailScreen() {
             </div>)}
 
             {/* 10. TAB: Comentarios */}
-            {forms.detailTab === 'Comentarios' && (<div className="space-y-4">
+            {(forms.detailTab === 'Yorumlar' || forms.detailTab === 'Comentarios') && (<div className="space-y-4">
               <div className="flex items-center gap-3"><div className="bg-[var(--card)] border border-[var(--border)] rounded-xl px-3 py-2 flex items-center gap-2"><MessageSquare size={14} className="text-[var(--af-accent)]" aria-hidden="true"/><span className="text-sm font-bold">{projComments.length}</span><span className="text-[11px] text-[var(--muted-foreground)]">comentarios</span></div></div>
               {replyingTo && (<div className="bg-[var(--af-accent)]/10 border border-[var(--af-accent)]/20 rounded-lg px-3 py-2 flex items-center justify-between"><span className="text-[11px] text-[var(--af-accent)]">Respondiendo a {(comments || []).find((c: Comment) => c.id === replyingTo)?.data?.userName || '...'}</span><button className="text-[10px] text-red-400 cursor-pointer hover:underline" onClick={() => setReplyingTo(null)}>İptal</button></div>)}
               <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3"><textarea className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)] resize-none" rows={3} placeholder="Escribe un comentario... Usa @ para mencionar" value={commentText} onChange={e => setCommentText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleProjectComment(); }} /><div className="flex justify-end mt-2"><button className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-4 py-1.5 rounded-lg text-xs font-semibold cursor-pointer border-none hover:opacity-90 disabled:opacity-40" disabled={!commentText.trim()} onClick={handleProjectComment}><Send size={12} aria-hidden="true"/> Gönder</button></div></div>
