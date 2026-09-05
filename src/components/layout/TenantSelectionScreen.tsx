@@ -114,25 +114,9 @@ export default function TenantSelectionScreen() {
     setCreating(true);
     setMigratedCounts(null);
     try {
-      // 1. Try API first
       let createdData: any = null;
-      try {
-        const headers = await getAuthHeaders();
-        const res = await fetch('/api/tenants', {
-          method: 'POST',
-          headers: { ...headers, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'create', name, migrateExisting }),
-        });
-        const data = await res.json();
-        if (data && data.tenantId) {
-          createdData = data;
-        }
-      } catch (_apiErr) {
-        // Fallback
-      }
-
-      // 2. Client-side Firestore creation if API didn't return tenantId
-      if (!createdData && authUser) {
+      // Direct client Firestore creation to avoid blocking on serverless API
+      if (authUser?.uid) {
         const fb = getFirebase();
         const db = fb.firestore();
         const code = generateCode();
@@ -145,7 +129,7 @@ export default function TenantSelectionScreen() {
           superAdmins: [authUser.uid],
           createdAt: FieldValue.serverTimestamp(),
         });
-        // Update user default tenant
+
         await db.collection('users').doc(authUser.uid).set({
           defaultTenantId: tenantRef.id,
           defaultTenantName: name,
@@ -164,6 +148,9 @@ export default function TenantSelectionScreen() {
       if (createdData) {
         showToast(`"${createdData.name}" çalışma alanı oluşturuldu — Süper Yöneticisiniz`);
         switchTenant(createdData.tenantId, createdData.name, createdData.role || 'Süper Yönetici');
+        setTimeout(() => {
+          if (typeof window !== 'undefined') window.location.reload();
+        }, 500);
       } else {
         showToast('Çalışma alanı oluşturulamadı, lütfen tekrar deneyin', 'error');
       }
