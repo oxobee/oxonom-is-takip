@@ -6,13 +6,13 @@ import { FormField, FormInput, FormSelect, FormTextarea, ModalFooter, useFormVal
 import { UserPlus, Repeat, Check } from 'lucide-react';
 
 const DIAS_SEMANA_RECURRENTE = [
-  { value: 0, label: 'Domingo', short: 'Dom' },
-  { value: 1, label: 'Lunes', short: 'Lun' },
-  { value: 2, label: 'Martes', short: 'Mar' },
-  { value: 3, label: 'Miércoles', short: 'Mié' },
-  { value: 4, label: 'Jueves', short: 'Jue' },
-  { value: 5, label: 'Viernes', short: 'Vie' },
-  { value: 6, label: 'Sábado', short: 'Sáb' },
+  { value: 0, label: 'Pazar', short: 'Dom' },
+  { value: 1, label: 'Pazartesi', short: 'Lun' },
+  { value: 2, label: 'Salı', short: 'Mar' },
+  { value: 3, label: 'Çarşamba', short: 'Mié' },
+  { value: 4, label: 'Perşembe', short: 'Jue' },
+  { value: 5, label: 'Cuma', short: 'Vie' },
+  { value: 6, label: 'Cumartesi', short: 'Sáb' },
 ];
 
 export default function MeetingModal({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -57,7 +57,7 @@ export default function MeetingModal({ open, onClose }: { open: boolean; onClose
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={480}>
-      <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar reunión' : 'Nueva reunión'}</h2>
+      <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar reunión' : 'Yeni Toplantı'}</h2>
 
       <div className="space-y-3">
         <FormField label="Título" required error={errors.meetTitle}>
@@ -134,7 +134,7 @@ export default function MeetingModal({ open, onClose }: { open: boolean; onClose
             <div className="mt-3 space-y-3 pl-7">
               {/* Day of week selector */}
               <div>
-                <label className="text-[11px] text-[var(--muted-foreground)] mb-1.5 block">Día de la semana</label>
+                <label className="text-[11px] text-[var(--muted-foreground)] mb-1.5 block">Gün de la semana</label>
                 <div className="flex gap-1">
                   {DIAS_SEMANA_RECURRENTE.map(d => (
                     <button
@@ -156,7 +156,7 @@ export default function MeetingModal({ open, onClose }: { open: boolean; onClose
               {/* End date */}
               <div>
                 <label className="text-[11px] text-[var(--muted-foreground)] mb-1.5 block">
-                  Fecha de fin (opcional — si no se indica, se repite por 52 semanas)
+                  Bitiş Tarihi (opcional — si no se indica, se repite por 52 semanas)
                 </label>
                 <FormInput
                   type="date"
@@ -225,7 +225,7 @@ export default function MeetingModal({ open, onClose }: { open: boolean; onClose
       <ModalFooter
         onCancel={() => closeModal('meeting')}
         onSubmit={handleSubmit}
-        submitLabel={editingId ? 'Actualizar' : 'Crear reunión'}
+        submitLabel={editingId ? 'Güncelle' : 'Crear reunión'}
       />
     </CenterModal>
   );

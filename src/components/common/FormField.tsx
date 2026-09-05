@@ -83,7 +83,7 @@ interface ModalFooterProps {
   submitColor?: string;
 }
 
-export function ModalFooter({ onCancel, onSubmit, submitLabel, cancelLabel = 'Cancelar', submitDisabled, submitColor = 'bg-[var(--af-accent)] text-background border-none hover:bg-[var(--af-accent2)]' }: ModalFooterProps) {
+export function ModalFooter({ onCancel, onSubmit, submitLabel, cancelLabel = 'İptal', submitDisabled, submitColor = 'bg-[var(--af-accent)] text-background border-none hover:bg-[var(--af-accent2)]' }: ModalFooterProps) {
   return (
     <div className="flex gap-2 justify-end mt-5 pt-4 border-t border-[var(--border)]">
       <button
@@ -127,7 +127,7 @@ export function useFormValidation() {
 
   const validateRequired = useCallback((field: string, value: string, label: string) => {
     if (!value.trim()) {
-      setError(field, `${label} es obligatorio`);
+      setError(field, `${label} zorunludur`);
       return false;
     }
     clearError(field);

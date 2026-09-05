@@ -50,7 +50,7 @@ export default function ChangeOrderApproval({ co, getProjectName, getUserName, c
       showToast('✅ Orden aprobada');
       onClose();
     } catch (err) {
-      console.error('[Archii] Error approving CO:', err);
+      console.error('[oxonom iş takip] Error approving CO:', err);
       showToast('Error al aprobar orden', 'error');
     } finally {
       setIsProcessing(false);
@@ -74,7 +74,7 @@ export default function ChangeOrderApproval({ co, getProjectName, getUserName, c
       showToast('Orden rechazada');
       onClose();
     } catch (err) {
-      console.error('[Archii] Error rejecting CO:', err);
+      console.error('[oxonom iş takip] Error rejecting CO:', err);
       showToast('Error al rechazar orden', 'error');
     } finally {
       setIsProcessing(false);
@@ -93,7 +93,7 @@ export default function ChangeOrderApproval({ co, getProjectName, getUserName, c
       showToast('Orden enviada para aprobación');
       onClose();
     } catch (err) {
-      console.error('[Archii] Error submitting CO:', err);
+      console.error('[oxonom iş takip] Error submitting CO:', err);
       showToast('Error al enviar orden', 'error');
     } finally {
       setIsProcessing(false);
@@ -185,7 +185,7 @@ export default function ChangeOrderApproval({ co, getProjectName, getUserName, c
       {d?.attachments && d.attachments.length > 0 && (
         <div>
           <div className="text-xs font-medium text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
-            <Paperclip size={12} aria-hidden="true" /> Archivos adjuntos
+            <Paperclip size={12} aria-hidden="true" /> Ekli Dosyalar
           </div>
           <div className="space-y-1">
             {d.attachments.map((att: any, i: number) => (
@@ -223,7 +223,7 @@ export default function ChangeOrderApproval({ co, getProjectName, getUserName, c
       {/* Approval info */}
       {d?.approvedByName && approvedDate && (
         <div className="text-[11px] text-[var(--muted-foreground)]">
-          Aprobada por {d.approvedByName} el {approvedDate.toLocaleDateString('es-CO')}
+          Onaylandı por {d.approvedByName} el {approvedDate.toLocaleDateString('es-CO')}
         </div>
       )}
 
@@ -237,8 +237,8 @@ export default function ChangeOrderApproval({ co, getProjectName, getUserName, c
               const actionLabels: Record<string, string> = {
                 created: 'Creada',
                 submitted: 'Enviada',
-                approved: 'Aprobada',
-                rejected: 'Rechazada',
+                approved: 'Onaylandı',
+                rejected: 'Reddedildi',
                 cancelled: 'Cancelada',
               };
               const actionIcons: Record<string, React.ReactNode> = {
@@ -273,7 +273,7 @@ export default function ChangeOrderApproval({ co, getProjectName, getUserName, c
             onClick={handleSubmit}
             disabled={isProcessing}
           >
-            📤 Enviar a Aprobación
+            📤 Gönder a Aprobación
           </button>
           <button
             className="px-3 py-2 rounded-lg text-[12px] font-semibold bg-[var(--af-bg3)] text-[var(--muted-foreground)] border border-[var(--input)] cursor-pointer hover:bg-[var(--af-bg4)] transition-colors"
@@ -330,13 +330,13 @@ export default function ChangeOrderApproval({ co, getProjectName, getUserName, c
                   onClick={handleReject}
                   disabled={isProcessing}
                 >
-                  Confirmar Rechazo
+                  Onayla Rechazo
                 </button>
                 <button
                   className="px-3 py-2.5 rounded-lg text-[13px] font-medium bg-[var(--af-bg3)] text-[var(--muted-foreground)] border border-[var(--input)] cursor-pointer hover:bg-[var(--af-bg4)] transition-colors"
                   onClick={() => setShowReject(false)}
                 >
-                  Cancelar
+                  İptal
                 </button>
               </div>
             </div>

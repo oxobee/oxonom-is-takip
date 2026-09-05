@@ -88,7 +88,7 @@ export default function InvTransferModal({ open, onClose }: { open: boolean; onC
         </FormField>
       </div>
 
-      <FormField label="Notas">
+      <FormField label="Notlar">
         <FormTextarea rows={2} placeholder="Motivo de la transferencia..." value={forms.invTrNotes || ''} onChange={e => setForms(p => ({ ...p, invTrNotes: e.target.value }))} />
       </FormField>
 

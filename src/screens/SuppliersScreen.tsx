@@ -130,7 +130,7 @@ export default function SuppliersScreen() {
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <Store size={20} className="text-[var(--af-accent)]" aria-hidden="true" />
-            Proveedores
+            Tedarikçiler
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
             {filtered.length === suppliers.length
@@ -143,7 +143,7 @@ export default function SuppliersScreen() {
           onClick={() => { setEditingId(null); openModal('supplier'); }}
         >
           <Plus size={14} aria-hidden="true" />
-          Nuevo proveedor
+          Yeni Tedarikçi
         </button>
       </div>
 
@@ -223,13 +223,13 @@ export default function SuppliersScreen() {
       {!loading && suppliers.length > 0 && filtered.length === 0 && (
         <div className="text-center py-16 text-[var(--af-text3)]">
           <Search size={36} className="mx-auto mb-3 text-[var(--muted-foreground)] opacity-50" />
-          <div className="text-[15px] font-medium text-[var(--muted-foreground)] mb-1">Sin resultados</div>
+          <div className="text-[15px] font-medium text-[var(--muted-foreground)] mb-1">Sonuç bulunamadı</div>
           <div className="text-[13px] mb-4">No se encontraron proveedores con &quot;{search}&quot;</div>
           <button
             className="text-[12px] text-[var(--af-accent)] hover:underline cursor-pointer bg-transparent border-none"
             onClick={() => { setSearch(''); setActiveCategory('Todos'); }}
           >
-            Limpiar filtros
+            Filtreleri Temizle
           </button>
         </div>
       )}
@@ -259,14 +259,14 @@ export default function SuppliersScreen() {
                       <button
                         className="p-1.5 rounded-md bg-[var(--af-bg4)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer border-none transition-colors"
                         onClick={() => handleEdit(s)}
-                        aria-label="Editar proveedor"
+                        aria-label="Tedarikçiyi Düzenle"
                       >
                         ✏️
                       </button>
                       <button
                         className="p-1.5 rounded-md bg-red-500/10 text-red-400 hover:bg-red-500/20 cursor-pointer border-none transition-colors"
                         onClick={() => handleDelete(s.id)}
-                        aria-label="Eliminar proveedor"
+                        aria-label="Tedarikçiyi Sil"
                       >
                         🗑
                       </button>
@@ -354,7 +354,7 @@ export default function SuppliersScreen() {
                     )}
                     {s.data.notes && (
                       <div className="mt-2">
-                        <div className="text-[11px] font-medium text-[var(--muted-foreground)] mb-1">Notas</div>
+                        <div className="text-[11px] font-medium text-[var(--muted-foreground)] mb-1">Notlar</div>
                         <div className="text-xs text-[var(--foreground)] bg-[var(--af-bg3)] rounded-lg p-2.5 border border-[var(--border)] whitespace-pre-wrap">
                           {s.data.notes}
                         </div>

@@ -117,7 +117,7 @@ export default function TimeEntryModal({ open, onClose }: { open: boolean; onClo
       <ModalFooter
         onCancel={() => closeModal('timeEntry')}
         onSubmit={handleSubmit}
-        submitLabel="Guardar"
+        submitLabel="Kaydet"
       />
     </CenterModal>
   );

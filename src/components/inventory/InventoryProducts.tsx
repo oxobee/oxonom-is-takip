@@ -36,7 +36,7 @@ export default function InventoryProducts({
         <h3 className="text-lg font-semibold">📦 Productos ({invProducts.length})</h3>
         <button className="px-4 py-2 rounded-lg text-[13px] font-semibold cursor-pointer bg-[var(--af-accent)] text-background border-none hover:bg-[var(--af-accent2)] transition-colors flex items-center gap-2 self-start" onClick={() => { setEditingId(null); const rf: Record<string,any> = { invProdName: '', invProdSku: '', invProdCat: '', invProdUnit: 'Unidad', invProdPrice: '', invProdMinStock: '5', invProdDesc: '', invProdImage: '', invProdWarehouse: 'Almacén Principal' }; INV_WAREHOUSES.forEach(w => { rf[`invProdWS_${w.replace(/\s/g,'_')}`] = '0'; }); setForms((p: any) => ({ ...p, ...rf })); openModal('invProduct'); }}>
           <Plus size={16} className="stroke-current" aria-hidden="true"/>
-          Nuevo producto
+          Yeni Ürün
         </button>
       </div>
       <div className="flex flex-col sm:flex-row gap-2">
@@ -45,7 +45,7 @@ export default function InventoryProducts({
           <input className="w-full bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg pl-9 pr-3 py-2 text-sm text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]" placeholder="Buscar producto..." value={invSearch} onChange={e => setInvSearch(e.target.value)} />
         </div>
         <select className="bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none" value={invFilterCat} onChange={e => setInvFilterCat(e.target.value)}>
-          <option value="all">Todas las categorías</option>
+          <option value="all">Tüm Kategoriler</option>
           {invCategories.map(c => <option key={c.id} value={c.id}>{c.data.name}</option>)}
         </select>
       </div>
@@ -117,7 +117,7 @@ export default function InventoryProducts({
                 </div>
                 <div className="grid grid-cols-2 gap-3 mt-2">
                   <div><div className="text-[10px] text-[var(--muted-foreground)]">Precio unit.</div><div className="text-sm font-medium">{fmtCOP(Number(p.data.price) || 0)}</div></div>
-                  <div><div className="text-[10px] text-[var(--muted-foreground)]">Valor total</div><div className="text-sm font-medium">{fmtCOP((Number(p.data.price) || 0) * totalSt)}</div></div>
+                  <div><div className="text-[10px] text-[var(--muted-foreground)]">Toplam Tutar</div><div className="text-sm font-medium">{fmtCOP((Number(p.data.price) || 0) * totalSt)}</div></div>
                 </div>
               </div>
             );

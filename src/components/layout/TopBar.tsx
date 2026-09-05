@@ -38,18 +38,18 @@ export default function TopBar() {
       });
       const data = await res.json();
       if (data.fixed?.length > 0 || data.addedToMembers?.length > 0) {
-        showToast(`Rol corregido en ${data.fixed?.length || 0} espacios`, 'success');
+        showToast(`Rol ${data.fixed?.length || 0} alanda güncellendi`, 'success');
         // Reload page to pick up corrected role
         setTimeout(() => window.location.reload(), 1500);
       } else if (data.already?.length > 0) {
-        showToast('Ya eres Super Admin en todos los espacios', 'success');
+        showToast('Tüm alanlarda zaten Süper Yöneticisiniz', 'success');
       } else {
-        showToast('No se encontraron espacios para corregir', 'error');
+        showToast('Düzeltilecek alan bulunamadı', 'error');
         console.warn('[TopBar] fix-my-role full response:', JSON.stringify(data));
       }
     } catch (err) {
       console.error('[TopBar] fix-my-role error:', err);
-      showToast('Error al corregir rol', 'error');
+      showToast('Rol güncellenirken hata oluştu', 'error');
     } finally {
       setFixingRole(false);
     }
@@ -57,44 +57,44 @@ export default function TopBar() {
 
   // Local screen title overrides (dynamic titles like projectDetail)
   const localScreenTitles: Record<string, string> = {
-    dashboard: 'Dashboard', projects: 'Proyectos', tasks: 'Tareas', chat: 'Mensajes',
-    budget: 'Presupuestos', files: 'Planos y archivos', gallery: 'Galería', inventory: 'Inventario',
-    admin: 'Panel Admin', superAdmin: 'Super Admin', obra: 'Seguimiento obra', suppliers: 'Proveedores', team: 'Equipo',
-    calendar: 'Calendario', portal: 'Portal cliente', profile: 'Mi Perfil', install: 'Instalar App',
-    companies: 'Empresas', projectDetail: currentProject?.data.name || 'Proyecto',
-    rfis: 'RFIs', submittals: 'Submittals', punchList: 'Punch List',
-    timeTracking: 'Time Tracking', invoices: 'Facturación', reports: 'Reportes',
-    weeklyAgenda: 'Agenda Semanal',
+    dashboard: 'Panel', projects: 'Projeler', tasks: 'Görevler', chat: 'Ekip Ayajları',
+    budget: 'Bütçe & Harcamalar', files: 'Planlar ve Dosyalar', gallery: 'Fotoğraf Galerisi', inventory: 'Envanter & Stok',
+    admin: 'Yönetim Paneli', superAdmin: 'Süper Yönetici', obra: 'Şantiye Takibi', suppliers: 'Tedarikçiler', team: 'Ekip Üyeleri',
+    calendar: 'Takvim', portal: 'Müşteri Portalı', profile: 'Profilim', install: 'Uygulamayı Yükle',
+    companies: 'Şirketler & Firmalar', projectDetail: currentProject?.data.name || 'Proje Detayı',
+    rfis: 'Bilgi Talepleri (RFI)', submittals: 'Onay Belgeleri', punchList: 'Eksik & Kusur Listesi',
+    timeTracking: 'Zaman Takibi', invoices: 'Faturalar', reports: 'Raporlar',
+    weeklyAgenda: 'Haftalık Ajanda',
   };
 
   return (
     <>
     <header className="af-glass border-b border-[var(--border)] flex items-center px-4 md:px-6 gap-3 flex-shrink-0 safe-top" style={{ minHeight: 'calc(60px + env(safe-area-inset-top, 0px))' }}>
-      <button aria-label="Abrir menú" className="w-9 h-9 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] items-center justify-center cursor-pointer md:hidden flex hover:scale-105 active:scale-95" onClick={() => setSidebarOpen(true)}>
+      <button aria-label="Menüyü aç" className="w-9 h-9 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] items-center justify-center cursor-pointer md:hidden flex hover:scale-105 active:scale-95" onClick={() => setSidebarOpen(true)}>
         <Menu size={18} className="stroke-[var(--muted-foreground)]" aria-hidden="true"/>
       </button>
       {screen === 'projectDetail' ? (
         <button className="flex items-center gap-1.5 text-[var(--af-accent)] text-sm font-medium cursor-pointer hover:underline mr-2" onClick={() => navigateTo('projects')}>
           <ChevronLeft size={16} className="stroke-current" aria-hidden="true"/>
-          Proyectos
+          Projeler
         </button>
       ) : null}
       <div className="flex-1 min-w-0">
         <div className="text-base font-medium truncate af-heading-responsive">{localScreenTitles[screen] || screenTitles[screen] || ''}</div>
         <div className="text-xs text-[var(--muted-foreground)] hidden md:block">
-          {screen === 'dashboard' ? `Bienvenido, ${userName.split(' ')[0]}` : screen === 'projectDetail' ? currentProject?.data.status || '' : ''}
+          {screen === 'dashboard' ? `Hoş geldiniz, ${userName.split(' ')[0]}` : screen === 'projectDetail' ? currentProject?.data.status || '' : ''}
         </div>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
-        {/* Super Admin button — only for platform super admins */}
+        {/* Süper Yönetici button — only for platform super admins */}
         {isEmailAdmin && screen !== 'superAdmin' && (
           <button
             onClick={() => navigateTo('superAdmin')}
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 cursor-pointer hover:bg-red-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-            title="Super Admin Panel"
+            title="Süper Yönetici Paneli"
           >
             <Shield size={14} className="stroke-red-400" aria-hidden="true"/>
-            <span className="text-[10px] font-bold text-red-400 hidden lg:inline">SA</span>
+            <span className="text-[10px] font-bold text-red-400 hidden lg:inline">SY</span>
           </button>
         )}
         {/* Tenant switcher — compact on mobile, full on desktop */}
@@ -115,14 +115,14 @@ export default function TopBar() {
               }
             }}
             className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] cursor-pointer hover:bg-[var(--af-bg4)] transition-all hover:scale-[1.02] active:scale-[0.98]"
-            title="Cambiar espacio de trabajo"
+            title="Çalışma alanını değiştir"
           >
             <Building2 size={14} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
-            <span className="text-xs font-medium max-w-[80px] sm:max-w-[120px] truncate hidden xs:inline">{activeTenantName || 'Espacio'}</span>
-            {activeTenantRole === 'Super Admin' && (
+            <span className="text-xs font-medium max-w-[80px] sm:max-w-[120px] truncate hidden xs:inline">{activeTenantName || 'Çalışma Alanı'}</span>
+            {activeTenantRole === 'Süper Yönetici' && (
               <span className="text-[9px] font-bold bg-gradient-to-r from-[var(--af-accent)] to-amber-500 text-background px-1 py-0.5 rounded hidden sm:inline-flex items-center gap-0.5 flex-shrink-0">
                 <Crown size={7} aria-hidden="true"/>
-                SA
+                YÖNETİCİ
               </span>
             )}
             <ChevronDown size={12} className={`stroke-[var(--muted-foreground)] transition-transform hidden sm:block ${showTenantMenu ? 'rotate-180' : ''}`} aria-hidden="true"/>
@@ -138,14 +138,14 @@ export default function TopBar() {
                   zIndex: 9999,
                 }}
               >
-                <div className="px-3 py-2 text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Espacio actual</div>
+                <div className="px-3 py-2 text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Aktif Alan</div>
                 <div className="px-3 py-1.5 text-sm font-medium flex items-center gap-2">
                   <Building2 size={14} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
-                  <span className="flex-1 min-w-0 truncate">{activeTenantName || 'Sin espacio'}</span>
-                  {activeTenantRole === 'Super Admin' && (
+                  <span className="flex-1 min-w-0 truncate">{activeTenantName || 'Seçili alan yok'}</span>
+                  {activeTenantRole === 'Süper Yönetici' && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-gradient-to-r from-[var(--af-accent)] to-amber-500 text-background px-1.5 py-0.5 rounded-md flex-shrink-0">
                       <Crown size={9} aria-hidden="true"/>
-                      ADMIN
+                      YÖNETİCİ
                     </span>
                   )}
                 </div>
@@ -155,7 +155,7 @@ export default function TopBar() {
                     className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm cursor-pointer hover:bg-[var(--af-bg3)] transition-colors text-left bg-transparent border-none text-[var(--foreground)]"
                   >
                     <LayoutGrid size={14} className="stroke-[var(--muted-foreground)]" aria-hidden="true"/>
-                    Cambiar espacio
+                    Çalışma alanını değiştir
                   </button>
                   {activeTenantId && (
                     <button
@@ -163,7 +163,7 @@ export default function TopBar() {
                       className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm cursor-pointer hover:bg-[var(--af-bg3)] transition-colors text-left bg-transparent border-none text-[var(--foreground)]"
                     >
                       <Users size={14} className="stroke-[var(--muted-foreground)]" aria-hidden="true"/>
-                      Gestionar miembros
+                      Üyeleri yönet
                     </button>
                   )}
                   <button
@@ -172,7 +172,7 @@ export default function TopBar() {
                     className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm cursor-pointer hover:bg-amber-500/10 transition-colors text-left bg-transparent border-none text-amber-400 disabled:opacity-50"
                   >
                     <Shield size={14} className="stroke-amber-400" aria-hidden="true"/>
-                    {fixingRole ? 'Corrigiendo...' : `Corregir mi rol (${activeTenantRole || 'sin rol'})`}
+                    {fixingRole ? 'Güncelleniyor...' : `Rolümü düzelt (${activeTenantRole || 'rolsüz'})`}
                   </button>
                 </div>
               </div>
@@ -181,7 +181,7 @@ export default function TopBar() {
                   tenantId={activeTenantId}
                   tenantName={activeTenantName || ''}
                   onClose={() => setShowManageMembers(false)}
-                  canRemove={activeTenantRole === 'Super Admin' || activeTenantRole === 'Admin' || activeTenantRole === 'Director'}
+                  canRemove={activeTenantRole === 'Süper Yönetici' || activeTenantRole === 'Admin' || activeTenantRole === 'Director'}
                 />
               )}
             </>
@@ -189,10 +189,10 @@ export default function TopBar() {
         </div>
         {/* Notification bell */}
         <button
-          aria-label="Notificaciones"
+          aria-label="Bildirimler"
           className="w-9 h-9 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-all relative hover:scale-105 active:scale-95"
           onClick={() => setShowNotifPanel(!showNotifPanel)}
-          title="Notificaciones"
+          title="Bildirimler"
         >
           <Bell size={18} className="stroke-[var(--muted-foreground)]" aria-hidden="true"/>
           {unreadCount > 0 && (
@@ -205,25 +205,25 @@ export default function TopBar() {
           )}
         </button>
         {/* Settings — unified config panel (visible on all sizes) */}
-        <button aria-label="Configuración" className="w-9 h-9 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-all hover:scale-105 active:scale-95" onClick={() => setSettingsOpen(true)} title="Configuración">
+        <button aria-label="Ayarlar" className="w-9 h-9 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-all hover:scale-105 active:scale-95" onClick={() => setSettingsOpen(true)} title="Ayarlar">
           <Settings size={18} className="stroke-[var(--muted-foreground)]" aria-hidden="true"/>
         </button>
         {screen === 'projects' && (
-          <button className="hidden sm:flex items-center gap-1.5 af-btn-primary text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer transition-colors border-none" onClick={() => { setEditingId(null); setForms(p => ({ ...p, projName: '', projClient: '', projLocation: '', projBudget: '', projDesc: '', projStart: '', projEnd: '', projStatus: 'Concepto' })); openModal('project'); }}>
+          <button className="hidden sm:flex items-center gap-1.5 af-btn-primary text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer transition-colors border-none" onClick={() => { setEditingId(null); setForms(p => ({ ...p, projName: '', projClient: '', projLocation: '', projBudget: '', projDesc: '', projStart: '', projEnd: '', projStatus: 'Harcama Kalemi' })); openModal('project'); }}>
             <Plus size={14} className="stroke-current" strokeWidth={2.5} aria-hidden="true"/>
-            Nuevo proyecto
+            Yeni proje
           </button>
         )}
         {screen === 'tasks' && (
           <button className="hidden sm:flex items-center gap-1.5 af-btn-primary text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer transition-colors border-none" onClick={() => { setForms(p => ({ ...p, taskTitle: '', taskDue: new Date().toISOString().split('T')[0] })); openModal('task'); }}>
             <Plus size={14} className="stroke-current" strokeWidth={2.5} aria-hidden="true"/>
-            Nueva tarea
+            Yeni görev
           </button>
         )}
         {screen === 'suppliers' && (
           <button className="hidden sm:flex items-center gap-1.5 af-btn-primary text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer transition-colors border-none" onClick={() => { setEditingId(null); setForms(p => ({ ...p, supName: '', supCategory: 'Otro', supPhone: '', supEmail: '', supAddress: '', supWebsite: '', supNotes: '', supRating: '5' })); openModal('supplier'); }}>
             <Plus size={14} className="stroke-current" strokeWidth={2.5} aria-hidden="true"/>
-            Nuevo proveedor
+            Yeni tedarikçi
           </button>
         )}
         <div className={`w-9 h-9 md:w-7 md:h-7 rounded-full flex items-center justify-center text-[10px] font-semibold border flex-shrink-0 ${authUser?.photoURL ? '' : avatarColor(authUser?.uid ?? '')} overflow-hidden`}>{authUser?.photoURL ? <img src={authUser.photoURL} alt="" className="w-full h-full object-cover" /> : initials}</div>

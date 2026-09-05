@@ -26,9 +26,9 @@ export default function ReportsFinanciero({ projects, expenses, invoices, timeEn
   const totalBudget = projects.reduce((s, p) => s + (p.data.budget || 0), 0);
   const totalSpent = expenses.reduce((s, e) => s + (e.data.amount || 0), 0);
   const totalInvoiced = invoices.filter(i => i.data.status !== 'Cancelada').reduce((s, i) => s + (i.data.total || 0), 0);
-  const totalPaid = invoices.filter(i => i.data.status === 'Pagada').reduce((s, i) => s + (i.data.total || 0), 0);
-  const totalPending = invoices.filter(i => i.data.status === 'Enviada' || i.data.status === 'Borrador').reduce((s, i) => s + (i.data.total || 0), 0);
-  const totalOverdue = invoices.filter(i => i.data.status === 'Vencida').reduce((s, i) => s + (i.data.total || 0), 0);
+  const totalPaid = invoices.filter(i => i.data.status === 'Ödendi').reduce((s, i) => s + (i.data.total || 0), 0);
+  const totalPending = invoices.filter(i => i.data.status === 'Enviada' || i.data.status === 'Taslak').reduce((s, i) => s + (i.data.total || 0), 0);
+  const totalOverdue = invoices.filter(i => i.data.status === 'Gecikmiş').reduce((s, i) => s + (i.data.total || 0), 0);
   const totalBillable = timeEntries.filter(e => e.data.billable).reduce((s, e) => s + (e.data.duration || 0) * (e.data.rate || 0) / 60, 0);
   const budgetPct = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
 
@@ -39,20 +39,20 @@ export default function ReportsFinanciero({ projects, expenses, invoices, timeEn
         <span className="text-[11px] text-[var(--af-text3)]">{dateLabel}</span>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        {[{ lbl: 'Presupuesto', val: fmtCOP(totalBudget), c: 'text-[var(--af-accent)]' }, { lbl: 'Gastado', val: fmtCOP(totalSpent), c: 'text-[var(--foreground)]' }, { lbl: 'Facturado', val: fmtCOP(totalInvoiced), c: 'text-blue-400' }, { lbl: 'Cobrado', val: fmtCOP(totalPaid), c: 'text-emerald-400' }, { lbl: 'Por cobrar', val: fmtCOP(totalPending + totalOverdue), c: totalOverdue > 0 ? 'text-red-400' : 'text-amber-400' }].map((m, i) => (
+        {[{ lbl: 'Bütçe', val: fmtCOP(totalBudget), c: 'text-[var(--af-accent)]' }, { lbl: 'Gastado', val: fmtCOP(totalSpent), c: 'text-[var(--foreground)]' }, { lbl: 'Facturado', val: fmtCOP(totalInvoiced), c: 'text-blue-400' }, { lbl: 'Cobrado', val: fmtCOP(totalPaid), c: 'text-emerald-400' }, { lbl: 'Por cobrar', val: fmtCOP(totalPending + totalOverdue), c: totalOverdue > 0 ? 'text-red-400' : 'text-amber-400' }].map((m, i) => (
           <div key={i} className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className={`text-xl font-bold ${m.c}`}>{m.val}</div><div className="text-[11px] text-[var(--muted-foreground)]">{m.lbl}</div></div>
         ))}
       </div>
     </div>
     {/* Alerts */}
     {(totalOverdue > 0 || (totalBudget > 0 && totalSpent > totalBudget * 0.9)) && <div className="lg:col-span-2 space-y-2">
-      {totalOverdue > 0 && <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 flex items-center gap-2"><span className="text-red-400 text-lg">⚠️</span><span className="text-sm text-red-400 font-medium">Facturas vencidas por {fmtCOP(totalOverdue)}</span></div>}
+      {totalOverdue > 0 && <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 flex items-center gap-2"><span className="text-red-400 text-lg">⚠️</span><span className="text-sm text-red-400 font-medium">Faturalar vencidas por {fmtCOP(totalOverdue)}</span></div>}
       {totalBudget > 0 && totalSpent > totalBudget * 0.9 && <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3 flex items-center gap-2"><span className="text-amber-400 text-lg">⚠️</span><span className="text-sm text-amber-400 font-medium">Gasto al {Math.round(totalSpent / totalBudget * 100)}% del presupuesto</span></div>}
     </div>}
     {/* Budget vs Real */}
     <div className="lg:col-span-2 bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-[15px] font-semibold">Presupuesto vs Real por Proyecto</h3>
+        <h3 className="text-[15px] font-semibold">Bütçe vs Real por Proyecto</h3>
         <button className="text-xs text-[var(--af-accent)] cursor-pointer hover:underline" onClick={() => {
           try { exportBudgetPDF({ expenses, projects }); showToast('PDF descargado'); } catch { showToast('Error', 'error'); }
         }}><FileText size={12} className="inline mr-1" aria-hidden="true"/>PDF</button>
@@ -65,7 +65,7 @@ export default function ReportsFinanciero({ projects, expenses, invoices, timeEn
             <YAxis tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} tickFormatter={(v: number) => v >= 1000000 ? `${(v/1000000).toFixed(0)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}K` : String(v)} />
             <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(212,184,122,0.06)' }} />
             <Legend content={<ChartLegend />} />
-            <Bar dataKey="presupuesto" name="Presupuesto" fill="#d4b87a" radius={[4, 4, 0, 0]} barSize={18} />
+            <Bar dataKey="presupuesto" name="Bütçe" fill="#d4b87a" radius={[4, 4, 0, 0]} barSize={18} />
             <Bar dataKey="gastado" name="Gastado" fill={budgetPct > 90 ? '#ef4444' : '#10b981'} radius={[4, 4, 0, 0]} barSize={18} />
           </BarChart>
         </ResponsiveContainer>

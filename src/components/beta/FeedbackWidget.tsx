@@ -96,7 +96,7 @@ export default function FeedbackWidget() {
           transition={reduced ? instant : { delay: 3, type: 'spring', stiffness: 200, damping: 15 }}
           whileHover={reduced ? undefined : { scale: 1.08 }}
           whileTap={reduced ? undefined : { scale: 0.95 }}
-          title="Enviar feedback"
+          title="Gönder feedback"
         >
           <MessageSquarePlus size={20} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
           <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[var(--af-accent)] text-[9px] font-bold text-background flex items-center justify-center">
@@ -136,7 +136,7 @@ export default function FeedbackWidget() {
                   </div>
                   <div>
                     <h3 className="text-base font-bold">Feedback Beta</h3>
-                    <p className="text-[11px] text-[var(--muted-foreground)]">Ayudanos a mejorar Archii</p>
+                    <p className="text-[11px] text-[var(--muted-foreground)]">Ayudanos a mejorar oxonom iş takip</p>
                   </div>
                 </div>
                 <button
@@ -191,7 +191,7 @@ export default function FeedbackWidget() {
                 <div className="flex items-center gap-2 p-3 rounded-xl bg-[var(--af-accent)]/5 border border-[var(--af-accent)]/10">
                   <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[var(--af-accent)]/15 text-[var(--af-accent)]">BETA</span>
                   <p className="text-[11px] text-[var(--muted-foreground)]">
-                    Tu feedback es anonimo y se usa para mejorar Archii. No se recopilan datos personales.
+                    Tu feedback es anonimo y se usa para mejorar oxonom iş takip. No se recopilan datos personales.
                   </p>
                 </div>
 
@@ -206,7 +206,7 @@ export default function FeedbackWidget() {
                   ) : (
                     <Send size={16} aria-hidden="true"/>
                   )}
-                  {submitting ? 'Enviando...' : 'Enviar feedback'}
+                  {submitting ? 'Enviando...' : 'Gönder feedback'}
                 </button>
               </div>
             </motion.div>
@@ -231,13 +231,13 @@ export default function FeedbackWidget() {
               <div className="text-[13px] font-semibold">Gracias!</div>
             </div>
             <p className="text-[11px] text-[var(--muted-foreground)] mb-3">
-              Tu feedback nos ayuda a hacer Archii mejor para todos.
+              Tu feedback nos ayuda a hacer oxonom iş takip mejor para todos.
             </p>
             <button
               onClick={handleReset}
               className="text-[11px] text-[var(--af-accent)] font-medium cursor-pointer bg-transparent border-none hover:underline"
             >
-              Enviar otro feedback
+              Gönder otro feedback
             </button>
           </motion.div>
         )}

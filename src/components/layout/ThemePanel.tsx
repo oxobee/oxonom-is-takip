@@ -24,7 +24,7 @@ export default function ThemePanel({ onClose }: ThemePanelProps) {
         <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
           <div>
             <h2 className="text-lg font-bold text-[var(--foreground)]">Temas</h2>
-            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Personaliza la apariencia de Archii</p>
+            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Personaliza la apariencia de oxonom iş takip</p>
           </div>
           <button
             onClick={onClose}

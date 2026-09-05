@@ -38,7 +38,7 @@ export default function DashboardProjectsList({
               <div key={p.id} className="bg-[var(--af-bg3)] border border-[var(--border)] rounded-xl p-3 cursor-pointer transition-all hover:border-[var(--input)] hover:-translate-y-0.5" onClick={() => openProject(p.id)}>
                 <div className="flex justify-between items-start mb-1.5">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${statusColor(d.status)}`}>{d.status || 'Concepto'}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${statusColor(d.status)}`}>{d.status || 'Harcama Kalemi'}</span>
                     {compName && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--af-bg4)] text-[var(--af-text3)]">{compName}</span>}
                   </div>
                   <div className="text-sm font-bold">{prog}%</div>

@@ -11,7 +11,7 @@ interface Tenant {
   members?: string[];
   createdBy?: string;
   createdAt?: any;
-  role?: string; // 'Super Admin' | 'Miembro'
+  role?: string; // 'Süper Yönetici' | 'Üye'
 }
 
 export default function TenantSelectionScreen() {
@@ -48,9 +48,9 @@ export default function TenantSelectionScreen() {
       const data = await res.json();
       if (data.tenants) {
         setTenants(data.tenants);
-        // AUTO-FIX: If user appears as Miembro in any tenant they should own,
+        // AUTO-FIX: If user appears as Üye in any tenant they should own,
         // force the role fix from the server side
-        const anyMemberRole = data.tenants.some((t: any) => t.role === 'Miembro');
+        const anyMemberRole = data.tenants.some((t: any) => t.role === 'Üye');
         if (anyMemberRole) {
           fetch('/api/tenants', {
             method: 'POST',
@@ -87,7 +87,7 @@ export default function TenantSelectionScreen() {
   useEffect(() => {
     if (tenants.length === 1 && !showCreate && !showJoin) {
       const t = tenants[0];
-      switchTenant(t.id, t.name, t.role || 'Miembro');
+      switchTenant(t.id, t.name, t.role || 'Üye');
     }
   }, [tenants.length, showCreate, showJoin, tenants, switchTenant]);
 
@@ -116,9 +116,9 @@ export default function TenantSelectionScreen() {
         const total = Object.values(data.migratedCounts).reduce((sum: number, v: any) => sum + (v > 0 ? v : 0), 0);
         showToast(`Espacio "${data.name}" creado con ${total} datos migrados`);
       } else {
-        showToast(`Espacio "${data.name}" creado — Eres Super Admin`);
+        showToast(`Espacio "${data.name}" creado — Eres Süper Yönetici`);
       }
-      switchTenant(data.tenantId, data.name, data.role || 'Super Admin');
+      switchTenant(data.tenantId, data.name, data.role || 'Süper Yönetici');
     } catch (err) {
       console.error('[TenantSelection] Create error:', err);
       showToast('Error al crear espacio', 'error');
@@ -150,9 +150,9 @@ export default function TenantSelectionScreen() {
       if (data.alreadyMember) {
         showToast(`Ya eres miembro de "${data.name}"`);
       } else {
-        showToast(`Te uniste a "${data.name}" como ${data.role || 'Miembro'}`);
+        showToast(`Te uniste a "${data.name}" como ${data.role || 'Üye'}`);
       }
-      switchTenant(data.tenantId, data.name, data.role || 'Miembro');
+      switchTenant(data.tenantId, data.name, data.role || 'Üye');
     } catch (err) {
       console.error('[TenantSelection] Join error:', err);
       setJoinError('Error al unirse al espacio');
@@ -171,7 +171,7 @@ export default function TenantSelectionScreen() {
   };
 
   const selectTenant = (t: Tenant) => {
-    switchTenant(t.id, t.name, t.role || 'Miembro');
+    switchTenant(t.id, t.name, t.role || 'Üye');
   };
 
   if (loading) {
@@ -179,7 +179,7 @@ export default function TenantSelectionScreen() {
       <div className="fixed inset-0 bg-[var(--background)] z-[200] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-2 border-[var(--af-accent)] border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm text-[var(--muted-foreground)]">Cargando espacios...</span>
+          <span className="text-sm text-[var(--muted-foreground)]">Çalışma alanları yükleniyor...</span>
         </div>
       </div>
     );
@@ -195,11 +195,11 @@ export default function TenantSelectionScreen() {
           <div className="w-14 h-14 bg-gradient-to-br from-[var(--af-accent)] to-[var(--af-accent2)] rounded-2xl shadow-lg af-glow-accent flex items-center justify-center mx-auto mb-4">
             <Building2 size={28} className="stroke-background" aria-hidden="true"/>
           </div>
-          <h1 className="text-2xl font-bold af-heading">Bienvenido, {userName.split(' ')[0]}</h1>
+          <h1 className="text-2xl font-bold af-heading">Hoş geldiniz, {userName.split(' ')[0]}</h1>
           <p className="text-sm text-[var(--muted-foreground)] mt-2">
             {tenants.length === 0
-              ? 'Crea tu espacio o únete con un código de invitación'
-              : 'Selecciona o crea un espacio de trabajo'
+              ? 'Çalışma alanınızı oluşturun veya bir davet koduyla katılın'
+              : 'Bir çalışma alanı seçin veya yeni bir alan oluşturun'
             }
           </p>
         </div>
@@ -208,11 +208,11 @@ export default function TenantSelectionScreen() {
         {tenants.length > 0 && !showCreate && !showJoin && (
           <div className="space-y-3 mb-6">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Tus espacios</span>
-              <span className="text-xs text-[var(--muted-foreground)]">{tenants.length} espacio{tenants.length !== 1 ? 's' : ''}</span>
+              <span className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Çalışma Alanlarınız</span>
+              <span className="text-xs text-[var(--muted-foreground)]">{tenants.length} alan</span>
             </div>
             {tenants.map((t) => {
-              const isSuperAdmin = t.role === 'Super Admin' || t.createdBy === authUser?.uid || (t as any).superAdmins?.includes(authUser?.uid);
+              const isSuperAdmin = t.role === 'Süper Yönetici' || t.createdBy === authUser?.uid || (t as any).superAdmins?.includes(authUser?.uid);
               return (
                 <button
                   key={t.id}
@@ -228,7 +228,7 @@ export default function TenantSelectionScreen() {
                       {isSuperAdmin && (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-gradient-to-r from-[var(--af-accent)] to-amber-500 text-background px-1.5 py-0.5 rounded-md flex-shrink-0">
                           <Crown size={10} aria-hidden="true"/>
-                          SUPER ADMIN
+                          SÜPER YÖNETİCİ
                         </span>
                       )}
                     </div>
@@ -236,7 +236,7 @@ export default function TenantSelectionScreen() {
                       <span className="text-[11px] text-[var(--muted-foreground)] font-mono bg-[var(--af-bg3)] px-2 py-0.5 rounded-md">{t.code}</span>
                       <span className="text-[11px] text-[var(--muted-foreground)] flex items-center gap-1">
                         <Users size={10} aria-hidden="true"/>
-                        {t.members?.length || 1} miembro{(t.members?.length || 1) !== 1 ? 's' : ''}
+                        {t.members?.length || 1} üye
                       </span>
                     </div>
                   </div>
@@ -244,7 +244,7 @@ export default function TenantSelectionScreen() {
                     <button
                       onClick={(e) => copyCode(t.code, e)}
                       className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-all"
-                      title="Copiar código de invitación"
+                      title="Davet kodunu kopyala"
                     >
                       {copiedCode === t.code ? (
                         <Check size={14} className="stroke-emerald-400" aria-hidden="true"/>
@@ -268,14 +268,14 @@ export default function TenantSelectionScreen() {
               className="w-full af-btn-primary flex items-center justify-center gap-2.5 py-3 rounded-xl text-sm font-semibold cursor-pointer transition-all border-none"
             >
               <Plus size={18} className="stroke-current" strokeWidth={2.5} aria-hidden="true"/>
-              {tenants.length === 0 ? 'Crear mi espacio de trabajo' : 'Crear nuevo espacio'}
+              {tenants.length === 0 ? 'Çalışma alanımı oluştur' : 'Yeni alan oluştur'}
             </button>
             <button
               onClick={() => setShowJoin(true)}
               className="w-full af-btn-secondary flex items-center justify-center gap-2.5 py-3 rounded-xl text-sm font-semibold cursor-pointer transition-all"
             >
               <Sparkles size={16} className="stroke-current" aria-hidden="true"/>
-              Unirme con un código
+              Davet koduyla katıl
             </button>
           </div>
         )}
@@ -284,21 +284,21 @@ export default function TenantSelectionScreen() {
         {showCreate && (
           <div className="af-card bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 animate-fadeIn">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-base">Crear espacio de trabajo</h2>
+              <h2 className="font-semibold text-base">Çalışma Alanı Oluştur</h2>
               <button
                 onClick={() => { setShowCreate(false); setNewTenantName(''); }}
                 className="text-xs text-[var(--muted-foreground)] cursor-pointer hover:text-[var(--foreground)] bg-transparent border-none"
               >
-                Cancelar
+                İptal
               </button>
             </div>
 
-            {/* Super Admin info */}
+            {/* Süper Yönetici info */}
             <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-gradient-to-r from-[var(--af-accent)]/10 via-amber-500/5 to-transparent border border-[var(--af-accent)]/20 mb-4">
               <Crown size={16} className="stroke-[var(--af-accent)] flex-shrink-0" aria-hidden="true"/>
               <div>
-                <div className="text-xs font-semibold">Serás Super Admin</div>
-                <div className="text-[11px] text-[var(--muted-foreground)]">Tendrás control total del espacio. Comparte el código para invitar miembros.</div>
+                <div className="text-xs font-semibold">Süper Yönetici Olacaksınız</div>
+                <div className="text-[11px] text-[var(--muted-foreground)]">Bu alanda tam kontrole sahip olacaksınız. Kod ile ekip üyelerinizi davet edebilirsiniz.</div>
               </div>
             </div>
 
@@ -315,20 +315,20 @@ export default function TenantSelectionScreen() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <Database size={14} className={`flex-shrink-0 ${migrateExisting ? 'stroke-[var(--af-accent)]' : 'stroke-[var(--muted-foreground)]'}`} aria-hidden="true"/>
-                      <span className="text-xs font-semibold">Migrar datos existentes</span>
+                      <span className="text-xs font-semibold">Mevcut verileri bu alana aktar</span>
                     </div>
                     <p className="text-[11px] text-[var(--muted-foreground)] mt-1 leading-relaxed">
-                      Asigna tus proyectos, tareas, gastos y demas datos actuales a este nuevo espacio para mantenerlos aislados.
+                      Projelerinizi, görevlerinizi ve bütçelerinizi bu yeni alana bağlayın.
                     </p>
                   </div>
                 </button>
               </div>
 
             <div className="mb-4">
-              <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Nombre del espacio</label>
+              <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Çalışma alanı adı</label>
               <input
                 className="w-full bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--foreground)] outline-none transition-colors focus:border-[var(--af-accent)]"
-                placeholder="Ej: Constructora ABC, Arquitectura XYZ..."
+                placeholder="Örn: Oxonom Mimarlık, Merkez Ofis..."
                 value={newTenantName}
                 onChange={(e) => setNewTenantName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleCreate(); }}
@@ -346,7 +346,7 @@ export default function TenantSelectionScreen() {
               ) : (
                 <Shield size={16} className="stroke-current" aria-hidden="true"/>
               )}
-              {creating ? 'Creando...' : 'Crear espacio como Super Admin'}
+              {creating ? 'Oluşturuluyor...' : 'Alanı Oluştur ve Başla'}
             </button>
           </div>
         )}
@@ -355,12 +355,12 @@ export default function TenantSelectionScreen() {
         {showJoin && (
           <div className="af-card bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 animate-fadeIn">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-base">Unirme con código</h2>
+              <h2 className="font-semibold text-base">Davet Koduyla Katıl</h2>
               <button
                 onClick={() => { setShowJoin(false); setJoinCode(''); setJoinError(''); }}
                 className="text-xs text-[var(--muted-foreground)] cursor-pointer hover:text-[var(--foreground)] bg-transparent border-none"
               >
-                Cancelar
+                İptal
               </button>
             </div>
 
@@ -368,13 +368,13 @@ export default function TenantSelectionScreen() {
             <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] mb-4">
               <UserCheck size={16} className="stroke-[var(--af-accent)] flex-shrink-0" aria-hidden="true"/>
               <div>
-                <div className="text-xs font-semibold">Entrarás como Miembro</div>
-                <div className="text-[11px] text-[var(--muted-foreground)]">Podrás ver y colaborar en los proyectos del espacio.</div>
+                <div className="text-xs font-semibold">Ekip Üyesi Olarak Katılacaksınız</div>
+                <div className="text-[11px] text-[var(--muted-foreground)]">Bu alandaki projeleri görüntüleyebilir ve görevlerde iş birliği yapabilirsiniz.</div>
               </div>
             </div>
 
             <div className="mb-2">
-              <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">Código de invitación</label>
+              <label className="block text-xs font-medium text-[var(--muted-foreground)] mb-1.5">6 Haneli Davet Kodu</label>
               <input
                 className={`w-full bg-[var(--af-bg3)] border rounded-lg px-3.5 py-3 text-sm text-[var(--foreground)] outline-none transition-colors text-center font-mono text-lg tracking-[0.3em] uppercase ${joinError ? 'border-[var(--destructive)]' : 'border-[var(--input)] focus:border-[var(--af-accent)]'}`}
                 placeholder="ABC123"
@@ -399,7 +399,7 @@ export default function TenantSelectionScreen() {
               ) : (
                 <Sparkles size={16} className="stroke-current" aria-hidden="true"/>
               )}
-              {joining ? 'Uniéndome...' : 'Unirme al espacio'}
+              {joining ? 'Katılınıyor...' : 'Çalışma Alanına Katıl'}
             </button>
           </div>
         )}
@@ -407,7 +407,7 @@ export default function TenantSelectionScreen() {
         {/* Bottom info */}
         <div className="text-center mt-6">
           <p className="text-[11px] text-[var(--muted-foreground)]">
-            Cada espacio es completamente independiente. Los proyectos, tareas, gastos y demás datos están aislados entre espacios.
+            Her çalışma alanı bağımsızdır. Projeler, görevler ve bütçeler alanlar arasında güvenle izole edilir.
           </p>
         </div>
       </div>

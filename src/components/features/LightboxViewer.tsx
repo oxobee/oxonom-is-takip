@@ -17,7 +17,7 @@ export default function LightboxViewer() {
     <div className="fixed inset-0 bg-black/95 z-[200] flex items-center justify-center animate-fadeIn" onClick={closeLightbox}>
       <div className="relative w-full h-full flex flex-col items-center justify-center p-4" onClick={e => e.stopPropagation()}>
         {/* Close button */}
-        <button aria-label="Cerrar" className="absolute top-3 right-3 pt-[env(safe-area-inset-top,0px)] z-10 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center text-lg hover:bg-white/20 transition-colors" onClick={closeLightbox}><X size={20} aria-hidden="true"/></button>
+        <button aria-label="Kapat" className="absolute top-3 right-3 pt-[env(safe-area-inset-top,0px)] z-10 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center text-lg hover:bg-white/20 transition-colors" onClick={closeLightbox}><X size={20} aria-hidden="true"/></button>
         {/* OneDrive photo lightbox */}
         {lightboxPhoto.thumbnailLarge || lightboxPhoto.thumbnailUrl ? (
           <>

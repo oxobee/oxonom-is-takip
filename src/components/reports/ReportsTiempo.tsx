@@ -45,7 +45,7 @@ export default function ReportsTiempo({ timeEntries, teamUsers, projects, dateLa
         <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--af-accent)]">{fmtDuration(totalHrs)}</div><div className="text-[11px] text-[var(--muted-foreground)]">Total registrado</div></div>
         <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-emerald-400">{fmtDuration(billableHrs)}</div><div className="text-[11px] text-[var(--muted-foreground)]">Facturable</div></div>
         <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-blue-400">{fmtCOP(totalBillable)}</div><div className="text-[11px] text-[var(--muted-foreground)]">Valor facturable</div></div>
-        <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--foreground)]">{fmtDuration(weekHrs)}</div><div className="text-[11px] text-[var(--muted-foreground)]">Esta semana</div></div>
+        <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--foreground)]">{fmtDuration(weekHrs)}</div><div className="text-[11px] text-[var(--muted-foreground)]">Bu Hafta</div></div>
       </div>
     </div>
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
@@ -63,7 +63,7 @@ export default function ReportsTiempo({ timeEntries, teamUsers, projects, dateLa
       )}
     </div>
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
-      <h3 className="text-[15px] font-semibold mb-4">Horas por Miembro</h3>
+      <h3 className="text-[15px] font-semibold mb-4">Üye Başına Süre</h3>
       {Object.keys(byUser).length === 0 ? <div className="text-sm text-[var(--muted-foreground)]">Sin datos</div> : (
         <div className="space-y-2">{Object.entries(byUser).sort((a, b) => b[1] - a[1]).map(([uid, mins]) => {
           const user = teamUsers.find(u => u.id === uid);

@@ -146,7 +146,7 @@ export default function BudgetScreen() {
   const exportCSV = () => {
     const q = '"';
     const dq = '""';
-    const headers = ['Concepto', 'Proyecto', 'Categoría', 'Monto', 'Fecha', 'Método de pago', 'Proveedor'];
+    const headers = ['Harcama Kalemi', 'Proyecto', 'Categoría', 'Monto', 'Fecha', 'Ödeme Yöntemi', 'Proveedor'];
     const esc = (v: string | number) => q + String(v).split(q).join(dq) + q;
     const rows = filtered.map((e: Expense) => [
       e.data.concept,
@@ -161,7 +161,7 @@ export default function BudgetScreen() {
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = 'presupuesto_' + new Date().toISOString().split('T')[0] + '.csv'; a.click(); URL.revokeObjectURL(url);
-    showToast('Presupuesto exportado a CSV');
+    showToast('Bütçe exportado a CSV');
   };
 
   return (
@@ -171,20 +171,20 @@ export default function BudgetScreen() {
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <DollarSign size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
-            Presupuesto
+            Bütçe
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{expenses.length} gastos registrados{filtered.length !== expenses.length ? ` · ${filtered.length} filtrados` : ''}</p>
         </div>
         <div className="flex gap-2 flex-wrap">
           <button
             className="flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-colors"
-            onClick={() => { try { exportBudgetPDF({ expenses: filtered, projects }); showToast('Presupuesto PDF descargado'); } catch { showToast('Error al generar PDF', 'error'); } }}
+            onClick={() => { try { exportBudgetPDF({ expenses: filtered, projects }); showToast('Bütçe PDF descargado'); } catch { showToast('Error al generar PDF', 'error'); } }}
           >
             <FileText size={14} aria-hidden="true"/> PDF
           </button>
           <button
             className="flex items-center gap-1.5 bg-[var(--af-bg3)] text-[var(--foreground)] px-3 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-colors"
-            onClick={() => { try { exportExpensesExcel(filtered, projects); showToast('Presupuesto Excel descargado'); } catch { showToast('Error al generar Excel', 'error'); } }}
+            onClick={() => { try { exportExpensesExcel(filtered, projects); showToast('Bütçe Excel descargado'); } catch { showToast('Error al generar Excel', 'error'); } }}
           >
             <Download size={14} aria-hidden="true"/> Excel
           </button>
@@ -196,7 +196,7 @@ export default function BudgetScreen() {
           </button>
           <button
             className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors"
-            onClick={() => { setEditingId(null); setForms((p: Record<string, any>) => ({ ...p, expConcept: '', expProject: '', expAmount: '', expDate: new Date().toISOString().split('T')[0], expCategory: 'Materiales', expPaymentMethod: 'Efectivo', expVendor: '', expNotes: '' })); openModal('expense'); }}
+            onClick={() => { setEditingId(null); setForms((p: Record<string, any>) => ({ ...p, expConcept: '', expProject: '', expAmount: '', expDate: new Date().toISOString().split('T')[0], expCategory: 'Materiales', expPaymentMethod: 'Nakit', expVendor: '', expNotes: '' })); openModal('expense'); }}
           >
             <Plus size={15} aria-hidden="true"/> Registrar gasto
           </button>
@@ -232,14 +232,14 @@ export default function BudgetScreen() {
               <div>
                 <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Proyecto</label>
                 <select value={filterProject} onChange={e => setFilterProject(e.target.value)} className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer">
-                  <option value="">Todos los proyectos</option>
+                  <option value="">Tüm Projeler</option>
                   {projects.map((p: Project) => <option key={p.id} value={p.id}>{p.data?.name}</option>)}
                 </select>
               </div>
               <div>
                 <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Categoría</label>
                 <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)} className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer">
-                  <option value="">Todas las categorías</option>
+                  <option value="">Tüm Kategoriler</option>
                   {EXPENSE_CATS.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
@@ -253,7 +253,7 @@ export default function BudgetScreen() {
               </div>
             </div>
             {hasActiveFilters && (
-              <button className="mt-3 text-[11px] text-[var(--af-accent)] cursor-pointer hover:underline" onClick={clearFilters}>Limpiar filtros</button>
+              <button className="mt-3 text-[11px] text-[var(--af-accent)] cursor-pointer hover:underline" onClick={clearFilters}>Filtreleri Temizle</button>
             )}
           </div>
         )}
@@ -262,7 +262,7 @@ export default function BudgetScreen() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
-          <div className="text-[11px] text-[var(--muted-foreground)] mb-1">Total gastado</div>
+          <div className="text-[11px] text-[var(--muted-foreground)] mb-1">Toplam Harcanan</div>
           <div className="text-lg font-bold text-[var(--af-accent)]">{fmtCOP(totalExpenses)}</div>
           <div className="text-[10px] text-[var(--muted-foreground)]">{filtered.length} registros</div>
         </div>
@@ -276,7 +276,7 @@ export default function BudgetScreen() {
           <div className="text-[10px] text-[var(--muted-foreground)]">{topCategory ? fmtCOP(topCategory.value) : ''}</div>
         </div>
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
-          <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">Mes anterior</div>
+          <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">Ay anterior</div>
           <div className="text-lg font-bold flex items-center gap-1">
             {momChange !== null ? (
               <>
@@ -365,7 +365,7 @@ export default function BudgetScreen() {
         <div>
           <div className="text-[15px] font-semibold mb-3 flex items-center gap-2">
             <Receipt size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
-            Presupuesto por Proyecto
+            Bütçe por Proyecto
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {projectBudgetData.map((p) => (
@@ -384,7 +384,7 @@ export default function BudgetScreen() {
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-[var(--muted-foreground)]">
                   <span>Gastado: <span className="text-[var(--foreground)] font-medium">{fmtCOP(p.spent)}</span></span>
-                  <span>Presupuesto: <span className="text-[var(--foreground)] font-medium">{fmtCOP(p.budget)}</span></span>
+                  <span>Bütçe: <span className="text-[var(--foreground)] font-medium">{fmtCOP(p.budget)}</span></span>
                 </div>
                 {p.pct > 100 && (
                   <div className="mt-2 text-[10px] text-red-400 flex items-center gap-1">
@@ -453,28 +453,28 @@ export default function BudgetScreen() {
                         <span>{e.data.category}</span>
                         {e.data.date && <span> · {e.data.date}</span>}
                         {e.data.vendor && <span> · {e.data.vendor}</span>}
-                        {e.data.paymentMethod && e.data.paymentMethod !== 'Efectivo' && <span className="text-[10px] px-1 py-0.5 rounded bg-[var(--af-bg4)]">{e.data.paymentMethod}</span>}
+                        {e.data.paymentMethod && e.data.paymentMethod !== 'Nakit' && <span className="text-[10px] px-1 py-0.5 rounded bg-[var(--af-bg4)]">{e.data.paymentMethod}</span>}
                       </div>
                     </div>
                     <div className="text-sm font-semibold">{fmtCOP(Number(e.data.amount))}</div>
                     {/* Desktop: action buttons */}
                     <div className="hidden md:flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <button className="text-xs px-1.5 py-1 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] cursor-pointer hover:bg-[var(--af-accent)]/20" onClick={() => openEditExpense(e)}>✎</button>
-                      <button className="text-xs px-1.5 py-1 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar gasto', description: '¿Estás seguro? El gasto será eliminado permanentemente.' })) deleteExpense(e.id); }}>✕</button>
+                      <button className="text-xs px-1.5 py-1 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Harcamayı Sil', description: '¿Estás seguro? El gasto será eliminado permanentemente.' })) deleteExpense(e.id); }}>✕</button>
                     </div>
                     {/* Mobile: OverflowMenu */}
                     <div className="md:hidden flex-shrink-0">
                       <OverflowMenu
                         actions={[
                           {
-                            label: 'Editar gasto',
+                            label: 'Harcamayı Düzenle',
                             icon: <Edit3 size={14} aria-hidden="true"/>,
                             onClick: () => openEditExpense(e),
                           },
                           {
-                            label: 'Eliminar gasto',
+                            label: 'Harcamayı Sil',
                             icon: <Trash2 size={14} aria-hidden="true"/>,
-                            onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar gasto', description: '¿Estás seguro? El gasto será eliminado permanentemente.' })) deleteExpense(e.id); },
+                            onClick: async () => { if (await confirmDialog.confirm({ title: 'Harcamayı Sil', description: '¿Estás seguro? El gasto será eliminado permanentemente.' })) deleteExpense(e.id); },
                             variant: 'danger',
                           },
                         ]}

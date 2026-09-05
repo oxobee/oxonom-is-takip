@@ -261,7 +261,7 @@ export default function KanbanBoardScreen() {
           projectId: selectedProjectId || '',
           assigneeId: authUser.uid,
           assigneeIds: [authUser.uid],
-          priority: 'Media',
+          priority: 'Orta',
           status,
           dueDate: '',
           tenantId: activeTenantId,
@@ -291,7 +291,7 @@ export default function KanbanBoardScreen() {
               'data.quickCards': [...existingQuickCards, quickCard],
               'data.updatedAt': ts,
             });
-          showToast('Tarjeta creada');
+          showToast('Kart creada');
         }
       }
     } catch (err: any) {
@@ -400,7 +400,7 @@ export default function KanbanBoardScreen() {
               </svg>
             </div>
             <h2 className="text-lg font-semibold text-[var(--foreground)] mb-2">
-              Tablero Kanban
+              Kanban Panosu
             </h2>
             <p className="text-[13px] text-[var(--muted-foreground)] leading-relaxed mb-6">
               Organiza tus {getEntityLabel(kanbanEntityType).toLowerCase()} visualmente con un tablero Kanban interactivo. Arrastra y suelta para cambiar estados.

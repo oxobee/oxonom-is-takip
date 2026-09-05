@@ -52,13 +52,13 @@ export default function SubmittalsScreen() {
 
   const handleCreate = () => {
     setEditingId(null);
-    setForms(p => ({ ...p, subTitle: '', subDescription: '', subSpecification: '', subStatus: 'Borrador', subReviewer: '', subDueDate: '', subReviewNotes: '', subProject: '' }));
+    setForms(p => ({ ...p, subTitle: '', subDescription: '', subSpecification: '', subStatus: 'Taslak', subReviewer: '', subDueDate: '', subReviewNotes: '', subProject: '' }));
     openModal('submittal');
   };
 
   const handleEdit = (s: any) => {
     setEditingId(s.id);
-    setForms(f => ({ ...f, subTitle: s.data.title, subDescription: s.data.description || '', subSpecification: s.data.specification || '', subStatus: s.data.status || 'Borrador', subReviewer: s.data.reviewer || '', subDueDate: s.data.dueDate || '', subReviewNotes: s.data.reviewNotes || '', subProject: s.data.projectId || '' }));
+    setForms(f => ({ ...f, subTitle: s.data.title, subDescription: s.data.description || '', subSpecification: s.data.specification || '', subStatus: s.data.status || 'Taslak', subReviewer: s.data.reviewer || '', subDueDate: s.data.dueDate || '', subReviewNotes: s.data.reviewNotes || '', subProject: s.data.projectId || '' }));
     openModal('submittal');
   };
 
@@ -78,7 +78,7 @@ export default function SubmittalsScreen() {
           onClick={handleCreate}
         >
           <Plus size={14} aria-hidden="true"/>
-          Nuevo submittal
+          Yeni Onay Belgesi
         </button>
       </div>
 
@@ -86,10 +86,10 @@ export default function SubmittalsScreen() {
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-5">
         {[
           { label: 'Total', value: stats.total, color: 'bg-[var(--af-bg4)]' },
-          { label: 'Borrador', value: stats.draft, color: 'bg-gray-500/10 text-gray-400' },
-          { label: 'En revisión', value: stats.inReview, color: 'bg-amber-500/10 text-amber-400' },
-          { label: 'Aprobado', value: stats.approved, color: 'bg-emerald-500/10 text-emerald-400' },
-          { label: 'Rechazado', value: stats.rejected, color: 'bg-red-500/10 text-red-400' },
+          { label: 'Taslak', value: stats.draft, color: 'bg-gray-500/10 text-gray-400' },
+          { label: 'İncelemede', value: stats.inReview, color: 'bg-amber-500/10 text-amber-400' },
+          { label: 'Onaylandı', value: stats.approved, color: 'bg-emerald-500/10 text-emerald-400' },
+          { label: 'Reddedildi', value: stats.rejected, color: 'bg-red-500/10 text-red-400' },
           { label: 'Devuelto', value: stats.returned, color: 'bg-purple-500/10 text-purple-400' },
         ].map((s) => (
           <div key={s.label} className={`${s.color} rounded-xl p-3 text-center`}>
@@ -123,7 +123,7 @@ export default function SubmittalsScreen() {
           emoji="📋"
           title="Sin submittals"
           description="Crea tu primer submittal para enviar a revisión"
-          actionLabel="Nuevo submittal"
+          actionLabel="Yeni Onay Belgesi"
           onAction={handleCreate}
         />
       ) : (
@@ -191,9 +191,9 @@ export default function SubmittalsScreen() {
                 {s.data.status === 'Borrador' && (
                   <button
                     className="text-[12px] font-semibold text-[var(--af-accent)] hover:underline cursor-pointer bg-transparent border-none p-0 mb-2"
-                    onClick={() => handleStatusChange(s.id, 'En revisión')}
+                    onClick={() => handleStatusChange(s.id, 'İncelemede')}
                   >
-                    → Enviar a revisión
+                    → Gönder a revisión
                   </button>
                 )}
 
@@ -203,12 +203,12 @@ export default function SubmittalsScreen() {
                       <div className="flex gap-2 w-full">
                         <input
                           className="flex-1 bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-3 py-1.5 text-xs text-[var(--foreground)] outline-none"
-                          placeholder="Notas de revisión (opcional)"
+                          placeholder="Notlar de revisión (opcional)"
                           value={reviewNotes[s.id] || ''}
                           onChange={(e) => setReviewNotes(prev => ({ ...prev, [s.id]: e.target.value }))}
                         />
-                        <button className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 cursor-pointer" onClick={() => handleStatusChange(s.id, 'Aprobado', reviewNotes[s.id])}>Aprobar</button>
-                        <button className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-red-500/10 text-red-400 border border-red-500/30 cursor-pointer" onClick={() => handleStatusChange(s.id, 'Rechazado', reviewNotes[s.id])}>Rechazar</button>
+                        <button className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 cursor-pointer" onClick={() => handleStatusChange(s.id, 'Onaylandı', reviewNotes[s.id])}>Aprobar</button>
+                        <button className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-red-500/10 text-red-400 border border-red-500/30 cursor-pointer" onClick={() => handleStatusChange(s.id, 'Reddedildi', reviewNotes[s.id])}>Rechazar</button>
                         <button className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/30 cursor-pointer" onClick={() => handleStatusChange(s.id, 'Devuelto', reviewNotes[s.id])}>Devolver</button>
                         <button className="px-2 py-1.5 rounded-lg text-[11px] bg-[var(--af-bg4)] cursor-pointer" onClick={() => setShowReviewInput(null)}>✕</button>
                       </div>

@@ -38,7 +38,7 @@ export default function ProjectBatchActionBar({
             onChange={e => { if (e.target.value) { onStatusChange(e.target.value); e.target.value = ''; } }}
           >
             <option value="" disabled>Cambiar estado...</option>
-            <option value="Concepto">Concepto</option>
+            <option value="Harcama Kalemi">Harcama Kalemi</option>
             <option value="Diseno">Diseño</option>
             <option value="Ejecucion">Ejecución</option>
             <option value="Terminado">Terminado</option>

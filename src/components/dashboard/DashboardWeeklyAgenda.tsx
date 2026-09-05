@@ -27,7 +27,7 @@ export default function DashboardWeeklyAgenda({
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <CalendarDays size={18} className="text-[var(--af-accent)]" aria-hidden="true"/>
-          <h3 className="text-[14px] sm:text-[15px] font-semibold">Agenda Semanal</h3>
+          <h3 className="text-[14px] sm:text-[15px] font-semibold">Haftalık Ajanda</h3>
           <span className="text-[11px] text-[var(--muted-foreground)] hidden sm:inline">{agendaWeekLabel}</span>
         </div>
         <button
@@ -129,7 +129,7 @@ export default function DashboardWeeklyAgenda({
                       const maxH = Math.max(...meta.hourSlots);
                       const spanCount = maxH - minH + 1;
                       const blockHeight = spanCount * AGENDA_SLOT_H;
-                      const pc = AGENDA_PRIO_COLORS[task.data.priority] || AGENDA_PRIO_COLORS['Media'];
+                      const pc = AGENDA_PRIO_COLORS[task.data.priority] || AGENDA_PRIO_COLORS['Orta'];
 
                       return (
                         <div

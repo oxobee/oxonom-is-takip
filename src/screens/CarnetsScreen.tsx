@@ -81,7 +81,7 @@ export default function CarnetsScreen() {
   const [importResult, setImportResult] = useState<any>(null);
   const [importFile, setImportFile] = useState<File | null>(null);
 
-  // Designer state — opens as full-screen overlay within CarnetsScreen
+  // Designer state — opens as full-screen overlay within Kimlik & BelgelerScreen
   const [showDesigner, setShowDesigner] = useState(false);
 
   // Photo cropper state
@@ -130,7 +130,7 @@ export default function CarnetsScreen() {
         setStats(data.stats);
       }
     } catch (err) {
-      console.error('[Carnets] fetch error:', err);
+      console.error('[Kimlik & Belgeler] fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -153,7 +153,7 @@ export default function CarnetsScreen() {
       }
       if (data.total !== undefined) setStats(data);
     } catch (err) {
-      console.error('[Carnets] stats error:', err);
+      console.error('[Kimlik & Belgeler] stats error:', err);
     }
   }, [activeTenantId, authUser]);
 
@@ -186,7 +186,7 @@ export default function CarnetsScreen() {
         if (backDefault) setBackTemplate(backDefault);
       }
     } catch (err) {
-      console.error('[Carnets] template fetch error:', err);
+      console.error('[Kimlik & Belgeler] template fetch error:', err);
     }
   }, [activeTenantId, authUser]);
 
@@ -260,7 +260,7 @@ export default function CarnetsScreen() {
 
   const handleSave = async () => {
     if (!form.fullName?.trim()) {
-      toast.error('Nombre completo es requerido');
+      toast.error('Ad Soyad es requerido');
       return;
     }
     try {
@@ -363,7 +363,7 @@ export default function CarnetsScreen() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[var(--foreground)]" style={{ fontFamily: "'DM Serif Display', serif" }}>
-            Carnets
+            Kimlik & Belgeler
           </h1>
           <p className="text-sm text-[var(--muted-foreground)] mt-1">
             Gestión de carnets corporativos
@@ -374,7 +374,7 @@ export default function CarnetsScreen() {
             onClick={() => { setShowImport(true); setImportResult(null); setImportFile(null); }}
             className="af-btn-secondary flex items-center gap-2 text-sm px-4 py-2.5"
           >
-            <FileSpreadsheet size={16} /> Importar Excel
+            <FileSpreadsheet size={16} /> Excel İçe Aktar
           </button>
           <button
             onClick={() => setShowDesigner(true)}
@@ -559,7 +559,7 @@ export default function CarnetsScreen() {
       {showImport && (
         <CenterModal open onClose={() => { setShowImport(false); setImportResult(null); setImportFile(null); }} maxWidth={650}>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Importar carnets desde Excel</h2>
+            <h2 className="text-lg font-semibold">İçe Aktar carnets desde Excel</h2>
             <button onClick={() => { setShowImport(false); setImportResult(null); setImportFile(null); }} className="w-8 h-8 rounded-lg hover:bg-[var(--af-bg3)] flex items-center justify-center cursor-pointer bg-transparent border-none">
               <X size={18} className="text-[var(--muted-foreground)]" />
             </button>
@@ -578,11 +578,11 @@ export default function CarnetsScreen() {
                   <span><span className="font-semibold">Área / Departamento</span></span>
                   <span><span className="font-semibold">Tipo de Sangre</span></span>
                   <span><span className="font-semibold">Ciudad</span></span>
-                  <span><span className="font-semibold">Teléfono</span></span>
+                  <span><span className="font-semibold">Telefon</span></span>
                   <span><span className="font-semibold">Email</span></span>
                   <span><span className="font-semibold">EPS</span></span>
                   <span><span className="font-semibold">Contacto de Emergencia</span></span>
-                  <span><span className="font-semibold">Teléfono Emergencia</span></span>
+                  <span><span className="font-semibold">Telefon Emergencia</span></span>
                   <span><span className="font-semibold">Fecha Ingreso / Vigencia</span></span>
                 </div>
               </div>
@@ -633,7 +633,7 @@ export default function CarnetsScreen() {
                   onClick={() => { setShowImport(false); setImportFile(null); }}
                   className="af-btn-secondary text-sm px-4 py-2.5"
                 >
-                  Cancelar
+                  İptal
                 </button>
                 <button
                   onClick={async () => {
@@ -671,7 +671,7 @@ export default function CarnetsScreen() {
                   {importing ? (
                     <><Loader2 size={16} className="animate-spin" /> Importando...</>
                   ) : (
-                    <><FileSpreadsheet size={16} /> Importar</>
+                    <><FileSpreadsheet size={16} /> İçe Aktar</>
                   )}
                 </button>
               </div>
@@ -758,7 +758,7 @@ export default function CarnetsScreen() {
                   onClick={() => { setShowImport(false); setImportResult(null); setImportFile(null); }}
                   className="af-btn-primary text-sm px-4 py-2.5"
                 >
-                  Cerrar
+                  Kapat
                 </button>
               </div>
             </div>
@@ -794,7 +794,7 @@ export default function CarnetsScreen() {
               disabled={exporting}
               className="af-btn-primary flex items-center gap-2 text-[12px] px-3 py-2"
             >
-              <FileText size={14} /> Descargar PDF
+              <FileText size={14} /> PDF İndir
             </button>
             <button
               onClick={() => handleExportPNG('front', previewCarnet)}
@@ -848,7 +848,7 @@ export default function CarnetsScreen() {
               </div>
               <div className="flex-1">
                 <label className="af-btn-secondary inline-flex items-center gap-2 text-[12px] cursor-pointer px-3 py-2">
-                  <Upload size={14} /> Subir foto
+                  <Upload size={14} /> Fotoğraf Yükle
                   <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
                 </label>
                 {form.photoBase64 && (
@@ -871,7 +871,7 @@ export default function CarnetsScreen() {
               </div>
             </div>
 
-            <FormField label="Nombre completo" required>
+            <FormField label="Ad Soyad" required>
               <FormInput
                 value={form.fullName || ''}
                 onChange={e => setForm(prev => ({ ...prev, fullName: e.target.value }))}
@@ -901,7 +901,7 @@ export default function CarnetsScreen() {
                 <FormInput
                   value={form.position || ''}
                   onChange={e => setForm(prev => ({ ...prev, position: e.target.value }))}
-                  placeholder="Arquitecto"
+                  placeholder="Mimar"
                 />
               </FormField>
               <FormField label="Área">
@@ -914,7 +914,7 @@ export default function CarnetsScreen() {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="Teléfono">
+              <FormField label="Telefon">
                 <FormInput
                   value={form.phone || ''}
                   onChange={e => setForm(prev => ({ ...prev, phone: e.target.value }))}
@@ -953,7 +953,7 @@ export default function CarnetsScreen() {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="Fecha inicio">
+              <FormField label="Başlangıç Tarihi">
                 <FormInput
                   type="date"
                   value={form.startDate || ''}
@@ -977,7 +977,7 @@ export default function CarnetsScreen() {
                   placeholder="María Pérez"
                 />
               </FormField>
-              <FormField label="Teléfono emergencia">
+              <FormField label="Telefon emergencia">
                 <FormInput
                   value={form.emergencyPhone || ''}
                   onChange={e => setForm(prev => ({ ...prev, emergencyPhone: e.target.value }))}
@@ -1017,7 +1017,7 @@ export default function CarnetsScreen() {
           <ModalFooter
             onCancel={() => { setEditCarnet(null); setIsCreate(false); setForm({}); }}
             onSubmit={handleSave}
-            submitLabel={saving ? 'Guardando...' : isCreate ? 'Crear carnet' : 'Actualizar'}
+            submitLabel={saving ? 'Guardando...' : isCreate ? 'Crear carnet' : 'Güncelle'}
             submitDisabled={saving}
           />
         </CenterModal>
@@ -1037,7 +1037,7 @@ export default function CarnetsScreen() {
         />
       )}
 
-      {/* ═══ Designer Overlay (full-screen within Carnets) ═══ */}
+      {/* ═══ Designer Overlay (full-screen within Kimlik & Belgeler) ═══ */}
       {showDesigner && (
         <div className="fixed inset-0 z-50 bg-[var(--background)] animate-fadeIn">
           <CarnetTemplateEditor onClose={() => {

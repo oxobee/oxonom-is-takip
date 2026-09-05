@@ -39,26 +39,26 @@ export default function PunchItemModal({ open, onClose }: { open: boolean; onClo
           <FormTextarea value={forms.punchDescription || ''} onChange={(e) => setForms(p => ({ ...p, punchDescription: e.target.value }))} placeholder="Describe el defecto o item a corregir" rows={3} />
         </FormField>
         <div className="grid grid-cols-2 gap-3">
-          <FormField label="Ubicación">
+          <FormField label="Konum">
             <FormSelect value={forms.punchLocation || 'Otro'} onChange={(e) => setForms(p => ({ ...p, punchLocation: e.target.value }))}>
               {PUNCH_LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
             </FormSelect>
           </FormField>
           {editingId && (
             <FormField label="Estado">
-              <FormSelect value={forms.punchStatus || 'Pendiente'} onChange={(e) => setForms(p => ({ ...p, punchStatus: e.target.value }))}>
-                {['Pendiente', 'En progreso', 'Completado'].map(s => <option key={s} value={s}>{s}</option>)}
+              <FormSelect value={forms.punchStatus || 'Beklemede'} onChange={(e) => setForms(p => ({ ...p, punchStatus: e.target.value }))}>
+                {['Beklemede', 'Devam Ediyor', 'Tamamlandı'].map(s => <option key={s} value={s}>{s}</option>)}
               </FormSelect>
             </FormField>
           )}
           <FormField label="Prioridad">
-            <FormSelect value={forms.punchPriority || 'Media'} onChange={(e) => setForms(p => ({ ...p, punchPriority: e.target.value }))}>
-              {['Alta', 'Media', 'Baja'].map(p => <option key={p} value={p}>{p}</option>)}
+            <FormSelect value={forms.punchPriority || 'Orta'} onChange={(e) => setForms(p => ({ ...p, punchPriority: e.target.value }))}>
+              {['Yüksek', 'Orta', 'Düşük'].map(p => <option key={p} value={p}>{p}</option>)}
             </FormSelect>
           </FormField>
-          <FormField label="Asignado a">
+          <FormField label="Atanan Kişi">
             <FormSelect value={forms.punchAssignedTo || ''} onChange={(e) => setForms(p => ({ ...p, punchAssignedTo: e.target.value }))}>
-              <option value="">Sin asignar</option>
+              <option value="">Atanmamış</option>
               {teamUsers.map((u: any) => <option key={u.id} value={u.id}>{u.data.name}</option>)}
             </FormSelect>
           </FormField>
@@ -67,7 +67,7 @@ export default function PunchItemModal({ open, onClose }: { open: boolean; onClo
           </FormField>
         </div>
       </div>
-      <ModalFooter onCancel={() => closeModal('punchItem')} onSubmit={handleSubmit} submitLabel={editingId ? 'Actualizar' : 'Agregar item'} />
+      <ModalFooter onCancel={() => closeModal('punchItem')} onSubmit={handleSubmit} submitLabel={editingId ? 'Güncelle' : 'Agregar item'} />
     </CenterModal>
   );
 }

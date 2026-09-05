@@ -9,11 +9,11 @@ export default function BottomNav() {
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 af-glass af-noise border-t border-[var(--border)] flex z-40 safe-bottom" style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 4px)' }}>
       {[
-        { id: 'dashboard', icon: <LayoutGrid size={20} aria-hidden="true"/>, label: 'Inicio' },
-        { id: 'projects', icon: <Folder size={20} aria-hidden="true"/>, label: 'Proyectos' },
-        { id: 'tasks', icon: <ClipboardList size={20} aria-hidden="true"/>, label: 'Tareas' },
-        { id: 'chat', icon: <MessageCircle size={20} aria-hidden="true"/>, label: 'Chat' },
-        { id: '_more', icon: <MoreHorizontal size={20} aria-hidden="true"/>, label: 'Más' },
+        { id: 'dashboard', icon: <LayoutGrid size={20} aria-hidden="true"/>, label: 'Panel' },
+        { id: 'projects', icon: <Folder size={20} aria-hidden="true"/>, label: 'Projeler' },
+        { id: 'tasks', icon: <ClipboardList size={20} aria-hidden="true"/>, label: 'Görevler' },
+        { id: 'chat', icon: <MessageCircle size={20} aria-hidden="true"/>, label: 'Sohbet' },
+        { id: '_more', icon: <MoreHorizontal size={20} aria-hidden="true"/>, label: 'Diğer' },
       ].map(item => {
         const isActive = item.id === '_more' ? sidebarOpen : screen === item.id;
         return (

@@ -44,8 +44,8 @@ export default function ChangeOrdersScreen() {
     return { total, pending, approved, draft };
   }, [changeOrders]);
 
-  const canCreate = ['Admin', 'Director', 'Arquitecto'].includes(activeTenantRole);
-  const canApprove = ['Interventor', 'Super Admin', 'Admin'].includes(activeTenantRole);
+  const canCreate = ['Admin', 'Director', 'Mimar'].includes(activeTenantRole);
+  const canApprove = ['Denetçi', 'Süper Yönetici', 'Admin'].includes(activeTenantRole);
 
   const handleCreate = () => {
     setEditingId(null);
@@ -80,7 +80,7 @@ export default function ChangeOrdersScreen() {
       await fbActions.updateChangeOrder(co.id, { status: 'cancelada' });
       showToast('Orden cancelada');
     } catch (err) {
-      console.error('[Archii] Error cancelling CO:', err);
+      console.error('[oxonom iş takip] Error cancelling CO:', err);
     }
   };
 
@@ -123,15 +123,15 @@ export default function ChangeOrdersScreen() {
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-gray-400">{stats.draft}</div>
-            <div className="text-[10px] text-[var(--muted-foreground)]">Borrador</div>
+            <div className="text-[10px] text-[var(--muted-foreground)]">Taslak</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-amber-400">{stats.pending}</div>
-            <div className="text-[10px] text-[var(--muted-foreground)]">Pendiente</div>
+            <div className="text-[10px] text-[var(--muted-foreground)]">Beklemede</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-emerald-400">{stats.approved}</div>
-            <div className="text-[10px] text-[var(--muted-foreground)]">Aprobada</div>
+            <div className="text-[10px] text-[var(--muted-foreground)]">Onaylandı</div>
           </div>
         </div>
       </div>
@@ -151,7 +151,7 @@ export default function ChangeOrdersScreen() {
         }}
         filters={[{
           key: 'type',
-          label: 'Todos los tipos',
+          label: 'Tüm Türler',
           value: coFilterType ? (CO_TYPE_LABELS[coFilterType] || coFilterType) : '',
           options: CO_TYPES.map(t => ({ value: CO_TYPE_LABELS[t] || t, label: CO_TYPE_LABELS[t] || t })),
           onChange: (label: string) => {

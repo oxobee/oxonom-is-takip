@@ -60,7 +60,7 @@ const feedbackStatusColor = (status: string): string => {
 
 const feedbackStatusLabel = (status: string): string => {
   switch (status) {
-    case 'pending': return 'Pendiente';
+    case 'pending': return 'Beklemede';
     case 'reviewed': return 'Revisado';
     case 'resolved': return 'Resuelto';
     default: return status;
@@ -295,7 +295,7 @@ export default function AdminLogScreen() {
           onClick={handleRefresh}
           disabled={isLoading}
         >
-          <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} aria-hidden="true" /> Actualizar
+          <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} aria-hidden="true" /> Güncelle
         </button>
       </div>
 

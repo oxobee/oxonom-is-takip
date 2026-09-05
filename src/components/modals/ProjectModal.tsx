@@ -48,7 +48,7 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={580}>
-      <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar proyecto' : 'Nuevo proyecto'}</h2>
+      <h2 className="text-lg font-semibold mb-4">{editingId ? 'Projeyi Düzenle' : 'Yeni Proje'}</h2>
 
       <div className="space-y-3">
         <FormField label="Nombre" required error={errors.projName}>
@@ -64,17 +64,17 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
         <div className="grid grid-cols-2 gap-3">
           <FormField label="Estado">
             <FormSelect
-              value={forms.projStatus || 'Concepto'}
+              value={forms.projStatus || 'Harcama Kalemi'}
               onChange={(e) => setForms(p => ({ ...p, projStatus: e.target.value }))}
             >
-              <option value="Concepto">Concepto</option>
+              <option value="Harcama Kalemi">Harcama Kalemi</option>
               <option value="Diseno">Diseño</option>
               <option value="Ejecucion">Ejecución</option>
               <option value="Terminado">Terminado</option>
             </FormSelect>
           </FormField>
 
-          <FormField label="Tipo de proyecto">
+          <FormField label="Proje Türü">
             <FormSelect
               value={projectType}
               onChange={(e) => setForms(p => ({ ...p, projType: e.target.value, enabledPhases: [] }))}
@@ -91,7 +91,7 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
           <div className="bg-[var(--af-bg3)] rounded-lg p-3 border border-[var(--border)]">
             <div className="flex items-center justify-between mb-2">
               <div className="text-[12px] font-semibold text-[var(--foreground)]">
-                Fases del proyecto
+                Proje Aşamaları
               </div>
               <button
                 type="button"
@@ -136,7 +136,7 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
           </div>
         )}
 
-        <FormField label="Cliente">
+        <FormField label="Müşteri">
           <FormInput
             value={forms.projClient || ''}
             onChange={(e) => setForms(p => ({ ...p, projClient: e.target.value }))}
@@ -150,15 +150,15 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
           </datalist>
         </FormField>
 
-        <FormField label="Ubicación">
+        <FormField label="Konum">
           <FormInput
             value={forms.projLocation || ''}
             onChange={(e) => setForms(p => ({ ...p, projLocation: e.target.value }))}
-            placeholder="Ubicación del proyecto"
+            placeholder="Konum del proyecto"
           />
         </FormField>
 
-        <FormField label="Empresa">
+        <FormField label="Firma">
           <FormSelect
             value={forms.projCompany || ''}
             onChange={(e) => {
@@ -177,7 +177,7 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
           </FormSelect>
         </FormField>
 
-        <FormField label="Presupuesto COP">
+        <FormField label="Bütçe (TL)">
           <FormInput
             type="number"
             value={forms.projBudget || ''}
@@ -187,14 +187,14 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
         </FormField>
 
         <div className="grid grid-cols-2 gap-3">
-          <FormField label="Fecha inicio">
+          <FormField label="Başlangıç Tarihi">
             <FormInput
               type="date"
               value={forms.projStart || ''}
               onChange={(e) => setForms(p => ({ ...p, projStart: e.target.value }))}
             />
           </FormField>
-          <FormField label="Fecha entrega">
+          <FormField label="Teslim Tarihi">
             <FormInput
               type="date"
               value={forms.projEnd || ''}
@@ -216,7 +216,7 @@ export default function ProjectModal({ open, onClose }: { open: boolean; onClose
       <ModalFooter
         onCancel={() => closeModal('project')}
         onSubmit={handleSubmit}
-        submitLabel={editingId ? 'Actualizar' : 'Crear proyecto'}
+        submitLabel={editingId ? 'Güncelle' : 'Proje Oluştur'}
       />
     </CenterModal>
   );

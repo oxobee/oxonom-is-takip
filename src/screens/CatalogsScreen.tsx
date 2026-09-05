@@ -133,7 +133,7 @@ export default function CatalogsScreen() {
       }
       setShowForm(false);
     } catch (err: any) {
-      console.error('[Archii] Error saving catalog:', err);
+      console.error('[oxonom iş takip] Error saving catalog:', err);
       showToast('Error al guardar catálogo', 'error');
     } finally {
       setSaving(false);
@@ -153,7 +153,7 @@ export default function CatalogsScreen() {
       showToast('Catálogo eliminado');
       if (selectedCatalog?.id === c.id) setSelectedCatalog(null);
     } catch (err: any) {
-      console.error('[Archii] Error deleting catalog:', err);
+      console.error('[oxonom iş takip] Error deleting catalog:', err);
       showToast('Error al eliminar catálogo', 'error');
     }
   };
@@ -204,7 +204,7 @@ export default function CatalogsScreen() {
       showToast('Ítems guardados');
       setSelectedCatalog(null);
     } catch (err: any) {
-      console.error('[Archii] Error saving items:', err);
+      console.error('[oxonom iş takip] Error saving items:', err);
       showToast('Error al guardar ítems', 'error');
     } finally {
       setSaving(false);
@@ -222,7 +222,7 @@ export default function CatalogsScreen() {
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <BookOpen size={20} className="text-[var(--af-accent)]" aria-hidden="true" />
-            Catálogos
+            Kataloglar
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{catalogs.length} catálogos</p>
         </div>
@@ -248,7 +248,7 @@ export default function CatalogsScreen() {
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-amber-400">{stats.enRevision}</div>
-            <div className="text-[10px] text-[var(--muted-foreground)]">En revisión</div>
+            <div className="text-[10px] text-[var(--muted-foreground)]">İncelemede</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-gray-400">{stats.inactivos}</div>
@@ -283,7 +283,7 @@ export default function CatalogsScreen() {
           }}
           filters={[{
             key: 'type',
-            label: 'Todos los tipos',
+            label: 'Tüm Türler',
             value: filterType,
             options: CATALOG_TYPES.map(t => ({ value: t, label: t })),
             onChange: setFilterType,
@@ -425,14 +425,14 @@ export default function CatalogsScreen() {
               className="flex-1 px-4 py-2 rounded-lg text-[13px] font-semibold bg-[var(--af-bg4)] text-[var(--foreground)] cursor-pointer border-none hover:bg-[var(--af-bg3)] transition-colors"
               onClick={() => setShowForm(false)}
             >
-              Cancelar
+              İptal
             </button>
             <button
               className="flex-1 px-4 py-2 rounded-lg text-[13px] font-semibold bg-[var(--af-accent)] text-background cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors disabled:opacity-50"
               onClick={handleSave}
               disabled={saving}
             >
-              {saving ? 'Guardando...' : editingId ? 'Guardar' : 'Crear'}
+              {saving ? 'Guardando...' : editingId ? 'Kaydet' : 'Crear'}
             </button>
           </div>
         </div>
@@ -459,7 +459,7 @@ export default function CatalogsScreen() {
                 )}
               </div>
               <button
-                aria-label="Cerrar"
+                aria-label="Kapat"
                 className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[var(--af-bg4)] text-[var(--muted-foreground)] cursor-pointer flex-shrink-0 border-none bg-transparent"
                 onClick={() => setSelectedCatalog(null)}
               >
@@ -512,7 +512,7 @@ export default function CatalogsScreen() {
                       </select>
                     </div>
                     <div>
-                      <label className={labelCls}>Precio unitario (COP)</label>
+                      <label className={labelCls}>Birim Fiyat (COP)</label>
                       <input type="number" className={inputCls} placeholder="0" value={itemForm.unitPrice || ''} onChange={e => setItemForm(f => ({ ...f, unitPrice: Number(e.target.value) || 0 }))} />
                     </div>
                     <div>
@@ -525,21 +525,21 @@ export default function CatalogsScreen() {
                     </div>
                   </div>
                   <div>
-                    <label className={labelCls}>Notas</label>
-                    <input className={inputCls} placeholder="Notas adicionales..." value={itemForm.notes} onChange={e => setItemForm(f => ({ ...f, notes: e.target.value }))} />
+                    <label className={labelCls}>Notlar</label>
+                    <input className={inputCls} placeholder="Ek Notlar..." value={itemForm.notes} onChange={e => setItemForm(f => ({ ...f, notes: e.target.value }))} />
                   </div>
                   <div className="flex gap-2 pt-1">
                     <button
                       className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[var(--af-bg4)] text-[var(--foreground)] cursor-pointer border-none hover:bg-[var(--af-bg3)] transition-colors"
                       onClick={() => setShowItemForm(false)}
                     >
-                      Cancelar
+                      İptal
                     </button>
                     <button
                       className="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-[var(--af-accent)] text-background cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors"
                       onClick={handleSaveItem}
                     >
-                      {itemEditIdx !== null ? 'Guardar' : 'Agregar'}
+                      {itemEditIdx !== null ? 'Kaydet' : 'Agregar'}
                     </button>
                   </div>
                 </div>
@@ -623,14 +623,14 @@ export default function CatalogsScreen() {
                 className="flex-1 px-4 py-2 rounded-lg text-[13px] font-semibold bg-[var(--af-bg4)] text-[var(--foreground)] cursor-pointer border-none hover:bg-[var(--af-bg3)] transition-colors"
                 onClick={() => setSelectedCatalog(null)}
               >
-                Cancelar
+                İptal
               </button>
               <button
                 className="flex-1 px-4 py-2 rounded-lg text-[13px] font-semibold bg-[var(--af-accent)] text-background cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors disabled:opacity-50"
                 onClick={handleSaveItems}
                 disabled={saving}
               >
-                {saving ? 'Guardando...' : 'Guardar cambios'}
+                {saving ? 'Guardando...' : 'Değişiklikleri Kaydet'}
               </button>
             </div>
           </div>

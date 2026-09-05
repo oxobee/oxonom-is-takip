@@ -16,18 +16,18 @@ export default function InstallBanner() {
             <HomeIcon size={24} className="stroke-background" aria-hidden="true"/>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[15px] font-semibold">Instalar Archii</div>
-            <div className="text-[12.5px] text-[var(--muted-foreground)] mt-0.5">Accede más rápido desde tu pantalla de inicio o escritorio</div>
+            <div className="text-[15px] font-semibold">oxonom iş takip uygulamasını yükleyin</div>
+            <div className="text-[12.5px] text-[var(--muted-foreground)] mt-0.5">Ana ekranınızdan veya masaüstünüzden anında erişin</div>
             <div className="flex gap-2 mt-3">
               <button className="flex-1 bg-[var(--af-accent)] text-background px-4 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors" onClick={handleInstall}>
-                Instalar app
+                Uygulamayı Yükle
               </button>
               <button className="px-4 py-2 rounded-lg text-[13px] font-medium cursor-pointer bg-[var(--af-bg3)] text-[var(--muted-foreground)] border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-colors" onClick={dismissInstallBanner}>
-                Ahora no
+                Daha Sonra
               </button>
             </div>
           </div>
-          <button aria-label="Cerrar" className="w-9 h-9 flex items-center justify-center text-[var(--af-text3)] cursor-pointer hover:text-[var(--foreground)] flex-shrink-0" onClick={dismissInstallBanner}>
+          <button aria-label="Kapat" className="w-9 h-9 flex items-center justify-center text-[var(--af-text3)] cursor-pointer hover:text-[var(--foreground)] flex-shrink-0" onClick={dismissInstallBanner}>
             <X size={16} className="stroke-current" aria-hidden="true"/>
           </button>
         </div>

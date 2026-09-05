@@ -22,7 +22,7 @@ export default function InvProductModal({ open, onClose }: { open: boolean; onCl
     <CenterModal open={open} onClose={onClose} maxWidth={520}>
       <div className="text-lg font-semibold mb-5 flex items-center gap-2">
         <Package className="w-5 h-5" aria-hidden="true"/>
-        {editingId ? 'Editar producto' : 'Nuevo producto'}
+        {editingId ? 'Editar producto' : 'Yeni Ürün'}
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-3">
@@ -96,7 +96,7 @@ export default function InvProductModal({ open, onClose }: { open: boolean; onCl
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-3">
-        <FormField label="Stock mínimo (total)">
+        <FormField label="Minimum Stok (total)">
           <FormInput type="number" placeholder="5" value={forms.invProdMinStock || '5'} onChange={e => setForms(p => ({ ...p, invProdMinStock: e.target.value }))} />
         </FormField>
         <FormField label="Almacén principal">
@@ -110,7 +110,7 @@ export default function InvProductModal({ open, onClose }: { open: boolean; onCl
         <FormTextarea rows={2} placeholder="Descripción..." value={forms.invProdDesc || ''} onChange={e => setForms(p => ({ ...p, invProdDesc: e.target.value }))} />
       </FormField>
 
-      <ModalFooter onCancel={() => closeModal('invProduct')} onSubmit={handleSubmit} submitLabel={editingId ? 'Guardar' : 'Crear producto'} />
+      <ModalFooter onCancel={() => closeModal('invProduct')} onSubmit={handleSubmit} submitLabel={editingId ? 'Kaydet' : 'Crear producto'} />
     </CenterModal>
   );
 }

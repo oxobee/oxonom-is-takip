@@ -114,7 +114,7 @@ export default function KanbanBoard({
             <span>Estado</span>
             <span>Prioridad</span>
             <span>Responsable</span>
-            <span>Vencimiento</span>
+            <span>Vade</span>
           </div>
 
           {sortedCards.map(card => {
@@ -134,8 +134,8 @@ export default function KanbanBoard({
                     {column?.title || ''}
                   </span>
                   <span className={`text-[12px] px-2 py-0.5 rounded-md w-fit ${
-                    card.priority === 'Alta' ? 'bg-red-500/10 text-red-400' :
-                    card.priority === 'Media' ? 'bg-amber-500/10 text-amber-400' :
+                    card.priority === 'Yüksek' ? 'bg-red-500/10 text-red-400' :
+                    card.priority === 'Orta' ? 'bg-amber-500/10 text-amber-400' :
                     'bg-emerald-500/10 text-emerald-400'
                   }`}>
                     {card.priority}
@@ -155,8 +155,8 @@ export default function KanbanBoard({
                   <div className="flex items-start justify-between gap-2">
                     <span className="text-[13px] font-medium text-[var(--foreground)] line-clamp-2 flex-1">{card.title}</span>
                     <span className={`text-[11px] px-1.5 py-0.5 rounded-md flex-shrink-0 ${
-                      card.priority === 'Alta' ? 'bg-red-500/10 text-red-400' :
-                      card.priority === 'Media' ? 'bg-amber-500/10 text-amber-400' :
+                      card.priority === 'Yüksek' ? 'bg-red-500/10 text-red-400' :
+                      card.priority === 'Orta' ? 'bg-amber-500/10 text-amber-400' :
                       'bg-emerald-500/10 text-emerald-400'
                     }`}>
                       {card.priority}

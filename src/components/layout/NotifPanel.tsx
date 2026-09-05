@@ -15,7 +15,7 @@ export default function NotifPanel() {
     clearNotifHistory, unreadCount,
   } = useNotificationsContext();
 
-  // Canales externos
+  // Kanallar externos
   const [channelPrefs, setChannelPrefs] = useState({ whatsapp: true, email: true, push: true });
   const [pushSupported, setPushSupported] = useState(false);
   const [pushRegistering, setPushRegistering] = useState(false);
@@ -104,7 +104,7 @@ export default function NotifPanel() {
               { key: 'task', label: 'Tareas', Icon: ClipboardList },
               { key: 'meeting', label: 'Reuniones', Icon: Calendar },
               { key: 'agenda', label: 'Agenda', Icon: CalendarClock },
-              { key: 'inventory', label: 'Inventario', Icon: Package },
+              { key: 'inventory', label: 'Envanter', Icon: Package },
               { key: 'project', label: 'Proyectos', Icon: Folder },
               { key: 'approval', label: 'Aprob.', Icon: CheckCircle },
               { key: 'reminder', label: 'Record.', Icon: Clock },
@@ -191,7 +191,7 @@ export default function NotifPanel() {
               className="flex items-center gap-1 px-2 py-1 rounded-md text-[10px] text-[var(--muted-foreground)] cursor-pointer hover:text-[var(--foreground)] hover:bg-[var(--af-bg4)] transition-all"
               onClick={() => setShowChannels(!showChannels)}
             >
-              <Settings size={10} aria-hidden="true"/> Canales externos
+              <Settings size={10} aria-hidden="true"/> Kanallar externos
             </button>
           </div>
 
@@ -246,8 +246,8 @@ export default function NotifPanel() {
               { key: 'tasks', label: 'Tareas', Icon: ClipboardList },
               { key: 'meetings', label: 'Reuniones', Icon: Calendar },
               { key: 'agenda', label: 'Agenda', Icon: CalendarClock },
-              { key: 'approvals', label: 'Aprobaciones', Icon: CheckCircle },
-              { key: 'inventory', label: 'Inventario', Icon: Package },
+              { key: 'approvals', label: 'Onaylar', Icon: CheckCircle },
+              { key: 'inventory', label: 'Envanter', Icon: Package },
               { key: 'projects', label: 'Proyectos', Icon: Folder },
               { key: 'rfis', label: 'RFIs', Icon: CircleHelp },
               { key: 'submittals', label: 'Submittals', Icon: FileCheck },

@@ -28,9 +28,9 @@ const formatDateLabel = (date: Date): string => {
   const msgDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const diff = today.getTime() - msgDay.getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (days === 0) return 'Hoy';
-  if (days === 1) return 'Ayer';
-  if (days < 7) return ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][date.getDay()];
+  if (days === 0) return 'Bugün';
+  if (days === 1) return 'Dün';
+  if (days < 7) return ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'][date.getDay()];
   return date.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
 };
 
@@ -45,7 +45,7 @@ const formatTimeShort = (timestamp: any): string => {
   const diff = today.getTime() - msgDay.getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   if (days === 0) return date.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
-  if (days === 1) return 'Ayer';
+  if (days === 1) return 'Dün';
   if (days < 7) return ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][date.getDay()];
   return date.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
 };
@@ -284,7 +284,7 @@ export default function ChatScreen() {
                       <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: projColor }} />
                       <div className="min-w-0 flex-1">
                         <div className="text-[13px] font-medium truncate text-[var(--foreground)]">{p.data.name}</div>
-                        <div className="text-[11px] text-[var(--af-text3)] truncate">{p.data.client ? `Cliente: ${p.data.client}` : 'Canal del equipo'}</div>
+                        <div className="text-[11px] text-[var(--af-text3)] truncate">{p.data.client ? `Müşteri: ${p.data.client}` : 'Canal del equipo'}</div>
                       </div>
                     </div>
                   );
@@ -295,7 +295,7 @@ export default function ChatScreen() {
           {/* DM conversations section */}
           <div className="mt-1">
             <div className="flex items-center justify-between px-3 py-2">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Mensajes Directos</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted-foreground)]">Ayajlar Directos</span>
               <button
                 aria-label="Nuevo mensaje directo"
                 className="w-5 h-5 rounded-md flex items-center justify-center cursor-pointer border-none bg-transparent hover:bg-[var(--af-bg3)] transition-colors text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
@@ -438,7 +438,7 @@ export default function ChatScreen() {
                   <span className="text-4xl">💬</span>
                 </div>
                 <div className="text-[14px] font-semibold text-[var(--foreground)] mb-1">
-                  {chatMsgSearch.trim() ? 'Sin resultados' : 'Empieza la conversación'}
+                  {chatMsgSearch.trim() ? 'Sonuç bulunamadı' : 'Empieza la conversación'}
                 </div>
                 <div className="text-[12px] text-[var(--af-text3)] leading-relaxed">
                   {chatMsgSearch.trim() ? 'No se encontraron mensajes con ese criterio' : isDm ? '¡Envía un mensaje para empezar la conversación!' : '¡Saluda al equipo y comparte actualizaciones!'}
@@ -765,7 +765,7 @@ export default function ChatScreen() {
 
             {/* Close button */}
             <div className="text-center py-1 border-t border-[var(--border)]">
-              <button className="text-[11px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer border-none bg-transparent py-1 px-4" onClick={() => { setShowEmojiPicker(false); setEmojiSearch(''); }}>Cerrar</button>
+              <button className="text-[11px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer border-none bg-transparent py-1 px-4" onClick={() => { setShowEmojiPicker(false); setEmojiSearch(''); }}>Kapat</button>
             </div>
           </div>
         )}
@@ -781,7 +781,7 @@ export default function ChatScreen() {
                   <div className="text-[11px] text-[var(--af-text3)] truncate">{(chatReplyingTo.text || '').substring(0, 100)}</div>
                 </div>
                 <button
-                  aria-label="Cancelar respuesta"
+                  aria-label="İptal respuesta"
                   className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-[var(--af-bg4)] text-[var(--muted-foreground)] cursor-pointer border-none bg-transparent flex-shrink-0"
                   onClick={() => setChatReplyingTo(null)}
                 >
@@ -793,13 +793,13 @@ export default function ChatScreen() {
 
           <div className="flex gap-1 items-end px-2.5 py-2.5 safe-bottom">
             <input ref={fileInputRef} type="file" className="hidden" multiple onChange={(e) => handleFileSelect(e.target.files)} accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.dwg,.txt,.csv" />
-            <button aria-label="Adjuntar archivo" className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer border-none bg-transparent hover:bg-[var(--af-bg3)] transition-colors flex-shrink-0" onClick={() => fileInputRef.current?.click()} title="Adjuntar archivo">
+            <button aria-label="Dosya Ekle" className="w-10 h-10 rounded-xl flex items-center justify-center cursor-pointer border-none bg-transparent hover:bg-[var(--af-bg3)] transition-colors flex-shrink-0" onClick={() => fileInputRef.current?.click()} title="Dosya Ekle">
               <Paperclip size={18} className="stroke-[var(--muted-foreground)]" strokeWidth={1.75} aria-hidden="true"/>
             </button>
             <input
               id="chat-input-field"
               className="flex-1 bg-[var(--af-bg3)] border border-[var(--border)] rounded-2xl px-4 py-2.5 text-[15px] text-[var(--foreground)] outline-none focus:border-[var(--af-accent)] min-w-0 transition-colors placeholder:text-[var(--af-text3)]"
-              placeholder="Escribe un mensaje..."
+              placeholder="Bir mesaj yazın..."
               value={forms.chatInput || ''}
               onChange={e => setForms(p => ({ ...p, chatInput: e.target.value }))}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAll(); } }}
@@ -824,10 +824,10 @@ export default function ChatScreen() {
               )}
             </button>
             <button
-              aria-label="Enviar"
+              aria-label="Gönder"
               className="w-10 h-10 rounded-xl bg-[var(--af-accent)] flex items-center justify-center cursor-pointer border-none flex-shrink-0 active:scale-95 transition-transform hover:opacity-90 shadow-md"
               onClick={sendAll}
-              title="Enviar"
+              title="Gönder"
             >
               <Send size={18} className="stroke-background" strokeWidth={2.5} aria-hidden="true"/>
             </button>
@@ -842,7 +842,7 @@ export default function ChatScreen() {
           onClick={() => setLightboxImg(null)}
         >
           <button
-            aria-label="Cerrar"
+            aria-label="Kapat"
             className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer border-none text-white z-10 transition-colors"
             onClick={() => setLightboxImg(null)}
           >
@@ -878,7 +878,7 @@ export default function ChatScreen() {
                 <div className="text-[11px] text-[var(--muted-foreground)]">Selecciona un miembro del equipo</div>
               </div>
               <button
-                aria-label="Cerrar"
+                aria-label="Kapat"
                 className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer border-none bg-transparent hover:bg-[var(--af-bg3)] text-[var(--muted-foreground)] transition-colors"
                 onClick={() => setShowNewDmDialog(false)}
               >

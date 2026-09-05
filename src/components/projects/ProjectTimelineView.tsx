@@ -48,7 +48,7 @@ export default function ProjectTimelineView({ projects, getHealth, onOpenProject
     return (
       <div className="text-center py-12 text-[var(--af-text3)] text-sm">
         <GanttChart size={32} className="mx-auto mb-2 opacity-30" aria-hidden="true"/>
-        No hay proyectos con fechas para mostrar en el timeline
+        Proje bulunamadı con fechas para mostrar en el timeline
       </div>
     );
   }
@@ -132,7 +132,7 @@ export default function ProjectTimelineView({ projects, getHealth, onOpenProject
       {/* Today legend */}
       <div className="border-t border-[var(--border)] px-4 py-2 flex items-center justify-between text-[10px] text-[var(--muted-foreground)]">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1"><div className="w-2 h-2 bg-red-500 rounded-full" /> Hoy</div>
+          <div className="flex items-center gap-1"><div className="w-2 h-2 bg-red-500 rounded-full" /> Bugün</div>
           {Object.entries(STATUS_COLORS).map(([k, v]) => (
             <div key={k} className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm" style={{ background: v }} /> {STATUS_LABELS[k] || k}</div>
           ))}

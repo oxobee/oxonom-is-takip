@@ -113,7 +113,7 @@ export default function TimeTrackingScreen() {
                 onClick={handleQuickSave}
                 disabled={quickSaving}
               >
-                {quickSaving ? 'Guardando...' : 'Guardar'}
+                {quickSaving ? 'Guardando...' : 'Kaydet'}
               </button>
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function TimeTrackingScreen() {
 
           {/* Today's entries */}
           <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
-            <h3 className="text-[15px] font-semibold mb-4">Hoy</h3>
+            <h3 className="text-[15px] font-semibold mb-4">Bugün</h3>
             {(() => {
               const today = new Date().toISOString().split('T')[0];
               const todayEntries = timeEntries.filter(e => e.data.date === today);
@@ -195,7 +195,7 @@ export default function TimeTrackingScreen() {
         {timeTab === 'entries' && (<div>
           <div className="flex items-center gap-3 mb-4 flex-wrap">
             <select className="bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none" value={timeFilterProject} onChange={e => setTimeFilterProject(e.target.value)}>
-              <option value="all">Todos los proyectos</option>
+              <option value="all">Tüm Projeler</option>
               {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
             </select>
             <input type="date" className="bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--foreground)] outline-none" value={timeFilterDate} onChange={e => setTimeFilterDate(e.target.value)} />
@@ -286,14 +286,14 @@ export default function TimeTrackingScreen() {
             timeEntries.forEach(e => { if (e.data.phaseName) byPhase[e.data.phaseName] = (byPhase[e.data.phaseName] || 0) + (e.data.duration || 0); });
             return (<>
               <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
-                <h3 className="text-[15px] font-semibold mb-4">Esta Semana</h3>
+                <h3 className="text-[15px] font-semibold mb-4">Esta Hafta</h3>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--af-accent)]">{fmtDuration(weekTotal)}</div><div className="text-[11px] text-[var(--muted-foreground)]">Horas totales</div></div>
                   <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-emerald-400">{fmtCOP(weekBillable)}</div><div className="text-[11px] text-[var(--muted-foreground)]">Facturable</div></div>
                 </div>
               </div>
               <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
-                <h3 className="text-[15px] font-semibold mb-4">Este Mes</h3>
+                <h3 className="text-[15px] font-semibold mb-4">Este Ay</h3>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--af-accent)]">{fmtDuration(monthTotal)}</div><div className="text-[11px] text-[var(--muted-foreground)]">Horas totales</div></div>
                   <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-emerald-400">{fmtCOP(monthBillable)}</div><div className="text-[11px] text-[var(--muted-foreground)]">Facturable</div></div>

@@ -1,7 +1,7 @@
 {
-  "name": "Archii — Gestión de Proyectos de Arquitectura",
-  "short_name": "Archii",
-  "description": "Plataforma integral de gestión de proyectos de arquitectura e interiorismo",
+  "name": "oxonom iş takip — Proje & İş Yönetimi",
+  "short_name": "oxonom",
+  "description": "Kapsamlı kurumsal proje, görev ve iş takip yönetim platformu",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0e0f11",
@@ -9,7 +9,7 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "dir": "ltr",
-  "lang": "es",
+  "lang": "tr",
   "categories": ["productivity", "business"],
   "prefer_related_applications": false,
   "icons": [

@@ -151,7 +151,7 @@ function CommentItem({
 }) {
   const isResolved = comment.status === 'resolved';
   const roleColor =
-    ROLE_COLORS[comment.userRole || 'Miembro'] || ROLE_COLORS.Miembro;
+    ROLE_COLORS[comment.userRole || 'Üye'] || ROLE_COLORS.Üye;
 
   return (
     <div
@@ -452,7 +452,7 @@ export default function AnchoredComments({
                   disabled={!replyText.trim()}
                   className="h-7 px-2 text-[10px]"
                 >
-                  Enviar
+                  Gönder
                 </Button>
                 <Button
                   size="sm"

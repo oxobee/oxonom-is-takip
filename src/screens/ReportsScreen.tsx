@@ -60,7 +60,7 @@ export default function ReportsScreen() {
     });
   }, [timeEntries, dateFilter]);
 
-  const dateLabel = { all: 'Todo el tiempo', month: 'Este mes', quarter: 'Este trimestre', year: 'Este año' }[dateFilter];
+  const dateLabel = { all: 'Todo el tiempo', month: 'Bu Ay', quarter: 'Bu Çeyrek', year: 'Bu Yıl' }[dateFilter];
 
   const activeTab = forms.reportTab || 'General';
 
@@ -77,14 +77,14 @@ export default function ReportsScreen() {
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <BarChart3 size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
-            Reportes
+            Raporlar
           </h2>
-          <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Reportes consolidados del proyecto</p>
+          <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Raporlar consolidados del proyecto</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {/* Date filter */}
           <div className="flex gap-1 bg-[var(--af-bg3)] rounded-lg p-0.5">
-            {[{ k: 'all', l: 'Todo' }, { k: 'month', l: 'Mes' }, { k: 'quarter', l: 'Trim.' }, { k: 'year', l: 'Año' }].map(f => (
+            {[{ k: 'all', l: 'Todo' }, { k: 'month', l: 'Ay' }, { k: 'quarter', l: 'Trim.' }, { k: 'year', l: 'Yıl' }].map(f => (
               <button key={f.k} className={`px-2 py-1 rounded-md text-[11px] cursor-pointer transition-all ${dateFilter === f.k ? 'bg-[var(--card)] text-[var(--foreground)] font-medium shadow-sm' : 'text-[var(--muted-foreground)]'}`} onClick={() => setDateFilter(f.k as any)}>{f.l}</button>
             ))}
           </div>
@@ -102,14 +102,14 @@ export default function ReportsScreen() {
             try {
               let csv = 'Tipo,Dato,Valor\n';
               csv += `Proyectos,Total,${projects.length}\n`;
-              csv += `Presupuesto,Total,${projects.reduce((s, p) => s + (p.data.budget || 0), 0)}\n`;
+              csv += `Bütçe,Total,${projects.reduce((s, p) => s + (p.data.budget || 0), 0)}\n`;
               csv += `Gastos,Total,${filteredExpenses.reduce((s, e) => s + (e.data.amount || 0), 0)}\n`;
-              csv += `Tareas,Completadas,${tasks.filter(t => t.data.status === 'Completado').length}\n`;
-              csv += `Tareas,Pendientes,${tasks.filter(t => t.data.status !== 'Completado').length}\n`;
-              csv += `Equipo,Miembros,${teamUsers.length}\n`;
+              csv += `Tareas,Tamamlandıs,${tasks.filter(t => t.data.status === 'Completado').length}\n`;
+              csv += `Tareas,Beklemedes,${tasks.filter(t => t.data.status !== 'Completado').length}\n`;
+              csv += `Equipo,Üyes,${teamUsers.length}\n`;
               csv += `Tiempo,Horas totales,${filteredTimeEntries.reduce((s, e) => s + (e.data.duration || 0), 0)} minutos\n`;
-              csv += `Facturas,Total facturado,${filteredInvoices.filter(i => i.data.status !== 'Cancelada').reduce((s, i) => s + (i.data.total || 0), 0)}\n`;
-              projects.forEach(p => { csv += `Proyecto,"${p.data.name}",Presupuesto: ${p.data.budget}, Progreso: ${p.data.progress}%\n`; });
+              csv += `Faturalar,Total facturado,${filteredInvoices.filter(i => i.data.status !== 'Cancelada').reduce((s, i) => s + (i.data.total || 0), 0)}\n`;
+              projects.forEach(p => { csv += `Proyecto,"${p.data.name}",Bütçe: ${p.data.budget}, Progreso: ${p.data.progress}%\n`; });
               const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a'); a.href = url; a.download = `archii-reporte-${new Date().toISOString().split('T')[0]}.csv`; a.click();

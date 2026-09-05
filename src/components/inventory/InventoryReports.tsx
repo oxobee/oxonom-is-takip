@@ -28,11 +28,11 @@ export default function InventoryReports({
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h3 className="text-lg font-semibold">📊 Reportes</h3>
+        <h3 className="text-lg font-semibold">📊 Raporlar</h3>
         <div className="flex gap-2 flex-wrap">
           <button className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all bg-[var(--af-accent)] text-background border-none hover:bg-[var(--af-accent2)]" onClick={() => {
             try { exportInventoryExcel(invProducts, invCategories, invMovements); showToast('Excel de inventario exportado'); } catch { showToast('Error al generar Excel', 'error'); }
-          }}>📥 Exportar Excel</button>
+          }}>📥 Excel Dışa Aktar</button>
           <button className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all bg-[var(--af-bg3)] text-[var(--foreground)] border border-[var(--border)] hover:bg-[var(--af-bg4)]" onClick={() => {
             // Export products CSV
             const headers = ['Nombre', 'SKU', 'Categoría', 'Unidad', 'Precio', 'Stock Total', 'Mín Stock', 'Valor Total'];
@@ -42,7 +42,7 @@ export default function InventoryReports({
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a'); a.href = url; a.download = `inventario_productos_${new Date().toISOString().split('T')[0]}.csv`; a.click(); URL.revokeObjectURL(url);
             showToast('CSV de productos exportado');
-          }}>📥 Exportar productos CSV</button>
+          }}>📥 Dışa Aktar productos CSV</button>
           <button className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-all bg-blue-600 text-white border-none hover:bg-blue-700" onClick={() => {
             // Export movements CSV
             const headers = ['Fecha', 'Tipo', 'Producto', 'Almacén', 'Cantidad', 'Motivo', 'Referencia'];
@@ -52,14 +52,14 @@ export default function InventoryReports({
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a'); a.href = url; a.download = `movimientos_${new Date().toISOString().split('T')[0]}.csv`; a.click(); URL.revokeObjectURL(url);
             showToast('CSV de movimientos exportado');
-          }}>📥 Exportar movimientos CSV</button>
+          }}>📥 Dışa Aktar movimientos CSV</button>
         </div>
       </div>
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]">
-          <div className="text-xs text-[var(--muted-foreground)]">Valor total inventario</div>
+          <div className="text-xs text-[var(--muted-foreground)]">Toplam Tutar inventario</div>
           <div className="text-xl font-bold text-[var(--af-accent)] mt-1">{fmtCOP(invTotalValue)}</div>
         </div>
         <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]">
@@ -67,7 +67,7 @@ export default function InventoryReports({
           <div className="text-xl font-bold text-emerald-400 mt-1">{invProducts.filter(p => getTotalStock(p) > 0).length}</div>
         </div>
         <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]">
-          <div className="text-xs text-[var(--muted-foreground)]">Agotados</div>
+          <div className="text-xs text-[var(--muted-foreground)]">Tükendis</div>
           <div className="text-xl font-bold text-red-400 mt-1">{invProducts.filter(p => getTotalStock(p) === 0).length}</div>
         </div>
         <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]">
@@ -186,11 +186,11 @@ export default function InventoryReports({
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-blue-400">{invTransfers.length}</div>
-            <div className="text-[10px] text-[var(--muted-foreground)]">Transferencias</div>
+            <div className="text-[10px] text-[var(--muted-foreground)]">Havale / EFTs</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-[var(--foreground)]">{invTotalStock.toLocaleString('es-CO')}</div>
-            <div className="text-[10px] text-[var(--muted-foreground)]">Stock actual</div>
+            <div className="text-[10px] text-[var(--muted-foreground)]">Mevcut Stok</div>
           </div>
         </div>
         {/* Movement by warehouse bars */}

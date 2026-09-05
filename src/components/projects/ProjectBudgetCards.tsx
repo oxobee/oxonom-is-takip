@@ -14,7 +14,7 @@ export default function ProjectBudgetCards({ projectBudgetData }: ProjectBudgetC
     <div>
       <div className="text-[15px] font-semibold mb-3 flex items-center gap-2">
         <DollarSign size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
-        Presupuesto por Proyecto
+        Bütçe por Proyecto
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {projectBudgetData.map((p) => (
@@ -33,7 +33,7 @@ export default function ProjectBudgetCards({ projectBudgetData }: ProjectBudgetC
             </div>
             <div className="flex items-center justify-between text-[11px] text-[var(--muted-foreground)]">
               <span>Gastado: <span className="text-[var(--foreground)] font-medium">{fmtCOP(p.spent)}</span></span>
-              <span>Presupuesto: <span className="text-[var(--foreground)] font-medium">{fmtCOP(p.budget)}</span></span>
+              <span>Bütçe: <span className="text-[var(--foreground)] font-medium">{fmtCOP(p.budget)}</span></span>
             </div>
             {p.pct > 100 && (
               <div className="mt-2 text-[10px] text-red-400 flex items-center gap-1">

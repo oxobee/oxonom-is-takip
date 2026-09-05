@@ -119,11 +119,11 @@ export default function ObraScreen() {
           {displayLogs.length > 0 && (
             <button className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors" onClick={() => {
               try {
-                exportDailyLogsPDF({ logs: displayLogs, projectName: selectedProject?.data.name || 'Todos los proyectos' });
+                exportDailyLogsPDF({ logs: displayLogs, projectName: selectedProject?.data.name || 'Tüm Projeler' });
                 showToast('Bitácora PDF descargada');
               } catch { showToast('Error al generar PDF', 'error'); }
             }}>
-              <FileText size={14} aria-hidden="true"/> Exportar PDF
+              <FileText size={14} aria-hidden="true"/> PDF Dışa Aktar
             </button>
           )}
         </div>
@@ -142,7 +142,7 @@ export default function ObraScreen() {
         {activeProjects.length === 0 ? (
           <div className="text-center py-10 text-[var(--af-text3)]">
             <div className="text-4xl mb-3">🏗️</div>
-            <div className="text-sm mb-1">No hay proyectos en ejecución</div>
+            <div className="text-sm mb-1">Proje bulunamadı en ejecución</div>
             <div className="text-xs">Los proyectos con estado "Ejecución" aparecerán aquí</div>
           </div>
         ) : (
@@ -175,7 +175,7 @@ export default function ObraScreen() {
                     </div>
                     <div className="w-10 h-10 rounded-xl bg-[var(--af-accent)]/10 flex items-center justify-center text-lg group-hover:bg-[var(--af-accent)]/20 transition-colors ml-3 flex-shrink-0">📝</div>
                   </div>
-                  {p.data.client && <div className="text-[11px] text-[var(--af-text3)] mt-2">Cliente: {p.data.client}</div>}
+                  {p.data.client && <div className="text-[11px] text-[var(--af-text3)] mt-2">Müşteri: {p.data.client}</div>}
                 </div>
               );
             })}
@@ -231,7 +231,7 @@ export default function ObraScreen() {
 
             {/* Labor trend */}
             <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
-              <div className="text-[13px] font-semibold mb-3">Personal por Día</div>
+              <div className="text-[13px] font-semibold mb-3">Personal por Gün</div>
               {laborTrend.length > 0 ? (
                 <ResponsiveContainer width="100%" height={130}>
                   <BarChart data={laborTrend} margin={{ top: 5, right: 5, left: -15, bottom: 5 }}>

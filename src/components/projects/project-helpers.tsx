@@ -13,13 +13,13 @@ export const STATUS_COLORS: Record<string, string> = {
   Terminado: '#10b981',
 };
 
-export const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+export const MONTHS = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
 
 export const STATUS_LABELS: Record<string, string> = {
-  Concepto: 'Concepto',
-  Diseno: 'Diseño',
-  Ejecucion: 'Ejecución',
-  Terminado: 'Terminado',
+  Concepto: 'Konsept',
+  Diseno: 'Tasarım',
+  Ejecucion: 'Uygulama',
+  Terminado: 'Tamamlandı',
 };
 
 // ─── Health Score ───
@@ -72,7 +72,7 @@ export function computeHealth(
   const projTasks = tasks.filter((t: Task) => t.data.projectId === p.id);
   const totalTasks = projTasks.length;
   const overdueTasks = projTasks.filter(
-    (t: Task) => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)
+    (t: Task) => t.data.status !== 'Tamamlandı' && t.data.dueDate && checkOverdue(t.data.dueDate)
   ).length;
   if (totalTasks > 0) {
     const overdueRatio = overdueTasks / totalTasks;
@@ -147,9 +147,9 @@ export function ChartTooltipContent({
 // ─── Status tabs definition ───
 
 export const STATUS_TABS = [
-  { k: 'Todos', v: '' },
-  { k: 'Concepto', v: 'Concepto' },
-  { k: 'Diseño', v: 'Diseno' },
-  { k: 'Ejecución', v: 'Ejecucion' },
-  { k: 'Terminados', v: 'Terminado' },
+  { k: 'Tümü', v: '' },
+  { k: 'Konsept', v: 'Harcama Kalemi' },
+  { k: 'Tasarım', v: 'Diseno' },
+  { k: 'Uygulama', v: 'Ejecucion' },
+  { k: 'Tamamlanan', v: 'Terminado' },
 ];

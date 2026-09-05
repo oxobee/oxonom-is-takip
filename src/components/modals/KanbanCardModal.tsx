@@ -78,7 +78,7 @@ export default function KanbanCardModal({
             </span>
             {overdue && (
               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400">
-                Vencida
+                Gecikmiş
               </span>
             )}
           </div>
@@ -87,7 +87,7 @@ export default function KanbanCardModal({
           </h2>
         </div>
         <button
-          aria-label="Cerrar"
+          aria-label="Kapat"
           onClick={onClose}
           className="p-1.5 rounded-lg hover:bg-[var(--af-bg3)] text-[var(--muted-foreground)] transition-colors bg-transparent border-none cursor-pointer flex-shrink-0 ml-3"
         >
@@ -168,7 +168,7 @@ export default function KanbanCardModal({
                 <span className="text-[13px] text-[var(--foreground)] truncate">{getUserName(card.assigneeId)}</span>
               </>
             ) : (
-              <span className="text-[13px] text-[var(--muted-foreground)]">Sin asignar</span>
+              <span className="text-[13px] text-[var(--muted-foreground)]">Atanmamış</span>
             )}
           </div>
         </div>
@@ -252,13 +252,13 @@ export default function KanbanCardModal({
         <div className="border-t border-[var(--border)] pt-3 mt-4">
           {showDeleteConfirm ? (
             <div className="flex items-center justify-between">
-              <span className="text-[12px] text-red-400">Confirmar eliminacion?</span>
+              <span className="text-[12px] text-red-400">Onayla eliminacion?</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
                   className="px-3 py-1.5 text-[12px] rounded-lg bg-[var(--af-bg3)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors border-none cursor-pointer"
                 >
-                  Cancelar
+                  İptal
                 </button>
                 <button
                   onClick={handleDelete}

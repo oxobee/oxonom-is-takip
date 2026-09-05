@@ -18,7 +18,7 @@ export default function SupplierModal({ open, onClose }: { open: boolean; onClos
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={480}>
-      <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar proveedor' : 'Nuevo proveedor'}</h2>
+      <h2 className="text-lg font-semibold mb-4">{editingId ? 'Tedarikçiyi Düzenle' : 'Yeni Tedarikçi'}</h2>
 
       <div className="space-y-3">
         <FormField label="Nombre" required error={errors.supName}>
@@ -43,7 +43,7 @@ export default function SupplierModal({ open, onClose }: { open: boolean; onClos
         </FormField>
 
         <div className="grid grid-cols-2 gap-3">
-          <FormField label="Teléfono">
+          <FormField label="Telefon">
             <FormInput
               value={forms.supPhone || ''}
               onChange={(e) => setForms(p => ({ ...p, supPhone: e.target.value }))}
@@ -61,15 +61,15 @@ export default function SupplierModal({ open, onClose }: { open: boolean; onClos
           </FormField>
         </div>
 
-        <FormField label="Dirección">
+        <FormField label="Adres">
           <FormInput
             value={forms.supAddress || ''}
             onChange={(e) => setForms(p => ({ ...p, supAddress: e.target.value }))}
-            placeholder="Dirección"
+            placeholder="Adres"
           />
         </FormField>
 
-        <FormField label="Sitio web">
+        <FormField label="Web Sitesi">
           <FormInput
             value={forms.supWebsite || ''}
             onChange={(e) => setForms(p => ({ ...p, supWebsite: e.target.value }))}
@@ -103,11 +103,11 @@ export default function SupplierModal({ open, onClose }: { open: boolean; onClos
           </div>
         </FormField>
 
-        <FormField label="Notas">
+        <FormField label="Notlar">
           <FormTextarea
             value={forms.supNotes || ''}
             onChange={(e) => setForms(p => ({ ...p, supNotes: e.target.value }))}
-            placeholder="Notas sobre el proveedor"
+            placeholder="Notlar sobre el proveedor"
             rows={3}
           />
         </FormField>
@@ -116,7 +116,7 @@ export default function SupplierModal({ open, onClose }: { open: boolean; onClos
       <ModalFooter
         onCancel={() => closeModal('supplier')}
         onSubmit={handleSubmit}
-        submitLabel={editingId ? 'Actualizar' : 'Crear proveedor'}
+        submitLabel={editingId ? 'Güncelle' : 'Tedarikçi Ekle'}
       />
     </CenterModal>
   );

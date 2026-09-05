@@ -5,22 +5,22 @@
  */
 
 /**
- * Formatea un número como moneda COP (pesos colombianos).
+ * Formatea un número como moneda TL (Türk Lirası).
  */
 export const fmtCOP = (n: number): string => {
-  if (!n || n === 0) return '$0';
-  if (n >= 1e6) return '$' + (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
-  if (n >= 1e3) return '$' + (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
-  return '$' + Number(n).toLocaleString('es-CO');
+  if (!n || n === 0) return '₺0';
+  if (n >= 1e6) return '₺' + (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (n >= 1e3) return '₺' + (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'B';
+  return '₺' + Number(n).toLocaleString('tr-TR');
 };
 
 /**
- * Formatea un timestamp de Firebase o Date a fecha legible en español.
+ * Formatea un timestamp de Firebase o Date a fecha legible en turco.
  */
 export const fmtDate = (ts: any): string => {
   if (!ts) return '—';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
-  return d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
 /**
@@ -29,7 +29,36 @@ export const fmtDate = (ts: any): string => {
 export const fmtDateTime = (ts: any): string => {
   if (!ts) return '—';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
-  return d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+};
+
+/**
+ * Durum ve öncelik Türkçe etiket çeviricileri
+ */
+export const fmtStatus = (s: string): string => {
+  const map: Record<string, string> = {
+    'Por hacer': 'Yapılacak',
+    'En progreso': 'Devam Ediyor',
+    'Revision': 'İncelemede',
+    'Completado': 'Tamamlandı',
+    'Concepto': 'Konsept',
+    'Diseno': 'Tasarım',
+    'Ejecucion': 'Uygulama',
+    'Terminado': 'Tamamlandı',
+    'Pendiente': 'Beklemede',
+    'Aprobado': 'Onaylandı',
+    'Rechazado': 'Reddedildi',
+  };
+  return map[s] || s;
+};
+
+export const fmtPriority = (p: string): string => {
+  const map: Record<string, string> = {
+    'Alta': 'Yüksek',
+    'Media': 'Orta',
+    'Baja': 'Düşük',
+  };
+  return map[p] || p;
 };
 
 /**
@@ -53,9 +82,13 @@ export const getInitials = (n: string): string =>
 export const statusColor = (s: string): string =>
   ({
     Concepto: 'bg-[var(--af-bg4)] text-[var(--muted-foreground)]',
+    Konsept: 'bg-[var(--af-bg4)] text-[var(--muted-foreground)]',
     Diseno: 'bg-blue-500/10 text-blue-400',
+    Tasarım: 'bg-blue-500/10 text-blue-400',
     Ejecucion: 'bg-amber-500/10 text-amber-400',
+    Uygulama: 'bg-amber-500/10 text-amber-400',
     Terminado: 'bg-emerald-500/10 text-emerald-400',
+    Tamamlandı: 'bg-emerald-500/10 text-emerald-400',
   }[s] || 'bg-[var(--af-bg4)] text-[var(--muted-foreground)]');
 
 /**
@@ -64,8 +97,11 @@ export const statusColor = (s: string): string =>
 export const prioColor = (p: string): string =>
   ({
     Alta: 'bg-red-500/10 text-red-400',
+    Yüksek: 'bg-red-500/10 text-red-400',
     Media: 'bg-amber-500/10 text-amber-400',
+    Orta: 'bg-amber-500/10 text-amber-400',
     Baja: 'bg-emerald-500/10 text-emerald-400',
+    Düşük: 'bg-emerald-500/10 text-emerald-400',
   }[p] || 'bg-[var(--af-bg4)] text-[var(--muted-foreground)]');
 
 /**
@@ -74,9 +110,13 @@ export const prioColor = (p: string): string =>
 export const taskStColor = (s: string): string =>
   ({
     'Por hacer': 'bg-[var(--af-bg4)] text-[var(--muted-foreground)]',
+    'Yapılacak': 'bg-[var(--af-bg4)] text-[var(--muted-foreground)]',
     'En progreso': 'bg-blue-500/10 text-blue-400',
+    'Devam Ediyor': 'bg-blue-500/10 text-blue-400',
     Revision: 'bg-amber-500/10 text-amber-400',
+    İncelemede: 'bg-amber-500/10 text-amber-400',
     Completado: 'bg-emerald-500/10 text-emerald-400',
+    Tamamlandı: 'bg-emerald-500/10 text-emerald-400',
   }[s] || 'bg-[var(--af-bg4)] text-[var(--muted-foreground)]');
 
 /** Paleta de colores para avatares */

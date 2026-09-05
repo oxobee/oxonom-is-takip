@@ -17,17 +17,17 @@ interface KanbanToolbarProps {
 const ENTITY_OPTIONS: { value: KanbanEntityType; label: string }[] = [
   { value: 'tasks', label: 'Tareas' },
   { value: 'projects', label: 'Proyectos' },
-  { value: 'approvals', label: 'Aprobaciones' },
-  { value: 'invoices', label: 'Facturas' },
-  { value: 'transfers', label: 'Transferencias' },
+  { value: 'approvals', label: 'Onaylar' },
+  { value: 'invoices', label: 'Faturalar' },
+  { value: 'transfers', label: 'Havale / EFTs' },
   { value: 'phases', label: 'Fases' },
   { value: 'incidents', label: 'Incidencias' },
 ];
 
 const PRIORITY_OPTIONS = [
-  { value: 'Alta', label: 'Alta' },
-  { value: 'Media', label: 'Media' },
-  { value: 'Baja', label: 'Baja' },
+  { value: 'Yüksek', label: 'Yüksek' },
+  { value: 'Orta', label: 'Orta' },
+  { value: 'Düşük', label: 'Düşük' },
 ];
 
 export default function KanbanToolbar({

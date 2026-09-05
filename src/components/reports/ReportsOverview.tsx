@@ -23,7 +23,7 @@ export default function ReportsOverview({ projects, tasks, expenses, timeEntries
 
   const roleDistData = useMemo(() => {
     const roles: Record<string, number> = {};
-    teamUsers.forEach(u => { const r = u.data.role || 'Miembro'; roles[r] = (roles[r] || 0) + 1; });
+    teamUsers.forEach(u => { const r = u.data.role || 'Üye'; roles[r] = (roles[r] || 0) + 1; });
     return Object.entries(roles).sort((a, b) => b[1] - a[1]).map(([name, value]) => ({ name, value }));
   }, [teamUsers]);
 
@@ -50,13 +50,13 @@ export default function ReportsOverview({ projects, tasks, expenses, timeEntries
 
   const totalBudget = projects.reduce((s, p) => s + (p.data.budget || 0), 0);
   const totalSpent = expenses.reduce((s, e) => s + (e.data.amount || 0), 0);
-  const taskCompleted = tasks.filter(t => t.data.status === 'Completado').length;
-  const taskInProgress = tasks.filter(t => t.data.status === 'En progreso').length;
-  const taskPending = tasks.filter(t => t.data.status === 'Pendiente' || t.data.status === 'Por hacer').length;
-  const taskOverdue = tasks.filter(t => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)).length;
+  const taskCompleted = tasks.filter(t => t.data.status === 'Tamamlandı').length;
+  const taskInProgress = tasks.filter(t => t.data.status === 'Devam Ediyor').length;
+  const taskPending = tasks.filter(t => t.data.status === 'Beklemede' || t.data.status === 'Yapılacak').length;
+  const taskOverdue = tasks.filter(t => t.data.status !== 'Tamamlandı' && t.data.dueDate && checkOverdue(t.data.dueDate)).length;
   const budgetPct = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
   const membersByRole: Record<string, number> = {};
-  teamUsers.forEach(u => { const r = u.data.role || 'Miembro'; membersByRole[r] = (membersByRole[r] || 0) + 1; });
+  teamUsers.forEach(u => { const r = u.data.role || 'Üye'; membersByRole[r] = (membersByRole[r] || 0) + 1; });
   const tasksPerMember: Record<string, number> = {};
   tasks.forEach(t => { if (t.data.assigneeId) { tasksPerMember[t.data.assigneeId] = (tasksPerMember[t.data.assigneeId] || 0) + 1; } });
 
@@ -67,7 +67,7 @@ export default function ReportsOverview({ projects, tasks, expenses, timeEntries
         <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">Estado de Proyectos</h3>
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--af-accent)]">{projects.length}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Total Proyectos</div></div>
-          <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--foreground)]">{fmtCOP(totalBudget)}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Presupuesto Total</div></div>
+          <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--foreground)]">{fmtCOP(totalBudget)}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Bütçe Total</div></div>
           <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--foreground)]">{fmtCOP(totalSpent)}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Gastado ({dateLabel})</div></div>
           <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className={`text-2xl font-bold ${budgetPct > 90 ? 'text-red-400' : budgetPct > 70 ? 'text-amber-400' : 'text-emerald-400'}`}>{budgetPct}%</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Utilizacion</div></div>
         </div>
@@ -90,9 +90,9 @@ export default function ReportsOverview({ projects, tasks, expenses, timeEntries
         <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">Tareas y Productividad</h3>
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--af-accent)]">{tasks.length}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Total Tareas</div></div>
-          <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-emerald-400">{taskCompleted}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Completadas</div></div>
+          <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-emerald-400">{taskCompleted}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Tamamlandıs</div></div>
           <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-blue-400">{taskInProgress}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">En Progreso</div></div>
-          <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className={`text-2xl font-bold ${taskOverdue > 0 ? 'text-red-400' : 'text-[var(--foreground)]'}`}>{taskPending}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Pendientes</div></div>
+          <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className={`text-2xl font-bold ${taskOverdue > 0 ? 'text-red-400' : 'text-[var(--foreground)]'}`}>{taskPending}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Beklemedes</div></div>
         </div>
         {taskOverdue > 0 && <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 mb-4 flex items-center gap-2"><span className="text-red-400">⚠️</span><span className="text-sm text-red-400 font-medium">{taskOverdue} tarea{taskOverdue !== 1 ? 's' : ''} vencida{taskOverdue !== 1 ? 's' : ''}</span></div>}
         {tasks.length > 0 && <div className="bg-[var(--af-bg3)] rounded-lg p-3 mb-3"><div className="text-xs font-medium text-[var(--muted-foreground)] mb-2">Completitud general</div><div className="flex justify-between text-xs mb-1"><span className="text-[var(--foreground)]">Progreso</span><span className="text-[var(--muted-foreground)]">{tasks.length > 0 ? Math.round((taskCompleted / tasks.length) * 100) : 0}%</span></div><div className="w-full bg-[var(--af-bg2)] rounded-full h-2.5"><div className="bg-emerald-400 rounded-full h-2.5 transition-all" style={{ width: `${tasks.length > 0 ? (taskCompleted / tasks.length) * 100 : 0}%` }} /></div></div>}
@@ -109,11 +109,11 @@ export default function ReportsOverview({ projects, tasks, expenses, timeEntries
           </ResponsiveContainer>
         </div>}
       </div>
-      {/* Card 3: Presupuesto */}
+      {/* Card 3: Bütçe */}
       <div className="bg-[var(--af-bg2)] border border-[var(--border)] rounded-xl p-5">
-        <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">Presupuesto</h3>
+        <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">Bütçe</h3>
         <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-lg font-bold text-[var(--af-accent)]">{fmtCOP(totalBudget)}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Presupuesto</div></div>
+          <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-lg font-bold text-[var(--af-accent)]">{fmtCOP(totalBudget)}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Bütçe</div></div>
           <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-lg font-bold text-[var(--foreground)]">{fmtCOP(totalSpent)}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Gastado</div></div>
           <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className={`text-lg font-bold ${budgetPct > 90 ? 'text-red-400' : budgetPct > 70 ? 'text-amber-400' : 'text-emerald-400'}`}>{budgetPct}%</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Utilizado</div></div>
         </div>
@@ -137,7 +137,7 @@ export default function ReportsOverview({ projects, tasks, expenses, timeEntries
         </div>
         {/* Export budget button */}
         <button className="w-full text-xs text-[var(--af-accent)] cursor-pointer hover:underline text-center bg-[var(--af-accent)]/5 rounded-lg py-2 transition-colors hover:bg-[var(--af-accent)]/10" onClick={() => {
-          try { exportBudgetPDF({ expenses, projects }); showToast('Presupuesto PDF descargado'); } catch { showToast('Error', 'error'); }
+          try { exportBudgetPDF({ expenses, projects }); showToast('Bütçe PDF descargado'); } catch { showToast('Error', 'error'); }
         }}>
           <FileText size={12} className="inline mr-1" aria-hidden="true"/> Descargar reporte de presupuesto PDF
         </button>
@@ -146,7 +146,7 @@ export default function ReportsOverview({ projects, tasks, expenses, timeEntries
       <div className="bg-[var(--af-bg2)] border border-[var(--border)] rounded-xl p-5">
         <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">Equipo</h3>
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--af-accent)]">{teamUsers.length}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Miembros</div></div>
+          <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--af-accent)]">{teamUsers.length}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Üyes</div></div>
           <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--foreground)]">{Object.keys(membersByRole).length}</div><div className="text-xs text-[var(--muted-foreground)] mt-1">Roles distintos</div></div>
         </div>
         {roleDistData.length > 0 && <div className="mb-4">
@@ -216,7 +216,7 @@ function BurndownChart({ projects, tasks }: { projects: any[]; tasks: any[] }) {
           const d = t.data.updatedAt;
           if (!d) return false;
           const date = d.toDate ? d.toDate() : new Date(d);
-          return date >= mStart && date < mEnd && t.data.status === 'Completado';
+          return date >= mStart && date < mEnd && t.data.status === 'Tamamlandı';
         }).length;
 
         projData[p.id].total.push(created);
@@ -234,7 +234,7 @@ function BurndownChart({ projects, tasks }: { projects: any[]; tasks: any[] }) {
       data: labels.map((label, i) => ({
         name: label,
         Creadas: overallTotal[i],
-        Completadas: overallDone[i],
+        Tamamlandıs: overallDone[i],
       })),
     };
   }, [projects, tasks]);
@@ -252,7 +252,7 @@ function BurndownChart({ projects, tasks }: { projects: any[]; tasks: any[] }) {
           <YAxis tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} />
           <Tooltip content={<ChartTooltip />} />
           <Line type="monotone" dataKey="Creadas" name="Creadas" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
-          <Line type="monotone" dataKey="Completadas" name="Completadas" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
+          <Line type="monotone" dataKey="Tamamlandıs" name="Tamamlandıs" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
         </LineChart>
       </ResponsiveContainer>
       {projectNames.length > 0 && (

@@ -70,7 +70,7 @@ export default function ProjectCards({
             {/* Top: status + type + company + overdue + health + actions */}
             <div className="flex justify-between items-start mb-3 pr-8">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${statusColor(d.status)}`}>{STATUS_LABELS[d.status] || d.status || 'Concepto'}</span>
+                <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${statusColor(d.status)}`}>{STATUS_LABELS[d.status] || d.status || 'Harcama Kalemi'}</span>
                 {d.projectType && d.projectType !== 'Ejecución' && (
                   <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${d.projectType === 'Diseño' ? 'bg-violet-500/10 text-violet-400 border-violet-500/30' : d.projectType === 'Ambos' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' : 'bg-amber-500/10 text-amber-400 border-amber-500/30'}`}>
                     {d.projectType}
@@ -90,15 +90,15 @@ export default function ProjectCards({
               </div>
               {/* Desktop edit/delete */}
               <div className="hidden md:flex gap-1.5" onClick={e => e.stopPropagation()}>
-                <button aria-label="Editar proyecto" className="px-2.5 py-1.5 rounded bg-[var(--af-bg4)] text-xs cursor-pointer hover:bg-[var(--af-bg3)]" onClick={() => openEditProject(p)}><Pencil size={13} aria-hidden="true"/></button>
-                <button aria-label="Eliminar proyecto" className="px-2.5 py-1.5 rounded bg-red-500/10 text-xs cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar proyecto', description: `¿Estás seguro de eliminar "${d.name}"? Esta acción no se puede deshacer.` })) deleteProject(p.id); }}><Trash2 size={13} aria-hidden="true"/></button>
+                <button aria-label="Projeyi Düzenle" className="px-2.5 py-1.5 rounded bg-[var(--af-bg4)] text-xs cursor-pointer hover:bg-[var(--af-bg3)]" onClick={() => openEditProject(p)}><Pencil size={13} aria-hidden="true"/></button>
+                <button aria-label="Projeyi Sil" className="px-2.5 py-1.5 rounded bg-red-500/10 text-xs cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Projeyi Sil', description: `¿Estás seguro de eliminar "${d.name}"? Esta acción no se puede deshacer.` })) deleteProject(p.id); }}><Trash2 size={13} aria-hidden="true"/></button>
               </div>
               {/* Mobile overflow */}
               <div className="md:hidden" onClick={e => e.stopPropagation()}>
                 <OverflowMenu
                   actions={[
-                    { label: 'Editar proyecto', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => openEditProject(p) },
-                    { label: 'Eliminar proyecto', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar proyecto', description: `¿Estás seguro de eliminar "${d.name}"?` })) deleteProject(p.id); }, variant: 'danger', separator: true },
+                    { label: 'Projeyi Düzenle', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => openEditProject(p) },
+                    { label: 'Projeyi Sil', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirmDialog.confirm({ title: 'Projeyi Sil', description: `¿Estás seguro de eliminar "${d.name}"?` })) deleteProject(p.id); }, variant: 'danger', separator: true },
                   ]}
                   side="left"
                   align="end"

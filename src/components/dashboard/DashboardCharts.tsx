@@ -62,7 +62,7 @@ export default function DashboardCharts({
             <Users size={14} className="text-purple-400" aria-hidden="true"/> Carga de Trabajo
           </div>
           <button className="text-[10px] text-[var(--af-accent)] cursor-pointer hover:underline flex items-center gap-1" onClick={() => navigateTo('reports')}>
-            Reportes <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path d="m9 18 6-6-6-6" /></svg>
+            Raporlar <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path d="m9 18 6-6-6-6" /></svg>
           </button>
         </div>
         {teamWorkload.length === 0 ? (
@@ -75,8 +75,8 @@ export default function DashboardCharts({
               <YAxis tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} />
               <Tooltip content={<ChartTooltip />} />
               <Bar dataKey="activas" name="Activas" fill="#3b82f6" radius={[2, 2, 0, 0]} stackId="a" barSize={14} />
-              <Bar dataKey="completadas" name="Completadas" fill="#10b981" radius={[0, 0, 0, 0]} stackId="a" barSize={14} />
-              <Bar dataKey="pendientes" name="Pendientes" fill="rgba(212,184,122,0.4)" radius={[2, 2, 0, 0]} stackId="a" barSize={14} />
+              <Bar dataKey="completadas" name="Tamamlandıs" fill="#10b981" radius={[0, 0, 0, 0]} stackId="a" barSize={14} />
+              <Bar dataKey="pendientes" name="Beklemedes" fill="rgba(212,184,122,0.4)" radius={[2, 2, 0, 0]} stackId="a" barSize={14} />
             </BarChart>
           </ResponsiveContainer>
         )}

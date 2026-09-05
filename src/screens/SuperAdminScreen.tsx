@@ -65,7 +65,7 @@ export default function SuperAdminScreen() {
       <div className="animate-fadeIn p-6 text-center">
         <div className="text-5xl mb-4">🛡️</div>
         <div className="text-xl font-semibold mb-2">Acceso Restringido</div>
-        <div className="text-sm text-[var(--muted-foreground)]">Solo Super Administradores pueden acceder a este panel.</div>
+        <div className="text-sm text-[var(--muted-foreground)]">Solo Süper Yöneticiistradores pueden acceder a este panel.</div>
       </div>
     );
   }
@@ -96,7 +96,7 @@ export default function SuperAdminScreen() {
             <Shield size={20} className="text-white" aria-hidden="true"/>
           </div>
           <div>
-            <h2 className="text-lg font-semibold">Super Admin</h2>
+            <h2 className="text-lg font-semibold">Süper Yönetici</h2>
             <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Gestión global de la plataforma</p>
           </div>
         </div>
@@ -212,7 +212,7 @@ function DashboardTab({ handleAction, showToast, setLoading }: { handleAction: a
           onClick={loadDashboard}
           disabled={refreshing}
         >
-          <RefreshCw size={12} className={refreshing ? 'animate-spin' : ''} aria-hidden="true"/> Actualizar
+          <RefreshCw size={12} className={refreshing ? 'animate-spin' : ''} aria-hidden="true"/> Güncelle
         </button>
       </div>
 
@@ -367,7 +367,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
   const deleteTenant = async (tenantId: string, tenantName: string) => {
     const ok1 = await confirmDialog.confirm({ title: 'Eliminar tenant', description: `¿Eliminar el tenant "${tenantName}"?\n\nEsto eliminará el tenant de la lista. Los datos del tenant NO se eliminarán a menos que selecciones esa opción.` });
     if (!ok1) return;
-    const deleteData = await confirmDialog.confirm({ title: 'Eliminar datos asociados', description: '¿También eliminar TODOS los datos asociados (proyectos, tareas, gastos, etc.)?\n\nConfirmar = Eliminar todo\nCancelar = Solo eliminar el tenant', confirmLabel: 'Eliminar todo' });
+    const deleteData = await confirmDialog.confirm({ title: 'Eliminar datos asociados', description: '¿También eliminar TODOS los datos asociados (proyectos, tareas, gastos, etc.)?\n\nOnayla = Eliminar todo\nİptal = Solo eliminar el tenant', confirmLabel: 'Eliminar todo' });
     const result = await handleAction('delete-tenant', { tenantId, deleteData }, `Tenant "${tenantName}" eliminado`);
     if (result) loadTenants();
   };
@@ -414,7 +414,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer bg-[var(--af-bg3)] border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-all"
             onClick={loadTenants}
           >
-            <RefreshCw size={12} aria-hidden="true"/> Actualizar
+            <RefreshCw size={12} aria-hidden="true"/> Güncelle
           </button>
           <button
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer bg-[var(--af-accent)] text-background hover:bg-[var(--af-accent2)] transition-all"
@@ -460,7 +460,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
               Crear Tenant
             </button>
             <button onClick={() => setShowCreateForm(false)} className="px-4 py-2 rounded-lg text-xs font-medium cursor-pointer bg-[var(--af-bg4)] border border-[var(--border)] hover:bg-[var(--af-bg3)] transition-all">
-              Cancelar
+              İptal
             </button>
           </div>
         </div>
@@ -497,7 +497,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
                       className="px-2 py-1 rounded bg-[var(--card)] border border-[var(--border)] text-xs w-20 uppercase outline-none focus:border-[var(--af-accent)]"
                       placeholder={t.code}
                     />
-                    <button onClick={saveTenantEdit} className="px-2 py-1 rounded bg-emerald-500 text-white text-[10px] font-semibold cursor-pointer">Guardar</button>
+                    <button onClick={saveTenantEdit} className="px-2 py-1 rounded bg-emerald-500 text-white text-[10px] font-semibold cursor-pointer">Kaydet</button>
                     <button onClick={() => setEditingTenantId(null)} className="px-2 py-1 rounded bg-[var(--af-bg4)] text-[10px] cursor-pointer">X</button>
                   </div>
                 ) : (
@@ -536,7 +536,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
             {/* Expanded members */}
             {expandedTenant === t.id && t.membersResolved && (
               <div className="border-t border-[var(--border)] p-3 bg-[var(--card)]">
-                <div className="text-[10px] uppercase tracking-wide font-semibold text-[var(--muted-foreground)] mb-2">Miembros ({t.membersResolved.length})</div>
+                <div className="text-[10px] uppercase tracking-wide font-semibold text-[var(--muted-foreground)] mb-2">Üyes ({t.membersResolved.length})</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {t.membersResolved.map((m: any, i: number) => (
                     <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)]">
@@ -550,7 +550,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
                         </div>
                         <div className="text-[10px] text-[var(--muted-foreground)] truncate">{m.email}</div>
                       </div>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full border flex-shrink-0 ${ROLE_COLORS[m.role] || ROLE_COLORS['Miembro']}`}>{m.role}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full border flex-shrink-0 ${ROLE_COLORS[m.role] || ROLE_COLORS['Üye']}`}>{m.role}</span>
                     </div>
                   ))}
                 </div>
@@ -588,7 +588,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
 
                   {/* Members list */}
                   <div>
-                    <h4 className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)] mb-2">Miembros</h4>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)] mb-2">Üyes</h4>
                     <div className="space-y-1.5">
                       {detailData.membersResolved.map((m: any, i: number) => (
                         <div key={i} className="flex items-center gap-2 p-2.5 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)]">
@@ -599,7 +599,7 @@ function TenantsTab({ handleAction, showToast, switchTenant, setLoading }: { han
                             <div className="text-xs font-semibold truncate flex items-center gap-1">{m.name}{m.isCreator && <Crown size={10} className="text-amber-400" aria-hidden="true"/>}</div>
                             <div className="text-[10px] text-[var(--muted-foreground)] truncate">{m.email}</div>
                           </div>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full border ${ROLE_COLORS[m.role] || ROLE_COLORS['Miembro']}`}>{m.role}</span>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full border ${ROLE_COLORS[m.role] || ROLE_COLORS['Üye']}`}>{m.role}</span>
                         </div>
                       ))}
                     </div>
@@ -727,7 +727,7 @@ function UsersTab({ handleAction, showToast, setLoading, adminEmails }: { handle
             {USER_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
           <button onClick={loadUsers} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer bg-[var(--af-bg3)] border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-all">
-            <RefreshCw size={12} aria-hidden="true"/> Actualizar
+            <RefreshCw size={12} aria-hidden="true"/> Güncelle
           </button>
         </div>
       </div>
@@ -773,7 +773,7 @@ function UsersTab({ handleAction, showToast, setLoading, adminEmails }: { handle
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-semibold truncate">{u.name}</span>
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full border ${ROLE_COLORS[u.role] || ROLE_COLORS['Miembro']}`}>{ROLE_ICONS[u.role]} {u.role}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full border ${ROLE_COLORS[u.role] || ROLE_COLORS['Üye']}`}>{ROLE_ICONS[u.role]} {u.role}</span>
                   {adminEmails.includes((u.email || '').toLowerCase()) && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20 font-semibold">SA</span>}
                 </div>
                 <div className="text-[10px] text-[var(--muted-foreground)] truncate">{u.email} · {u.tenantsCount} tenant{u.tenantsCount !== 1 ? 's' : ''}</div>
@@ -939,7 +939,7 @@ function ToolsTab({ handleAction, showToast, setLoading }: { handleAction: any; 
           </select>
           <button onClick={transferOwnership} className="px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer bg-amber-500 text-white hover:bg-amber-600 transition-all">Transferir</button>
         </div>
-        <p className="text-[10px] text-[var(--muted-foreground)] mt-2">El nuevo owner debe ser miembro del tenant. El owner actual perderá el rol de Super Admin del tenant.</p>
+        <p className="text-[10px] text-[var(--muted-foreground)] mt-2">El nuevo owner debe ser miembro del tenant. El owner actual perderá el rol de Süper Yönetici del tenant.</p>
       </div>
 
       {/* Action log */}
@@ -1035,7 +1035,7 @@ function AuditSubTab({ handleAction, showToast, setLoading }: { handleAction: an
           onClick={loadAudit}
           className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer bg-[var(--af-bg3)] border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-all"
         >
-          <RefreshCw size={12} aria-hidden="true"/> Actualizar
+          <RefreshCw size={12} aria-hidden="true"/> Güncelle
         </button>
       </div>
 
@@ -1118,7 +1118,7 @@ function ErrorsSubTab({ handleAction, showToast, setLoading }: { handleAction: a
           onClick={loadErrors}
           className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer bg-[var(--af-bg3)] border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-all"
         >
-          <RefreshCw size={12} aria-hidden="true"/> Actualizar
+          <RefreshCw size={12} aria-hidden="true"/> Güncelle
         </button>
       </div>
 
@@ -1201,7 +1201,7 @@ function FeedbackSubTab({ handleAction, showToast, setLoading }: { handleAction:
   };
 
   const statusLabels: Record<string, string> = {
-    pending: 'Pendiente',
+    pending: 'Beklemede',
     reviewed: 'Revisado',
     resolved: 'Resuelto',
   };
@@ -1226,7 +1226,7 @@ function FeedbackSubTab({ handleAction, showToast, setLoading }: { handleAction:
           onClick={loadFeedback}
           className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer bg-[var(--af-bg3)] border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-all"
         >
-          <RefreshCw size={12} aria-hidden="true"/> Actualizar
+          <RefreshCw size={12} aria-hidden="true"/> Güncelle
         </button>
       </div>
 

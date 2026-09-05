@@ -63,10 +63,10 @@ export default function SettingsPanel() {
               <div className="w-8 h-8 rounded-xl bg-[var(--af-accent)]/15 flex items-center justify-center">
                 <Settings size={16} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
               </div>
-              <span className="text-base font-semibold">Configuración</span>
+              <span className="text-base font-semibold">Ayarlar</span>
             </div>
             <button
-              aria-label="Cerrar"
+              aria-label="Kapat"
               className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-all cursor-pointer border-none bg-transparent"
               onClick={onClose}
             >
@@ -114,12 +114,12 @@ export default function SettingsPanel() {
                 <Settings size={16} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
               </div>
               <div>
-                <h2 className="text-lg font-bold">Configuración</h2>
-                <p className="text-[11px] text-[var(--muted-foreground)]">Personaliza tu experiencia en Archii</p>
+                <h2 className="text-lg font-bold">Ayarlar</h2>
+                <p className="text-[11px] text-[var(--muted-foreground)]">Personaliza tu experiencia en oxonom iş takip</p>
               </div>
             </div>
             <button
-              aria-label="Cerrar"
+              aria-label="Kapat"
               className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-all cursor-pointer border-none bg-transparent"
               onClick={onClose}
             >
@@ -311,8 +311,8 @@ function NotificationsTab() {
     { key: 'chat', label: 'Chat', Icon: MessageCircle, color: 'blue' },
     { key: 'tasks', label: 'Tareas', Icon: ClipboardList, color: 'purple' },
     { key: 'meetings', label: 'Reuniones', Icon: Calendar, color: 'amber' },
-    { key: 'approvals', label: 'Aprobaciones', Icon: CheckCircle, color: 'pink' },
-    { key: 'inventory', label: 'Inventario', Icon: Package, color: 'emerald' },
+    { key: 'approvals', label: 'Onaylar', Icon: CheckCircle, color: 'pink' },
+    { key: 'inventory', label: 'Envanter', Icon: Package, color: 'emerald' },
     { key: 'projects', label: 'Proyectos', Icon: Folder, color: 'cyan' },
     { key: 'rfis', label: 'RFIs', Icon: CircleHelp, color: 'orange' },
     { key: 'submittals', label: 'Submittals', Icon: FileCheck, color: 'teal' },
@@ -391,7 +391,7 @@ function NotificationsTab() {
 
       {/* External channels */}
       <div>
-        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Canales externos</div>
+        <div className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Kanallar externos</div>
         <div className="text-[11px] text-[var(--muted-foreground)] mb-3">Recibir alertas fuera de la app:</div>
         <div className="grid grid-cols-1 gap-2">
           <button
@@ -508,7 +508,7 @@ function AccountTab({ onClose }: { onClose: () => void }) {
             <div className="text-sm font-semibold truncate">{userName}</div>
             <div className="text-[11px] text-[var(--muted-foreground)] truncate">{authUser?.email}</div>
             <div className="flex items-center gap-1.5 mt-1">
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[var(--af-accent)]/15 text-[var(--af-accent)]">{activeTenantRole || 'Miembro'}</span>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[var(--af-accent)]/15 text-[var(--af-accent)]">{activeTenantRole || 'Üye'}</span>
               {isEmailAdmin && (
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-red-500/15 text-red-400 flex items-center gap-0.5">
                   <Crown size={8} aria-hidden="true"/> SA
@@ -535,7 +535,7 @@ function AccountTab({ onClose }: { onClose: () => void }) {
               <User size={14} className="stroke-[var(--af-accent)]" aria-hidden="true"/>
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-medium">Mi Perfil</div>
+              <div className="text-[13px] font-medium">Profilim</div>
               <div className="text-[11px] text-[var(--muted-foreground)]">Nombre, foto, informacion personal</div>
             </div>
             <ChevronRight size={16} className="text-[var(--muted-foreground)] flex-shrink-0" aria-hidden="true"/>
@@ -578,7 +578,7 @@ function AccountTab({ onClose }: { onClose: () => void }) {
           className="w-full flex items-center justify-center gap-2 p-3.5 rounded-xl bg-red-500/5 border border-red-500/20 hover:bg-red-500/10 cursor-pointer transition-all active:scale-[0.98] min-h-[48px]"
         >
           <LogOut size={16} className="text-red-400" aria-hidden="true"/>
-          <span className="text-[13px] font-medium text-red-400">Cerrar sesion</span>
+          <span className="text-[13px] font-medium text-red-400">Kapat sesion</span>
         </button>
       </div>
     </div>

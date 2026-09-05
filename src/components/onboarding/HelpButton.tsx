@@ -29,7 +29,7 @@ const HELP_SECTIONS = [
       { icon: Folder, label: 'Proyectos', desc: 'Gestion de obras y proyectos', screen: 'projects' },
       { icon: ClipboardCheck, label: 'Tareas', desc: 'Seguimiento y asignacion de tareas', screen: 'tasks' },
       { icon: MessageCircle, label: 'Chat', desc: 'Comunicacion con tu equipo', screen: 'chat' },
-      { icon: FileText, label: 'Archivos', desc: 'Planos, documentos y galeria', screen: 'files' },
+      { icon: FileText, label: 'Dosyalar', desc: 'Planos, documentos y galeria', screen: 'files' },
       { icon: Bot, label: 'Asistente IA', desc: 'Preguntale cualquier cosa', action: 'open-ai-chat' as const },
       { icon: Users, label: 'Equipo', desc: 'Gestion de miembros y roles', screen: 'team' },
     ],
@@ -39,7 +39,7 @@ const HELP_SECTIONS = [
 const SHORTCUTS = [
   { keys: ['Ctrl', 'K'], action: 'Buscar (Command palette)' },
   { keys: ['Alt', 'A'], action: 'Abrir chat IA' },
-  { keys: ['Alt', 'Q'], action: 'Acciones rápidas' },
+  { keys: ['Alt', 'Q'], action: 'Hızlı İşlemler' },
   { keys: ['Alt', 'S'], action: 'Toggle sidebar' },
   { keys: ['Alt', 'T'], action: 'Toggle tema' },
   { keys: ['?'], action: 'Centro de ayuda' },
@@ -183,7 +183,7 @@ function HelpPanel() {
               </div>
             </div>
             <button
-              aria-label="Cerrar"
+              aria-label="Kapat"
               onClick={() => setHelpOpen(false)}
               className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-all cursor-pointer border-none bg-transparent"
             >

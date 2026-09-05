@@ -12,15 +12,15 @@ import type { ReportsTabProps } from './types';
 export default function ReportsEquipo({ teamUsers, tasks, timeEntries, showToast }: ReportsTabProps) {
   const roleDistData = useMemo(() => {
     const roles: Record<string, number> = {};
-    teamUsers.forEach(u => { const r = u.data.role || 'Miembro'; roles[r] = (roles[r] || 0) + 1; });
+    teamUsers.forEach(u => { const r = u.data.role || 'Üye'; roles[r] = (roles[r] || 0) + 1; });
     return Object.entries(roles).sort((a, b) => b[1] - a[1]).map(([name, value]) => ({ name, value }));
   }, [teamUsers]);
 
   const membersByRole: Record<string, number> = {};
-  teamUsers.forEach(u => { const r = u.data.role || 'Miembro'; membersByRole[r] = (membersByRole[r] || 0) + 1; });
+  teamUsers.forEach(u => { const r = u.data.role || 'Üye'; membersByRole[r] = (membersByRole[r] || 0) + 1; });
   const tasksPerMember: Record<string, { total: number; done: number; overdue: number }> = {};
   teamUsers.forEach(u => { tasksPerMember[u.id] = { total: 0, done: 0, overdue: 0 }; });
-  tasks.forEach(t => { if (t.data.assigneeId && tasksPerMember[t.data.assigneeId]) { tasksPerMember[t.data.assigneeId].total++; if (t.data.status === 'Completado') tasksPerMember[t.data.assigneeId].done++; if (t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)) tasksPerMember[t.data.assigneeId].overdue++; } });
+  tasks.forEach(t => { if (t.data.assigneeId && tasksPerMember[t.data.assigneeId]) { tasksPerMember[t.data.assigneeId].total++; if (t.data.status === 'Tamamlandı') tasksPerMember[t.data.assigneeId].done++; if (t.data.status !== 'Tamamlandı' && t.data.dueDate && checkOverdue(t.data.dueDate)) tasksPerMember[t.data.assigneeId].overdue++; } });
   const hoursPerMember: Record<string, number> = {};
   timeEntries.forEach(e => { hoursPerMember[e.data.userId] = (hoursPerMember[e.data.userId] || 0) + (e.data.duration || 0); });
 
@@ -50,7 +50,7 @@ export default function ReportsEquipo({ teamUsers, tasks, timeEntries, showToast
       )}
     </div>
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
-      <h3 className="text-[15px] font-semibold mb-4">Productividad por Miembro</h3>
+      <h3 className="text-[15px] font-semibold mb-4">Productividad por Üye</h3>
       <div className="md:hidden space-y-2">
         {teamUsers.sort((a, b) => (tasksPerMember[b.id]?.total || 0) - (tasksPerMember[a.id]?.total || 0)).map(u => {
           const stats = tasksPerMember[u.id] || { total: 0, done: 0, overdue: 0 };
@@ -73,7 +73,7 @@ export default function ReportsEquipo({ teamUsers, tasks, timeEntries, showToast
       </div>
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
-          <thead><tr className="border-b border-[var(--border)] text-[var(--muted-foreground)] text-xs"><th className="text-left py-2 pr-3">Miembro</th><th className="text-center py-2 px-2">Tareas</th><th className="text-center py-2 px-2">Listas</th><th className="text-center py-2 px-2">Vencidas</th><th className="text-center py-2 pl-2">Horas</th></tr></thead>
+          <thead><tr className="border-b border-[var(--border)] text-[var(--muted-foreground)] text-xs"><th className="text-left py-2 pr-3">Üye</th><th className="text-center py-2 px-2">Tareas</th><th className="text-center py-2 px-2">Listas</th><th className="text-center py-2 px-2">Gecikmişs</th><th className="text-center py-2 pl-2">Horas</th></tr></thead>
           <tbody>
             {teamUsers.sort((a, b) => (tasksPerMember[b.id]?.total || 0) - (tasksPerMember[a.id]?.total || 0)).map(u => {
               const stats = tasksPerMember[u.id] || { total: 0, done: 0, overdue: 0 };

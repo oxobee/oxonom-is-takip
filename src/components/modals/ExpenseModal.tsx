@@ -11,20 +11,20 @@ export default function ExpenseModal({ open, onClose }: { open: boolean; onClose
   const { errors, validateRequired, onBlurRequired, clearError } = useFormValidation();
 
   const handleSubmit = () => {
-    if (!validateRequired('expConcept', forms.expConcept || '', 'Concepto')) return;
+    if (!validateRequired('expConcept', forms.expConcept || '', 'Harcama Kalemi')) return;
     saveExpense();
   };
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={500}>
-      <h2 className="text-lg font-semibold mb-4">{isEditing ? 'Editar gasto' : 'Registrar gasto'}</h2>
+      <h2 className="text-lg font-semibold mb-4">{isEditing ? 'Harcamayı Düzenle' : 'Registrar gasto'}</h2>
 
       <div className="space-y-3">
-        <FormField label="Concepto" required error={errors.expConcept}>
+        <FormField label="Harcama Kalemi" required error={errors.expConcept}>
           <FormInput
             value={forms.expConcept || ''}
             onChange={(e) => { clearError('expConcept'); setForms(p => ({ ...p, expConcept: e.target.value })); }}
-            onBlur={() => onBlurRequired('expConcept', forms.expConcept || '', 'Concepto')}
+            onBlur={() => onBlurRequired('expConcept', forms.expConcept || '', 'Harcama Kalemi')}
             error={errors.expConcept}
             placeholder="Ej: Compra de cemento, Alquiler de excavadora"
           />
@@ -73,9 +73,9 @@ export default function ExpenseModal({ open, onClose }: { open: boolean; onClose
             </FormSelect>
           </FormField>
 
-          <FormField label="Método de pago">
+          <FormField label="Ödeme Yöntemi">
             <FormSelect
-              value={forms.expPaymentMethod || 'Efectivo'}
+              value={forms.expPaymentMethod || 'Nakit'}
               onChange={(e) => setForms(p => ({ ...p, expPaymentMethod: e.target.value }))}
             >
               {PAYMENT_METHODS.map(m => (
@@ -93,7 +93,7 @@ export default function ExpenseModal({ open, onClose }: { open: boolean; onClose
           />
         </FormField>
 
-        <FormField label="Notas">
+        <FormField label="Notlar">
           <FormTextarea
             value={forms.expNotes || ''}
             onChange={(e) => setForms(p => ({ ...p, expNotes: e.target.value }))}
@@ -106,7 +106,7 @@ export default function ExpenseModal({ open, onClose }: { open: boolean; onClose
       <ModalFooter
         onCancel={() => closeModal('expense')}
         onSubmit={handleSubmit}
-        submitLabel={isEditing ? 'Actualizar' : 'Registrar'}
+        submitLabel={isEditing ? 'Güncelle' : 'Registrar'}
       />
     </CenterModal>
   );

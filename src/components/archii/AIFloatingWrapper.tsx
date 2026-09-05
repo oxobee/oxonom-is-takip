@@ -62,9 +62,9 @@ export default function AIFloatingWrapper() {
           <div className="animate-slideUp mb-1 px-3 py-2 rounded-xl bg-[var(--af-bg3)] border border-[var(--af-bg4)] shadow-lg text-xs text-foreground max-w-[220px]">
             <div className="flex items-center gap-2">
               <span className="text-sm">⚡</span>
-              <span className="font-medium">Super IA</span>
+              <span className="font-medium">Oxonom Asistan</span>
             </div>
-            <p className="text-muted-foreground mt-0.5 text-[11px]">Puedo crear tareas, registrar gastos y gestionar tu proyecto</p>
+            <p className="text-muted-foreground mt-0.5 text-[11px]">Görev oluşturabilir, harcamaları kaydedebilir ve projenizi yönetebilirim</p>
             <div className="absolute -bottom-1 right-6 w-2 h-2 bg-[var(--af-bg3)] border-r border-b border-[var(--af-bg4)] rotate-45" />
           </div>
         )}
@@ -78,7 +78,7 @@ export default function AIFloatingWrapper() {
               ? 'bg-[var(--af-bg3)] text-foreground rotate-45 border border-[var(--af-bg4)]'
               : 'bg-[var(--af-bg3)] text-foreground border border-[var(--af-bg4)] hover:border-[var(--af-accent)]/30'
           )}
-          title="Acciones rápidas"
+          title="Hızlı işlemler"
         >
           <Plus size={20} aria-hidden="true"/>
         </button>
@@ -93,7 +93,7 @@ export default function AIFloatingWrapper() {
             'bg-gradient-to-br from-[var(--af-accent)] to-amber-600 text-black hover:scale-105 active:scale-95',
             chatOpen && 'scale-90 opacity-0 pointer-events-none'
           )}
-          title="Abrir Super IA"
+          title="Oxonom Asistanı Aç"
         >
           <Zap size={24} aria-hidden="true"/>
         </button>

@@ -9,6 +9,7 @@ import type { Task, Expense, Invoice, TimeEntry, RFI, Submittal, PunchItem, Meet
 import { toDate } from '@/lib/types';
 import { getWeekDates, agendaDateKey } from './agenda-helpers';
 import { isOverdue as checkOverdue } from '@/lib/kanban-helpers';
+import { fmtCOP } from '@/lib/helpers';
 
 export const CHART_COLORS = ['#d4b87a', '#10b981', '#f59e0b', '#ef4444', '#6366f1', '#8b5cf6', '#ec4899'];
 
@@ -90,12 +91,12 @@ export function useDashboardData() {
   const todayDueTasks = useMemo(() => tasks.filter((t: Task) => t.data.dueDate === todayStr && t.data.status !== 'Completado'), [tasks, todayStr]);
 
   // Range-filtered KPI counts
-  const rangeCompletedTasks = useMemo(() => rangeTasks.filter((t: Task) => t.data.status === 'Completado').length, [rangeTasks]);
-  const rangeActiveTasks = useMemo(() => rangeTasks.filter((t: Task) => t.data.status === 'En progreso' || t.data.status === 'Revision').length, [rangeTasks]);
+  const rangeCompletedTasks = useMemo(() => rangeTasks.filter((t: Task) => t.data.status === 'Tamamlandı').length, [rangeTasks]);
+  const rangeActiveTasks = useMemo(() => rangeTasks.filter((t: Task) => t.data.status === 'Devam Ediyor' || t.data.status === 'Revision').length, [rangeTasks]);
   const rangeTotalTime = useMemo(() => rangeTimeEntries.reduce((s: number, te: TimeEntry) => s + (te.data.duration || 0), 0), [rangeTimeEntries]);
 
   // Pending approvals
-  const pendingApprovals = useMemo(() => approvals.filter((a: Approval) => a.data.status === 'Pendiente').length, [approvals]);
+  const pendingApprovals = useMemo(() => approvals.filter((a: Approval) => a.data.status === 'Beklemede').length, [approvals]);
 
   // Time formatting helper
   const fmtHours = (mins: number) => {
@@ -115,7 +116,7 @@ export function useDashboardData() {
 
   // Tasks due this week (within 7 days, not completed, not overdue)
   const weekTasks = useMemo(() => tasks.filter((t: Task) => {
-    if (!t.data.dueDate || t.data.status === 'Completado') return false;
+    if (!t.data.dueDate || t.data.status === 'Tamamlandı') return false;
     const diff = Math.ceil((new Date(t.data.dueDate).getTime() - today.getTime()) / 86400000);
     return diff >= 0 && diff <= 7;
   }), [tasks, today]);
@@ -143,8 +144,8 @@ export function useDashboardData() {
     rangeTasks.forEach((t: Task) => {
       if (t.data.assigneeId && byUser[t.data.assigneeId]) {
         byUser[t.data.assigneeId].total++;
-        if (t.data.status === 'En progreso' || t.data.status === 'Revision') byUser[t.data.assigneeId].active++;
-        if (t.data.status === 'Completado') byUser[t.data.assigneeId].done++;
+        if (t.data.status === 'Devam Ediyor' || t.data.status === 'Revision') byUser[t.data.assigneeId].active++;
+        if (t.data.status === 'Tamamlandı') byUser[t.data.assigneeId].done++;
       }
     });
     return Object.entries(byUser).filter(([_, v]) => v.total > 0).sort((a, b) => b[1].active - a[1].active).slice(0, 8).map(([uid, data]) => {
@@ -160,12 +161,19 @@ export function useDashboardData() {
     return Object.entries(statuses).map(([name, value]) => ({ name, value }));
   }, [rangeTasks]);
 
-  // Recent activity
+  // Recent activity stream across modules
   const recentActivity = useMemo(() => {
-    const items: { id: string; type: string; title: string; subtitle: string; time: FirestoreTimestamp | undefined; icon: string; color: string }[] = [];
-    tasks.filter((t: Task) => t.data.status === 'Completado' && t.data.updatedAt).slice(0, 4).forEach((t: Task) => {
+    const items: { id: string; type: string; title: string; subtitle: string; time: any; icon: string; color: string }[] = [];
+    tasks.slice(0, 5).forEach((t: Task) => {
       const proj = projects.find((p: Project) => p.id === t.data.projectId);
-      items.push({ id: t.id, type: 'task', title: t.data.title, subtitle: `Completada · ${proj?.data?.name || ''}`, time: t.data.updatedAt, icon: '✓', color: 'bg-emerald-500' });
+      items.push({ id: t.id, type: 'task', title: t.data.title, subtitle: `${t.data.status} · ${proj?.data?.name || ''}`, time: t.data.updatedAt || t.data.createdAt, icon: '✓', color: t.data.status === 'Completado' ? 'bg-emerald-500' : 'bg-blue-500' });
+    });
+    expenses.slice(0, 3).forEach((e: Expense) => {
+      const proj = projects.find((p: Project) => p.id === e.data.projectId);
+      items.push({ id: e.id, type: 'expense', title: `${fmtCOP(e.data.amount)} - ${e.data.concept}`, subtitle: `${e.data.category} · ${proj?.data?.name || ''}`, time: e.data.createdAt, icon: '$', color: 'bg-amber-500' });
+    });
+    invoices.slice(0, 3).forEach((inv: Invoice) => {
+      items.push({ id: inv.id, type: 'invoice', title: `Faturalar #${inv.data.number} · ${fmtCOP(inv.data.total)}`, subtitle: `${inv.data.status} · ${inv.data.clientName || ''}`, time: inv.data.createdAt, icon: '📄', color: inv.data.status === 'Pagada' ? 'bg-emerald-500' : 'bg-purple-500' });
     });
     rfis.filter((r: RFI) => r.data.status !== 'Cerrado').slice(0, 3).forEach((r: RFI) => {
       const proj = projects.find((p: Project) => p.id === r.data.projectId);
@@ -193,9 +201,9 @@ export function useDashboardData() {
   // Greeting based on time of day
   const greeting = useMemo(() => {
     const h = today.getHours();
-    if (h < 12) return 'Buenos días';
-    if (h < 18) return 'Buenas tardes';
-    return 'Buenas noches';
+    if (h < 12) return 'Günaydın';
+    if (h < 18) return 'İyi Günler';
+    return 'İyi Akşamlar';
   }, []);
 
   // Date formatted in Spanish

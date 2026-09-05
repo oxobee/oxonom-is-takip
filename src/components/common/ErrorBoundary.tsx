@@ -29,7 +29,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('[Archii] ErrorBoundary caught:', error, errorInfo);
+    console.error('[oxonom iş takip] ErrorBoundary caught:', error, errorInfo);
 
     // Report to Firestore (non-blocking)
     reportError({

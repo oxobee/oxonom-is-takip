@@ -42,7 +42,7 @@ export default function Sidebar({
   const [navSearch, setNavSearch] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
   const calendarBadge = useMemo(() => {
-    const count = tasks.filter(t => t.data.dueDate && t.data.status !== 'Completado').length;
+    const count = tasks.filter(t => t.data.dueDate && t.data.status !== 'Tamamlandı').length;
     return count > 0 ? count : undefined;
   }, [tasks]);
 
@@ -56,52 +56,52 @@ export default function Sidebar({
   type NavCategory = 'principal' | 'proyecto' | 'calidad' | 'admin' | 'otros';
 
   const CATEGORY_META: Record<NavCategory, { label: string; icon: React.ReactNode; defaultOpen: boolean }> = {
-    principal: { label: 'Principal', icon: <Home size={14} className="stroke-current" aria-hidden="true" />, defaultOpen: true },
-    proyecto: { label: 'Proyecto', icon: <FolderOpen size={14} className="stroke-current" aria-hidden="true" />, defaultOpen: true },
-    calidad: { label: 'Calidad', icon: <ShieldCheck size={14} className="stroke-current" aria-hidden="true" />, defaultOpen: false },
-    admin: { label: 'Administración', icon: <Briefcase size={14} className="stroke-current" aria-hidden="true" />, defaultOpen: false },
-    otros: { label: 'Otros', icon: <Wrench size={14} className="stroke-current" aria-hidden="true" />, defaultOpen: false },
+    principal: { label: 'Ana Menü', icon: <Home size={14} className="stroke-current" aria-hidden="true" />, defaultOpen: true },
+    proyecto: { label: 'Proje & Saha', icon: <FolderOpen size={14} className="stroke-current" aria-hidden="true" />, defaultOpen: true },
+    calidad: { label: 'Kalite & Kontrol', icon: <ShieldCheck size={14} className="stroke-current" aria-hidden="true" />, defaultOpen: false },
+    admin: { label: 'Yönetim', icon: <Briefcase size={14} className="stroke-current" aria-hidden="true" />, defaultOpen: false },
+    otros: { label: 'Diğer Araçlar', icon: <Wrench size={14} className="stroke-current" aria-hidden="true" />, defaultOpen: false },
   };
 
   const navItems = [
-    // ── Principal ──
-    { id: 'dashboard', label: 'Dashboard', icon: <LayoutGrid size={18} className="stroke-current" aria-hidden="true" />, category: 'principal' as NavCategory },
-    { id: 'weeklyAgenda', label: 'Agenda Semanal', icon: <CalendarDays size={18} className="stroke-current" aria-hidden="true" />, badge: agendaTodayBadge, category: 'principal' as NavCategory },
-    { id: 'profile', label: 'Mi Perfil', icon: <User size={18} className="stroke-current" aria-hidden="true" />, category: 'principal' as NavCategory },
-    { id: 'projects', label: 'Proyectos', icon: <Folder size={18} className="stroke-current" aria-hidden="true" />, badge: projects.length, category: 'principal' as NavCategory },
-    { id: 'tasks', label: 'Tareas', icon: <ClipboardCheck size={18} className="stroke-current" aria-hidden="true" />, badge: pendingCount > 0 ? pendingCount : undefined, category: 'principal' as NavCategory },
-    { id: 'chat', label: 'Chat', icon: <MessageCircle size={18} className="stroke-current" aria-hidden="true" />, category: 'principal' as NavCategory },
-    // ── Proyecto ──
-    { id: 'timeTracking', label: 'Time Tracking', icon: <Timer size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },
-    { id: 'budget', label: 'Presupuestos', icon: <DollarSign size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },
-    { id: 'files', label: 'Planos y archivos', icon: <FileText size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },
-    { id: 'obra', label: 'Seguimiento obra', icon: <Camera size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },
-    { id: 'gallery', label: 'Galería', icon: <Image size={18} className="stroke-current" aria-hidden="true" />, badge: galleryPhotos.length > 0 ? galleryPhotos.length : undefined, category: 'proyecto' as NavCategory },
-    { id: 'inventory', label: 'Inventario', icon: <Package size={18} className="stroke-current" aria-hidden="true" />, badge: invLowStock.length > 0 ? invLowStock.length : undefined, category: 'proyecto' as NavCategory },
-    { id: 'kanban', label: 'Tablero Kanban', icon: <ListChecks size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },
-    // ── Calidad ──
-    { id: 'rfis', label: 'RFIs', icon: <CircleHelp size={18} className="stroke-current" aria-hidden="true" />, category: 'calidad' as NavCategory },
-    { id: 'submittals', label: 'Submittals', icon: <ClipboardList size={18} className="stroke-current" aria-hidden="true" />, category: 'calidad' as NavCategory },
-    { id: 'punchList', label: 'Punch List', icon: <ListChecks size={18} className="stroke-current" aria-hidden="true" />, category: 'calidad' as NavCategory },
-    { id: 'changeorders', label: 'Órdenes de Cambio', icon: <FileEdit size={18} className="stroke-current" aria-hidden="true" />, category: 'calidad' as NavCategory },
-    { id: 'fieldnotes', label: 'Notas de Campo', icon: <StickyNote size={18} className="stroke-current" aria-hidden="true" />, category: 'calidad' as NavCategory },
-    // ── Administración ──
-    { id: 'admin', label: 'Panel Admin', icon: <Settings size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
-    { id: 'suppliers', label: 'Proveedores', icon: <Store size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
-    { id: 'team', label: 'Equipo', icon: <Users size={18} className="stroke-current" aria-hidden="true" />, badge: teamUsers.length, category: 'admin' as NavCategory },
-    { id: 'invoices', label: 'Facturas', icon: <Receipt size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
-    { id: 'carnets', label: 'Carnets', icon: <CreditCard size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
-    { id: 'companies', label: 'Empresas', icon: <Building2 size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
-    { id: 'catalogs', label: 'Catálogos', icon: <BookOpen size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
-    { id: 'integrations', label: 'Integraciones', icon: <Globe size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
-    // ── Otros ──
-    { id: 'calendar', label: 'Calendario', icon: <Calendar size={18} className="stroke-current" aria-hidden="true" />, badge: calendarBadge, category: 'otros' as NavCategory },
-    { id: 'portal', label: 'Portal cliente', icon: <Globe size={18} className="stroke-current" aria-hidden="true" />, category: 'otros' as NavCategory },
-    { id: 'reports', label: 'Reportes', icon: <BarChart3 size={18} className="stroke-current" aria-hidden="true" />, category: 'otros' as NavCategory },
-    { id: 'install', label: 'Instalar App', icon: <Download size={18} className="stroke-current" aria-hidden="true" />, category: 'otros' as NavCategory },
+    // ── Ana Menü ──
+    { id: 'dashboard', label: 'Panel', icon: <LayoutGrid size={18} className="stroke-current" aria-hidden="true" />, category: 'principal' as NavCategory },
+    { id: 'weeklyAgenda', label: 'Haftalık Ajanda', icon: <CalendarDays size={18} className="stroke-current" aria-hidden="true" />, badge: agendaTodayBadge, category: 'principal' as NavCategory },
+    { id: 'profile', label: 'Profilim', icon: <User size={18} className="stroke-current" aria-hidden="true" />, category: 'principal' as NavCategory },
+    { id: 'projects', label: 'Projeler', icon: <Folder size={18} className="stroke-current" aria-hidden="true" />, badge: projects.length, category: 'principal' as NavCategory },
+    { id: 'tasks', label: 'Görevler', icon: <ClipboardCheck size={18} className="stroke-current" aria-hidden="true" />, badge: pendingCount > 0 ? pendingCount : undefined, category: 'principal' as NavCategory },
+    { id: 'chat', label: 'Sohbet & Ayajlar', icon: <MessageCircle size={18} className="stroke-current" aria-hidden="true" />, category: 'principal' as NavCategory },
+    // ── Proje & Saha ──
+    { id: 'timeTracking', label: 'Zaman Takibi', icon: <Timer size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },
+    { id: 'budget', label: 'Bütçe & Harcamalar', icon: <DollarSign size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },
+    { id: 'files', label: 'Planlar ve Dosyalar', icon: <FileText size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },
+    { id: 'obra', label: 'Şantiye Takibi', icon: <Camera size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },
+    { id: 'gallery', label: 'Fotoğraf Galerisi', icon: <Image size={18} className="stroke-current" aria-hidden="true" />, badge: galleryPhotos.length > 0 ? galleryPhotos.length : undefined, category: 'proyecto' as NavCategory },
+    { id: 'inventory', label: 'Envanter & Stok', icon: <Package size={18} className="stroke-current" aria-hidden="true" />, badge: invLowStock.length > 0 ? invLowStock.length : undefined, category: 'proyecto' as NavCategory },
+    { id: 'kanban', label: 'Kanban Panosu', icon: <ListChecks size={18} className="stroke-current" aria-hidden="true" />, category: 'proyecto' as NavCategory },
+    // ── Kalite & Kontrol ──
+    { id: 'rfis', label: 'Bilgi Talepleri (RFI)', icon: <CircleHelp size={18} className="stroke-current" aria-hidden="true" />, category: 'calidad' as NavCategory },
+    { id: 'submittals', label: 'Onay Belgeleri', icon: <ClipboardList size={18} className="stroke-current" aria-hidden="true" />, category: 'calidad' as NavCategory },
+    { id: 'punchList', label: 'Eksik / Kusur Listesi', icon: <ListChecks size={18} className="stroke-current" aria-hidden="true" />, category: 'calidad' as NavCategory },
+    { id: 'changeorders', label: 'Değişiklik Emirleri', icon: <FileEdit size={18} className="stroke-current" aria-hidden="true" />, category: 'calidad' as NavCategory },
+    { id: 'fieldnotes', label: 'Saha Notları', icon: <StickyNote size={18} className="stroke-current" aria-hidden="true" />, category: 'calidad' as NavCategory },
+    // ── Yönetim ──
+    { id: 'admin', label: 'Yönetim Paneli', icon: <Settings size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
+    { id: 'suppliers', label: 'Tedarikçiler', icon: <Store size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
+    { id: 'team', label: 'Ekip Üyeleri', icon: <Users size={18} className="stroke-current" aria-hidden="true" />, badge: teamUsers.length, category: 'admin' as NavCategory },
+    { id: 'invoices', label: 'Faturalar', icon: <Receipt size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
+    { id: 'carnets', label: 'Kimlik & Belgeler', icon: <CreditCard size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
+    { id: 'companies', label: 'Şirketler & Firmalar', icon: <Building2 size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
+    { id: 'catalogs', label: 'Kataloglar', icon: <BookOpen size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
+    { id: 'integrations', label: 'Entegrasyonlar', icon: <Globe size={18} className="stroke-current" aria-hidden="true" />, category: 'admin' as NavCategory },
+    // ── Diğer Araçlar ──
+    { id: 'calendar', label: 'Takvim', icon: <Calendar size={18} className="stroke-current" aria-hidden="true" />, badge: calendarBadge, category: 'otros' as NavCategory },
+    { id: 'portal', label: 'Müşteri Portalı', icon: <Globe size={18} className="stroke-current" aria-hidden="true" />, category: 'otros' as NavCategory },
+    { id: 'reports', label: 'Raporlar', icon: <BarChart3 size={18} className="stroke-current" aria-hidden="true" />, category: 'otros' as NavCategory },
+    { id: 'install', label: 'Uygulamayı Yükle', icon: <Download size={18} className="stroke-current" aria-hidden="true" />, category: 'otros' as NavCategory },
     ...(isEmailAdmin ? [
-      { id: 'adminlog', label: 'Logs del Sistema', icon: <Shield size={18} className="stroke-current" aria-hidden="true" />, category: 'otros' as NavCategory },
-      { id: 'superAdmin', label: 'Super Admin', icon: <Shield size={18} className="stroke-red-400" aria-hidden="true" />, isSuperAdmin: true, category: 'otros' as NavCategory },
+      { id: 'adminlog', label: 'Sistem Günlükleri', icon: <Shield size={18} className="stroke-current" aria-hidden="true" />, category: 'otros' as NavCategory },
+      { id: 'superAdmin', label: 'Süper Yönetici', icon: <Shield size={18} className="stroke-red-400" aria-hidden="true" />, isSuperAdmin: true, category: 'otros' as NavCategory },
     ] : []),
   ];
 
@@ -157,7 +157,7 @@ export default function Sidebar({
   };
 
   const isActive = (n: any) => screen === n.id;
-  const userRole = teamUsers.find(u => u.id === authUser?.uid)?.data?.role || 'Miembro';
+  const userRole = teamUsers.find(u => u.id === authUser?.uid)?.data?.role || 'Üye';
   const displayRole = isEmailAdmin ? 'Admin' : userRole;
 
   // ─── Shared: render a nav item row ───
@@ -254,10 +254,10 @@ export default function Sidebar({
             </div>
             <div>
               <div style={{ fontFamily: "'DM Serif Display', serif" }} className="text-lg flex items-center gap-1.5">
-                Archii
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--af-accent)]/15 text-[var(--af-accent)]" style={{ fontFamily: 'system-ui, sans-serif' }}>2.0</span>
+                oxonom
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--af-accent)]/15 text-[var(--af-accent)]" style={{ fontFamily: 'system-ui, sans-serif' }}>iş takip</span>
               </div>
-              <div className="text-[10px] text-[var(--af-text3)]">Premium</div>
+              <div className="text-[10px] text-[var(--af-text3)]">Proje & İş Yönetimi</div>
             </div>
           </div>
 
@@ -271,7 +271,7 @@ export default function Sidebar({
                 type="text"
                 value={navSearch}
                 onChange={e => setNavSearch(e.target.value)}
-                placeholder="Buscar navegación..."
+                placeholder="Menüde ara..."
                 className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg pl-8 pr-7 py-2 text-[12px] text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]/50 transition-colors"
               />
               {navSearch && (
@@ -283,11 +283,11 @@ export default function Sidebar({
             {searchQ ? (
               hasResults ? (
                 <>
-                  <div className="text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-3 mb-1">Resultados ({filteredNavItems.length})</div>
+                  <div className="text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-3 mb-1">Sonuçlar ({filteredNavItems.length})</div>
                   {filteredNavItems.map((n: any) => renderNavItem(n, 'mobile'))}
                 </>
               ) : (
-                <div className="text-center py-6 text-[var(--af-text3)] text-[12px]">Sin resultados para "{navSearch}"</div>
+                <div className="text-center py-6 text-[var(--af-text3)] text-[12px]">"{navSearch}" için sonuç bulunamadı</div>
               )
             ) : (
               categoryOrder.map(cat => renderCategory(cat, 'mobile'))
@@ -303,8 +303,8 @@ export default function Sidebar({
               <Settings size={16} className="stroke-[var(--af-accent)]" />
             </div>
             <div className="flex-1">
-              <div className="text-[14px] font-medium">Configuración</div>
-              <div className="text-[11px] text-[var(--muted-foreground)]">Temas, notificaciones, cuenta</div>
+              <div className="text-[14px] font-medium">Ayarlar</div>
+              <div className="text-[11px] text-[var(--muted-foreground)]">Tema, bildirimler, hesap</div>
             </div>
             <ChevronLeft size={14} className="stroke-[var(--muted-foreground)] rotate-180" />
           </button>
@@ -321,12 +321,12 @@ export default function Sidebar({
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-[14px] font-medium truncate flex items-center gap-1.5">
-                  {activeTenantName || 'Espacio'}
-                  {activeTenantRole === 'Super Admin' && (
-                    <span className="inline-flex items-center text-[10px] font-bold bg-gradient-to-r from-[var(--af-accent)] to-amber-500 text-background px-1 py-0.5 rounded-md">ADMIN</span>
+                  {activeTenantName || 'Çalışma Alanı'}
+                  {activeTenantRole === 'Süper Yönetici' && (
+                    <span className="inline-flex items-center text-[10px] font-bold bg-gradient-to-r from-[var(--af-accent)] to-amber-500 text-background px-1 py-0.5 rounded-md">YÖNETİCİ</span>
                   )}
                 </div>
-                <div className="text-[11px] text-[var(--af-accent)]">Cambiar espacio</div>
+                <div className="text-[11px] text-[var(--af-accent)]">Alanı değiştir</div>
               </div>
               <ChevronLeft size={14} className="stroke-[var(--muted-foreground)] rotate-180" />
             </button>
@@ -345,14 +345,14 @@ export default function Sidebar({
 
       {/* ─── Desktop/Tablet: Slide-in sidebar ─── */}
       <aside className={`hidden md:flex fixed md:static z-50 h-full af-glass shadow-xl border-r border-[var(--border)] flex-col flex-shrink-0 transition-all duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 ${sidebarCollapsed ? 'w-[68px]' : 'w-[270px]'}`}>
-        <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="flex items-center justify-center h-8 w-8 self-end mr-2 mt-2 rounded-lg hover:bg-[var(--af-bg3)] hover:bg-[var(--af-bg4)] text-[var(--muted-foreground)] transition-colors cursor-pointer" title={sidebarCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}>
+        <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="flex items-center justify-center h-8 w-8 self-end mr-2 mt-2 rounded-lg hover:bg-[var(--af-bg3)] hover:bg-[var(--af-bg4)] text-[var(--muted-foreground)] transition-colors cursor-pointer" title={sidebarCollapsed ? 'Menüyü genişlet' : 'Menüyü daralt'}>
           <ChevronLeft size={16} className="transition-transform" style={{ transform: sidebarCollapsed ? 'rotate(180deg)' : 'none' }} />
         </button>
         <div className="p-4 pb-3 border-b border-[var(--border)] flex items-center gap-2.5">
           <div className="w-8 h-8 bg-gradient-to-br from-[var(--af-accent)] to-[var(--af-accent2)] rounded-xl shadow-sm flex items-center justify-center flex-shrink-0">
             <Home size={20} strokeWidth={2} className="stroke-background" />
           </div>
-          <div className={`transition-all duration-200 overflow-hidden ${sidebarCollapsed ? 'md:hidden md:w-0' : 'md:block'}`}><div style={{ fontFamily: "'DM Serif Display', serif" }} className="text-lg flex items-center gap-1.5">Archii <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--af-accent)]/15 text-[var(--af-accent)]" style={{ fontFamily: 'system-ui, sans-serif' }}>2.0</span></div><div className="text-[10px] text-[var(--af-text3)]">Premium</div></div>
+          <div className={`transition-all duration-200 overflow-hidden ${sidebarCollapsed ? 'md:hidden md:w-0' : 'md:block'}`}><div style={{ fontFamily: "'DM Serif Display', serif" }} className="text-lg flex items-center gap-1.5">oxonom <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--af-accent)]/15 text-[var(--af-accent)]" style={{ fontFamily: 'system-ui, sans-serif' }}>iş takip</span></div><div className="text-[10px] text-[var(--af-text3)]">Proje Yönetimi</div></div>
         </div>
         <div className="flex-1 overflow-y-auto py-3 px-3" id="onboarding-sidebar-trigger">
           {/* Desktop nav search — only when expanded */}
@@ -364,7 +364,7 @@ export default function Sidebar({
                 type="text"
                 value={navSearch}
                 onChange={e => setNavSearch(e.target.value)}
-                placeholder="Buscar..."
+                placeholder="Ara..."
                 className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg pl-8 pr-7 py-1.5 text-[12px] text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]/50 transition-colors"
               />
               {navSearch && (
@@ -379,7 +379,7 @@ export default function Sidebar({
             <button
               className="flex items-center justify-center w-full py-2 mb-1 rounded-lg cursor-pointer hover:bg-[var(--af-bg3)] transition-colors text-[var(--muted-foreground)]"
               onClick={() => { setSidebarCollapsed(false); setTimeout(() => searchInputRef.current?.focus(), 300); }}
-              title="Buscar navegación"
+              title="Arama yap"
             >
               <Search size={18} />
             </button>
@@ -388,11 +388,11 @@ export default function Sidebar({
             <>
               {hasResults ? (
                 <>
-                  <div className="text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-2 mb-1">Resultados ({filteredNavItems.length})</div>
+                  <div className="text-[10px] font-semibold tracking-wider text-[var(--af-text3)] uppercase px-2 mb-1">Sonuçlar ({filteredNavItems.length})</div>
                   {filteredNavItems.map((n: any) => renderNavItem(n, 'desktop'))}
                 </>
               ) : (
-                <div className="text-center py-6 text-[var(--af-text3)] text-[11px]">Sin resultados</div>
+                <div className="text-center py-6 text-[var(--af-text3)] text-[11px]">Sonuç bulunamadı</div>
               )}
             </>
           ) : (

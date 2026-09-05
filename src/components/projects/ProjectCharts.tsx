@@ -22,7 +22,7 @@ export default function ProjectCharts({
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
         <div className="text-[15px] font-semibold mb-3 flex items-center gap-2">
           <PieIcon size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
-          Distribución por Estado
+          Durum Dağılımı
         </div>
         {statusDist.length === 0 ? (
           <div className="text-center py-10 text-[var(--af-text3)] text-sm">Sin datos</div>

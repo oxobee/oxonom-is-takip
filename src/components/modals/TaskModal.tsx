@@ -95,7 +95,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={520}>
-      <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar tarea' : 'Nueva tarea'}</h2>
+      <h2 className="text-lg font-semibold mb-4">{editingId ? 'Görevi Düzenle' : 'Yeni Görev'}</h2>
 
       <div className="space-y-3">
         <FormField label="Titulo" required error={errors.taskTitle}>
@@ -183,7 +183,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
               </div>
               {teamUsers.length === 0 && (
                 <div className="px-3 py-3 text-[12px] text-[var(--muted-foreground)] text-center">
-                  No hay miembros en el equipo
+                  Üye bulunamadı en el equipo
                 </div>
               )}
               {teamUsers.map((u: any) => {
@@ -212,24 +212,24 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
         <div className="grid grid-cols-3 gap-3">
           <FormField label="Prioridad">
             <FormSelect
-              value={forms.taskPriority || 'Media'}
+              value={forms.taskPriority || 'Orta'}
               onChange={(e) => setForms((p: Record<string, any>) => ({ ...p, taskPriority: e.target.value }))}
             >
-              <option value="Alta">Alta</option>
-              <option value="Media">Media</option>
-              <option value="Baja">Baja</option>
+              <option value="Yüksek">Yüksek</option>
+              <option value="Orta">Orta</option>
+              <option value="Düşük">Düşük</option>
             </FormSelect>
           </FormField>
 
           <FormField label="Estado">
             <FormSelect
-              value={forms.taskStatus || 'Por hacer'}
+              value={forms.taskStatus || 'Yapılacak'}
               onChange={(e) => setForms((p: Record<string, any>) => ({ ...p, taskStatus: e.target.value }))}
             >
-              <option value="Por hacer">Por hacer</option>
-              <option value="En progreso">En progreso</option>
+              <option value="Yapılacak">Yapılacak</option>
+              <option value="Devam Ediyor">Devam Ediyor</option>
               <option value="Revision">Revision</option>
-              <option value="Completado">Completado</option>
+              <option value="Tamamlandı">Tamamlandı</option>
             </FormSelect>
           </FormField>
 
@@ -297,8 +297,8 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
           </div>
         </FormField>
 
-        {/* Subtareas */}
-        <FormField label={`Subtareas ${subtasks.length > 0 ? `(${doneSubtasks}/${subtasks.length})` : ''}`}>
+        {/* Alt Görevler */}
+        <FormField label={`Alt Görevler ${subtasks.length > 0 ? `(${doneSubtasks}/${subtasks.length})` : ''}`}>
           <div className="space-y-2">
             {subtasks.map((st: { text: string; done: boolean }, idx: number) => (
               <div key={idx} className="flex items-center gap-2">
@@ -312,7 +312,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
                   type="text"
                   value={st.text}
                   onChange={e => updateSubtask(idx, 'text', e.target.value)}
-                  placeholder={`Subtarea ${idx + 1}`}
+                  placeholder={`Alt Görev ${idx + 1}`}
                   className={`flex-1 text-[12px] bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[var(--foreground)] outline-none focus:border-[var(--af-accent)]/50 ${st.done ? 'line-through text-[var(--af-text3)]' : ''}`}
                 />
                 <button
@@ -330,7 +330,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
               className="flex items-center gap-1.5 text-[11px] text-[var(--af-accent)] cursor-pointer hover:underline bg-transparent border-none p-0 font-medium"
               onClick={addSubtask}
             >
-              <Plus size={13} aria-hidden="true"/> Agregar subtarea
+              <Plus size={13} aria-hidden="true"/> Alt Görev Ekle
             </button>
           </div>
         </FormField>
@@ -339,7 +339,7 @@ export default function TaskModal({ open, onClose }: { open: boolean; onClose: (
       <ModalFooter
         onCancel={() => closeModal('task')}
         onSubmit={handleSubmit}
-        submitLabel={isSavingTask ? 'Guardando...' : editingId ? 'Actualizar' : 'Crear tarea'}
+        submitLabel={isSavingTask ? 'Guardando...' : editingId ? 'Güncelle' : 'Görev Oluştur'}
         submitDisabled={isSavingTask}
       />
     </CenterModal>

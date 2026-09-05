@@ -284,7 +284,7 @@ export default function IntegrationsScreen() {
       case 'active': return 'Activo';
       case 'error': return 'Error';
       case 'inactive': return 'Inactivo';
-      case 'pending_setup': return 'Pendiente';
+      case 'pending_setup': return 'Beklemede';
       default: return status;
     }
   };
@@ -316,7 +316,7 @@ export default function IntegrationsScreen() {
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2"><Puzzle size={20} className="text-[var(--af-accent)]" aria-hidden="true"/> Marketplace</h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
-            Conecta Archii con tus herramientas favoritas
+            Conecta oxonom iş takip con tus herramientas favoritas
           </p>
         </div>
         <span className="text-[12px] text-[var(--af-text3)]">
@@ -364,7 +364,7 @@ export default function IntegrationsScreen() {
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-[var(--muted-foreground)] flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--af-accent)]" />
-            Integraciones Activas
+            Entegrasyonlar Activas
           </h3>
           <div className="space-y-2">
             {installed.map((inst) => {
@@ -446,7 +446,7 @@ export default function IntegrationsScreen() {
                           className="text-[10px] text-[var(--af-accent)] cursor-pointer"
                           onClick={() => setShowLogs(null)}
                         >
-                          Cerrar
+                          Kapat
                         </button>
                       </div>
                       {logs.length === 0 ? (
@@ -484,7 +484,7 @@ export default function IntegrationsScreen() {
       <div className="space-y-3">
         <h3 className="text-sm font-semibold text-[var(--muted-foreground)] flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[var(--af-accent)]" />
-          Integraciones Disponibles
+          Entegrasyonlar Disponibles
         </h3>
 
         {filteredProviders.length === 0 ? (
@@ -675,7 +675,7 @@ export default function IntegrationsScreen() {
                 className="flex-1 px-4 py-2.5 rounded-lg text-[13px] font-medium cursor-pointer transition-all border border-[var(--border)] bg-transparent text-[var(--foreground)] hover:bg-[var(--af-bg3)]"
                 onClick={closeConfig}
               >
-                Cancelar
+                İptal
               </button>
               {installedMap.has(selectedProvider.id) ? (
                 <button
@@ -683,7 +683,7 @@ export default function IntegrationsScreen() {
                   onClick={handleUpdate}
                   disabled={installing}
                 >
-                  {installing ? 'Guardando...' : 'Guardar Cambios'}
+                  {installing ? 'Guardando...' : 'Kaydet Cambios'}
                 </button>
               ) : (
                 <button

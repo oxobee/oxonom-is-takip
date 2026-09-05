@@ -46,7 +46,7 @@ export default function InvCategoryModal({ open, onClose }: { open: boolean; onC
         <FormTextarea rows={2} placeholder="Descripción..." value={forms.invCatDesc || ''} onChange={e => setForms(p => ({ ...p, invCatDesc: e.target.value }))} />
       </FormField>
 
-      <ModalFooter onCancel={() => closeModal('invCategory')} onSubmit={handleSubmit} submitLabel={editingId ? 'Guardar' : 'Crear categoría'} />
+      <ModalFooter onCancel={() => closeModal('invCategory')} onSubmit={handleSubmit} submitLabel={editingId ? 'Kaydet' : 'Crear categoría'} />
     </CenterModal>
   );
 }

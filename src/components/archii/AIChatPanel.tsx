@@ -41,14 +41,14 @@ interface AIChatPanelProps {
 }
 
 const QUICK_PROMPTS = [
-  { text: 'Crea una tarea', icon: '📋' },
-  { text: 'Resume mi proyecto', icon: '🏗️' },
-  { text: 'Registra un gasto', icon: '💰' },
-  { text: 'Agrega al inventario', icon: '📦' },
-  { text: 'Crea una factura', icon: '🧾' },
-  { text: 'Registra tiempo de trabajo', icon: '⏱️' },
-  { text: '¿Qué tareas tengo?', icon: '✅' },
-  { text: 'Analiza esta imagen', icon: '📸' },
+  { text: 'Bir görev oluştur', icon: '📋' },
+  { text: 'Projemi özetle', icon: '🏗️' },
+  { text: 'Harcama kaydet', icon: '💰' },
+  { text: 'Stok ekle', icon: '📦' },
+  { text: 'Fatura oluştur', icon: '🧾' },
+  { text: 'Çalışma süresi kaydet', icon: '⏱️' },
+  { text: 'Hangi görevlerim var?', icon: '✅' },
+  { text: 'Bu görseli analiz et', icon: '📸' },
 ];
 
 /** Sanitiza HTML generado por la IA */
@@ -167,7 +167,7 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
     {
       id: 'welcome',
       role: 'assistant',
-      content: '¡Hola! Soy tu **Super IA** de Archii. 🚀\n\nPuedo **gestionar toda tu app** desde aquí:\n\n**Proyectos y Tareas**\n• ✅ Crear tareas, proyectos y actualizar estados\n• 📊 Consultar presupuestos y gastos\n• 🏗️ Gestionar fases de obra\n\n**Finanzas y Compras**\n• 💰 Registrar gastos y crear facturas\n• 🤝 Agregar proveedores y empresas\n• 🧾 Gestionar facturas (borrador → pagada)\n\n**Obra e Inventario**\n• 📦 Gestionar inventario y movimientos\n• 📓 Registrar bitácoras de obra diarias\n• 🔧 Crear punch items y submittals\n• ❓ Gestionar RFIs\n\n**Equipo y Tiempos**\n• 👥 Consultar equipo y asignar tareas\n• ⏱️ Registrar tiempos de trabajo\n• 📅 Programar reuniones\n\n**Análisis Visual**\n• 📸 Analizar imágenes (planos, obras, cotizaciones)\n\n**Ejemplos:**\n"Crea una tarea para revisar planos eléctricos"\n"¿Cuánto he gastado en materiales este mes?"\n"Agrega cemento Portland al inventario"\n"Crea una factura para el proyecto Torre 3"\n"Registra el tiempo de hoy: 4h en estructura"\n"Analiza esta imagen" (adjunta imagen 📸)\n\n¿En qué te ayudo hoy?',
+      content: '¡Hola! Soy tu **Oxonom Asistan** de oxonom iş takip. 🚀\n\nPuedo **gestionar toda tu app** desde aquí:\n\n**Proyectos y Tareas**\n• ✅ Görev Oluşturs, proyectos y actualizar estados\n• 📊 Consultar presupuestos y gastos\n• 🏗️ Gestionar fases de obra\n\n**Finanzas y Compras**\n• 💰 Registrar gastos y crear facturas\n• 🤝 Agregar proveedores y empresas\n• 🧾 Gestionar facturas (borrador → pagada)\n\n**Obra e Envanter**\n• 📦 Gestionar inventario y movimientos\n• 📓 Registrar bitácoras de obra diarias\n• 🔧 Crear punch items y submittals\n• ❓ Gestionar RFIs\n\n**Equipo y Tiempos**\n• 👥 Consultar equipo y asignar tareas\n• ⏱️ Registrar tiempos de trabajo\n• 📅 Programar reuniones\n\n**Análisis Visual**\n• 📸 Analizar imágenes (planos, obras, cotizaciones)\n\n**Ejemplos:**\n"Crea una tarea para revisar planos eléctricos"\n"¿Cuánto he gastado en materiales este mes?"\n"Agrega cemento Portland al inventario"\n"Crea una factura para el proyecto Torre 3"\n"Registra el tiempo de hoy: 4h en estructura"\n"Analiza esta imagen" (adjunta imagen 📸)\n\n¿En qué te ayudo hoy?',
       displayContent: '',
       timestamp: new Date(),
     },
@@ -361,7 +361,7 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
         };
         setMessages((prev) => [...prev, errorMessage]);
       } else {
-        console.error('[Archii AI] Error en chat:', error);
+        console.error('[oxonom iş takip AI] Error en chat:', error);
         const errorMessage: Message = {
           id: `msg-${Date.now() + 1}`,
           role: 'assistant',
@@ -444,14 +444,14 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <h3 className="text-sm font-bold text-foreground">Super IA</h3>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--af-accent)]/15 text-[var(--af-accent)] font-semibold">AGENT</span>
+                <h3 className="text-sm font-bold text-foreground">Oxonom Asistan</h3>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--af-accent)]/15 text-[var(--af-accent)] font-semibold">ASİSTAN</span>
               </div>
-              <p className="text-[11px] text-muted-foreground">Gestiono toda tu app: proyectos, inventario, finanzas y más</p>
+              <p className="text-[11px] text-muted-foreground">Tüm platform: projeler, görevler, stok, bütçe ve analiz</p>
             </div>
           </div>
           <button
-            aria-label="Cerrar"
+            aria-label="Kapat"
             onClick={onClose}
             className="w-10 h-10 rounded-lg hover:bg-[var(--af-bg4)] active:bg-[var(--af-bg4)] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
           >
@@ -538,7 +538,7 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
         {/* Quick prompts */}
         {messages.length <= 1 && (
           <div className="px-4 sm:px-5 pb-2">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2 px-1">Acciones rápidas</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2 px-1">Hızlı İşlemler</p>
             <div className="grid grid-cols-2 gap-1.5">
               {QUICK_PROMPTS.map((prompt) => (
                 <button
@@ -561,7 +561,7 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
             <div className="flex gap-2 overflow-x-auto pb-2 px-1" style={{ scrollbarWidth: 'none' }}>
               {pendingImages.map((img, i) => (
                 <div key={i} className="relative flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border border-[var(--af-bg4)]">
-                  <img src={img.url} alt="Imagen adjunta" className="w-full h-full object-cover" />
+                  <img src={img.url} alt="Eklenen görsel" className="w-full h-full object-cover" />
                   <button
                     className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/60 text-white rounded-full text-[10px] flex items-center justify-center leading-none cursor-pointer border-none"
                     onClick={() => setPendingImages(prev => prev.filter((_, idx) => idx !== i))}
@@ -589,7 +589,7 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 onPaste={handlePaste}
-                placeholder="Dime qué necesitas... puedes adjuntar imágenes"
+                placeholder="Neye ihtiyacınız olduğunu yazın... görsel de ekleyebilirsiniz"
                 rows={1}
                 className={cn(
                   'w-full resize-none rounded-xl bg-[var(--af-bg3)] border border-[var(--af-bg4)]',
@@ -606,7 +606,7 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
             <button
               onClick={() => fileInputRef.current?.click()}
               className="w-11 h-11 rounded-xl flex items-center justify-center hover:bg-[var(--af-bg4)] active:bg-[var(--af-bg4)] transition-all duration-200 shrink-0 text-muted-foreground hover:text-foreground"
-              title="Subir imagen"
+              title="Görsel yükle"
             >
               <ImageIcon size={20} aria-hidden="true"/>
             </button>
@@ -630,7 +630,7 @@ export default function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
             </button>
           </div>
           <p className="text-[10px] text-muted-foreground/50 mt-1 text-center pb-[env(safe-area-inset-bottom,0px)]">
-            Super IA puede ejecutar acciones reales y analizar imágenes.
+            Oxonom Asistan sistem üzerinde işlem gerçekleştirebilir ve görsel analiz yapabilir.
           </p>
         </div>
       </div>

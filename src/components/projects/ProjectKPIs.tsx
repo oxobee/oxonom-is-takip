@@ -43,7 +43,7 @@ export default function ProjectKPIs({
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
         <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
           <DollarSign size={11} className="text-[var(--af-accent)]" aria-hidden="true"/>
-          Presupuesto
+          Bütçe
         </div>
         <div className="text-lg font-bold text-[var(--af-accent)]">{fmtCOP(totalBudget)}</div>
         <div className="text-[10px] text-[var(--muted-foreground)]">Gastado: {fmtCOP(totalSpent)}</div>

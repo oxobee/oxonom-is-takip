@@ -47,13 +47,13 @@ export default function RFIsScreen() {
 
   const handleCreate = () => {
     setEditingId(null);
-    setForms(p => ({ ...p, rfiSubject: '', rfiQuestion: '', rfiResponse: '', rfiPriority: 'Media', rfiAssignedTo: '', rfiDueDate: '', rfiStatus: 'Abierto', rfiProject: '' }));
+    setForms(p => ({ ...p, rfiSubject: '', rfiQuestion: '', rfiResponse: '', rfiPriority: 'Orta', rfiAssignedTo: '', rfiDueDate: '', rfiStatus: 'Abierto', rfiProject: '' }));
     openModal('rfi');
   };
 
   const handleEdit = (r: any) => {
     setEditingId(r.id);
-    setForms(p => ({ ...p, rfiSubject: r.data.subject, rfiQuestion: r.data.question, rfiResponse: r.data.response || '', rfiPriority: r.data.priority || 'Media', rfiAssignedTo: r.data.assignedTo || '', rfiDueDate: r.data.dueDate || '', rfiStatus: r.data.status || 'Abierto', rfiProject: r.data.projectId || '' }));
+    setForms(p => ({ ...p, rfiSubject: r.data.subject, rfiQuestion: r.data.question, rfiResponse: r.data.response || '', rfiPriority: r.data.priority || 'Orta', rfiAssignedTo: r.data.assignedTo || '', rfiDueDate: r.data.dueDate || '', rfiStatus: r.data.status || 'Abierto', rfiProject: r.data.projectId || '' }));
     openModal('rfi');
   };
 
@@ -73,7 +73,7 @@ export default function RFIsScreen() {
           onClick={handleCreate}
         >
           <Plus size={14} aria-hidden="true"/>
-          Nuevo RFI
+          Yeni Bilgi Talebi
         </button>
       </div>
 
@@ -82,7 +82,7 @@ export default function RFIsScreen() {
         {[
           { label: 'Total', value: stats.total, color: 'bg-[var(--af-bg4)]' },
           { label: 'Abiertos', value: stats.open, color: 'bg-blue-500/10 text-blue-400' },
-          { label: 'En revisión', value: stats.inReview, color: 'bg-amber-500/10 text-amber-400' },
+          { label: 'İncelemede', value: stats.inReview, color: 'bg-amber-500/10 text-amber-400' },
           { label: 'Respondidos', value: stats.responded, color: 'bg-emerald-500/10 text-emerald-400' },
           { label: 'Cerrados', value: stats.closed, color: 'bg-[var(--af-bg4)] text-[var(--muted-foreground)]' },
         ].map((s) => (
@@ -117,14 +117,14 @@ export default function RFIsScreen() {
           emoji="❓"
           title="Sin RFIs"
           description="Crea tu primer RFI para solicitar información"
-          actionLabel="Nuevo RFI"
+          actionLabel="Yeni Bilgi Talebi"
           onAction={handleCreate}
         />
       ) : (
         <div className="space-y-3">
           {filtered.map((r: any) => {
             const statusCls = RFI_STATUS_COLORS[r.data.status] || 'bg-[var(--af-bg4)] text-[var(--muted-foreground)] border-[var(--border)]';
-            const prioCls = PRIO_COLORS[r.data.priority] || PRIO_COLORS['Media'];
+            const prioCls = PRIO_COLORS[r.data.priority] || PRIO_COLORS['Orta'];
             return (
               <div key={r.id} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 hover:border-[var(--input)] transition-all">
                 {/* Top row */}

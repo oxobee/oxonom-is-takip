@@ -102,7 +102,7 @@ export default function QuickActions({ isOpen, onClose, onOpenChat }: QuickActio
         actions: data.actions || undefined,
       });
     } catch (err) {
-      console.error('[Archii AI] Error en sugerencias:', err);
+      console.error('[oxonom iş takip AI] Error en sugerencias:', err);
       setError('Error de conexión. Verifica tu internet e intenta de nuevo.');
     } finally {
       setLoadingId(null);
@@ -118,10 +118,10 @@ export default function QuickActions({ isOpen, onClose, onOpenChat }: QuickActio
             <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[var(--af-accent)] to-amber-600 flex items-center justify-center">
               <Zap size={12} className="text-black" strokeWidth={2.5} aria-hidden="true"/>
             </div>
-            <h4 className="text-sm font-semibold text-foreground">Acciones rápidas</h4>
+            <h4 className="text-sm font-semibold text-foreground">Hızlı İşlemler</h4>
           </div>
           <button
-            aria-label="Cerrar"
+            aria-label="Kapat"
             onClick={onClose}
             className="w-10 h-10 rounded-lg active:bg-[var(--af-bg4)] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
           >
@@ -211,7 +211,7 @@ export default function QuickActions({ isOpen, onClose, onOpenChat }: QuickActio
           >
             <span className="flex items-center justify-center gap-1.5">
               <HelpCircle size={14} aria-hidden="true"/>
-              Abrir Super IA
+              Abrir Oxonom Asistan
             </span>
           </button>
         </div>

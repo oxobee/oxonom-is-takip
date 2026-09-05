@@ -92,7 +92,7 @@ export default function GalleryScreen() {
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <Camera size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
-            Galería de proyectos
+            Galeri de proyectos
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
             {photoCount} foto{photoCount !== 1 ? 's' : ''}
@@ -113,7 +113,7 @@ export default function GalleryScreen() {
             aria-label={selectMode ? 'Salir de selección' : 'Modo selección'}
           >
             {selectMode ? <X size={14} aria-hidden="true"/> : <CheckSquare size={14} aria-hidden="true"/>}
-            <span className="hidden sm:inline">{selectMode ? 'Cancelar' : 'Seleccionar'}</span>
+            <span className="hidden sm:inline">{selectMode ? 'İptal' : 'Seleccionar'}</span>
           </button>
           {/* Add photo button */}
           <button
@@ -183,7 +183,7 @@ export default function GalleryScreen() {
           value={galleryFilterProject}
           onChange={e => setGalleryFilterProject(e.target.value)}
         >
-          <option value="all">Todos los proyectos</option>
+          <option value="all">Tüm Projeler</option>
           {projects.map((p: any) => <option key={p.id} value={p.id}>{p.data.name}</option>)}
         </select>
         {/* Category filter */}
@@ -192,7 +192,7 @@ export default function GalleryScreen() {
           value={galleryFilterCat}
           onChange={e => setGalleryFilterCat(e.target.value)}
         >
-          <option value="all">Todas las categorías</option>
+          <option value="all">Tüm Kategoriler</option>
           {PHOTO_CATS.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
         {/* View mode toggle */}
@@ -234,7 +234,7 @@ export default function GalleryScreen() {
             </div>
           </div>
           <div className="text-[15px] font-medium text-[var(--muted-foreground)] mb-1">
-            {hasActiveFilters ? 'Sin resultados' : 'No hay fotos en la galería'}
+            {hasActiveFilters ? 'Sonuç bulunamadı' : 'No hay fotos en la galería'}
           </div>
           <div className="text-[13px] text-[var(--af-text3)] max-w-xs mx-auto space-y-1">
             {hasActiveFilters ? (
@@ -258,7 +258,7 @@ export default function GalleryScreen() {
               className="mt-4 px-4 py-2 rounded-lg text-[13px] font-medium bg-[var(--af-bg3)] text-[var(--foreground)] border border-[var(--border)] cursor-pointer hover:bg-[var(--af-bg4)] transition-colors"
               onClick={() => { setSearchQuery(''); setGalleryFilterProject('all'); setGalleryFilterCat('all'); }}
             >
-              Limpiar filtros
+              Filtreleri Temizle
             </button>
           ) : (
             <button

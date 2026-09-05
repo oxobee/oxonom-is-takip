@@ -19,10 +19,10 @@ export default function DashboardQuickActions({
       <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-colors" onClick={() => navigateTo('weeklyAgenda')}>
         <CalendarDays size={12} aria-hidden="true"/> Agenda
       </button>
-      <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-colors" onClick={() => { setForms(p => ({ ...p, taskTitle: '', taskProject: '', taskDue: new Date().toISOString().split('T')[0], taskStatus: 'Por hacer' })); openModal('task'); }}>
+      <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-colors" onClick={() => { setForms(p => ({ ...p, taskTitle: '', taskProject: '', taskDue: new Date().toISOString().split('T')[0], taskStatus: 'Yapılacak' })); openModal('task'); }}>
         <Plus size={12} aria-hidden="true"/> Tarea
       </button>
-      <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-colors" onClick={() => { setForms(p => ({ ...p, expConcept: '', expProject: '', expAmount: '', expDate: new Date().toISOString().split('T')[0], expCategory: 'Materiales', expPaymentMethod: 'Efectivo', expVendor: '', expNotes: '' })); openModal('expense'); }}>
+      <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium cursor-pointer border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-colors" onClick={() => { setForms(p => ({ ...p, expConcept: '', expProject: '', expAmount: '', expDate: new Date().toISOString().split('T')[0], expCategory: 'Materiales', expPaymentMethod: 'Nakit', expVendor: '', expNotes: '' })); openModal('expense'); }}>
         <DollarSign size={12} aria-hidden="true"/> Gasto
       </button>
       {pendingApprovals > 0 && (

@@ -23,7 +23,7 @@ export default function RFIModal({ open, onClose }: { open: boolean; onClose: ()
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={560}>
-      <h2 className="text-lg font-semibold mb-4">{editingId ? `Editar RFI` : 'Nuevo RFI'}</h2>
+      <h2 className="text-lg font-semibold mb-4">{editingId ? `Editar RFI` : 'Yeni Bilgi Talebi'}</h2>
       <div className="space-y-3">
         {!editingId && (
           <FormField label="Proyecto" required error={errors.rfiProject}>
@@ -46,20 +46,20 @@ export default function RFIModal({ open, onClose }: { open: boolean; onClose: ()
         )}
         <div className="grid grid-cols-2 gap-3">
           <FormField label="Prioridad">
-            <FormSelect value={forms.rfiPriority || 'Media'} onChange={(e) => setForms(p => ({ ...p, rfiPriority: e.target.value }))}>
-              {['Alta', 'Media', 'Baja'].map(p => <option key={p} value={p}>{p}</option>)}
+            <FormSelect value={forms.rfiPriority || 'Orta'} onChange={(e) => setForms(p => ({ ...p, rfiPriority: e.target.value }))}>
+              {['Yüksek', 'Orta', 'Düşük'].map(p => <option key={p} value={p}>{p}</option>)}
             </FormSelect>
           </FormField>
           {editingId && (
             <FormField label="Estado">
               <FormSelect value={forms.rfiStatus || 'Abierto'} onChange={(e) => setForms(p => ({ ...p, rfiStatus: e.target.value }))}>
-                {['Abierto', 'En revisión', 'Respondido', 'Cerrado'].map(s => <option key={s} value={s}>{s}</option>)}
+                {['Abierto', 'İncelemede', 'Respondido', 'Cerrado'].map(s => <option key={s} value={s}>{s}</option>)}
               </FormSelect>
             </FormField>
           )}
-          <FormField label="Asignado a">
+          <FormField label="Atanan Kişi">
             <FormSelect value={forms.rfiAssignedTo || ''} onChange={(e) => setForms(p => ({ ...p, rfiAssignedTo: e.target.value }))}>
-              <option value="">Sin asignar</option>
+              <option value="">Atanmamış</option>
               {teamUsers.map((u: any) => <option key={u.id} value={u.id}>{u.data.name}</option>)}
             </FormSelect>
           </FormField>
@@ -68,7 +68,7 @@ export default function RFIModal({ open, onClose }: { open: boolean; onClose: ()
           </FormField>
         </div>
       </div>
-      <ModalFooter onCancel={() => closeModal('rfi')} onSubmit={handleSubmit} submitLabel={editingId ? 'Actualizar' : 'Crear RFI'} />
+      <ModalFooter onCancel={() => closeModal('rfi')} onSubmit={handleSubmit} submitLabel={editingId ? 'Güncelle' : 'Crear RFI'} />
     </CenterModal>
   );
 }

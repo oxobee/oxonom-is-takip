@@ -52,7 +52,7 @@ export default function FilterBar({
             value={projectFilter.value}
             onChange={(e) => projectFilter.onChange(e.target.value)}
           >
-            <option value="">{projectFilter.label || 'Todos los proyectos'}</option>
+            <option value="">{projectFilter.label || 'Tüm Projeler'}</option>
             {projectFilter.projects.map((p) => (
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}

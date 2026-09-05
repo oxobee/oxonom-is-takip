@@ -7,32 +7,32 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Archii — Gestión de Proyectos",
-    template: "%s | Archii",
+    default: "oxonom iş takip — Proje & İş Yönetimi",
+    template: "%s | oxonom iş takip",
   },
-  description: "Plataforma integral de gestión de proyectos de arquitectura e interiorismo. Planifica, ejecuta y controla todos tus proyectos en un solo lugar.",
-  keywords: ["arquitectura", "interiorismo", "gestión de proyectos", "construcción", "presupuestos", "planificación de obra", "colombia", "diseño", "obras"],
-  authors: [{ name: "Archii" }],
+  description: "Kapsamlı kurumsal proje, görev, şantiye ve iş takip yönetim platformu.",
+  keywords: ["oxonom", "iş takip", "proje yönetimi", "görev takibi", "şantiye", "bütçe", "planlama", "türkiye"],
+  authors: [{ name: "oxonom iş takip" }],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Archii",
+    title: "oxonom iş takip",
   },
   other: {
     "mobile-web-app-capable": "yes",
   },
   openGraph: {
     type: "website",
-    locale: "es_CO",
-    siteName: "Archii",
-    title: "Archii — Gestión de Proyectos de Arquitectura",
-    description: "Plataforma integral de gestión de proyectos de arquitectura e interiorismo. Planifica, ejecuta y controla todos tus proyectos en un solo lugar.",
+    locale: "tr_TR",
+    siteName: "oxonom iş takip",
+    title: "oxonom iş takip — Proje & İş Yönetimi Platformu",
+    description: "Kapsamlı kurumsal proje, görev, şantiye ve iş takip yönetim platformu.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Archii — Gestión de Proyectos",
-    description: "Plataforma integral de gestión de proyectos de arquitectura e interiorismo.",
+    title: "oxonom iş takip — Proje & İş Yönetimi",
+    description: "Kapsamlı kurumsal proje, görev, şantiye ve iş takip yönetim platformu.",
   },
   robots: {
     index: true,
@@ -59,7 +59,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="tr" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -79,7 +79,7 @@ export default function RootLayout({
         {/* iOS PWA */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Archii" />
+        <meta name="apple-mobile-web-app-title" content="oxonom iş takip" />
         {/* PWA Icons */}
         <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
         <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />

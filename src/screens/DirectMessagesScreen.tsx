@@ -20,9 +20,9 @@ const formatDateLabel = (date: Date): string => {
   const msgDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const diff = today.getTime() - msgDay.getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (days === 0) return 'Hoy';
-  if (days === 1) return 'Ayer';
-  if (days < 7) return ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][date.getDay()];
+  if (days === 0) return 'Bugün';
+  if (days === 1) return 'Dün';
+  if (days < 7) return ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'][date.getDay()];
   return date.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
 };
 
@@ -33,7 +33,7 @@ const formatTimeShort = (ts: any): string => {
     const diffMs = now.getTime() - d.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     if (diffDays === 0) return d.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
-    if (diffDays === 1) return 'Ayer';
+    if (diffDays === 1) return 'Dün';
     if (diffDays < 7) return ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][d.getDay()];
     return d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
   } catch {
@@ -147,7 +147,7 @@ export default function DirectMessagesScreen() {
   /* ===== DERIVED: OTHER PARTICIPANT ===== */
   const getOtherParticipant = useCallback((conv: DirectMessageConversation) => {
     if (!authUser) return null;
-    const otherUid = conv.data.participants.find(p => p !== authUser.uid);
+    const otherUid = conv.data.participants.find((p: string) => p !== authUser.uid);
     if (!otherUid) return null;
     const teamUser = teamUsers.find(u => u.id === otherUid);
     return {
@@ -378,7 +378,7 @@ export default function DirectMessagesScreen() {
                   <span className="text-4xl">✉️</span>
                 </div>
                 <div className="text-[14px] font-semibold text-[var(--foreground)] mb-1">
-                  {searchQuery.trim() ? 'Sin resultados' : 'Sin conversaciones'}
+                  {searchQuery.trim() ? 'Sonuç bulunamadı' : 'Sin conversaciones'}
                 </div>
                 <div className="text-[12px] text-[var(--af-text3)] leading-relaxed">
                   {searchQuery.trim()
@@ -476,7 +476,7 @@ export default function DirectMessagesScreen() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold truncate text-[var(--foreground)]">{selectedOther.name}</div>
-                <div className="text-[11px] text-[var(--muted-foreground)]">{selectedOther.role || 'Miembro del equipo'}</div>
+                <div className="text-[11px] text-[var(--muted-foreground)]">{selectedOther.role || 'Üye del equipo'}</div>
               </div>
             </div>
 
@@ -550,7 +550,7 @@ export default function DirectMessagesScreen() {
                         {/* Message bubble */}
                         <div className={`relative max-w-[80%] rounded-2xl shadow-sm transition-shadow hover:shadow-md ${isMe ? 'rounded-br-md' : 'rounded-bl-md'}`}>
                           <div className={`px-3.5 py-2.5 text-[13px] leading-relaxed ${isMe ? 'bg-[var(--accent)] text-[var(--af-accent2)] border border-[var(--af-accent)]/20' : 'bg-[var(--af-bg3)] text-[var(--foreground)]'}`}>
-                            {m.data.text.split('\n').map((l, i) => <span key={i}>{l}{i < m.data.text.split('\n').length - 1 ? <br /> : ''}</span>)}
+                            {m.data.text.split('\n').map((l: string, i: number) => <span key={i}>{l}{i < m.data.text.split('\n').length - 1 ? <br /> : ''}</span>)}
                           </div>
                         </div>
 
@@ -572,17 +572,17 @@ export default function DirectMessagesScreen() {
                 <input
                   ref={inputRef}
                   className="flex-1 bg-[var(--af-bg3)] border border-[var(--border)] rounded-2xl px-4 py-2.5 text-[15px] text-[var(--foreground)] outline-none focus:border-[var(--af-accent)] min-w-0 transition-colors placeholder:text-[var(--af-text3)]"
-                  placeholder="Escribe un mensaje..."
+                  placeholder="Bir mesaj yazın..."
                   value={inputText}
                   onChange={e => setInputText(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
                 />
                 <button
-                  aria-label="Enviar"
+                  aria-label="Gönder"
                   className="w-10 h-10 rounded-xl bg-[var(--af-accent)] flex items-center justify-center cursor-pointer border-none flex-shrink-0 active:scale-95 transition-transform hover:opacity-90 shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
                   onClick={sendMessage}
                   disabled={!inputText.trim()}
-                  title="Enviar"
+                  title="Gönder"
                 >
                   <Send size={18} className="stroke-background" strokeWidth={2.5} aria-hidden="true"/>
                 </button>
@@ -596,7 +596,7 @@ export default function DirectMessagesScreen() {
               <div className="w-24 h-24 rounded-2xl bg-[var(--af-bg3)] flex items-center justify-center mx-auto mb-4">
                 <span className="text-5xl">✉️</span>
               </div>
-              <div className="text-[15px] font-semibold text-[var(--foreground)] mb-1">Mensajes Directos</div>
+              <div className="text-[15px] font-semibold text-[var(--foreground)] mb-1">Ayajlar Directos</div>
               <div className="text-[12px] text-[var(--af-text3)] leading-relaxed">
                 Selecciona una conversación o inicia una nueva para comunicarte directamente con tu equipo
               </div>
@@ -617,7 +617,7 @@ export default function DirectMessagesScreen() {
             <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
               <h2 className="text-[15px] font-bold text-[var(--foreground)]">Nueva Conversación</h2>
               <button
-                aria-label="Cerrar"
+                aria-label="Kapat"
                 className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-[var(--af-bg3)] text-[var(--muted-foreground)] cursor-pointer border-none bg-transparent transition-colors"
                 onClick={() => setShowNewConvDialog(false)}
               >
@@ -644,7 +644,7 @@ export default function DirectMessagesScreen() {
               {availableUsers.length === 0 && (
                 <div className="py-8 text-center">
                   <div className="text-[13px] text-[var(--af-text3)]">
-                    {newConvSearch.trim() ? 'No se encontraron miembros' : 'No hay miembros disponibles'}
+                    {newConvSearch.trim() ? 'No se encontraron miembros' : 'Üye bulunamadı disponibles'}
                   </div>
                 </div>
               )}
@@ -671,7 +671,7 @@ export default function DirectMessagesScreen() {
                     <div className="min-w-0 flex-1">
                       <div className="text-[13px] font-medium truncate text-[var(--foreground)]">{u.data.name || u.data.email}</div>
                       <div className="text-[11px] text-[var(--af-text3)] truncate">
-                        {u.data.role || 'Miembro'}
+                        {u.data.role || 'Üye'}
                         {hasExisting && ' · Conversación existente'}
                       </div>
                     </div>

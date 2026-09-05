@@ -43,7 +43,7 @@ const EMPTY_FORM: FormState = {
   fnTitle: '',
   fnProject: '',
   fnCategory: 'Observación',
-  fnPriority: 'Media',
+  fnPriority: 'Orta',
   fnStatus: 'Abierta',
   fnLocation: '',
   fnContent: '',
@@ -123,7 +123,7 @@ export default function FieldNotesScreen() {
       });
       showToast(`Nota actualizada a "${next}"`);
     } catch (err) {
-      console.error('[Archii] Error updating field note status:', err);
+      console.error('[oxonom iş takip] Error updating field note status:', err);
       showToast('Error al actualizar estado', 'error');
     }
   };
@@ -141,7 +141,7 @@ export default function FieldNotesScreen() {
       fnTitle: note.data.title || '',
       fnProject: note.data.projectId || '',
       fnCategory: note.data.category || 'Observación',
-      fnPriority: note.data.priority || 'Media',
+      fnPriority: note.data.priority || 'Orta',
       fnStatus: note.data.status || 'Abierta',
       fnLocation: note.data.location || '',
       fnContent: note.data.content || '',
@@ -201,7 +201,7 @@ export default function FieldNotesScreen() {
       setEditingId(null);
       setForm({ ...EMPTY_FORM });
     } catch (err) {
-      console.error('[Archii] Error saving field note:', err);
+      console.error('[oxonom iş takip] Error saving field note:', err);
       showToast('Error al guardar la nota', 'error');
     } finally {
       setSaving(false);
@@ -221,7 +221,7 @@ export default function FieldNotesScreen() {
       showToast('Nota eliminada');
       showUndoToast({ collection: 'fieldNotes', docId: note.id, snapshot, label: 'Nota', gender: 'a' });
     } catch (err) {
-      console.error('[Archii] Error deleting field note:', err);
+      console.error('[oxonom iş takip] Error deleting field note:', err);
       showToast('Error al eliminar la nota', 'error');
     }
   };
@@ -237,7 +237,7 @@ export default function FieldNotesScreen() {
         const b64 = await fileToBase64(files[i]);
         newPhotos.push(b64);
       } catch (err) {
-        console.error('[Archii] Error converting photo:', err);
+        console.error('[oxonom iş takip] Error converting photo:', err);
       }
     }
     setForm(f => ({ ...f, fnPhotos: newPhotos }));
@@ -275,7 +275,7 @@ export default function FieldNotesScreen() {
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <NotebookPen size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
-            Notas de Campo
+            Notlar de Campo
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">{fieldNotes.length} notas</p>
         </div>
@@ -317,7 +317,7 @@ export default function FieldNotesScreen() {
         filters={[
           {
             key: 'category',
-            label: 'Todas las categorías',
+            label: 'Tüm Kategoriler',
             value: filterCategory,
             options: FIELD_NOTE_CATEGORIES.map(c => ({ value: c, label: c })),
             onChange: setFilterCategory,
@@ -370,7 +370,7 @@ export default function FieldNotesScreen() {
           {filtered.map((note: any) => {
             const statusCls = FIELD_NOTE_STATUS_COLORS[note.data.status] || 'bg-[var(--af-bg4)] text-[var(--muted-foreground)] border-[var(--border)]';
             const catCls = FIELD_NOTE_CATEGORY_COLORS[note.data.category] || FIELD_NOTE_CATEGORY_COLORS['Otro'];
-            const prioCls = PRIO_COLORS[note.data.priority] || PRIO_COLORS['Media'];
+            const prioCls = PRIO_COLORS[note.data.priority] || PRIO_COLORS['Orta'];
             const projName = getProjectName(note.data.projectId);
             const nextStatus = NEXT_STATUS[note.data.status];
 
@@ -544,7 +544,7 @@ export default function FieldNotesScreen() {
 
             {/* Location */}
             <div>
-              <label className="text-[12px] font-medium text-[var(--muted-foreground)] mb-1 block">Ubicación en obra</label>
+              <label className="text-[12px] font-medium text-[var(--muted-foreground)] mb-1 block">Konum en obra</label>
               <input
                 type="text"
                 className={inputCls}
@@ -611,14 +611,14 @@ export default function FieldNotesScreen() {
               onClick={() => setShowFormModal(false)}
               disabled={saving}
             >
-              Cancelar
+              İptal
             </button>
             <button
               className="px-4 py-2 rounded-lg text-[13px] font-semibold bg-[var(--af-accent)] text-background border-none cursor-pointer hover:bg-[var(--af-accent2)] transition-colors disabled:opacity-50"
               onClick={handleSave}
               disabled={saving}
             >
-              {saving ? 'Guardando...' : editingId ? 'Actualizar' : 'Crear Nota'}
+              {saving ? 'Guardando...' : editingId ? 'Güncelle' : 'Crear Nota'}
             </button>
           </DialogFooter>
         </DialogContent>
@@ -733,7 +733,7 @@ export default function FieldNotesScreen() {
           <button
             className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center cursor-pointer border-none hover:bg-white/20 transition-colors"
             onClick={() => setShowLightbox(false)}
-            aria-label="Cerrar"
+            aria-label="Kapat"
           >
             <X size={20} aria-hidden="true"/>
           </button>

@@ -22,7 +22,7 @@ export default function DashboardAgendaToday({
       <div className="flex items-center justify-between mb-3">
         <div className="text-[14px] sm:text-[15px] font-semibold flex items-center gap-2">
           <CalendarDays size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
-          Agenda de Hoy
+          Agenda de Bugün
           <button className="text-[10px] text-[var(--af-accent)] cursor-pointer hover:underline ml-1" onClick={() => navigateTo('weeklyAgenda')}>Ver agenda completa →</button>
         </div>
         <button className="text-[10px] text-[var(--af-accent)] cursor-pointer hover:underline flex items-center gap-1" onClick={() => navigateTo('calendar')}>

@@ -67,7 +67,7 @@ export default function ChangeOrderModal({ open, onClose }: { open: boolean; onC
               uploadedAt: fb.firestore.FieldValue.serverTimestamp(),
             });
           } catch (err) {
-            console.error('[Archii] Error uploading attachment:', err);
+            console.error('[oxonom iş takip] Error uploading attachment:', err);
           }
         }
       }
@@ -117,7 +117,7 @@ export default function ChangeOrderModal({ open, onClose }: { open: boolean; onC
       }
       closeModal('changeOrder');
     } catch (err) {
-      console.error('[Archii] Error saving CO:', err);
+      console.error('[oxonom iş takip] Error saving CO:', err);
       showToast('Error al guardar orden', 'error');
     } finally {
       setIsSubmitting(false);
@@ -167,7 +167,7 @@ export default function ChangeOrderModal({ open, onClose }: { open: boolean; onC
               uploadedAt: fb.firestore.FieldValue.serverTimestamp(),
             });
           } catch (err) {
-            console.error('[Archii] Error uploading attachment:', err);
+            console.error('[oxonom iş takip] Error uploading attachment:', err);
           }
         }
       }
@@ -207,7 +207,7 @@ export default function ChangeOrderModal({ open, onClose }: { open: boolean; onC
       }
       closeModal('changeOrder');
     } catch (err) {
-      console.error('[Archii] Error submitting CO:', err);
+      console.error('[oxonom iş takip] Error submitting CO:', err);
       showToast('Error al enviar orden', 'error');
     } finally {
       setIsSubmitting(false);
@@ -246,7 +246,7 @@ export default function ChangeOrderModal({ open, onClose }: { open: boolean; onC
           <div className="bg-[var(--af-bg3)] rounded-lg p-3 space-y-3">
             <div className="text-xs font-semibold text-amber-400">💰 Impacto en Costo</div>
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="Presupuesto anterior">
+              <FormField label="Bütçe anterior">
                 <FormInput type="number" value={forms.coPreviousBudget || ''} onChange={(e) => setForms(p => ({ ...p, coPreviousBudget: e.target.value }))} placeholder="$0" />
               </FormField>
               <FormField label="Nuevo presupuesto">
@@ -268,7 +268,7 @@ export default function ChangeOrderModal({ open, onClose }: { open: boolean; onC
         {showScheduleImpact && (
           <div className="bg-[var(--af-bg3)] rounded-lg p-3 space-y-3">
             <div className="text-xs font-semibold text-blue-400">📅 Impacto en Cronograma</div>
-            <FormField label="Días de extensión">
+            <FormField label="Güns de extensión">
               <FormInput type="number" value={forms.coDaysExtension || ''} onChange={(e) => setForms(p => ({ ...p, coDaysExtension: e.target.value }))} placeholder="0" min="0" />
             </FormField>
             <FormField label="Razón de la extensión">
@@ -280,7 +280,7 @@ export default function ChangeOrderModal({ open, onClose }: { open: boolean; onC
         {/* Attachments */}
         {!editingId && (
           <div>
-            <FormField label="Archivos adjuntos (máx. 5, 10MB c/u)">
+            <FormField label="Ekli Dosyalar (máx. 5, 10MB c/u)">
               <input
                 type="file"
                 multiple
@@ -313,21 +313,21 @@ export default function ChangeOrderModal({ open, onClose }: { open: boolean; onC
           className="px-4 py-2 rounded-lg text-[13px] font-medium cursor-pointer bg-transparent text-[var(--muted-foreground)] border border-[var(--input)] hover:bg-[var(--af-bg3)] hover:text-[var(--foreground)] transition-all disabled:opacity-50"
           onClick={() => closeModal('changeOrder')}
         >
-          Cancelar
+          İptal
         </button>
         <button
           className="px-4 py-2 rounded-lg text-[13px] font-medium cursor-pointer bg-[var(--af-bg3)] text-[var(--foreground)] border border-[var(--input)] hover:bg-[var(--af-bg4)] transition-colors disabled:opacity-50"
           onClick={handleSaveDraft}
           disabled={isSubmitting}
         >
-          Guardar Borrador
+          Kaydet Taslak
         </button>
         <button
           className="px-4 py-2 rounded-lg text-[13px] font-semibold cursor-pointer bg-[var(--af-accent)] text-background border-none hover:bg-[var(--af-accent2)] transition-colors disabled:opacity-50"
           onClick={handleSubmitForApproval}
           disabled={isSubmitting}
         >
-          Enviar a Aprobación
+          Gönder a Aprobación
         </button>
       </div>
     </CenterModal>

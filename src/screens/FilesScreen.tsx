@@ -201,7 +201,7 @@ function FileBrowser({
             )}
           </div>
           <button
-            aria-label="Cerrar error"
+            aria-label="Kapat error"
             onClick={od.clearError}
             className="text-red-400/60 hover:text-red-400 text-xs flex-shrink-0"
           >
@@ -441,7 +441,7 @@ export default function FilesScreen() {
   const tenant = useTenantOneDrive(activeTenantId);
   const personal = usePersonalOneDrive();
 
-  const isTenantAdmin = activeTenantRole === 'Super Admin';
+  const isTenantAdmin = activeTenantRole === 'Süper Yönetici';
 
   // Delete file with confirmation dialog (replaces native confirm())
   const handleDeleteFile = async (itemId: string, itemName: string, od: typeof tenant | typeof personal) => {
@@ -552,7 +552,7 @@ export default function FilesScreen() {
           <div>
             <h2 className="text-lg font-semibold flex items-center gap-2">
               <FolderOpen size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
-              Archivos
+              Dosyalar
             </h2>
             <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Gestiona archivos del equipo y personales</p>
           </div>
@@ -568,7 +568,7 @@ export default function FilesScreen() {
                 : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
             }`}
           >
-            🏢 Archivos del Equipo
+            🏢 Dosyalar del Equipo
           </button>
           <button
             onClick={() => setActiveTab('personal')}
@@ -683,7 +683,7 @@ export default function FilesScreen() {
                 className="bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg p-3 text-left cursor-pointer hover:border-[var(--af-accent)]/40 transition-all group"
                 onClick={() => {
                   setSelectedProjectId(p.id);
-                  setForms((f: any) => ({ ...f, detailTab: 'Archivos' }));
+                  setForms((f: any) => ({ ...f, detailTab: 'Dosyalar' }));
                   navigateTo('projectDetail', p.id);
                 }}
               >

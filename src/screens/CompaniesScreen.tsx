@@ -127,7 +127,7 @@ export default function CompaniesScreen() {
         <div>
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <Building2 size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
-            Empresas
+            Firmas
           </h2>
           <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
             {companies.length} empresa{companies.length !== 1 ? 's' : ''} registrada{companies.length !== 1 ? 's' : ''}
@@ -139,7 +139,7 @@ export default function CompaniesScreen() {
           onClick={handleNewCompany}
         >
           <Plus size={14} aria-hidden="true"/>
-          Nueva empresa
+          Yeni Firma
         </button>
       </div>
 
@@ -186,7 +186,7 @@ export default function CompaniesScreen() {
           <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
             <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
               <Briefcase size={11} className="text-blue-400" aria-hidden="true"/>
-              Total proyectos
+              Toplam Proje
             </div>
             <div className="text-lg font-bold text-blue-400">{summary.totalProjects}</div>
             <div className="text-[10px] text-[var(--muted-foreground)]">vinculados a empresas</div>
@@ -194,7 +194,7 @@ export default function CompaniesScreen() {
           <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
             <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
               <DollarSign size={11} className="text-emerald-400" aria-hidden="true"/>
-              Presupuesto total
+              Toplam Bütçe
             </div>
             <div className="text-lg font-bold text-emerald-400">{fmtCOP(summary.totalBudget)}</div>
             <div className="text-[10px] text-[var(--muted-foreground)]">suma de presupuestos</div>
@@ -215,7 +215,7 @@ export default function CompaniesScreen() {
       {search && filtered.length === 0 && (
         <div className="text-center py-16">
           <div className="text-4xl mb-3">🔍</div>
-          <div className="text-[15px] font-medium text-[var(--muted-foreground)] mb-1">Sin resultados</div>
+          <div className="text-[15px] font-medium text-[var(--muted-foreground)] mb-1">Sonuç bulunamadı</div>
           <div className="text-[13px] text-[var(--af-text3)]">
             No se encontraron empresas para &quot;{search}&quot;
           </div>
@@ -293,7 +293,7 @@ export default function CompaniesScreen() {
                     </div>
                   </div>
                   <div className="bg-[var(--af-bg3)] rounded-lg px-3 py-2">
-                    <div className="text-[10px] text-[var(--muted-foreground)] mb-0.5">Presupuesto</div>
+                    <div className="text-[10px] text-[var(--muted-foreground)] mb-0.5">Bütçe</div>
                     <div className="text-sm font-bold text-emerald-400">
                       {stats.totalBudget > 0 ? fmtCOP(stats.totalBudget) : '—'}
                     </div>

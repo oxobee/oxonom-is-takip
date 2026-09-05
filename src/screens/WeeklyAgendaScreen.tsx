@@ -48,22 +48,22 @@ type FormTab = 'new' | 'link';
    ═══════════════════════════════════════════════════════════════ */
 
 const DAY_NAMES = ['Lun', 'Mar', 'Mi\u00e9', 'Jue', 'Vie', 'S\u00e1b', 'Dom'];
-const DAY_FULL = ['Lunes', 'Martes', 'Mi\u00e9rcoles', 'Jueves', 'Viernes', 'S\u00e1bado', 'Domingo'];
+const DAY_FULL = ['Pazartesi', 'Salı', 'Mi\u00e9rcoles', 'Perşembe', 'Cuma', 'S\u00e1bado', 'Pazar'];
 const HOURS = Array.from({ length: 10 }, (_, i) => i + 8); // 8..17
 const SLOT_H = 56; // px height per slot
 
 const PRIO_COLORS: Record<string, { bg: string; border: string; text: string; dot: string }> = {
-  'Alta':    { bg: 'bg-red-500/10 dark:bg-red-500/15', border: 'border-l-red-500', text: 'text-red-600 dark:text-red-400', dot: 'bg-red-500' },
-  'Media':   { bg: 'bg-amber-500/10 dark:bg-amber-500/15', border: 'border-l-amber-500', text: 'text-amber-600 dark:text-amber-400', dot: 'bg-amber-500' },
-  'Baja':    { bg: 'bg-emerald-500/10 dark:bg-emerald-500/15', border: 'border-l-emerald-500', text: 'text-emerald-600 dark:text-emerald-400', dot: 'bg-emerald-500' },
+  'Yüksek':    { bg: 'bg-red-500/10 dark:bg-red-500/15', border: 'border-l-red-500', text: 'text-red-600 dark:text-red-400', dot: 'bg-red-500' },
+  'Orta':   { bg: 'bg-amber-500/10 dark:bg-amber-500/15', border: 'border-l-amber-500', text: 'text-amber-600 dark:text-amber-400', dot: 'bg-amber-500' },
+  'Düşük':    { bg: 'bg-emerald-500/10 dark:bg-emerald-500/15', border: 'border-l-emerald-500', text: 'text-emerald-600 dark:text-emerald-400', dot: 'bg-emerald-500' },
   'Cr\u00edtica': { bg: 'bg-purple-500/10 dark:bg-purple-500/15', border: 'border-l-purple-500', text: 'text-purple-600 dark:text-purple-400', dot: 'bg-purple-500' },
 };
 
 const STATUS_ICON: Record<string, React.ReactNode> = {
-  'Por hacer': <Clock className="w-3 h-3 text-slate-400" aria-hidden="true"/>,
-  'En progreso': <div className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />,
+  'Yapılacak': <Clock className="w-3 h-3 text-slate-400" aria-hidden="true"/>,
+  'Devam Ediyor': <div className="w-3 h-3 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />,
   'Revision': <Flag className="w-3 h-3 text-amber-500" aria-hidden="true"/>,
-  'Completado': <CheckCircle2 className="w-3 h-3 text-emerald-500" aria-hidden="true"/>,
+  'Tamamlandı': <CheckCircle2 className="w-3 h-3 text-emerald-500" aria-hidden="true"/>,
 };
 
 const NOTE_COLORS = [
@@ -71,8 +71,8 @@ const NOTE_COLORS = [
   'var(--note-green)', 'var(--note-purple)', 'var(--note-yellow)',
 ];
 
-const PRIORITIES = ['Alta', 'Media', 'Baja', 'Cr\u00edtica'];
-const STATUSES = ['Por hacer', 'En progreso', 'Revision', 'Completado'];
+const PRIORITIES = ['Yüksek', 'Orta', 'Düşük', 'Cr\u00edtica'];
+const STATUSES = ['Yapılacak', 'Devam Ediyor', 'Revision', 'Tamamlandı'];
 
 /* ═══════════════════════════════════════════════════════════════
    HELPERS
@@ -125,8 +125,8 @@ const EMPTY_FORM: ActivityForm = {
   projectId: '',
   assigneeId: '',
   participantIds: [],
-  priority: 'Media',
-  status: 'Por hacer',
+  priority: 'Orta',
+  status: 'Yapılacak',
   observations: '',
   hours: [],
   subtasks: [],
@@ -387,8 +387,8 @@ export default function WeeklyAgendaScreen() {
       projectId: task.data.projectId || '',
       assigneeId: task.data.assigneeId || '',
       participantIds: meta?.participantIds || [],
-      priority: task.data.priority || 'Media',
-      status: task.data.status || 'Por hacer',
+      priority: task.data.priority || 'Orta',
+      status: task.data.status || 'Yapılacak',
       observations: task.data.description || '',
       hours: meta?.hourSlots || [],
       subtasks: task.data.subtasks || [],
@@ -467,7 +467,7 @@ export default function WeeklyAgendaScreen() {
       }));
       closeForm();
     } catch (err) {
-      console.error('[Archii Agenda] Error creating task:', err);
+      console.error('[oxonom iş takip Agenda] Error creating task:', err);
     } finally {
       setSaving(false);
     }
@@ -494,7 +494,7 @@ export default function WeeklyAgendaScreen() {
       }));
       closeForm();
     } catch (err) {
-      console.error('[Archii Agenda] Error linking task:', err);
+      console.error('[oxonom iş takip Agenda] Error linking task:', err);
     } finally {
       setSaving(false);
     }
@@ -530,7 +530,7 @@ export default function WeeklyAgendaScreen() {
       }));
       closeForm();
     } catch (err) {
-      console.error('[Archii Agenda] Error updating task:', err);
+      console.error('[oxonom iş takip Agenda] Error updating task:', err);
     } finally {
       setSaving(false);
     }
@@ -568,7 +568,7 @@ export default function WeeklyAgendaScreen() {
                   updatedAt: getFirebase().firestore.FieldValue.serverTimestamp(),
                 }));
                 toast.success('Tarea restaurada en la agenda');
-              } catch (err) { console.error('[Archii Agenda] undo remove:', err); toast.error('Error al restaurar'); }
+              } catch (err) { console.error('[oxonom iş takip Agenda] undo remove:', err); toast.error('Error al restaurar'); }
             },
           },
         });
@@ -576,7 +576,7 @@ export default function WeeklyAgendaScreen() {
       setConfirmDelete(null);
       closeForm();
     } catch (err) {
-      console.error('[Archii Agenda] Error deleting:', err);
+      console.error('[oxonom iş takip Agenda] Error deleting:', err);
     }
   };
 
@@ -601,7 +601,7 @@ export default function WeeklyAgendaScreen() {
           setNotesLoaded(true);
         }
       } catch (err) {
-        console.error('[Archii Agenda] Error loading notes:', err);
+        console.error('[oxonom iş takip Agenda] Error loading notes:', err);
         if (!cancelled) {
           setNotesLoaded(true);
           toast.error('Error al cargar las notas de la semana');
@@ -631,7 +631,7 @@ export default function WeeklyAgendaScreen() {
           updatedBy: authUser.uid,
         }), { merge: true });
       } catch (err) {
-        console.error('[Archii Agenda] Error saving notes:', err);
+        console.error('[oxonom iş takip Agenda] Error saving notes:', err);
         toast.error('Error al guardar las notas');
       }
     }, 1000);
@@ -671,8 +671,8 @@ export default function WeeklyAgendaScreen() {
     const byProject: Record<string, number> = {};
     let totalHours = 0;
     filtered.forEach(t => {
-      const p = t.data.priority || 'Media';
-      const s = t.data.status || 'Por hacer';
+      const p = t.data.priority || 'Orta';
+      const s = t.data.status || 'Yapılacak';
       const pr = t.data.projectId ? (projectMap[t.data.projectId] || 'Sin proyecto') : 'Sin proyecto';
       byPriority[p] = (byPriority[p] || 0) + 1;
       byStatus[s] = (byStatus[s] || 0) + 1;
@@ -681,14 +681,14 @@ export default function WeeklyAgendaScreen() {
     });
 
     const statusSymbol: Record<string, string> = {
-      'Por hacer': '\u25CB', 'En progreso': '\u25CE', 'Revision': '\u25B3', 'Completado': '\u2713',
+      'Yapılacak': '\u25CB', 'Devam Ediyor': '\u25CE', 'Revision': '\u25B3', 'Tamamlandı': '\u2713',
     };
 
     const prioBorder: Record<string, string> = {
-      'Alta': '#ef4444', 'Media': '#f59e0b', 'Baja': '#10b981', 'Cr\u00edtica': '#a855f7',
+      'Yüksek': '#ef4444', 'Orta': '#f59e0b', 'Düşük': '#10b981', 'Cr\u00edtica': '#a855f7',
     };
     const prioBg: Record<string, string> = {
-      'Alta': '#fef2f2', 'Media': '#fffbeb', 'Baja': '#ecfdf5', 'Cr\u00edtica': '#faf5ff',
+      'Yüksek': '#fef2f2', 'Orta': '#fffbeb', 'Düşük': '#ecfdf5', 'Cr\u00edtica': '#faf5ff',
     };
 
     const now = new Date();
@@ -713,14 +713,14 @@ export default function WeeklyAgendaScreen() {
         dayTasks.forEach(task => {
           const meta = task.data.agendaMeta;
           if (!meta) return;
-          const priority = task.data.priority || 'Media';
+          const priority = task.data.priority || 'Orta';
           const border = prioBorder[priority] || '#f59e0b';
           const bg = prioBg[priority] || '#fffbeb';
           const spanCount = Math.max(...meta.hourSlots) - Math.min(...meta.hourSlots) + 1;
           const heightPx = spanCount * 48 - 6;
           const proj = task.data.projectId ? (projectMap[task.data.projectId] || '') : '';
           const assignee = task.data.assigneeId ? (userMap[task.data.assigneeId]?.name || '') : '';
-          const status = task.data.status || 'Por hacer';
+          const status = task.data.status || 'Yapılacak';
           const participants = meta.participantIds?.length || 0;
           const subtasks = task.data.subtasks || [];
           const doneSub = subtasks.filter(s => s.done).length;
@@ -760,7 +760,7 @@ export default function WeeklyAgendaScreen() {
     if (totalTasks > 0) {
       statsHtml = `
       <div class="stats-section">
-        <h3>Resumen de la Semana</h3>
+        <h3>Resumen de la Hafta</h3>
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-value">${totalTasks}</div>
@@ -803,7 +803,7 @@ export default function WeeklyAgendaScreen() {
     if (weekNotes.length > 0 && weekNotes.some(n => n.text.trim())) {
       notesHtml = `
       <div class="notes-section">
-        <h3>Notas de la Semana</h3>
+        <h3>Notlar de la Hafta</h3>
         ${weekNotes.filter(n => n.text.trim()).map(n =>
           `<div class="note-block">${n.text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`
         ).join('')}
@@ -814,7 +814,7 @@ export default function WeeklyAgendaScreen() {
     if (!w) return;
     w.document.write(`<!DOCTYPE html><html lang="es"><head>
       <meta charset="UTF-8">
-      <title>Agenda Semanal — Archii</title>
+      <title>Haftalık Ajanda — oxonom iş takip</title>
       <style>
         @page { size: landscape; margin: 10mm; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -879,10 +879,10 @@ export default function WeeklyAgendaScreen() {
     </head><body>
       <div class="print-header">
         <div>
-          <div class="print-logo">Archii</div>
+          <div class="print-logo">oxonom iş takip</div>
         </div>
         <div>
-          <div class="print-title">Agenda Semanal</div>
+          <div class="print-title">Haftalık Ajanda</div>
           <div class="print-subtitle">${weekLabel}${filterLabel ? ` &middot; Proyecto: ${filterLabel}` : ''}</div>
         </div>
         <div class="print-meta">
@@ -899,8 +899,8 @@ export default function WeeklyAgendaScreen() {
       ${notesHtml}
 
       <div class="print-footer">
-        <span>Archii \u2014 Gesti\u00f3n de Proyectos de Construcci\u00f3n</span>
-        <span>Agenda Semanal ${weekLabel}</span>
+        <span>oxonom iş takip \u2014 Gesti\u00f3n de Proyectos de Construcci\u00f3n</span>
+        <span>Haftalık Ajanda ${weekLabel}</span>
       </div>
     </body></html>`);
     w.document.close();
@@ -954,18 +954,18 @@ export default function WeeklyAgendaScreen() {
       {/* ─── Header Toolbar ─── */}
       <div className="flex-shrink-0 flex flex-wrap items-center gap-1.5 md:gap-2 px-3 md:px-6 py-2 md:py-3 border-b border-[var(--border)] bg-[var(--card)]">
         <CalendarDays className="w-5 h-5 text-[var(--primary)] flex-shrink-0" aria-hidden="true"/>
-        <h2 className="text-sm font-semibold mr-2 hidden sm:block">Agenda Semanal</h2>
+        <h2 className="text-sm font-semibold mr-2 hidden sm:block">Haftalık Ajanda</h2>
 
         {/* Week nav */}
-        <button onClick={prevWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Semana anterior">
+        <button onClick={prevWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Hafta anterior">
           <ChevronLeft className="w-4 h-4" aria-hidden="true"/>
         </button>
         <span className="text-[10px] sm:text-xs font-medium min-w-[100px] sm:min-w-[180px] text-center">{weekLabel}</span>
-        <button onClick={nextWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Semana siguiente">
+        <button onClick={nextWeek} className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Hafta siguiente">
           <ChevronRight className="w-4 h-4" aria-hidden="true"/>
         </button>
         <button onClick={goToday} className="text-[10px] sm:text-xs px-2 sm:px-3 py-1.5 rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)] font-medium hover:opacity-90 active:scale-95 transition-transform">
-          Hoy
+          Bugün
         </button>
 
         <div className="flex-1" />
@@ -973,7 +973,7 @@ export default function WeeklyAgendaScreen() {
         {/* Project filter */}
         <select value={filterProject} onChange={e => setFilterProject(e.target.value)}
           className="text-[10px] sm:text-xs rounded-lg border border-[var(--border)] bg-[var(--input)] px-2 py-1.5 max-w-[120px] sm:max-w-[160px] truncate no-print">
-          <option value="all">Todos los proyectos</option>
+          <option value="all">Tüm Projeler</option>
           {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
         </select>
 
@@ -1041,7 +1041,7 @@ export default function WeeklyAgendaScreen() {
                       {DAY_FULL[mobileDayIdx]}
                     </div>
                     <div className="text-xs text-[var(--muted-foreground)]">
-                      {fmtDay(d)} {isToday && <span className="ml-1 px-1.5 py-0.5 rounded text-[9px] font-semibold" style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}>Hoy</span>}
+                      {fmtDay(d)} {isToday && <span className="ml-1 px-1.5 py-0.5 rounded text-[9px] font-semibold" style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}>Bugün</span>}
                     </div>
                   </div>
                   <button
@@ -1068,7 +1068,7 @@ export default function WeeklyAgendaScreen() {
                   {dayTasks.map(task => {
                     const meta = task.data.agendaMeta;
                     if (!meta) return null;
-                    const pc = PRIO_COLORS[task.data.priority] || PRIO_COLORS['Media'];
+                    const pc = PRIO_COLORS[task.data.priority] || PRIO_COLORS['Orta'];
                     const doneSubtasks = (task.data.subtasks || []).filter(s => s.done).length;
                     const totalSubtasks = (task.data.subtasks || []).length;
 
@@ -1183,7 +1183,7 @@ export default function WeeklyAgendaScreen() {
             aria-expanded={showMobileNotes}
           >
             <StickyNote className="w-4 h-4 text-amber-500" aria-hidden="true"/>
-            <span className="text-xs font-semibold flex-1">Notas de la semana</span>
+            <span className="text-xs font-semibold flex-1">Notlar de la semana</span>
             {weekNotes.length > 0 && (
               <span className="text-[10px] bg-amber-500/15 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded-full font-medium">{weekNotes.length}</span>
             )}
@@ -1334,7 +1334,7 @@ export default function WeeklyAgendaScreen() {
                           const maxH = Math.max(...meta.hourSlots);
                           const spanCount = maxH - minH + 1;
                           const blockHeight = spanCount * SLOT_H;
-                          const pc = PRIO_COLORS[task.data.priority] || PRIO_COLORS['Media'];
+                          const pc = PRIO_COLORS[task.data.priority] || PRIO_COLORS['Orta'];
                           const doneSubtasks = (task.data.subtasks || []).filter(s => s.done).length;
                           const totalSubtasks = (task.data.subtasks || []).length;
 
@@ -1467,7 +1467,7 @@ export default function WeeklyAgendaScreen() {
           <div className="lg:w-52 flex-shrink-0 flex-col gap-2 no-print lg:min-w-[200px] hidden md:flex" style={{ minWidth: 0 }}>
             <div className="flex items-center gap-2 px-2 flex-shrink-0 lg:flex-shrink">
               <StickyNote className="w-4 h-4 text-amber-500" aria-hidden="true"/>
-              <span className="text-xs font-semibold whitespace-nowrap">Notas</span>
+              <span className="text-xs font-semibold whitespace-nowrap">Notlar</span>
               <div className="flex-1 hidden lg:block" />
               <button onClick={addNote} className="w-6 h-6 rounded-md bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform" aria-label="Agregar nota">
                 <Plus className="w-3.5 h-3.5" aria-hidden="true"/>
@@ -1550,7 +1550,7 @@ export default function WeeklyAgendaScreen() {
               <div className="flex items-center gap-2 justify-end">
                 <button onClick={() => setConfirmDelete(null)}
                   className="text-xs px-4 py-2 rounded-lg border border-[var(--border)] hover:bg-[var(--af-bg3)] transition-colors">
-                  Cancelar
+                  İptal
                 </button>
                 <button onClick={() => taskToDelete && handleDelete(taskToDelete)}
                   className="text-xs px-4 py-2 rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 active:scale-95 transition-all">
@@ -1601,7 +1601,7 @@ export default function WeeklyAgendaScreen() {
                 </p>
               </div>
               <div className="flex-1" />
-              <button onClick={closeForm} className="w-8 h-8 rounded-lg hover:bg-[var(--af-bg3)] flex items-center justify-center" aria-label="Cerrar">
+              <button onClick={closeForm} className="w-8 h-8 rounded-lg hover:bg-[var(--af-bg3)] flex items-center justify-center" aria-label="Kapat">
                 <X className="w-4 h-4" aria-hidden="true"/>
               </button>
             </div>
@@ -1618,7 +1618,7 @@ export default function WeeklyAgendaScreen() {
                   }}
                 >
                   <Plus className="w-3.5 h-3.5 inline mr-1.5" aria-hidden="true"/>
-                  Nueva tarea
+                  Yeni Görev
                 </button>
                 <button
                   onClick={() => setFormTab('link')}
@@ -1637,7 +1637,7 @@ export default function WeeklyAgendaScreen() {
             {/* Modal Body */}
             <div className="px-5 py-4 space-y-3 max-h-[60vh] overflow-y-auto">
 
-              {/* ══════ TAB: Nueva tarea ══════ */}
+              {/* ══════ TAB: Yeni Görev ══════ */}
               {(formTab === 'new' || editingTask) && (
                 <>
                   {/* Title */}
@@ -1674,7 +1674,7 @@ export default function WeeklyAgendaScreen() {
                     </label>
                     <select value={form.assigneeId} onChange={e => setForm(f => ({ ...f, assigneeId: e.target.value }))}
                       className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none text-[var(--foreground)]">
-                      <option value="">Sin asignar</option>
+                      <option value="">Atanmamış</option>
                       {allUserOptions.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                     </select>
                   </div>
@@ -1713,7 +1713,7 @@ export default function WeeklyAgendaScreen() {
                         );
                       })}
                       {allUserOptions.length === 0 && (
-                        <span className="text-[10px] text-[var(--muted-foreground)]">No hay miembros en el equipo</span>
+                        <span className="text-[10px] text-[var(--muted-foreground)]">Üye bulunamadı en el equipo</span>
                       )}
                     </div>
                   </div>
@@ -1748,7 +1748,7 @@ export default function WeeklyAgendaScreen() {
                     <textarea
                       value={form.observations}
                       onChange={e => setForm(f => ({ ...f, observations: e.target.value }))}
-                      placeholder="Notas adicionales..."
+                      placeholder="Ek Notlar..."
                       className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--primary)]/30 resize-none text-[var(--foreground)]"
                       rows={2}
                     />
@@ -1795,10 +1795,10 @@ export default function WeeklyAgendaScreen() {
                     )}
                   </div>
 
-                  {/* Subtareas */}
+                  {/* Alt Görevler */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <ListChecks className="w-3 h-3" aria-hidden="true"/> Subtareas {form.subtasks.length > 0 ? `(${form.subtasks.filter(s => s.done).length}/${form.subtasks.length})` : ''}
+                      <ListChecks className="w-3 h-3" aria-hidden="true"/> Alt Görevler {form.subtasks.length > 0 ? `(${form.subtasks.filter(s => s.done).length}/${form.subtasks.length})` : ''}
                     </label>
                     <div className="space-y-2">
                       {form.subtasks.map((st, idx) => (
@@ -1814,7 +1814,7 @@ export default function WeeklyAgendaScreen() {
                             type="text"
                             value={st.text}
                             onChange={e => updateSubtask(idx, 'text', e.target.value)}
-                            placeholder={`Subtarea ${idx + 1}`}
+                            placeholder={`Alt Görev ${idx + 1}`}
                             className={`flex-1 text-[12px] bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 outline-none focus:border-[var(--af-accent)]/50 ${st.done ? 'line-through' : ''}`}
                             style={{ color: st.done ? 'var(--muted-foreground)' : 'var(--foreground)' }}
                           />
@@ -1833,7 +1833,7 @@ export default function WeeklyAgendaScreen() {
                         style={{ color: 'var(--af-accent)' }}
                         onClick={addSubtask}
                       >
-                        <Plus className="w-3 h-3" aria-hidden="true"/> Agregar subtarea
+                        <Plus className="w-3 h-3" aria-hidden="true"/> Alt Görev Ekle
                       </button>
                     </div>
                   </div>
@@ -1846,11 +1846,11 @@ export default function WeeklyAgendaScreen() {
                   {/* Project filter */}
                   <div>
                     <label className="text-[10px] font-medium text-[var(--muted-foreground)] uppercase tracking-wider flex items-center gap-1 mb-1">
-                      <FolderOpen className="w-3 h-3" aria-hidden="true"/> Filtrar por proyecto
+                      <FolderOpen className="w-3 h-3" aria-hidden="true"/> Projeye göre filtrele
                     </label>
                     <select value={linkFilterProject} onChange={e => setLinkFilterProject(e.target.value)}
                       className="w-full text-sm rounded-lg border border-[var(--border)] bg-[var(--input)] px-3 py-2 outline-none text-[var(--foreground)]">
-                      <option value="">Todos los proyectos</option>
+                      <option value="">Tüm Projeler</option>
                       {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
                     </select>
                   </div>
@@ -1873,12 +1873,12 @@ export default function WeeklyAgendaScreen() {
                   <div className="max-h-40 overflow-y-auto rounded-lg border border-[var(--border)] bg-[var(--af-bg3)]">
                     {linkableTasks.length === 0 ? (
                       <div className="text-center py-4">
-                        <p className="text-[10px] text-[var(--muted-foreground)]">No hay tareas disponibles para vincular</p>
+                        <p className="text-[10px] text-[var(--muted-foreground)]">Görev bulunamadı disponibles para vincular</p>
                       </div>
                     ) : (
                       linkableTasks.slice(0, 20).map(t => {
                         const isSelected = linkTaskId === t.id;
-                        const pc = PRIO_COLORS[t.data.priority] || PRIO_COLORS['Media'];
+                        const pc = PRIO_COLORS[t.data.priority] || PRIO_COLORS['Orta'];
                         return (
                           <button
                             key={t.id}
@@ -1891,8 +1891,8 @@ export default function WeeklyAgendaScreen() {
                                   title: t.data.title,
                                   projectId: t.data.projectId || '',
                                   assigneeId: t.data.assigneeId || '',
-                                  priority: t.data.priority || 'Media',
-                                  status: t.data.status || 'Por hacer',
+                                  priority: t.data.priority || 'Orta',
+                                  status: t.data.status || 'Yapılacak',
                                   observations: t.data.description || '',
                                   subtasks: t.data.subtasks || [],
                                 }));
@@ -1907,7 +1907,7 @@ export default function WeeklyAgendaScreen() {
                             <div className="flex-1 min-w-0">
                               <p className="text-xs font-medium truncate text-[var(--foreground)]">{t.data.title}</p>
                               <p className="text-[9px] truncate text-[var(--muted-foreground)]">
-                                {projectMap[t.data.projectId] || 'Sin proyecto'} &middot; {userMap[t.data.assigneeId]?.name || 'Sin asignar'}
+                                {projectMap[t.data.projectId] || 'Sin proyecto'} &middot; {userMap[t.data.assigneeId]?.name || 'Atanmamış'}
                               </p>
                             </div>
                             {isSelected && (
@@ -1928,18 +1928,18 @@ export default function WeeklyAgendaScreen() {
                   {linkTaskId && (() => {
                     const selTask = ctxTasks.find(t => t.id === linkTaskId);
                     if (!selTask) return null;
-                    const pc = PRIO_COLORS[selTask.data.priority] || PRIO_COLORS['Media'];
+                    const pc = PRIO_COLORS[selTask.data.priority] || PRIO_COLORS['Orta'];
                     return (
                       <div className={`rounded-lg p-3 ${pc.bg} border-l-4 ${pc.border}`}>
                         <p className="text-xs font-semibold mb-1 text-[var(--foreground)]">{selTask.data.title}</p>
                         <div className="flex items-center gap-3 text-[10px] text-[var(--muted-foreground)]">
                           <span className="flex items-center gap-1"><FolderOpen className="w-2.5 h-2.5" aria-hidden="true"/>{projectMap[selTask.data.projectId] || 'Sin proyecto'}</span>
-                          <span className="flex items-center gap-1"><User className="w-2.5 h-2.5" aria-hidden="true"/>{userMap[selTask.data.assigneeId]?.name || 'Sin asignar'}</span>
+                          <span className="flex items-center gap-1"><User className="w-2.5 h-2.5" aria-hidden="true"/>{userMap[selTask.data.assigneeId]?.name || 'Atanmamış'}</span>
                           <span className={pc.text}>{selTask.data.priority}</span>
                         </div>
                         {((selTask.data.subtasks || [])).length > 0 && (
                           <p className="text-[9px] mt-1 text-[var(--muted-foreground)]">
-                            Subtareas: {(selTask.data.subtasks || []).filter(s => s.done).length}/{(selTask.data.subtasks || []).length}
+                            Alt Görevler: {(selTask.data.subtasks || []).filter(s => s.done).length}/{(selTask.data.subtasks || []).length}
                           </p>
                         )}
                       </div>
@@ -2029,7 +2029,7 @@ export default function WeeklyAgendaScreen() {
               <div className="flex-1" />
               <button onClick={closeForm}
                 className="text-xs px-4 py-2 rounded-lg border border-[var(--border)] hover:bg-[var(--af-bg3)] transition-colors">
-                Cancelar
+                İptal
               </button>
               <button
                 onClick={() => {
@@ -2045,7 +2045,7 @@ export default function WeeklyAgendaScreen() {
                 className="text-xs px-4 py-2 rounded-lg font-medium hover:opacity-90 active:scale-95 transition-all disabled:opacity-50"
                 style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}
               >
-                {saving ? 'Guardando...' : editingTask ? 'Guardar' : formTab === 'new' ? 'Crear' : 'Vincular'}
+                {saving ? 'Guardando...' : editingTask ? 'Kaydet' : formTab === 'new' ? 'Crear' : 'Vincular'}
               </button>
             </div>
           </div>

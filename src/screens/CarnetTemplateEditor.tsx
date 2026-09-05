@@ -71,7 +71,7 @@ function uid() {
 export default function CarnetTemplateEditor({ onClose }: { onClose?: () => void } = {}) {
   const { activeTenantId, activeTenantName, authUser, setScreen } = useApp() as any;
 
-  // When embedded (e.g. inside CarnetsScreen overlay), use onClose; otherwise navigate
+  // When embedded (e.g. inside Kimlik & BelgelerScreen overlay), use onClose; otherwise navigate
   const handleClose = onClose || (() => setScreen('carnets'));
 
   // Template state
@@ -841,7 +841,7 @@ export default function CarnetTemplateEditor({ onClose }: { onClose?: () => void
             disabled={saving}
             className="af-btn-primary flex items-center gap-1.5 text-[12px] px-3 py-1.5"
           >
-            <Save size={14} /> {saving ? 'Guardando...' : 'Guardar'}
+            <Save size={14} /> {saving ? 'Guardando...' : 'Kaydet'}
           </button>
         </div>
       </div>
@@ -1575,7 +1575,7 @@ function ImageProps({ element, onUpdate, onImageUpload }: { element: ImageTempla
     <>
       <PropSection title="Imagen">
         <label className="af-btn-secondary flex items-center gap-1.5 text-[10px] px-2 py-1.5 cursor-pointer justify-center w-full">
-          <Upload size={12} /> Subir imagen
+          <Upload size={12} /> Görsel Yükle
           <input type="file" accept="image/png,image/svg+xml,image/webp,image/*" className="hidden" onChange={onImageUpload} />
         </label>
         {element.image && (
@@ -1637,7 +1637,7 @@ function PreviewModal({ template, onClose }: { template: CarnetTemplate; onClose
             <PreviewElement key={el.id} element={el} />
           ))}
         </div>
-        <button onClick={onClose} className="mt-4 w-full af-btn-secondary text-[12px] py-2">Cerrar</button>
+        <button onClick={onClose} className="mt-4 w-full af-btn-secondary text-[12px] py-2">Kapat</button>
       </div>
     </div>
   );

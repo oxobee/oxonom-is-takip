@@ -19,8 +19,8 @@ function ConfirmDialog({ open, title, message, onConfirm, onCancel }: { open: bo
         <div className="text-[15px] font-semibold mb-2">{title}</div>
         <div className="text-[13px] text-[var(--muted-foreground)] mb-5">{message}</div>
         <div className="flex gap-2 justify-end">
-          <button className="px-4 py-2 rounded-lg text-[13px] bg-[var(--af-bg4)] hover:bg-[var(--af-bg3)] border border-[var(--border)] cursor-pointer transition-colors" onClick={onCancel}>Cancelar</button>
-          <button className="px-4 py-2 rounded-lg text-[13px] bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 cursor-pointer transition-colors" onClick={onConfirm}>Confirmar</button>
+          <button className="px-4 py-2 rounded-lg text-[13px] bg-[var(--af-bg4)] hover:bg-[var(--af-bg3)] border border-[var(--border)] cursor-pointer transition-colors" onClick={onCancel}>İptal</button>
+          <button className="px-4 py-2 rounded-lg text-[13px] bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 cursor-pointer transition-colors" onClick={onConfirm}>Onayla</button>
         </div>
       </div>
     </div>
@@ -40,7 +40,7 @@ async function exportProfilePDF(data: { name: string; email: string; role: strin
     doc.rect(0, 0, pageW, 48, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(18);
-    doc.text('Perfil de Usuario', pageW / 2, 22, { align: 'center' });
+    doc.text('Profil de Usuario', pageW / 2, 22, { align: 'center' });
     doc.setFontSize(10);
     doc.setTextColor(180, 180, 190);
     doc.text(`Generado: ${new Date().toLocaleDateString('es-CO')}`, pageW / 2, 32, { align: 'center' });
@@ -66,10 +66,10 @@ async function exportProfilePDF(data: { name: string; email: string; role: strin
     doc.setTextColor(60, 60, 70);
     const kpis = [
       ['Total Tareas', String(data.totalTasks)],
-      ['Completadas', String(data.completed)],
-      ['Pendientes', String(data.pending)],
+      ['Tamamlandıs', String(data.completed)],
+      ['Beklemedes', String(data.pending)],
       ['En Progreso', String(data.inProgress)],
-      ['Vencidas', String(data.overdue)],
+      ['Gecikmişs', String(data.overdue)],
       ['Cumplimiento', `${data.compliance}%`],
       ['Horas Registradas', `${data.totalHours}h`],
       ['Gastos', new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(data.totalExpenses)],
@@ -193,9 +193,9 @@ export default function ProfileScreen() {
 
     // Priority data
     const prioData = [
-      { label: 'Alta', count: allMyTasks.filter(t => t.data.priority === 'Alta').length, color: '#e05555' },
-      { label: 'Media', count: allMyTasks.filter(t => t.data.priority === 'Media').length, color: '#e09855' },
-      { label: 'Baja', count: allMyTasks.filter(t => t.data.priority === 'Baja').length, color: '#4caf7d' },
+      { label: 'Yüksek', count: allMyTasks.filter(t => t.data.priority === 'Alta').length, color: '#e05555' },
+      { label: 'Orta', count: allMyTasks.filter(t => t.data.priority === 'Media').length, color: '#e09855' },
+      { label: 'Düşük', count: allMyTasks.filter(t => t.data.priority === 'Baja').length, color: '#4caf7d' },
     ];
     const prioMax = Math.max(...prioData.map(p => p.count), 1);
 
@@ -297,7 +297,7 @@ export default function ProfileScreen() {
   const handleExportPDF = () => {
     if (!computed || !userName) return;
     exportProfilePDF({
-      name: userName, email: authUser?.email || '', role: myRole || 'Miembro',
+      name: userName, email: authUser?.email || '', role: myRole || 'Üye',
       totalTasks: computed.allMyTasks.length, completed: computed.myCompleted.length,
       pending: computed.myPending.length, inProgress: computed.myInProgress.length,
       compliance: computed.totalRate, overdue: computed.myOverdue.length,
@@ -308,14 +308,14 @@ export default function ProfileScreen() {
   };
 
   // ─── Role from teamUsers ────────────────────────────
-  const effectiveRole = teamUsers.find(u => u.id === uid)?.data?.role || myRole || 'Miembro';
+  const effectiveRole = teamUsers.find(u => u.id === uid)?.data?.role || myRole || 'Üye';
 
   // ─── Tabs config ─────────────────────────────────────
   const tabs: { id: ProfileTab; label: string; icon: string }[] = [
     { id: 'resumen', label: 'Resumen', icon: '📊' },
     { id: 'calendario', label: 'Calendario', icon: '📅' },
     { id: 'actividad', label: 'Actividad', icon: '⚡' },
-    { id: 'integraciones', label: 'Integraciones', icon: '🔗' },
+    { id: 'integraciones', label: 'Entegrasyonlar', icon: '🔗' },
   ];
 
   if (!computed) return null;
@@ -332,7 +332,7 @@ export default function ProfileScreen() {
   });
   computed.myHighPrio.forEach(t => {
     const proj = projects.find(p => p.id === t.data.projectId);
-    notifications.push({ icon: '🔴', text: `Urgente: "${t.data.title}"${proj ? ` — ${proj.data.name}` : ''}`, time: `Prioridad Alta · ${t.data.status}`, urgent: true });
+    notifications.push({ icon: '🔴', text: `Urgente: "${t.data.title}"${proj ? ` — ${proj.data.name}` : ''}`, time: `Yüksek Öncelik · ${t.data.status}`, urgent: true });
   });
   computed.myCalMeetings.forEach(m => {
     if (m.data.date && (m.data.date === todayStr2 || (m.data.date > todayStr2 && m.data.date <= weekLater.toISOString().split('T')[0]))) {
@@ -352,7 +352,7 @@ export default function ProfileScreen() {
   // ─── Render ─────────────────────────────────────────
   return (
     <div className="animate-fadeIn space-y-4">
-      <ConfirmDialog open={logoutOpen} title="Cerrar Sesión" message="¿Estás seguro de que deseas cerrar sesión? Se perderá el progreso no guardado." onConfirm={() => { setLogoutOpen(false); doLogout(); }} onCancel={() => setLogoutOpen(false)} />
+      <ConfirmDialog open={logoutOpen} title="Kapat Sesión" message="¿Estás seguro de que deseas cerrar sesión? Se perderá el progreso no guardado." onConfirm={() => { setLogoutOpen(false); doLogout(); }} onCancel={() => setLogoutOpen(false)} />
 
       {/* ═══ HEADER CARD ═══ */}
       <div className="bg-gradient-to-br from-[var(--card)] to-[var(--af-bg3)] border border-[var(--border)] rounded-xl sm:rounded-2xl p-3.5 sm:p-5 relative overflow-hidden">
@@ -371,7 +371,7 @@ export default function ProfileScreen() {
             {editingName ? (
               <div className="flex items-center gap-2 mb-1">
                 <input autoFocus className="bg-[var(--af-bg4)] border border-[var(--border)] rounded-lg px-3 py-1 text-[13px] sm:text-base font-semibold text-[var(--foreground)] outline-none focus:ring-2 focus:ring-[var(--af-accent)]/30 w-full max-w-[200px]" value={editNameVal} onChange={e => setEditNameVal(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveName()} />
-                <button className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 text-[11px] cursor-pointer hover:bg-emerald-500/30 border border-emerald-500/30 transition-colors" onClick={saveName}>Guardar</button>
+                <button className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 text-[11px] cursor-pointer hover:bg-emerald-500/30 border border-emerald-500/30 transition-colors" onClick={saveName}>Kaydet</button>
                 <button className="px-2.5 py-1 rounded-lg bg-[var(--af-bg4)] text-[var(--muted-foreground)] text-[11px] cursor-pointer hover:bg-[var(--af-bg3)] border border-[var(--border)] transition-colors" onClick={() => setEditingName(false)}>X</button>
               </div>
             ) : (
@@ -390,20 +390,20 @@ export default function ProfileScreen() {
 
           {/* Actions */}
           <div className="flex flex-col gap-1.5 flex-shrink-0">
-            <button className="w-8 h-8 rounded-lg bg-[var(--af-bg4)] border border-[var(--border)] flex items-center justify-center text-sm cursor-pointer hover:bg-[var(--af-bg3)] hover:text-[var(--af-accent)] transition-colors" onClick={handleExportPDF} title="Exportar perfil PDF">📄</button>
+            <button className="w-8 h-8 rounded-lg bg-[var(--af-bg4)] border border-[var(--border)] flex items-center justify-center text-sm cursor-pointer hover:bg-[var(--af-bg3)] hover:text-[var(--af-accent)] transition-colors" onClick={handleExportPDF} title="Dışa Aktar perfil PDF">📄</button>
           </div>
         </div>
 
         {/* ═══ KPIs ROW ═══ */}
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-1.5 sm:gap-2 mt-4">
           {[
-            { val: computed.myPending.length, lbl: 'Pendientes', c: 'text-amber-400', bg: 'bg-amber-500/10', filter: '' },
-            { val: computed.myInProgress.length, lbl: 'En progreso', c: 'text-blue-400', bg: 'bg-blue-500/10', filter: 'En progreso' },
-            { val: computed.myReview.length, lbl: 'En revisión', c: 'text-violet-400', bg: 'bg-violet-500/10', filter: 'Revision' },
-            { val: computed.myCompleted.length, lbl: 'Completadas', c: 'text-emerald-400', bg: 'bg-emerald-500/10', filter: 'Completado' },
+            { val: computed.myPending.length, lbl: 'Beklemedes', c: 'text-amber-400', bg: 'bg-amber-500/10', filter: '' },
+            { val: computed.myInProgress.length, lbl: 'Devam Ediyor', c: 'text-blue-400', bg: 'bg-blue-500/10', filter: 'Devam Ediyor' },
+            { val: computed.myReview.length, lbl: 'İncelemede', c: 'text-violet-400', bg: 'bg-violet-500/10', filter: 'Revision' },
+            { val: computed.myCompleted.length, lbl: 'Tamamlandıs', c: 'text-emerald-400', bg: 'bg-emerald-500/10', filter: 'Tamamlandı' },
             { val: computed.totalRate + '%', lbl: 'Cumplimiento', c: 'text-[var(--af-accent)]', bg: 'bg-[var(--af-accent)]/10', filter: null },
-            { val: computed.myOverdue.length, lbl: 'Vencidas', c: 'text-red-400', bg: 'bg-red-500/10', filter: null },
-            { val: computed.weekHours + 'h', lbl: 'Esta semana', c: 'text-cyan-400', bg: 'bg-cyan-500/10', filter: null },
+            { val: computed.myOverdue.length, lbl: 'Gecikmişs', c: 'text-red-400', bg: 'bg-red-500/10', filter: null },
+            { val: computed.weekHours + 'h', lbl: 'Bu Hafta', c: 'text-cyan-400', bg: 'bg-cyan-500/10', filter: null },
             { val: computed.avgPerDay, lbl: 'Prom/día', c: 'text-orange-400', bg: 'bg-orange-500/10', filter: null },
           ].map((s, i) => (
             <div key={i} className={`${s.bg} rounded-lg p-2 text-center ${s.filter !== null ? 'cursor-pointer hover:ring-2 hover:ring-[var(--af-accent)]/20 transition-all' : ''}`} onClick={() => {
@@ -495,7 +495,7 @@ export default function ProfileScreen() {
 
             {/* Weekly Activity */}
             <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3.5 sm:p-5">
-              <div className="text-[11px] sm:text-[13px] font-semibold text-[var(--muted-foreground)] mb-3">Actividad Semanal</div>
+              <div className="text-[11px] sm:text-[13px] font-semibold text-[var(--muted-foreground)] mb-3">Actividad Haftal</div>
               <div className="flex items-end gap-1.5 h-24">
                 {computed.weeklyData.map((d, i) => (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
@@ -507,7 +507,7 @@ export default function ProfileScreen() {
                   </div>
                 ))}
               </div>
-              <div className="text-[10px] text-[var(--af-text3)] mt-2 text-center">Tareas completadas en los últimos 7 días</div>
+              <div className="text-[10px] text-[var(--af-text3)] mt-2 text-center">Tamamlanan Görevler en los últimos 7 días</div>
             </div>
           </div>
 
@@ -544,8 +544,8 @@ export default function ProfileScreen() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {[
                 { icon: '✅', label: 'Mis Tareas', sub: `${computed.myPending.length} pendientes`, screen: 'tasks', filter: { taskFilterAssignee: uid || '' } },
-                { icon: '📁', label: 'Mis Proyectos', sub: `${computed.activeProjects.length} activos`, screen: 'projects' },
-                { icon: '⏱️', label: 'Time Tracking', sub: `${computed.weekHours}h esta semana`, screen: 'timeTracking' },
+                { icon: '📁', label: 'Projelerim', sub: `${computed.activeProjects.length} activos`, screen: 'projects' },
+                { icon: '⏱️', label: 'Zaman Takibi', sub: `${computed.weekHours}h esta semana`, screen: 'timeTracking' },
                 { icon: '💰', label: 'Mis Gastos', sub: fmtCOP(computed.totalSpent), screen: 'budget' },
                 { icon: '❓', label: 'Mis RFIs', sub: `${computed.myOpenRFIs.length} abiertos`, screen: 'rfis' },
                 { icon: '📋', label: 'Submittals', sub: `${computed.myOpenSubs.length} pendientes`, screen: 'submittals' },
@@ -580,22 +580,22 @@ export default function ProfileScreen() {
           {/* Calendar Header */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-1.5">
-              <button aria-label="Mes anterior" className="w-7 h-7 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={pcPrevMonth}>
+              <button aria-label="Ay anterior" className="w-7 h-7 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={pcPrevMonth}>
                 <ChevronLeft size={14} className="text-[var(--muted-foreground)]" aria-hidden="true"/>
               </button>
               <div className="text-[13px] sm:text-[14px] font-semibold min-w-[110px] sm:min-w-[140px] text-center">{MESES[pcMonth]} {pcYear}</div>
-              <button aria-label="Mes siguiente" className="w-7 h-7 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={pcNextMonth}>
+              <button aria-label="Ay siguiente" className="w-7 h-7 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={pcNextMonth}>
                 <ChevronRight size={14} className="text-[var(--muted-foreground)]" aria-hidden="true"/>
               </button>
             </div>
-            <button className="text-[10px] px-2 py-1 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={pcGoToday}>Hoy</button>
+            <button className="text-[10px] px-2 py-1 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={pcGoToday}>Bugün</button>
           </div>
 
           {/* Mini stats */}
           <div className="grid grid-cols-4 gap-1.5 mb-3">
             <div className="bg-red-500/10 rounded-lg p-2 text-center"><div className="text-sm font-bold text-red-400">{pcUrgent}</div><div className="text-[10px] text-red-400/70">Urgentes</div></div>
-            <div className="bg-amber-500/10 rounded-lg p-2 text-center"><div className="text-sm font-bold text-amber-400">{pcOverdue}</div><div className="text-[10px] text-amber-400/70">Vencidas</div></div>
-            <div className="bg-blue-500/10 rounded-lg p-2 text-center"><div className="text-sm font-bold text-blue-400">{pcThisWeek}</div><div className="text-[10px] text-blue-400/70">Esta semana</div></div>
+            <div className="bg-amber-500/10 rounded-lg p-2 text-center"><div className="text-sm font-bold text-amber-400">{pcOverdue}</div><div className="text-[10px] text-amber-400/70">Gecikmişs</div></div>
+            <div className="bg-blue-500/10 rounded-lg p-2 text-center"><div className="text-sm font-bold text-blue-400">{pcThisWeek}</div><div className="text-[10px] text-blue-400/70">Bu Hafta</div></div>
             <div className="bg-purple-500/10 rounded-lg p-2 text-center"><div className="text-sm font-bold text-purple-400">{pcMonthMeetings}</div><div className="text-[10px] text-purple-400/70">Reuniones</div></div>
           </div>
 
@@ -675,7 +675,7 @@ export default function ProfileScreen() {
             </div>
             <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3.5 text-center">
               <div className="text-xl sm:text-2xl font-bold text-blue-400">{computed.weekHours}h</div>
-              <div className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)]">Esta Semana</div>
+              <div className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)]">Esta Hafta</div>
             </div>
             <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3.5 text-center">
               <div className="text-xl sm:text-2xl font-bold text-orange-400">{fmtCOP(computed.totalSpent)}</div>
@@ -709,7 +709,7 @@ export default function ProfileScreen() {
           <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3.5 sm:p-5">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-base">⚡</div>
-              <div className="text-[13px] sm:text-[15px] font-semibold">Historial de Tareas Completadas</div>
+              <div className="text-[13px] sm:text-[15px] font-semibold">Historial de Tareas Tamamlandıs</div>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--af-bg4)] text-[var(--muted-foreground)]">{computed.activityTimeline.length}</span>
             </div>
             {computed.activityTimeline.length === 0 ? (
@@ -762,7 +762,7 @@ export default function ProfileScreen() {
                     <span className="text-base">📂</span>
                     <div>
                       <div className="text-[12px] font-medium group-hover:text-[#00a4ef] transition-colors">Ver mis archivos en OneDrive</div>
-                      <div className="text-[10px] text-[var(--muted-foreground)]">Ir a Archivos → Mi OneDrive</div>
+                      <div className="text-[10px] text-[var(--muted-foreground)]">Ir a Dosyalar → Mi OneDrive</div>
                     </div>
                   </div>
                 </button>
@@ -796,7 +796,7 @@ export default function ProfileScreen() {
           <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3.5 sm:p-5">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-base">⚙️</div>
-              <div className="text-[13px] sm:text-[15px] font-semibold">Cuenta y Configuración</div>
+              <div className="text-[13px] sm:text-[15px] font-semibold">Cuenta y Ayarlar</div>
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--af-bg3)]">
@@ -820,12 +820,12 @@ export default function ProfileScreen() {
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-base">🚪</div>
                 <div>
-                  <div className="text-[13px] font-medium">Cerrar Sesión</div>
-                  <div className="text-[10px] text-[var(--muted-foreground)]">Salir de tu cuenta en Archii</div>
+                  <div className="text-[13px] font-medium">Kapat Sesión</div>
+                  <div className="text-[10px] text-[var(--muted-foreground)]">Salir de tu cuenta en oxonom iş takip</div>
                 </div>
               </div>
               <button className="px-5 py-2.5 rounded-lg border border-red-500/30 text-red-400 text-[13px] font-medium cursor-pointer hover:bg-red-500/10 transition-colors flex items-center gap-2" onClick={() => setLogoutOpen(true)}>
-                Cerrar Sesión
+                Kapat Sesión
               </button>
             </div>
           </div>

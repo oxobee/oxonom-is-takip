@@ -15,7 +15,7 @@ export default function TeamScreen() {
 
   const [showManageMembers, setShowManageMembers] = useState(false);
   const myRole = getMyRole();
-  const canManage = myRole === 'Admin' || myRole === 'Director' || activeTenantRole === 'Super Admin';
+  const canManage = myRole === 'Admin' || myRole === 'Director' || activeTenantRole === 'Süper Yönetici';
 
   return (
     <div className="animate-fadeIn space-y-5">
@@ -72,7 +72,7 @@ export default function TeamScreen() {
       {teamUsers.length === 0 && (
         <div className="text-center py-16">
           <div className="text-4xl mb-3">👥</div>
-          <p className="text-[var(--muted-foreground)] text-sm mb-4">No hay miembros en este tenant</p>
+          <p className="text-[var(--muted-foreground)] text-sm mb-4">Üye bulunamadı en este tenant</p>
           {canManage && (
             <button
               onClick={() => setShowManageMembers(true)}
@@ -87,7 +87,7 @@ export default function TeamScreen() {
       {/* Team Members List */}
       <div className="space-y-2">
         {teamUsers.filter(u => !forms.teamCompanyFilter || u.data.companyId === forms.teamCompanyFilter).map(user => {
-          const role = user.data.role || 'Miembro';
+          const role = user.data.role || 'Üye';
           const isMe = user.id === authUser?.uid;
           const canChangeRole = myRole === 'Admin' || myRole === 'Director';
           const canChangeCompany = myRole === 'Admin' || myRole === 'Director';

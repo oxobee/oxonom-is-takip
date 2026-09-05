@@ -40,11 +40,11 @@ interface PresenceAvatarsProps {
 const ROLE_RING_COLORS: Record<string, string> = {
   Admin: 'ring-red-400',
   Director: 'ring-sky-400',
-  Arquitecto: 'ring-blue-400',
-  Interventor: 'ring-purple-400',
-  Contratista: 'ring-amber-400',
-  Cliente: 'ring-emerald-400',
-  Miembro: 'ring-slate-400',
+  Mimar: 'ring-blue-400',
+  Denetçi: 'ring-purple-400',
+  Yüklenici: 'ring-amber-400',
+  Müşteri: 'ring-emerald-400',
+  Üye: 'ring-slate-400',
 };
 
 const MAX_VISIBLE = 5;
@@ -105,8 +105,8 @@ export default function PresenceAvatars({
         {[...visibleUsers].reverse().map((presence) => {
           const isTyping = typingUser?.userId === presence.userId;
           const ringColor =
-            ROLE_RING_COLORS[presence.userRole || 'Miembro'] ||
-            ROLE_RING_COLORS.Miembro;
+            ROLE_RING_COLORS[presence.userRole || 'Üye'] ||
+            ROLE_RING_COLORS.Üye;
 
           return (
             <div

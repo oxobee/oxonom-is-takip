@@ -151,7 +151,7 @@ export default function PhotoCropperModal({
             onClick={onCancel}
             className="af-btn-secondary text-[12px] px-4 py-2 cursor-pointer"
           >
-            Cancelar
+            İptal
           </button>
           <button
             onClick={handleConfirm}

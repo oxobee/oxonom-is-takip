@@ -140,7 +140,7 @@ export default function KanbanColumn({
             />
             <div className="flex items-center justify-end gap-1">
               <button
-                aria-label="Cancelar"
+                aria-label="İptal"
                 onClick={() => { setIsAdding(false); setNewCardTitle(''); }}
                 className="p-1 rounded-md hover:bg-[var(--af-bg4)] text-[var(--muted-foreground)] transition-colors bg-transparent border-none cursor-pointer"
               >

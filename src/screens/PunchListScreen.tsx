@@ -50,13 +50,13 @@ export default function PunchListScreen() {
 
   const handleCreate = () => {
     setEditingId(null);
-    setForms(p => ({ ...p, punchTitle: '', punchDescription: '', punchLocation: 'Otro', punchStatus: 'Pendiente', punchPriority: 'Media', punchAssignedTo: '', punchDueDate: '', punchProject: '' }));
+    setForms(p => ({ ...p, punchTitle: '', punchDescription: '', punchLocation: 'Otro', punchStatus: 'Beklemede', punchPriority: 'Orta', punchAssignedTo: '', punchDueDate: '', punchProject: '' }));
     openModal('punchItem');
   };
 
   const handleEdit = (p: any) => {
     setEditingId(p.id);
-    setForms(f => ({ ...f, punchTitle: p.data.title, punchDescription: p.data.description || '', punchLocation: p.data.location || 'Otro', punchStatus: p.data.status || 'Pendiente', punchPriority: p.data.priority || 'Media', punchAssignedTo: p.data.assignedTo || '', punchDueDate: p.data.dueDate || '', punchProject: p.data.projectId || '' }));
+    setForms(f => ({ ...f, punchTitle: p.data.title, punchDescription: p.data.description || '', punchLocation: p.data.location || 'Otro', punchStatus: p.data.status || 'Beklemede', punchPriority: p.data.priority || 'Orta', punchAssignedTo: p.data.assignedTo || '', punchDueDate: p.data.dueDate || '', punchProject: p.data.projectId || '' }));
     openModal('punchItem');
   };
 
@@ -89,15 +89,15 @@ export default function PunchListScreen() {
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-red-400">{stats.pending}</div>
-            <div className="text-[10px] text-[var(--muted-foreground)]">Pendiente</div>
+            <div className="text-[10px] text-[var(--muted-foreground)]">Beklemede</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-amber-400">{stats.inProgress}</div>
-            <div className="text-[10px] text-[var(--muted-foreground)]">En progreso</div>
+            <div className="text-[10px] text-[var(--muted-foreground)]">Devam Ediyor</div>
           </div>
           <div className="text-center">
             <div className="text-lg font-bold text-emerald-400">{stats.completed}</div>
-            <div className="text-[10px] text-[var(--muted-foreground)]">Completado</div>
+            <div className="text-[10px] text-[var(--muted-foreground)]">Tamamlandı</div>
           </div>
         </div>
         <div className="relative h-2 bg-[var(--af-bg3)] rounded-full overflow-hidden">
@@ -147,7 +147,7 @@ export default function PunchListScreen() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {filtered.map((p: any) => {
             const statusCls = PUNCH_STATUS_COLORS[p.data.status] || 'bg-[var(--af-bg4)] text-[var(--muted-foreground)] border-[var(--border)]';
-            const prioCls = PRIO_COLORS[p.data.priority] || PRIO_COLORS['Media'];
+            const prioCls = PRIO_COLORS[p.data.priority] || PRIO_COLORS['Orta'];
             const locCls = LOC_COLORS[p.data.location] || LOC_COLORS['Otro'];
             const projName = getProjectName(p.data.projectId);
             return (
@@ -188,7 +188,7 @@ export default function PunchListScreen() {
                   {p.data.status === 'Pendiente' && (
                     <button
                       className="flex-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 cursor-pointer hover:bg-amber-500/20 transition-colors"
-                      onClick={() => handleStatusChange(p.id, 'En progreso')}
+                      onClick={() => handleStatusChange(p.id, 'Devam Ediyor')}
                     >
                       ▶ Iniciar
                     </button>
@@ -196,7 +196,7 @@ export default function PunchListScreen() {
                   {p.data.status === 'En progreso' && (
                     <button
                       className="flex-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 cursor-pointer hover:bg-emerald-500/20 transition-colors"
-                      onClick={() => handleStatusChange(p.id, 'Completado')}
+                      onClick={() => handleStatusChange(p.id, 'Tamamlandı')}
                     >
                       ✓ Completar
                     </button>
@@ -204,7 +204,7 @@ export default function PunchListScreen() {
                   {p.data.status === 'Completado' && (
                     <button
                       className="flex-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 cursor-pointer"
-                      onClick={() => handleStatusChange(p.id, 'Pendiente')}
+                      onClick={() => handleStatusChange(p.id, 'Beklemede')}
                     >
                       ↩ Reabrir
                     </button>

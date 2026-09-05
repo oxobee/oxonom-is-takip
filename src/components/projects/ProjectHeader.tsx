@@ -49,7 +49,7 @@ export default function ProjectHeader({
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all ${viewMode === 'cards' ? 'bg-[var(--card)] text-[var(--foreground)] shadow-sm' : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'}`}
             onClick={() => setViewMode('cards')}
           >
-            <LayoutGrid size={13} aria-hidden="true"/> Tarjetas
+            <LayoutGrid size={13} aria-hidden="true"/> Karts
           </button>
           <button
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium cursor-pointer transition-all ${viewMode === 'timeline' ? 'bg-[var(--card)] text-[var(--foreground)] shadow-sm' : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)]'}`}
@@ -91,7 +91,7 @@ export default function ProjectHeader({
           className="flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors"
           onClick={handleNewProject}
         >
-          <Plus size={15} aria-hidden="true"/> Nuevo proyecto
+          <Plus size={15} aria-hidden="true"/> Yeni Proje
         </button>
       </div>
     </div>

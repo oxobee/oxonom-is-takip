@@ -23,7 +23,7 @@ export default function ProjectCompanyFilter({
         className={`px-3 py-1.5 rounded-full text-[12px] cursor-pointer transition-all whitespace-nowrap border ${!projCompanyFilter ? 'bg-[var(--af-accent)] text-background border-[var(--af-accent)]' : 'bg-transparent text-[var(--muted-foreground)] border-[var(--border)] hover:border-[var(--af-accent)]/30'}`}
         onClick={() => setForms((p: Record<string, any>) => ({ ...p, projCompanyFilter: '' }))}
       >
-        Todas las empresas
+        Tüm Şirketler
       </button>
       {companies.map((c: any) => (
         <button

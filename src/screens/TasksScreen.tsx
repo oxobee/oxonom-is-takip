@@ -17,17 +17,17 @@ import { useConfirmDialog } from '@/lib/useConfirmDialog';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 const KANBAN_COLS = [
-  { status: 'Por hacer', color: 'bg-slate-400', bg: 'bg-slate-400/10', border: 'border-slate-400/30', dot: 'bg-slate-400' },
-  { status: 'En progreso', color: 'bg-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/30', dot: 'bg-blue-500' },
+  { status: 'Yapılacak', color: 'bg-slate-400', bg: 'bg-slate-400/10', border: 'border-slate-400/30', dot: 'bg-slate-400' },
+  { status: 'Devam Ediyor', color: 'bg-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/30', dot: 'bg-blue-500' },
   { status: 'Revision', color: 'bg-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/30', dot: 'bg-amber-500' },
-  { status: 'Completado', color: 'bg-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', dot: 'bg-emerald-500' },
+  { status: 'Tamamlandı', color: 'bg-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', dot: 'bg-emerald-500' },
 ];
 
 const STATUS_CHART_COLORS: Record<string, string> = {
-  'Por hacer': '#94a3b8',
-  'En progreso': '#3b82f6',
+  'Yapılacak': '#94a3b8',
+  'Devam Ediyor': '#3b82f6',
   'Revision': '#f59e0b',
-  'Completado': '#10b981',
+  'Tamamlandı': '#10b981',
 };
 
 const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -71,7 +71,7 @@ function AssigneeAvatars({ task, getUserName, size = 'sm' }: { task: Task; getUs
   if (ids.length === 0) {
     return (
       <div className="flex items-center gap-1 text-[10px] text-[var(--af-text3)]">
-        <User size={10} aria-hidden="true"/> Sin asignar
+        <User size={10} aria-hidden="true"/> Atanmamış
       </div>
     );
   }
@@ -139,7 +139,7 @@ export default function TasksScreen() {
   const taskFilterProject = forms.taskFilterProject || '';
 
   const handleNewTask = () => {
-    setForms((p: Record<string, any>) => ({ ...p, taskTitle: '', taskAssignees: [], taskDue: new Date().toISOString().split('T')[0], taskStatus: 'Por hacer', taskTags: [], taskEstimatedHours: null }));
+    setForms((p: Record<string, any>) => ({ ...p, taskTitle: '', taskAssignees: [], taskDue: new Date().toISOString().split('T')[0], taskStatus: 'Yapılacak', taskTags: [], taskEstimatedHours: null }));
     openModal('task');
   };
 
@@ -307,7 +307,7 @@ export default function TasksScreen() {
   const statusDistribution = useMemo(() => {
     const counts: Record<string, number> = {};
     tasks.forEach((t: Task) => {
-      const s = t.data.status || 'Por hacer';
+      const s = t.data.status || 'Yapılacak';
       counts[s] = (counts[s] || 0) + 1;
     });
     return KANBAN_COLS.map(col => ({
@@ -357,7 +357,7 @@ export default function TasksScreen() {
     const q = '"';
     const dq = '""';
     const getAssigneeNames = (t: Task): string => getAssigneeIds(t).map((uid: string) => getUserName(uid)).join(', ') || '-';
-    const headers = ['Tarea', 'Proyecto', 'Prioridad', 'Estado', 'Asignado', 'Fecha Limite', 'Horas Est.', 'Subtareas', 'Etiquetas'];
+    const headers = ['Tarea', 'Proyecto', 'Prioridad', 'Estado', 'Asignado', 'Fecha Limite', 'Horas Est.', 'Alt Görevler', 'Etiquetas'];
     const esc = (v: string | number) => q + String(v).split(q).join(dq) + q;
     const rows = filteredTasks.map((t: Task) => {
       const sts: { text: string; done: boolean }[] = Array.isArray(t.data.subtasks) ? t.data.subtasks : [];
@@ -420,7 +420,7 @@ export default function TasksScreen() {
             <button
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-medium cursor-pointer border transition-colors ${showCompleted ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-[var(--card)] text-[var(--muted-foreground)] border-[var(--border)] hover:bg-[var(--af-bg3)] hover:text-[var(--foreground)]'}`}
               onClick={() => setShowCompleted(!showCompleted)}
-              title={showCompleted ? 'Ocultar completadas' : 'Ver historial de completadas'}
+              title={showCompleted ? 'Tamamlananları Gizle' : 'Ver historial de completadas'}
             >
               {showCompleted ? <EyeOff size={14} aria-hidden="true"/> : <Archive size={14} aria-hidden="true"/>}
               <span className="hidden sm:inline">Historial</span>
@@ -448,7 +448,7 @@ export default function TasksScreen() {
             className="hidden sm:flex items-center gap-1.5 bg-[var(--af-accent)] text-background px-3.5 py-2 rounded-lg text-[13px] font-semibold cursor-pointer border-none hover:bg-[var(--af-accent2)] transition-colors"
             onClick={handleNewTask}
           >
-            <Plus size={15} aria-hidden="true"/> Nueva tarea
+            <Plus size={15} aria-hidden="true"/> Yeni Görev
           </button>
         </div>
       </div>
@@ -479,7 +479,7 @@ export default function TasksScreen() {
             value={taskFilterProject}
             onChange={e => setForms((p: Record<string, any>) => ({ ...p, taskFilterProject: e.target.value }))}
           >
-            <option value="">Todos los proyectos</option>
+            <option value="">Tüm Projeler</option>
             {projects.map((p: Project) => <option key={p.id} value={p.id}>{p.data.name}</option>)}
           </select>
 
@@ -508,9 +508,9 @@ export default function TasksScreen() {
                 <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Prioridad</label>
                 <select value={filterPriority} onChange={e => setFilterPriority(e.target.value)} className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer">
                   <option value="">Todas</option>
-                  <option value="Alta">Alta</option>
-                  <option value="Media">Media</option>
-                  <option value="Baja">Baja</option>
+                  <option value="Yüksek">Yüksek</option>
+                  <option value="Orta">Orta</option>
+                  <option value="Düşük">Düşük</option>
                 </select>
               </div>
               <div>
@@ -537,7 +537,7 @@ export default function TasksScreen() {
               </div>
             </div>
             {hasActiveFilters && (
-              <button className="mt-3 text-[11px] text-[var(--af-accent)] cursor-pointer hover:underline" onClick={clearFilters}>Limpiar filtros</button>
+              <button className="mt-3 text-[11px] text-[var(--af-accent)] cursor-pointer hover:underline" onClick={clearFilters}>Filtreleri Temizle</button>
             )}
           </div>
         )}
@@ -546,7 +546,7 @@ export default function TasksScreen() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
-          <div className="text-[11px] text-[var(--muted-foreground)] mb-1">Total tareas</div>
+          <div className="text-[11px] text-[var(--muted-foreground)] mb-1">Toplam Görev</div>
           <div className="text-lg font-bold text-[var(--af-accent)]">{kpis.total}</div>
           <div className="text-[10px] text-[var(--muted-foreground)]">{kpis.createdThisWeek} esta semana</div>
         </div>
@@ -559,20 +559,20 @@ export default function TasksScreen() {
           <div className="text-[10px] text-[var(--muted-foreground)]">{kpis.completed} completadas</div>
         </div>
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
-          <div className="text-[11px] text-[var(--muted-foreground)] mb-1">En progreso</div>
+          <div className="text-[11px] text-[var(--muted-foreground)] mb-1">Devam Ediyor</div>
           <div className="text-lg font-bold text-blue-400">{kpis.inProgress}</div>
         </div>
         <div className={`bg-[var(--card)] border rounded-xl p-4 ${kpis.overdue > 0 ? 'border-red-500/30 bg-red-500/5' : 'border-[var(--border)]'}`}>
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
             {kpis.overdue > 0 && <AlertTriangle size={10} className="text-red-400" aria-hidden="true"/>}
-            Vencidas
+            Gecikmişs
           </div>
           <div className={`text-lg font-bold ${kpis.overdue > 0 ? 'text-red-400' : ''}`}>{kpis.overdue}</div>
         </div>
         <div className={`bg-[var(--card)] border rounded-xl p-4 ${kpis.highPrioActive > 0 ? 'border-amber-500/30 bg-amber-500/5' : 'border-[var(--border)]'}`}>
           <div className="text-[11px] text-[var(--muted-foreground)] mb-1 flex items-center gap-1">
             <Target size={10} className="text-amber-400" aria-hidden="true"/>
-            Alta prioridad
+            Yüksek prioridad
           </div>
           <div className={`text-lg font-bold ${kpis.highPrioActive > 0 ? 'text-amber-400' : ''}`}>{kpis.highPrioActive}</div>
           <div className="text-[10px] text-[var(--muted-foreground)]">pendientes</div>
@@ -636,7 +636,7 @@ export default function TasksScreen() {
                 <YAxis tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} axisLine={false} tickLine={false} />
                 <Tooltip content={<ChartTooltipContent />} cursor={{ fill: 'rgba(212,184,122,0.06)' }} />
                 <Bar dataKey="creadas" name="Creadas" fill="#3b82f6" radius={[3, 3, 0, 0]} barSize={16} />
-                <Bar dataKey="completadas" name="Completadas" fill="#10b981" radius={[3, 3, 0, 0]} barSize={16} />
+                <Bar dataKey="completadas" name="Tamamlandıs" fill="#10b981" radius={[3, 3, 0, 0]} barSize={16} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -648,7 +648,7 @@ export default function TasksScreen() {
         <div>
           <div className="text-[15px] font-semibold mb-3 flex items-center gap-2">
             <Users size={16} className="text-[var(--af-accent)]" aria-hidden="true"/>
-            Productividad por Miembro
+            Productividad por Üye
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {memberProductivity.map((m) => (
@@ -693,7 +693,7 @@ export default function TasksScreen() {
               <KanbanSquare size={24} className="text-[var(--af-text3)]" aria-hidden="true"/>
             </div>
             <div className="text-[15px] font-medium text-[var(--muted-foreground)]">
-              {hasActiveFilters ? 'Sin resultados' : 'Sin tareas'}
+              {hasActiveFilters ? 'Sonuç bulunamadı' : 'Sin tareas'}
             </div>
             <div className="text-xs mt-1">
               {hasActiveFilters ? 'Intenta con otros filtros' : 'Crea tu primera tarea para empezar'}
@@ -706,11 +706,11 @@ export default function TasksScreen() {
               <div className="text-center py-8">
                 <div className="inline-flex items-center gap-2 text-[var(--muted-foreground)] text-sm">
                   <CheckCircle2 size={16} className="text-emerald-400" aria-hidden="true"/>
-                  Todas las tareas estan completadas
+                  Tüm Görevler estan completadas
                 </div>
               </div>
             )}
-            {['Alta', 'Media', 'Baja'].map(prio => {
+            {['Yüksek', 'Orta', 'Düşük'].map(prio => {
               const group = activeTasks.filter((t: Task) => t.data.priority === prio);
               if (!group.length) return null;
               const prioColorBg = prio === 'Alta' ? 'bg-red-500/10 text-red-400' : prio === 'Media' ? 'bg-amber-500/10 text-amber-400' : 'bg-emerald-500/10 text-emerald-400';
@@ -795,7 +795,7 @@ export default function TasksScreen() {
                         {/* Desktop hover actions */}
                         <div className="hidden md:flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button className="text-xs px-2.5 py-1.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] cursor-pointer hover:bg-[var(--af-accent)]/20" onClick={() => openEditTask(t)}>Editar</button>
-                          <button className="text-xs px-2 py-1.5 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}>
+                          <button className="text-xs px-2 py-1.5 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Görevi Sil', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}>
                             <X size={12} aria-hidden="true"/>
                           </button>
                         </div>
@@ -804,14 +804,14 @@ export default function TasksScreen() {
                           <OverflowMenu
                             actions={[
                               {
-                                label: 'Editar tarea',
+                                label: 'Görevi Düzenle',
                                 icon: <Pencil size={14} aria-hidden="true"/>,
                                 onClick: () => openEditTask(t),
                               },
                               {
-                                label: 'Eliminar tarea',
+                                label: 'Görevi Sil',
                                 icon: <Trash2 size={14} aria-hidden="true"/>,
-                                onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); },
+                                onClick: async () => { if (await confirmDialog.confirm({ title: 'Görevi Sil', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); },
                                 variant: 'danger',
                                 separator: true,
                               },
@@ -838,7 +838,7 @@ export default function TasksScreen() {
                   <ChevronRight size={16} className={`text-[var(--af-text3)] transition-transform ${showCompleted ? 'rotate-90' : ''}`} aria-hidden="true"/>
                   <CheckCircle2 size={16} className="text-emerald-400" aria-hidden="true"/>
                   <span className="text-[13px] font-semibold flex-1 text-left">
-                    Tareas completadas
+                    Tamamlanan Görevler
                   </span>
                   <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-medium">
                     {completedTasks.length}
@@ -885,7 +885,7 @@ export default function TasksScreen() {
                               {completedDate && (
                                 <span className="inline-flex items-center gap-0.5 text-emerald-400/70">
                                   <CheckCircle2 size={8} className="flex-shrink-0" aria-hidden="true"/>
-                                  Completada {fmtDate(completedDate.toISOString().split('T')[0])}
+                                  Tamamlandı {fmtDate(completedDate.toISOString().split('T')[0])}
                                 </span>
                               )}
                               {completedByName && (
@@ -912,7 +912,7 @@ export default function TasksScreen() {
                           {/* Desktop hover actions */}
                           <div className="hidden md:flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button className="text-xs px-2.5 py-1.5 rounded bg-[var(--af-accent)]/10 text-[var(--af-accent)] cursor-pointer hover:bg-[var(--af-accent)]/20" onClick={() => openEditTask(t)}>Editar</button>
-                            <button className="text-xs px-2 py-1.5 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}>
+                            <button className="text-xs px-2 py-1.5 rounded bg-red-500/10 text-red-400 cursor-pointer hover:bg-red-500/20" onClick={async () => { if (await confirmDialog.confirm({ title: 'Görevi Sil', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}>
                               <X size={12} aria-hidden="true"/>
                             </button>
                           </div>
@@ -920,9 +920,9 @@ export default function TasksScreen() {
                           <div className="md:hidden flex-shrink-0">
                             <OverflowMenu
                               actions={[
-                                { label: 'Reabrir tarea', icon: <Eye size={14} aria-hidden="true"/>, onClick: () => toggleTask(t.id, t.data.status) },
-                                { label: 'Editar tarea', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => openEditTask(t) },
-                                { label: 'Eliminar tarea', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }, variant: 'danger', separator: true },
+                                { label: 'Görevi Yeniden Aç', icon: <Eye size={14} aria-hidden="true"/>, onClick: () => toggleTask(t.id, t.data.status) },
+                                { label: 'Görevi Düzenle', icon: <Pencil size={14} aria-hidden="true"/>, onClick: () => openEditTask(t) },
+                                { label: 'Görevi Sil', icon: <Trash2 size={14} aria-hidden="true"/>, onClick: async () => { if (await confirmDialog.confirm({ title: 'Görevi Sil', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }, variant: 'danger', separator: true },
                               ]}
                               side="left"
                               align="end"
@@ -945,7 +945,7 @@ export default function TasksScreen() {
               <KanbanSquare size={24} className="text-[var(--af-text3)]" aria-hidden="true"/>
             </div>
             <div className="text-[15px] font-medium text-[var(--muted-foreground)]">
-              {hasActiveFilters ? 'Sin resultados' : 'Sin tareas'}
+              {hasActiveFilters ? 'Sonuç bulunamadı' : 'Sin tareas'}
             </div>
             <div className="text-xs mt-1">
               {hasActiveFilters ? 'Intenta con otros filtros' : 'Crea tu primera tarea para empezar'}
@@ -983,7 +983,7 @@ export default function TasksScreen() {
                       <div className="flex flex-col items-center gap-2 py-3 cursor-pointer" onClick={() => setKanbanCompletedCollapsed(false)}>
                         <span className={`w-2.5 h-2.5 rounded-full ${col.dot}`} />
                         <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">{colTasks.length}</span>
-                        <span className="text-[10px] text-[var(--af-text3)] [writing-mode:vertical-lr] rotate-180">Completado</span>
+                        <span className="text-[10px] text-[var(--af-text3)] [writing-mode:vertical-lr] rotate-180">Tamamlandı</span>
                         <Eye size={12} className="text-[var(--af-text3)]" aria-hidden="true"/>
                       </div>
                     ) : (
@@ -1026,7 +1026,7 @@ export default function TasksScreen() {
                             className="text-[10px] px-2.5 py-1 rounded-md bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] cursor-pointer hover:border-[var(--af-accent)]/30 hover:text-[var(--af-accent)] transition-all"
                             onClick={() => handleNewTaskInColumn(col.status)}
                           >
-                            <Plus size={10} className="inline mr-0.5" aria-hidden="true"/> Crear tarea
+                            <Plus size={10} className="inline mr-0.5" aria-hidden="true"/> Görev Oluştur
                           </button>
                         </div>
                       )}
@@ -1063,7 +1063,7 @@ export default function TasksScreen() {
                               </button>
                               <button
                                 className="w-6 h-6 rounded flex items-center justify-center bg-[var(--card)]/90 backdrop-blur-sm text-[var(--af-text3)] hover:text-red-400 hover:bg-red-500/10 cursor-pointer transition-colors border border-[var(--border)]"
-                                onClick={async e => { e.stopPropagation(); if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}
+                                onClick={async e => { e.stopPropagation(); if (await confirmDialog.confirm({ title: 'Görevi Sil', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}
                                 title="Eliminar"
                               >
                                 <Trash2 size={11} aria-hidden="true"/>
@@ -1153,7 +1153,7 @@ export default function TasksScreen() {
                           {/* Footer: assignees */}
                           <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border)]">
                             <AssigneeAvatars task={t} getUserName={getUserName} size="md" />
-                            <button className="text-[10px] text-[var(--af-text3)] hover:text-red-400 cursor-pointer md:opacity-0 md:group-hover/card:opacity-100 transition-opacity" onClick={async e => { e.stopPropagation(); if (await confirmDialog.confirm({ title: 'Eliminar tarea', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}>
+                            <button className="text-[10px] text-[var(--af-text3)] hover:text-red-400 cursor-pointer md:opacity-0 md:group-hover/card:opacity-100 transition-opacity" onClick={async e => { e.stopPropagation(); if (await confirmDialog.confirm({ title: 'Görevi Sil', description: '¿Estas seguro? La tarea sera eliminada permanentemente.' })) deleteTask(t.id); }}>
                               <X size={12} aria-hidden="true"/>
                             </button>
                           </div>
@@ -1185,7 +1185,7 @@ export default function TasksScreen() {
       {/* Mobile FAB */}
       <FloatingActionButton
         onClick={handleNewTask}
-        ariaLabel="Nueva tarea"
+        ariaLabel="Yeni Görev"
       />
       <ConfirmDialog {...confirmDialog} />
     </div>

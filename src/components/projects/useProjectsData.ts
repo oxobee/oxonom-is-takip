@@ -75,7 +75,7 @@ export function useProjectsData() {
   const projectsWithOverdue = useMemo(() => {
     return filteredProjects.filter((p: Project) => {
       const projTasks = tasks.filter((t: Task) => t.data.projectId === p.id);
-      return projTasks.some((t: Task) => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate));
+      return projTasks.some((t: Task) => t.data.status !== 'Tamamlandı' && t.data.dueDate && checkOverdue(t.data.dueDate));
     }).length;
   }, [filteredProjects, tasks, today]);
   const overBudgetCount = useMemo(() => {
@@ -128,7 +128,7 @@ export function useProjectsData() {
   const statusDist = useMemo(() => {
     const map: Record<string, number> = {};
     projects.forEach((p: Project) => {
-      const s = p.data.status || 'Concepto';
+      const s = p.data.status || 'Harcama Kalemi';
       map[s] = (map[s] || 0) + 1;
     });
     return Object.entries(map)
@@ -175,9 +175,9 @@ export function useProjectsData() {
   // --- Helpers ---
   const getProjectStats = useCallback((projectId: string) => {
     const projTasks = tasks.filter((t: Task) => t.data.projectId === projectId);
-    const pending = projTasks.filter((t: Task) => t.data.status !== 'Completado').length;
-    const overdue = projTasks.filter((t: Task) => t.data.status !== 'Completado' && t.data.dueDate && checkOverdue(t.data.dueDate)).length;
-    const completed = projTasks.filter((t: Task) => t.data.status === 'Completado').length;
+    const pending = projTasks.filter((t: Task) => t.data.status !== 'Tamamlandı').length;
+    const overdue = projTasks.filter((t: Task) => t.data.status !== 'Tamamlandı' && t.data.dueDate && checkOverdue(t.data.dueDate)).length;
+    const completed = projTasks.filter((t: Task) => t.data.status === 'Tamamlandı').length;
     return { pending, overdue, completed, total: projTasks.length };
   }, [tasks, today]);
 
@@ -208,7 +208,7 @@ export function useProjectsData() {
     const list = projList || filteredProjects;
     const q = '"';
     const dq = '""';
-    const headers = ['Proyecto', 'Estado', 'Tipo', 'Cliente', 'Ubicación', 'Presupuesto', 'Gastado', 'Saldo', 'Progreso', 'Tareas', 'Completadas', 'Fecha Inicio', 'Fecha Entrega', 'Salud'];
+    const headers = ['Proyecto', 'Estado', 'Tipo', 'Müşteri', 'Konum', 'Bütçe', 'Gastado', 'Saldo', 'Progreso', 'Tareas', 'Tamamlandıs', 'Fecha Inicio', 'Fecha Entrega', 'Salud'];
     const esc = (v: string | number) => q + String(v).split(q).join(dq) + q;
     const rows = list.map((p: Project) => {
       const d = p.data;

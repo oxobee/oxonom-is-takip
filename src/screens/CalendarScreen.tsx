@@ -59,27 +59,27 @@ export default function CalendarScreen() {
               {/* Calendar Header */}
               <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                 <div className="flex items-center gap-2">
-                  <button aria-label="Mes anterior" className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={prevMonth}>
+                  <button aria-label="Ay anterior" className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={prevMonth}>
                     <ChevronLeft size={16} className="text-[var(--muted-foreground)]" aria-hidden="true"/>
                   </button>
                   <div className="text-[15px] font-semibold min-w-[120px] sm:min-w-[160px] text-center">{MESES[calMonth]} {calYear}</div>
-                  <button aria-label="Mes siguiente" className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={nextMonth}>
+                  <button aria-label="Ay siguiente" className="w-8 h-8 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] flex items-center justify-center cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={nextMonth}>
                     <ChevronRight size={16} className="text-[var(--muted-foreground)]" aria-hidden="true"/>
                   </button>
                 </div>
                 <div className="flex items-center gap-2">
                   <select className="bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2.5 py-1.5 text-[11px] text-[var(--foreground)] outline-none cursor-pointer" value={calFilterProject} onChange={e => setCalFilterProject(e.target.value)}>
-                    <option value="all">Todos los proyectos</option>
+                    <option value="all">Tüm Projeler</option>
                     {projects.map(p => <option key={p.id} value={p.id}>{p.data.name}</option>)}
                   </select>
-                  <button className="text-[11px] px-2.5 py-1.5 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={() => { setCalMonth(today.getMonth()); setCalYear(today.getFullYear()); setCalSelectedDate(today.toISOString().split('T')[0]); }}>Hoy</button>
+                  <button className="text-[11px] px-2.5 py-1.5 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={() => { setCalMonth(today.getMonth()); setCalYear(today.getFullYear()); setCalSelectedDate(today.toISOString().split('T')[0]); }}>Bugün</button>
                 </div>
               </div>
 
               {/* Stats row */}
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                 <div className="flex items-center gap-2"><button className="flex items-center gap-1.5 bg-purple-500/10 text-purple-400 px-3 py-1.5 rounded-lg text-[11px] font-semibold cursor-pointer border border-purple-500/20" onClick={() => { setEditingId(null); setForms(p => ({ ...p, meetTitle: '', meetProject: '', meetDate: calSelectedDate || new Date().toISOString().split('T')[0], meetTime: '09:00', meetDuration: '60', meetDesc: '', meetAttendees: '', meetRecurring: 'none', meetRecurringDayOfWeek: undefined, meetRecurringEndDate: '', _meetRecurringGroupId: undefined })); openModal('meeting'); }}>+ Reunión</button><span className="text-[11px] text-purple-400/70">{meetings.filter(m => m.data.date && m.data.date.startsWith(`${calYear}-${String(calMonth + 1).padStart(2, '0')}`)).length} este mes</span></div>
-                <button className="text-[11px] px-2.5 py-1.5 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={() => { setCalMonth(today.getMonth()); setCalYear(today.getFullYear()); setCalSelectedDate(today.toISOString().split('T')[0]); }}>Hoy</button>
+                <button className="text-[11px] px-2.5 py-1.5 rounded-lg bg-[var(--af-bg3)] border border-[var(--border)] cursor-pointer hover:bg-[var(--af-bg4)] transition-colors" onClick={() => { setCalMonth(today.getMonth()); setCalYear(today.getFullYear()); setCalSelectedDate(today.toISOString().split('T')[0]); }}>Bugün</button>
               </div>
               <div className="grid grid-cols-3 gap-2 mb-4">
                 <div className="bg-red-500/10 rounded-lg p-2.5 text-center">
@@ -88,11 +88,11 @@ export default function CalendarScreen() {
                 </div>
                 <div className="bg-amber-500/10 rounded-lg p-2.5 text-center">
                   <div className="text-base font-bold text-amber-400">{calTasks.filter(t => { const d = t.data.dueDate; return d && checkOverdue(d); }).length}</div>
-                  <div className="text-[10px] text-amber-400/70">Vencidas</div>
+                  <div className="text-[10px] text-amber-400/70">Gecikmişs</div>
                 </div>
                 <div className="bg-blue-500/10 rounded-lg p-2.5 text-center">
                   <div className="text-base font-bold text-blue-400">{calTasks.filter(t => { const d = t.data.dueDate; if (!d) return false; const diff = Math.ceil((new Date(d).getTime() - today.getTime()) / 86400000); return diff >= 0 && diff <= 7; }).length}</div>
-                  <div className="text-[10px] text-blue-400/70">Esta semana</div>
+                  <div className="text-[10px] text-blue-400/70">Bu Hafta</div>
                 </div>
               </div>
 

@@ -62,7 +62,7 @@ export default function GalleryModal({ open, onClose }: { open: boolean; onClose
         <FormInput placeholder="Ej: Vista frontal del proyecto" value={forms.galleryCaption || ''} onChange={e => setForms(p => ({ ...p, galleryCaption: e.target.value }))} />
       </FormField>
 
-      <ModalFooter onCancel={() => closeModal('gallery')} onSubmit={handleSubmit} submitLabel={editingId ? 'Guardar' : 'Subir foto'} />
+      <ModalFooter onCancel={() => closeModal('gallery')} onSubmit={handleSubmit} submitLabel={editingId ? 'Kaydet' : 'Fotoğraf Yükle'} />
     </CenterModal>
   );
 }

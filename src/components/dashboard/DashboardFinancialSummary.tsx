@@ -39,13 +39,13 @@ export default function DashboardFinancialSummary({
         </div>
         {totalBudget > 0 && (
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[var(--af-text3)]" /><span className="text-[12px]">Presupuesto total</span></div>
+            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-[var(--af-text3)]" /><span className="text-[12px]">Toplam Bütçe</span></div>
             <span className="text-[12px] font-semibold">{fmtCOP(totalBudget)}</span>
           </div>
         )}
         {overdueInvoices > 0 && (
           <div className="flex items-center justify-between mt-1">
-            <div className="flex items-center gap-2"><AlertTriangle size={10} className="text-red-400" aria-hidden="true"/><span className="text-[11px] text-red-400 font-medium">Facturas vencidas</span></div>
+            <div className="flex items-center gap-2"><AlertTriangle size={10} className="text-red-400" aria-hidden="true"/><span className="text-[11px] text-red-400 font-medium">Faturalar vencidas</span></div>
             <span className="text-[11px] font-semibold text-red-400">{overdueInvoices}</span>
           </div>
         )}

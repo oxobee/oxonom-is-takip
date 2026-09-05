@@ -7,7 +7,7 @@ import { Globe, Search, Filter, FolderKanban, DollarSign, CheckCircle2, ArrowRig
 
 const STATUS_OPTIONS = [
   { key: 'Todos', value: '' },
-  { key: 'Concepto', value: 'Concepto' },
+  { key: 'Harcama Kalemi', value: 'Harcama Kalemi' },
   { key: 'Diseno', value: 'Diseno' },
   { key: 'Ejecucion', value: 'Ejecucion' },
   { key: 'Terminado', value: 'Terminado' },
@@ -102,7 +102,7 @@ export default function PortalScreen() {
             </div>
           </div>
           <div className="text-lg font-bold">{kpiSummary.total}</div>
-          <div className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)] mt-0.5">Total proyectos</div>
+          <div className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)] mt-0.5">Toplam Proje</div>
         </div>
 
         {/* In Execution */}
@@ -124,7 +124,7 @@ export default function PortalScreen() {
             </div>
           </div>
           <div className="text-lg font-bold text-emerald-400">{kpiSummary.completed}</div>
-          <div className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)] mt-0.5">Completados</div>
+          <div className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)] mt-0.5">Tamamlandıs</div>
         </div>
 
         {/* Total Budget */}
@@ -135,7 +135,7 @@ export default function PortalScreen() {
             </div>
           </div>
           <div className="text-lg font-bold text-[var(--af-accent)]">{fmtCOP(kpiSummary.totalBudget)}</div>
-          <div className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)] mt-0.5">Presupuesto total</div>
+          <div className="text-[10px] sm:text-[11px] text-[var(--muted-foreground)] mt-0.5">Toplam Bütçe</div>
         </div>
       </div>
 
@@ -223,7 +223,7 @@ export default function PortalScreen() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${statusColor(p.data.status)}`}>
-                        {p.data.status || 'Concepto'}
+                        {p.data.status || 'Harcama Kalemi'}
                       </span>
                       {p.data.location && (
                         <span className="text-[10px] text-[var(--af-text3)] truncate">
@@ -309,7 +309,7 @@ export default function PortalScreen() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${statusColor(p.data.status)}`}>
-                        {p.data.status || 'Concepto'}
+                        {p.data.status || 'Harcama Kalemi'}
                       </span>
                     </div>
                     <div className="text-[14px] font-medium truncate group-hover:text-[var(--af-accent)] transition-colors">
@@ -381,13 +381,13 @@ export default function PortalScreen() {
           {hasFilters ? (
             <>
               <div className="text-3xl mb-2"><Filter size={32} className="mx-auto text-[var(--muted-foreground)] opacity-40" aria-hidden="true"/></div>
-              <div className="text-[14px] font-medium text-[var(--muted-foreground)] mb-1">Sin resultados</div>
+              <div className="text-[14px] font-medium text-[var(--muted-foreground)] mb-1">Sonuç bulunamadı</div>
               <div className="text-[11px] text-[var(--af-text3)] mb-3">No se encontraron proyectos con los filtros aplicados</div>
               <button
                 className="text-[12px] text-[var(--af-accent)] cursor-pointer hover:underline"
                 onClick={() => { setSearch(''); setStatusFilter(''); }}
               >
-                Limpiar filtros
+                Filtreleri Temizle
               </button>
             </>
           ) : (

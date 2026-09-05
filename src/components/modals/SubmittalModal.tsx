@@ -21,7 +21,7 @@ export default function SubmittalModal({ open, onClose }: { open: boolean; onClo
 
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={560}>
-      <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar submittal' : 'Nuevo submittal'}</h2>
+      <h2 className="text-lg font-semibold mb-4">{editingId ? 'Editar submittal' : 'Yeni Onay Belgesi'}</h2>
       <div className="space-y-3">
         {!editingId && (
           <FormField label="Proyecto" required error={errors.subProject}>
@@ -43,14 +43,14 @@ export default function SubmittalModal({ open, onClose }: { open: boolean; onClo
         <div className="grid grid-cols-2 gap-3">
           {editingId && (
             <FormField label="Estado">
-              <FormSelect value={forms.subStatus || 'Borrador'} onChange={(e) => setForms(p => ({ ...p, subStatus: e.target.value }))}>
-                {['Borrador', 'En revisión', 'Aprobado', 'Rechazado', 'Devuelto'].map(s => <option key={s} value={s}>{s}</option>)}
+              <FormSelect value={forms.subStatus || 'Taslak'} onChange={(e) => setForms(p => ({ ...p, subStatus: e.target.value }))}>
+                {['Taslak', 'İncelemede', 'Onaylandı', 'Reddedildi', 'Devuelto'].map(s => <option key={s} value={s}>{s}</option>)}
               </FormSelect>
             </FormField>
           )}
           <FormField label="Revisor">
             <FormSelect value={forms.subReviewer || ''} onChange={(e) => setForms(p => ({ ...p, subReviewer: e.target.value }))}>
-              <option value="">Sin asignar</option>
+              <option value="">Atanmamış</option>
               {teamUsers.map((u: any) => <option key={u.id} value={u.id}>{u.data.name}</option>)}
             </FormSelect>
           </FormField>
@@ -58,13 +58,13 @@ export default function SubmittalModal({ open, onClose }: { open: boolean; onClo
             <FormInput type="date" value={forms.subDueDate || ''} onChange={(e) => setForms(p => ({ ...p, subDueDate: e.target.value }))} />
           </FormField>
         </div>
-        {(editingId && (forms.subStatus === 'Rechazado' || forms.subStatus === 'Devuelto')) && (
-          <FormField label="Notas de revisión">
-            <FormTextarea value={forms.subReviewNotes || ''} onChange={(e) => setForms(p => ({ ...p, subReviewNotes: e.target.value }))} placeholder="Notas del revisor" rows={3} />
+        {(editingId && (forms.subStatus === 'Reddedildi' || forms.subStatus === 'Devuelto')) && (
+          <FormField label="Notlar de revisión">
+            <FormTextarea value={forms.subReviewNotes || ''} onChange={(e) => setForms(p => ({ ...p, subReviewNotes: e.target.value }))} placeholder="Notlar del revisor" rows={3} />
           </FormField>
         )}
       </div>
-      <ModalFooter onCancel={() => closeModal('submittal')} onSubmit={handleSubmit} submitLabel={editingId ? 'Actualizar' : 'Crear submittal'} />
+      <ModalFooter onCancel={() => closeModal('submittal')} onSubmit={handleSubmit} submitLabel={editingId ? 'Güncelle' : 'Crear submittal'} />
     </CenterModal>
   );
 }

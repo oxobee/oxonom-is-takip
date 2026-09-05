@@ -21,7 +21,7 @@ export default function InventoryDashboard({
 }: InventoryDashboardProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">📊 Panel de Inventario</h3>
+      <h3 className="text-lg font-semibold">📊 Panel de Envanter</h3>
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]">
@@ -30,7 +30,7 @@ export default function InventoryDashboard({
         </div>
         <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]">
           <div className="text-2xl font-bold text-blue-400">{fmtCOP(invTotalValue)}</div>
-          <div className="text-xs text-[var(--muted-foreground)] mt-1">Valor total</div>
+          <div className="text-xs text-[var(--muted-foreground)] mt-1">Toplam Tutar</div>
         </div>
         <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]">
           <div className="text-2xl font-bold text-emerald-400">{invTotalStock.toLocaleString('es-CO')}</div>

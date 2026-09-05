@@ -19,7 +19,7 @@ export default function DashboardDateRange({
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 sm:p-4">
       <div className="flex items-center gap-2 flex-wrap">
         <span className="text-[11px] font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mr-1">Periodo:</span>
-        {([['week', 'Esta semana'], ['month', 'Este mes'], ['quarter', 'Este trimestre'], ['year', 'Este año']] as const).map(([key, label]) => (
+        {([['week', 'Bu Hafta'], ['month', 'Bu Ay'], ['quarter', 'Bu Çeyrek'], ['year', 'Bu Yıl']] as const).map(([key, label]) => (
           <button
             key={key}
             className={`px-2.5 py-1 rounded-lg text-[11px] font-medium cursor-pointer transition-all border ${
@@ -40,7 +40,7 @@ export default function DashboardDateRange({
           }`}
           onClick={() => setDateRange('custom')}
         >
-          Personalizado
+          Özel Aralık
         </button>
         {dateRange === 'custom' && (
           <div className="flex items-center gap-2 ml-1 animate-fadeIn">

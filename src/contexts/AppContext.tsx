@@ -163,67 +163,67 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   const [adminPermSection, setAdminPermSection] = useState<string>('roles');
   const [rolePerms, setRolePerms] = useState<Record<string, string[]>>({
     // ── Dashboard & Proyectos ──
-    'Ver Dashboard': ['Admin','Director','Arquitecto','Interventor','Contratista','Cliente','Miembro'],
-    'Crear proyectos': ['Admin','Director','Arquitecto'],
-    'Editar proyectos': ['Admin','Director','Arquitecto'],
+    'Ver Dashboard': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri','Üye'],
+    'Crear proyectos': ['Admin','Director','Mimar'],
+    'Editar proyectos': ['Admin','Director','Mimar'],
     'Eliminar proyectos': ['Admin','Director'],
     // ── Tareas ──
-    'Crear tareas': ['Admin','Director','Arquitecto','Interventor','Contratista'],
-    'Asignar tareas': ['Admin','Director','Arquitecto'],
-    'Ver tablero Kanban': ['Admin','Director','Arquitecto','Interventor','Contratista'],
+    'Crear tareas': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
+    'Asignar tareas': ['Admin','Director','Mimar'],
+    'Ver tablero Kanban': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
     // ── Time Tracking ──
-    'Time Tracking': ['Admin','Director','Arquitecto','Contratista','Interventor'],
+    'Time Tracking': ['Admin','Director','Mimar','Yüklenici','Denetçi'],
     // ── Presupuestos ──
-    'Ver presupuestos': ['Admin','Director','Arquitecto','Interventor','Cliente'],
+    'Ver presupuestos': ['Admin','Director','Mimar','Denetçi','Müşteri'],
     'Gestionar presupuestos': ['Admin','Director'],
     // ── Archivos & Galería ──
-    'Ver planos y archivos': ['Admin','Director','Arquitecto','Interventor','Contratista','Cliente'],
-    'Subir archivos': ['Admin','Director','Arquitecto','Contratista'],
-    'Ver galería': ['Admin','Director','Arquitecto','Interventor','Contratista','Cliente'],
-    'Subir fotos galería': ['Admin','Director','Arquitecto','Contratista','Interventor'],
-    'Seguimiento obra': ['Admin','Director','Arquitecto','Interventor','Contratista'],
+    'Ver planos y archivos': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri'],
+    'Subir archivos': ['Admin','Director','Mimar','Yüklenici'],
+    'Ver galería': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri'],
+    'Subir fotos galería': ['Admin','Director','Mimar','Yüklenici','Denetçi'],
+    'Seguimiento obra': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
     // ── Inventario ──
-    'Ver inventario': ['Admin','Director','Arquitecto','Contratista','Interventor'],
-    'Gestionar inventario': ['Admin','Director','Contratista'],
+    'Ver inventario': ['Admin','Director','Mimar','Yüklenici','Denetçi'],
+    'Gestionar inventario': ['Admin','Director','Yüklenici'],
     // ── Calidad ──
-    'Ver RFIs': ['Admin','Director','Arquitecto','Interventor','Contratista'],
-    'Crear RFIs': ['Admin','Director','Arquitecto','Interventor'],
-    'Ver Submittals': ['Admin','Director','Arquitecto','Interventor','Contratista'],
-    'Crear Submittals': ['Admin','Director','Arquitecto'],
-    'Ver Punch List': ['Admin','Director','Arquitecto','Interventor','Contratista'],
-    'Crear Punch List': ['Admin','Director','Arquitecto','Interventor'],
-    'Ver Órdenes de Cambio': ['Admin','Director','Arquitecto','Interventor','Cliente'],
+    'Ver RFIs': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
+    'Crear RFIs': ['Admin','Director','Mimar','Denetçi'],
+    'Ver Submittals': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
+    'Crear Submittals': ['Admin','Director','Mimar'],
+    'Ver Punch List': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
+    'Crear Punch List': ['Admin','Director','Mimar','Denetçi'],
+    'Ver Órdenes de Cambio': ['Admin','Director','Mimar','Denetçi','Müşteri'],
     'Crear Órdenes de Cambio': ['Admin','Director'],
-    'Ver Notas de Campo': ['Admin','Director','Arquitecto','Interventor','Contratista'],
-    'Crear Notas de Campo': ['Admin','Director','Arquitecto','Contratista','Interventor'],
+    'Ver Notas de Campo': ['Admin','Director','Mimar','Denetçi','Yüklenici'],
+    'Crear Notas de Campo': ['Admin','Director','Mimar','Yüklenici','Denetçi'],
     // ── Administración ──
     'Panel Admin': ['Admin','Director'],
     'Gestionar equipo': ['Admin','Director'],
     'Cambiar roles': ['Admin'],
-    'Ver proveedores': ['Admin','Director','Arquitecto','Interventor'],
+    'Ver proveedores': ['Admin','Director','Mimar','Denetçi'],
     'Gestionar proveedores': ['Admin','Director'],
-    'Ver facturas': ['Admin','Director','Interventor'],
+    'Ver facturas': ['Admin','Director','Denetçi'],
     'Gestionar facturas': ['Admin','Director'],
-    'Ver empresas': ['Admin','Director','Arquitecto'],
+    'Ver empresas': ['Admin','Director','Mimar'],
     'Gestionar empresas': ['Admin','Director'],
-    'Ver catálogos': ['Admin','Director','Arquitecto','Interventor'],
-    'Gestionar catálogos': ['Admin','Director','Arquitecto'],
+    'Ver catálogos': ['Admin','Director','Mimar','Denetçi'],
+    'Gestionar catálogos': ['Admin','Director','Mimar'],
     'Ver integraciones': ['Admin','Director'],
     'Gestionar integraciones': ['Admin'],
     // ── Carnets ──
-    'Ver carnets': ['Admin','Director','Arquitecto','Interventor'],
-    'Crear carnets': ['Admin','Director','Arquitecto'],
+    'Ver carnets': ['Admin','Director','Mimar','Denetçi'],
+    'Crear carnets': ['Admin','Director','Mimar'],
     'Usar diseñador de carnets': ['Admin','Director'],
     'Importar carnets Excel': ['Admin','Director'],
     // ── Comunicación ──
-    'Chat general': ['Admin','Director','Arquitecto','Interventor','Contratista','Cliente','Miembro'],
-    'Mensajes directos': ['Admin','Director','Arquitecto','Interventor','Contratista','Cliente','Miembro'],
+    'Chat general': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri','Üye'],
+    'Mensajes directos': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri','Üye'],
     // ── Calendario & Reportes ──
-    'Ver calendario': ['Admin','Director','Arquitecto','Interventor','Contratista','Cliente'],
-    'Ver reportes': ['Admin','Director','Arquitecto','Interventor'],
+    'Ver calendario': ['Admin','Director','Mimar','Denetçi','Yüklenici','Müşteri'],
+    'Ver reportes': ['Admin','Director','Mimar','Denetçi'],
     'Exportar reportes': ['Admin','Director'],
     // ── Portal cliente ──
-    'Portal cliente': ['Admin','Director','Cliente'],
+    'Portal cliente': ['Admin','Director','Müşteri'],
   });
   const toggleRolePerm = (permName: string, role: string) => {
     setRolePerms(prev => {
@@ -303,7 +303,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   // ===== TENANT STATE =====
   const [activeTenantId, setActiveTenantId] = useState<string | null>(null);
   const [activeTenantName, setActiveTenantName] = useState<string | null>(null);
-  const [activeTenantRole, setActiveTenantRole] = useState<string>('Miembro'); // 'Super Admin' or 'Miembro'
+  const [activeTenantRole, setActiveTenantRole] = useState<string>('Üye'); // 'Super Admin' or 'Üye'
   const [tenantReady, setTenantReady] = useState(false);
   const [showTenantSelector, setShowTenantSelector] = useState(false);
   const [activeTenantMembers, setActiveTenantMembers] = useState<string[]>([]); // UIDs of tenant members
@@ -334,7 +334,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       if (savedTenantId && savedTenantName) {
         setActiveTenantId(savedTenantId);
         setActiveTenantName(savedTenantName);
-        setActiveTenantRole(savedTenantRole || 'Miembro');
+        setActiveTenantRole(savedTenantRole || 'Üye');
         setTenantReady(true);
       }
     } catch (err) { console.error("[Archii]", err); }
@@ -612,7 +612,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
                   name: existingData.name || user.displayName || (user.email || '').split('@')[0],
                   email: user.email,
                   photoURL: user.photoURL || existingData.photoURL || '',
-                  role: existingData.role || (isAdminEmail ? 'Admin' : 'Miembro'),
+                  role: existingData.role || (isAdminEmail ? 'Admin' : 'Üye'),
                   createdAt: existingData.createdAt || fb.firestore.FieldValue.serverTimestamp(),
                 });
                 // Now migrate tenant memberships from old UID to new UID
@@ -636,11 +636,11 @@ export default function AppProvider({ children }: { children: React.ReactNode })
                   }
                 }
               } else {
-                await ref.set({ name: user.displayName || (user.email || '').split('@')[0], email: user.email, photoURL: user.photoURL || '', role: isAdminEmail ? 'Admin' : 'Miembro', createdAt: fb.firestore.FieldValue.serverTimestamp() });
+                await ref.set({ name: user.displayName || (user.email || '').split('@')[0], email: user.email, photoURL: user.photoURL || '', role: isAdminEmail ? 'Admin' : 'Üye', createdAt: fb.firestore.FieldValue.serverTimestamp() });
               }
             } catch (_dupErr) {
               // Duplicate check failed, creating user doc anyway
-              await ref.set({ name: user.displayName || (user.email || '').split('@')[0], email: user.email, photoURL: user.photoURL || '', role: isAdminEmail ? 'Admin' : 'Miembro', createdAt: fb.firestore.FieldValue.serverTimestamp() });
+              await ref.set({ name: user.displayName || (user.email || '').split('@')[0], email: user.email, photoURL: user.photoURL || '', role: isAdminEmail ? 'Admin' : 'Üye', createdAt: fb.firestore.FieldValue.serverTimestamp() });
             }
           } else {
             // Existing user: sync photoURL and name from auth provider on every login
@@ -696,7 +696,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
 
                     }
                     // Determine role — trust saved defaultTenantRole first, then verify on tenant doc
-                    let role = 'Miembro';
+                    let role = 'Üye';
                     if (userData.defaultTenantRole === 'Super Admin') {
                       role = 'Super Admin';
                       // Ensure the Super Admin role is in the tenant doc too
@@ -786,7 +786,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         const isCreator = data?.createdBy === uid;
         const superAdmins: string[] = data?.superAdmins || [];
         const isSuperAdmin = isCreator || superAdmins.includes(uid);
-        const realRole = isSuperAdmin ? 'Super Admin' : 'Miembro';
+        const realRole = isSuperAdmin ? 'Super Admin' : 'Üye';
 
 
         // ALWAYS update role state from tenant doc (no stale closure comparison)
@@ -846,10 +846,10 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     return () => unsub();
   }, [ready, authUser, activeTenantId]);
 
-  // AUTO-FIX: When auth is ready and tenant is loaded, if role is Miembro, call fix-my-role from server
+  // AUTO-FIX: When auth is ready and tenant is loaded, if role is Üye, call fix-my-role from server
   // This runs once after auth + tenant are ready, and ensures the role is correct in Firestore
   useEffect(() => {
-    if (!ready || !authUser || !activeTenantId || activeTenantRole !== 'Miembro') return;
+    if (!ready || !authUser || !activeTenantId || activeTenantRole !== 'Üye') return;
     // Only run once (debounced)
     const timer = setTimeout(async () => {
       try {
@@ -1592,45 +1592,45 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   /* ===== FIREBASE ACTIONS ===== */
   const doLogin = async () => {
     const email = forms.loginEmail || '', pass = forms.loginPass || '';
-    if (!email || !pass) { showToast('Completa todos los campos', 'error'); return; }
+    if (!email || !pass) { showToast('Lütfen tüm alanları doldurunuz', 'error'); return; }
     try {
 
       await getFirebase().auth().signInWithEmailAndPassword(email, pass);
     } catch (e: any) {
-      console.error('[Archii Auth] Login error:', e.code, e.message);
+      console.error('[Oxonom Auth] Giriş hatası:', e.code, e.message);
       const msgs: Record<string, string> = {
-        'auth/invalid-credential': 'Correo o contraseña incorrectos',
-        'auth/user-not-found': 'No existe cuenta con ese correo',
-        'auth/too-many-requests': 'Demasiados intentos. Espera un momento y vuelve a intentar.',
-        'auth/user-disabled': 'Esta cuenta ha sido deshabilitada.',
-        'auth/invalid-email': 'El formato del correo no es válido.',
-        'auth/network-request-failed': 'Error de conexión. Verifica tu internet.',
+        'auth/invalid-credential': 'E-posta veya şifre hatalı',
+        'auth/user-not-found': 'Bu e-posta adresiyle kayıtlı hesap bulunamadı',
+        'auth/too-many-requests': 'Çok fazla başarısız deneme yapıldı. Lütfen biraz bekleyip tekrar deneyin.',
+        'auth/user-disabled': 'Bu hesap devre dışı bırakılmıştır.',
+        'auth/invalid-email': 'Geçersiz e-posta formatı.',
+        'auth/network-request-failed': 'Bağlantı hatası. Lütfen internetinizi kontrol edin.',
       };
-      showToast(msgs[e.code] || `Error: ${e.code || e.message || 'No se pudo iniciar sesión'}`, 'error');
+      showToast(msgs[e.code] || `Hata: ${e.code || e.message || 'Giriş yapılamadı'}`, 'error');
     }
   };
 
   const doRegister = async () => {
     const name = forms.regName || '', email = forms.regEmail || '', pass = forms.regPass || '';
-    if (!name || !email || !pass) { showToast('Completa todos los campos', 'error'); return; }
+    if (!name || !email || !pass) { showToast('Lütfen tüm alanları doldurunuz', 'error'); return; }
     try {
 
       const cred = await getFirebase().auth().createUserWithEmailAndPassword(email, pass);
       await cred.user.updateProfile({ displayName: name });
       const db = getFirebase().firestore();
-      await db.collection('users').doc(cred.user.uid).set({ name, email, photoURL: '', role: 'Miembro', createdAt: getFirebase().firestore.FieldValue.serverTimestamp() });
+      await db.collection('users').doc(cred.user.uid).set({ name, email, photoURL: '', role: 'Üye', createdAt: getFirebase().firestore.FieldValue.serverTimestamp() });
 
     } catch (e: any) {
-      console.error('[Archii Auth] Register error:', e.code, e.message);
+      console.error('[Oxonom Auth] Kayıt hatası:', e.code, e.message);
       const msgs: Record<string, string> = {
-        'auth/email-already-in-use': 'Ese correo ya está registrado. Intenta iniciar sesión.',
-        'auth/weak-password': 'La contraseña es muy débil. Mínimo 6 caracteres.',
-        'auth/invalid-email': 'El formato del correo no es válido.',
-        'auth/too-many-requests': 'Demasiados intentos. Espera un momento.',
-        'auth/network-request-failed': 'Error de conexión. Verifica tu internet.',
-        'auth/operation-not-allowed': 'Registro con email/contraseña deshabilitado. Verifica Firebase Console.',
+        'auth/email-already-in-use': 'Bu e-posta adresi zaten kullanımda. Lütfen giriş yapmayı deneyin.',
+        'auth/weak-password': 'Şifre çok zayıf. En az 6 karakter olmalıdır.',
+        'auth/invalid-email': 'Geçersiz e-posta formatı.',
+        'auth/too-many-requests': 'Çok fazla deneme yapıldı. Lütfen bekleyin.',
+        'auth/network-request-failed': 'Bağlantı hatası. Lütfen internetinizi kontrol edin.',
+        'auth/operation-not-allowed': 'E-posta/şifre ile kayıt şu anda devre dışı.',
       };
-      showToast(msgs[e.code] || `Error al registrar: ${e.code || e.message || ''}`, 'error');
+      showToast(msgs[e.code] || `Kayıt oluşturulurken hata: ${e.code || e.message || ''}`, 'error');
     }
   };
 
@@ -1976,9 +1976,9 @@ export default function AppProvider({ children }: { children: React.ReactNode })
 
   // Get current user's role
   const getMyRole = () => {
-    if (!authUser) return 'Miembro';
+    if (!authUser) return 'Üye';
     const me = teamUsers.find(u => u.id === authUser.uid);
-    return me?.data?.role || 'Miembro';
+    return me?.data?.role || 'Üye';
   };
 
   // Filter projects based on company (Admin/Director see all, others see their company only)
@@ -2014,7 +2014,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     if (!activeTenantId) { showToast('Error: no hay espacio de trabajo activo. Recarga la página.', 'error'); return; }
     try {
       await fbActions.saveProject({ ...forms, projName: name }, editingId, showToast, authUser, activeTenantId);
-      closeModal('project'); setForms(p => ({ ...p, projName: '', projClient: '', projLocation: '', projBudget: '', projDesc: '', projStart: '', projEnd: '', projStatus: 'Concepto', projCompany: '', projType: 'Ejecución', enabledPhases: [] }));
+      closeModal('project'); setForms(p => ({ ...p, projName: '', projClient: '', projLocation: '', projBudget: '', projDesc: '', projStart: '', projEnd: '', projStatus: 'Harcama Kalemi', projCompany: '', projType: 'Ejecución', enabledPhases: [] }));
     } catch (err: any) {
       console.error('[Archii] saveProject error:', err);
       const msg = err?.message || '';
@@ -2173,7 +2173,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       category: forms.expCategory || 'Materiales',
       amount,
       date: forms.expDate || '',
-      paymentMethod: forms.expPaymentMethod || 'Efectivo',
+      paymentMethod: forms.expPaymentMethod || 'Nakit',
       vendor: forms.expVendor || '',
       notes: forms.expNotes || '',
       tenantId: activeTenantId || '',
@@ -2192,7 +2192,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         await db.collection('expenses').add(data);
         showToast('Gasto registrado');
       }
-      closeModal('expense'); setForms(p => ({ ...p, expConcept: '', expAmount: '', expDate: new Date().toISOString().split('T')[0], expCategory: 'Materiales', expPaymentMethod: 'Efectivo', expVendor: '', expNotes: '' }));
+      closeModal('expense'); setForms(p => ({ ...p, expConcept: '', expAmount: '', expDate: new Date().toISOString().split('T')[0], expCategory: 'Materiales', expPaymentMethod: 'Nakit', expVendor: '', expNotes: '' }));
     } catch (err) { console.error('[Archii]', err); showToast('Error', 'error'); }
   };
 
@@ -2205,7 +2205,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       expCategory: e.data.category || 'Materiales',
       expAmount: String(e.data.amount || ''),
       expDate: e.data.date || '',
-      expPaymentMethod: e.data.paymentMethod || 'Efectivo',
+      expPaymentMethod: e.data.paymentMethod || 'Nakit',
       expVendor: e.data.vendor || '',
       expNotes: e.data.notes || '',
     }));
@@ -2742,7 +2742,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     return map[getProjectColor(projId)] || '#f5f5f4';
   };
 
-  const getUserRole = (uid: string) => { const u = teamUsers.find(x => x.id === uid); return u?.data?.role || 'Miembro'; };
+  const getUserRole = (uid: string) => { const u = teamUsers.find(x => x.id === uid); return u?.data?.role || 'Üye'; };
   const myRole = getUserRole(authUser?.uid || '');
   // Admin check: also consider ADMIN_EMAILS directly in case Firestore update hasn't propagated yet
   const isEmailAdmin = authUser ? adminEmails.includes((authUser.email || '').toLowerCase()) : false;
@@ -2752,16 +2752,16 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   const userName = authUser?.displayName || authUser?.email?.split('@')[0] || '';
   const initials = getInitials(userName);
   const screenTitles: Record<string, string> = {
-    dashboard: 'Dashboard', profile: 'Mi Perfil', projects: 'Proyectos', tasks: 'Tareas',
-    kanban: 'Tablero Kanban', timeTracking: 'Time Tracking', chat: 'Chat',
-    directmessages: 'Mensajes Directos', budget: 'Presupuestos', files: 'Archivos',
-    obra: 'Seguimiento de Obra', suppliers: 'Proveedores', team: 'Equipo',
-    companies: 'Empresas', invoices: 'Facturación', calendar: 'Calendario',
-    weeklyAgenda: 'Agenda Semanal', portal: 'Portal Cliente', gallery: 'Galería de Fotos',
-    inventory: 'Inventario', reports: 'Reportes', admin: 'Panel de Administración',
-    superAdmin: 'Super Administrador', rfis: 'RFIs', submittals: 'Submittals',
-    punchList: 'Punch List', changeorders: 'Órdenes de Cambio', catalogs: 'Catálogos',
-    fieldnotes: 'Notas de Campo', integrations: 'Integraciones', adminlog: 'Logs del Sistema', install: 'Instalar App',
+    dashboard: 'Panel', profile: 'Profilim', projects: 'Projeler', tasks: 'Görevler',
+    kanban: 'Kanban Panosu', timeTracking: 'Zaman Takibi', chat: 'Ekip Sohbeti',
+    directmessages: 'Direkt Ayajlar', budget: 'Bütçe & Harcamalar', files: 'Planlar ve Dosyalar',
+    obra: 'Şantiye Takibi', suppliers: 'Tedarikçiler', team: 'Ekip Üyeleri',
+    companies: 'Şirketler & Firmalar', invoices: 'Faturalar', calendar: 'Takvim',
+    weeklyAgenda: 'Haftalık Ajanda', portal: 'Müşteri Portalı', gallery: 'Fotoğraf Galerisi',
+    inventory: 'Envanter & Stok', reports: 'Raporlar', admin: 'Yönetim Paneli',
+    superAdmin: 'Süper Yönetici', rfis: 'Bilgi Talepleri (RFI)', submittals: 'Onay Belgeleri',
+    punchList: 'Eksik & Kusur Listesi', changeorders: 'Değişiklik Emirleri', catalogs: 'Kataloglar',
+    fieldnotes: 'Saha Notları', integrations: 'Entegrasyonlar', adminlog: 'Sistem Günlükleri', install: 'Uygulamayı Yükle',
   };
 
   const activeTasks = tasks.filter(t => t.data.status !== 'Completado');
@@ -2790,7 +2790,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       const ctx = [
         `Proyecto: ${currentProject.data.name}`,
         currentProject.data.description ? `Descripción: ${currentProject.data.description}` : '',
-        currentProject.data.client ? `Cliente: ${currentProject.data.client}` : '',
+        currentProject.data.client ? `Müşteri: ${currentProject.data.client}` : '',
         currentProject.data.location ? `Ubicación: ${currentProject.data.location}` : '',
         currentProject.data.status ? `Estado: ${currentProject.data.status}` : '',
         currentProject.data.budget ? `Presupuesto: ${fmtCOP(currentProject.data.budget)}` : '',
@@ -3080,13 +3080,13 @@ export default function AppProvider({ children }: { children: React.ReactNode })
     const result = await fbActions.saveSubmittal(forms, editingId, showToast, authUser, activeTenantId);
     if (result !== null) {
       closeModal('submittal'); setEditingId(null);
-      setForms(p => ({ ...p, subTitle: '', subDescription: '', subSpecification: '', subStatus: 'Borrador', subReviewer: '', subDueDate: '', subReviewNotes: '', subProject: '' }));
+      setForms(p => ({ ...p, subTitle: '', subDescription: '', subSpecification: '', subStatus: 'Taslak', subReviewer: '', subDueDate: '', subReviewNotes: '', subProject: '' }));
     }
   };
 
   const openEditSubmittal = (s: Submittal) => {
     setEditingId(s.id);
-    setForms(f => ({ ...f, subTitle: s.data.title, subDescription: s.data.description || '', subSpecification: s.data.specification || '', subStatus: s.data.status || 'Borrador', subReviewer: s.data.reviewer || '', subDueDate: s.data.dueDate || '', subReviewNotes: s.data.reviewNotes || '', subProject: s.data.projectId || '' }));
+    setForms(f => ({ ...f, subTitle: s.data.title, subDescription: s.data.description || '', subSpecification: s.data.specification || '', subStatus: s.data.status || 'Taslak', subReviewer: s.data.reviewer || '', subDueDate: s.data.dueDate || '', subReviewNotes: s.data.reviewNotes || '', subProject: s.data.projectId || '' }));
     openModal('submittal');
   };
 
@@ -3164,7 +3164,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   }, [ready, authUser, tenantReady, activeTenantId, activeTenantRole]);
 
   // ===== TENANT MANAGEMENT =====
-  const switchTenant = useCallback((tenantId: string, tenantName: string, role: string = 'Miembro') => {
+  const switchTenant = useCallback((tenantId: string, tenantName: string, role: string = 'Üye') => {
     setActiveTenantId(tenantId);
     setActiveTenantName(tenantName);
     setActiveTenantRole(role);

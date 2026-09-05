@@ -120,7 +120,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
   };
 
   const handleRemoveMember = async (uid: string, name: string) => {
-    if (!(await confirmDialog.confirm({ title: 'Eliminar miembro', description: `¿Eliminar a ${name} del tenant?` }))) return;
+    if (!(await confirmDialog.confirm({ title: 'Üyeyi Sil', description: `¿Eliminar a ${name} del tenant?` }))) return;
     setActionLoading(true);
     try {
       const data = await apiCall({ action: 'remove-member', tenantId, memberUid: uid });
@@ -201,16 +201,16 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
           <div>
-            <h2 id="manage-members-title" className="text-lg font-bold text-[var(--foreground)]">Gestionar Miembros</h2>
+            <h2 id="manage-members-title" className="text-lg font-bold text-[var(--foreground)]">Gestionar Üyes</h2>
             <p className="text-sm text-[var(--muted-foreground)]">{tenantName}</p>
           </div>
-          <button onClick={onClose} aria-label="Cerrar modal" className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-xl p-1 cursor-pointer">✕</button>
+          <button onClick={onClose} aria-label="Kapat modal" className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-xl p-1 cursor-pointer">✕</button>
         </div>
 
         {/* Tabs */}
         <div className="flex border-b border-[var(--border)]">
           {[
-            { key: 'members' as const, label: `Miembros (${members.length})` },
+            { key: 'members' as const, label: `Üyes (${members.length})` },
             { key: 'add' as const, label: `Agregar (${availableUsers.length})` },
             { key: 'code' as const, label: 'Codigo' },
           ].map(t => (
@@ -235,7 +235,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
           ) : tab === 'members' ? (
             <div className="space-y-2">
               {members.length === 0 ? (
-                <p className="text-[var(--muted-foreground)] text-center py-8">No hay miembros en este tenant</p>
+                <p className="text-[var(--muted-foreground)] text-center py-8">Üye bulunamadı en este tenant</p>
               ) : (
                 members.map((m: any) => (
                   <div key={m.uid} className="flex items-center gap-3 p-3 rounded-xl bg-[var(--af-bg3)] border border-[var(--border)]">
@@ -374,7 +374,7 @@ export default function ManageMembersModal({ tenantId, tenantName, onClose, canR
                   <Copy size={20} aria-hidden="true"/>
                 </button>
               </div>
-              <p className="text-[var(--af-text3)] text-xs mt-4">Los nuevos miembros entraran como Miembro</p>
+              <p className="text-[var(--af-text3)] text-xs mt-4">Los nuevos miembros entraran como Üye</p>
             </div>
           )}
         </div>

@@ -351,7 +351,7 @@ export default function AdminScreen() {
             <div>
               <h2 className="text-lg font-semibold flex items-center gap-2">
                 <ShieldCheck size={20} className="text-[var(--af-accent)]" aria-hidden="true"/>
-                Panel Admin
+                Yönetim Paneli
               </h2>
               <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Gestión administrativa del equipo</p>
             </div>
@@ -393,7 +393,7 @@ export default function AdminScreen() {
                 </div>
                 <div className="flex gap-1.5">
                   <button className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer bg-[var(--af-bg3)] border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-all" onClick={() => setAdminWeekOffset((p: any) => p - 1)}>◀ Anterior</button>
-                  <button className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer bg-[var(--af-bg3)] border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-all" onClick={() => setAdminWeekOffset(0)}>Hoy</button>
+                  <button className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer bg-[var(--af-bg3)] border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-all" onClick={() => setAdminWeekOffset(0)}>Bugün</button>
                   <button className="px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer bg-[var(--af-bg3)] border border-[var(--border)] hover:bg-[var(--af-bg4)] transition-all" onClick={() => setAdminWeekOffset((p: any) => p + 1)}>Siguiente ▶</button>
                 </div>
               </div>
@@ -411,7 +411,7 @@ export default function AdminScreen() {
                 <span className="text-[10px] uppercase tracking-wide font-semibold text-[var(--muted-foreground)] mr-1">Proyectos:</span>
                 {projects.slice(0, 6).map(p => (<div key={p.id} className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm" style={{ backgroundColor: getProjectColor(p.id) }} /><span className="text-[11px] text-[var(--foreground)]">{p.data.name.substring(0, 20)}</span></div>))}
                 <div className="w-px h-4 bg-[var(--border)]" />
-                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-[var(--foreground)]" /><span className="text-[11px]">Hoy</span></div>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-full bg-[var(--foreground)]" /><span className="text-[11px]">Bugün</span></div>
                 <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded-sm bg-red-400/30 border border-red-400" /><span className="text-[11px]">Traslape</span></div>
               </div>
 
@@ -445,7 +445,7 @@ export default function AdminScreen() {
                           <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold flex-shrink-0 ${avatarColor(member.id)}`}>{getInitials(member.data?.name || '?')}</div>
                           <div className="min-w-0">
                             <div className="text-[11px] font-semibold truncate">{member.data?.name || 'Sin nombre'}</div>
-                            <div className="text-[10px] text-[var(--muted-foreground)]">{member.data?.role || 'Miembro'} · {member.tasks.length} tareas</div>
+                            <div className="text-[10px] text-[var(--muted-foreground)]">{member.data?.role || 'Üye'} · {member.tasks.length} tareas</div>
                           </div>
                           {hasOverlap && <span className="ml-auto text-[10px] text-red-400">⚠</span>}
                         </div>
@@ -524,8 +524,8 @@ export default function AdminScreen() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]"><div className="text-xs text-[var(--muted-foreground)]">Total Tareas</div><div className="text-2xl font-bold mt-1">{tasks.length}</div></div>
               <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]"><div className="text-xs text-[var(--muted-foreground)]">En Progreso</div><div className="text-2xl font-bold text-blue-400 mt-1">{tasks.filter(t => t.data.status === 'En progreso').length}</div></div>
-              <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]"><div className="text-xs text-[var(--muted-foreground)]">Completadas</div><div className="text-2xl font-bold text-emerald-400 mt-1">{completedTasks.length}</div></div>
-              <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]"><div className="text-xs text-[var(--muted-foreground)]">Vencidas</div><div className="text-2xl font-bold text-red-400 mt-1">{overdueTasks.length}</div></div>
+              <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]"><div className="text-xs text-[var(--muted-foreground)]">Tamamlandıs</div><div className="text-2xl font-bold text-emerald-400 mt-1">{completedTasks.length}</div></div>
+              <div className="bg-[var(--af-bg3)] rounded-xl p-4 border border-[var(--border)]"><div className="text-xs text-[var(--muted-foreground)]">Gecikmişs</div><div className="text-2xl font-bold text-red-400 mt-1">{overdueTasks.length}</div></div>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Upcoming */}
@@ -574,12 +574,12 @@ export default function AdminScreen() {
                   return (<div key={m.id} className="bg-[var(--card)] rounded-lg p-3 border border-[var(--border)]">
                     <div className="flex items-center gap-2 mb-2">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-semibold ${avatarColor(m.id)}`}>{getInitials(m.data?.name || '?')}</div>
-                      <div className="min-w-0"><div className="text-xs font-semibold truncate">{m.data?.name}</div><div className="text-[10px] text-[var(--muted-foreground)]">{m.data?.role || 'Miembro'}</div></div>
+                      <div className="min-w-0"><div className="text-xs font-semibold truncate">{m.data?.name}</div><div className="text-[10px] text-[var(--muted-foreground)]">{m.data?.role || 'Üye'}</div></div>
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-center">
                       <div><div className="text-sm font-bold text-blue-400">{mActive.length}</div><div className="text-[10px] text-[var(--muted-foreground)]">Activas</div></div>
                       <div><div className="text-sm font-bold text-emerald-400">{mDone.length}</div><div className="text-[10px] text-[var(--muted-foreground)]">Hechas</div></div>
-                      <div><div className="text-sm font-bold">{pct}%</div><div className="text-[10px] text-[var(--muted-foreground)]">Completado</div></div>
+                      <div><div className="text-sm font-bold">{pct}%</div><div className="text-[10px] text-[var(--muted-foreground)]">Tamamlandı</div></div>
                     </div>
                   </div>);
                 })}
@@ -629,10 +629,10 @@ export default function AdminScreen() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] px-2 py-0.5 rounded-full border flex items-center gap-1" style={{ borderColor: 'var(--border)' }}>
-                          <span>{ROLE_ICONS[u.data?.role || 'Miembro']}</span>
-                          {u.data?.role || 'Miembro'}
+                          <span>{ROLE_ICONS[u.data?.role || 'Üye']}</span>
+                          {u.data?.role || 'Üye'}
                         </span>
-                        {canChange && (<select className="bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-2 py-1 text-[10px] text-[var(--foreground)] outline-none cursor-pointer" value={u.data?.role || 'Miembro'} onChange={e => updateUserRole(u.id, e.target.value)}>
+                        {canChange && (<select className="bg-[var(--af-bg3)] border border-[var(--input)] rounded-lg px-2 py-1 text-[10px] text-[var(--foreground)] outline-none cursor-pointer" value={u.data?.role || 'Üye'} onChange={e => updateUserRole(u.id, e.target.value)}>
                           {USER_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                         </select>)}
                       </div>
@@ -658,18 +658,18 @@ export default function AdminScreen() {
                       {(() => {
                         // Group permissions by category for better readability
                         const categories: { label: string; emoji: string; perms: string[] }[] = [
-                          { label: 'Dashboard & Proyectos', emoji: '📊', perms: ['Ver Dashboard','Crear proyectos','Editar proyectos','Eliminar proyectos'] },
-                          { label: 'Tareas', emoji: '✅', perms: ['Crear tareas','Asignar tareas','Ver tablero Kanban'] },
-                          { label: 'Time Tracking', emoji: '⏱️', perms: ['Time Tracking'] },
-                          { label: 'Presupuestos', emoji: '💰', perms: ['Ver presupuestos','Gestionar presupuestos'] },
-                          { label: 'Archivos & Galería', emoji: '📁', perms: ['Ver planos y archivos','Subir archivos','Ver galería','Subir fotos galería','Seguimiento obra'] },
-                          { label: 'Inventario', emoji: '📦', perms: ['Ver inventario','Gestionar inventario'] },
-                          { label: 'Calidad', emoji: '🔍', perms: ['Ver RFIs','Crear RFIs','Ver Submittals','Crear Submittals','Ver Punch List','Crear Punch List','Ver Órdenes de Cambio','Crear Órdenes de Cambio','Ver Notas de Campo','Crear Notas de Campo'] },
-                          { label: 'Administración', emoji: '⚙️', perms: ['Panel Admin','Gestionar equipo','Cambiar roles','Ver proveedores','Gestionar proveedores','Ver facturas','Gestionar facturas','Ver empresas','Gestionar empresas','Ver catálogos','Gestionar catálogos','Ver integraciones','Gestionar integraciones'] },
-                          { label: 'Carnets', emoji: '🪪', perms: ['Ver carnets','Crear carnets','Usar diseñador de carnets','Importar carnets Excel'] },
-                          { label: 'Comunicación', emoji: '💬', perms: ['Chat general','Mensajes directos'] },
-                          { label: 'Calendario & Reportes', emoji: '📅', perms: ['Ver calendario','Ver reportes','Exportar reportes'] },
-                          { label: 'Portal cliente', emoji: '🌐', perms: ['Portal cliente'] },
+                          { label: 'Dashboard & Proyectos', emoji: '📊', perms: ['Ver Dashboard','Proje Oluşturs','Projeyi Düzenles','Projeyi Sils'] },
+                          { label: 'Tareas', emoji: '✅', perms: ['Görev Oluşturs','Asignar tareas','Ver tablero Kanban'] },
+                          { label: 'Zaman Takibi', emoji: '⏱️', perms: ['Zaman Takibi'] },
+                          { label: 'Bütçes', emoji: '💰', perms: ['Ver presupuestos','Gestionar presupuestos'] },
+                          { label: 'Dosyalar & Galeri', emoji: '📁', perms: ['Ver planos y archivos','Dosya Yükles','Ver galería','Fotoğraf Yükles galería','Şantiye Takibi'] },
+                          { label: 'Envanter', emoji: '📦', perms: ['Ver inventario','Gestionar inventario'] },
+                          { label: 'Calidad', emoji: '🔍', perms: ['Ver RFIs','Crear RFIs','Ver Submittals','Crear Submittals','Ver Punch List','Crear Punch List','Ver Órdenes de Cambio','Crear Órdenes de Cambio','Ver Notlar de Campo','Crear Notlar de Campo'] },
+                          { label: 'Administración', emoji: '⚙️', perms: ['Yönetim Paneli','Gestionar equipo','Cambiar roles','Ver proveedores','Gestionar proveedores','Ver facturas','Gestionar facturas','Ver empresas','Gestionar empresas','Ver catálogos','Gestionar catálogos','Ver integraciones','Gestionar integraciones'] },
+                          { label: 'Kimlik & Belgeler', emoji: '🪪', perms: ['Ver carnets','Crear carnets','Usar diseñador de carnets','İçe Aktar carnets Excel'] },
+                          { label: 'Comunicación', emoji: '💬', perms: ['Chat general','Direkt Ayajlar'] },
+                          { label: 'Calendario & Raporlar', emoji: '📅', perms: ['Ver calendario','Ver reportes','Dışa Aktar reportes'] },
+                          { label: 'Müşteri Portalı', emoji: '🌐', perms: ['Müşteri Portalı'] },
                         ];
                         const rows: React.ReactNode[] = [];
                         categories.forEach((cat, ci) => {
@@ -760,7 +760,7 @@ export default function AdminScreen() {
                 const isSelf = m.id === authUser?.uid;
                 const deleting = deletingIds.has(m.id);
                 const handleDeleteMember = async () => {
-                  if (!await confirmDialog.confirm({ title: 'Eliminar miembro', description: `¿Eliminar a ${m.data?.name || m.data?.email} del equipo? Esta acción no se puede deshacer.` })) return;
+                  if (!await confirmDialog.confirm({ title: 'Üyeyi Sil', description: `¿Eliminar a ${m.data?.name || m.data?.email} del equipo? Esta acción no se puede deshacer.` })) return;
                   if (!activeTenantId) { showToast('No hay tenant activo', 'error'); return; }
                   setDeleting(m.id, true);
                   try {
@@ -801,7 +801,7 @@ export default function AdminScreen() {
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${avatarColor(m.id)}`}>{getInitials(m.data?.name || '?')}</div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-semibold truncate">{m.data?.name}</div>
-                      <div className="text-[10px] text-[var(--muted-foreground)]">{m.data?.role || 'Miembro'}{m.data?.email ? ` · ${m.data.email}` : ''}</div>
+                      <div className="text-[10px] text-[var(--muted-foreground)]">{m.data?.role || 'Üye'}{m.data?.email ? ` · ${m.data.email}` : ''}</div>
                     </div>
                     <span className="text-[10px] bg-[var(--card)] px-2 py-0.5 rounded-full border border-[var(--border)]">{mTasks.length} tareas</span>
                   </div>
@@ -838,7 +838,7 @@ export default function AdminScreen() {
                     <FileText size={18} className="text-[var(--af-accent)]" />
                     🔍 Auditoría
                   </h3>
-                  <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Registro de actividades del equipo · Auto-refresh cada 30s</p>
+                  <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Aktivite Kaydıes del equipo · Auto-refresh cada 30s</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] text-[var(--muted-foreground)]">{auditTotal} registros</span>
@@ -848,7 +848,7 @@ export default function AdminScreen() {
                     disabled={auditLoading}
                   >
                     <RefreshCw size={12} className={auditLoading ? 'animate-spin' : ''} />
-                    Actualizar
+                    Güncelle
                   </button>
                 </div>
               </div>
@@ -872,12 +872,12 @@ export default function AdminScreen() {
                 >
                   <option value="">Todas las acciones</option>
                   <option value="create">Crear</option>
-                  <option value="update">Actualizar</option>
+                  <option value="update">Güncelle</option>
                   <option value="delete">Eliminar</option>
                   <option value="archive">Archivar</option>
                   <option value="restore">Restaurar</option>
-                  <option value="import">Importar</option>
-                  <option value="export">Exportar</option>
+                  <option value="import">İçe Aktar</option>
+                  <option value="export">Dışa Aktar</option>
                 </select>
               </div>
 
@@ -1031,7 +1031,7 @@ export default function AdminScreen() {
                     <Bug size={18} className="text-[var(--af-accent)]" />
                     🐛 Errores
                   </h3>
-                  <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Reportes de errores agrupados por mensaje</p>
+                  <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Raporlar de errores agrupados por mensaje</p>
                 </div>
                 <div className="flex items-center gap-2">
                   {unresolvedCount > 0 && (
@@ -1046,7 +1046,7 @@ export default function AdminScreen() {
                     disabled={errorsLoading}
                   >
                     <RefreshCw size={12} className={errorsLoading ? 'animate-spin' : ''} />
-                    Actualizar
+                    Güncelle
                   </button>
                 </div>
               </div>
@@ -1219,7 +1219,7 @@ export default function AdminScreen() {
                   disabled={feedbackLoading}
                 >
                   <RefreshCw size={12} className={feedbackLoading ? 'animate-spin' : ''} />
-                  Actualizar
+                  Güncelle
                 </button>
               </div>
 
@@ -1314,13 +1314,13 @@ export default function AdminScreen() {
                                     onClick={() => handleReviewFeedback(entry.id)}
                                   >
                                     <CheckCircle2 size={10} />
-                                    Confirmar revisión
+                                    Onayla revisión
                                   </button>
                                   <button
                                     className="px-3 py-1.5 rounded-lg text-[10px] font-medium cursor-pointer bg-[var(--af-bg3)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-all"
                                     onClick={() => { setReviewingId(null); setFeedbackNote(''); }}
                                   >
-                                    Cancelar
+                                    İptal
                                   </button>
                                 </div>
                               </div>

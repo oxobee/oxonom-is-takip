@@ -180,7 +180,7 @@ export default function ProjectsScreen() {
       )}
 
       {/* ===== MOBILE FAB ===== */}
-      <FloatingActionButton onClick={data.handleNewProject} ariaLabel="Nuevo proyecto" />
+      <FloatingActionButton onClick={data.handleNewProject} ariaLabel="Yeni Proje" />
 
       {/* ===== BATCH ACTION BAR ===== */}
       {data.selectedIds.size > 0 && (

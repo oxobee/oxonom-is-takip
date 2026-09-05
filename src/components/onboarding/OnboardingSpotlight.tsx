@@ -99,7 +99,7 @@ function SpotlightTooltip({
             <span className="text-[13px] font-semibold text-[var(--foreground)]">{tip.title}</span>
           </div>
           <button
-            aria-label="Cerrar"
+            aria-label="Kapat"
             onClick={onDismiss}
             className="w-6 h-6 rounded-md flex items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--af-bg3)] transition-all cursor-pointer border-none bg-transparent flex-shrink-0"
           >
@@ -118,7 +118,7 @@ function SpotlightTooltip({
             onClick={onDismiss}
             className="text-[11px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] cursor-pointer bg-transparent border-none px-2 py-1 rounded-md hover:bg-[var(--af-bg3)] transition-all"
           >
-            Cerrar
+            Kapat
           </button>
           {onNextAvailable && (
             <button

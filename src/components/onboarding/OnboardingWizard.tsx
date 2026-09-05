@@ -13,7 +13,7 @@ import { useMotionPreference } from '@/hooks/useMotionPreference';
 const STEPS: { id: OnboardingStep; title: string; subtitle: string; Icon: any; features: string[] }[] = [
   {
     id: 'welcome',
-    title: 'Bienvenido a Archii',
+    title: 'Hoş Geldiniz a oxonom iş takip',
     subtitle: 'Tu plataforma de gestion de proyectos de construccion',
     Icon: Crown,
     features: [
@@ -57,7 +57,7 @@ const STEPS: { id: OnboardingStep; title: string; subtitle: string; Icon: any; f
     Icon: Users,
     features: [
       'Comparte el codigo de tu espacio de trabajo',
-      'Roles: Super Admin y Miembro',
+      'Roles: Süper Yönetici y Üye',
       'Chat integrado por proyecto',
       'Asignacion de tareas con seguimiento',
       'Notificaciones en tiempo real',

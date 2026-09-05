@@ -36,7 +36,7 @@ export default function DashboardActivity({
           </div>
         </div>
         {recentActivity.length === 0 ? (
-          <div className="text-center py-8 text-[var(--af-text3)] text-sm">Sin actividad reciente</div>
+          <div className="text-center py-8 text-[var(--af-text3)] text-sm">Yakın zamanda işlem yok</div>
         ) : (
           <div className="space-y-2 max-h-[240px] overflow-y-auto pr-1" style={{ scrollbarWidth: 'thin' }}>
             {recentActivity.map(item => (

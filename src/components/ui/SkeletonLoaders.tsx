@@ -107,7 +107,7 @@ export const SkeletonProjects = ({ count = 6 }: { count?: number }) => (
 /* ─── Tasks List Skeleton ─── */
 export const SkeletonTasks = () => (
   <div className="space-y-4">
-    {['Alta', 'Media', 'Baja'].map(prio => (
+    {['Yüksek', 'Orta', 'Düşük'].map(prio => (
       <div key={prio} className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4">
         <Skeleton className="h-3 w-24 mb-3" />
         {Array.from({ length: 3 }).map((_, i) => <SkeletonListItem key={i} hasAvatar hasTag lines={1} />)}

@@ -66,24 +66,24 @@ export default function ProjectSearchFilters({
         <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 animate-fadeIn">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
-              <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Tipo de proyecto</label>
+              <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Proje Türü</label>
               <select value={filterType} onChange={e => setFilterType(e.target.value)} className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer">
-                <option value="">Todos los tipos</option>
+                <option value="">Tüm Türler</option>
                 <option value="Diseño">Diseño</option>
                 <option value="Ejecución">Ejecución</option>
                 <option value="Ambos">Ambos</option>
               </select>
             </div>
             <div>
-              <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Presupuesto mínimo (COP)</label>
+              <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Bütçe mínimo (COP)</label>
               <input type="number" value={filterBudgetMin} onChange={e => setFilterBudgetMin(e.target.value)} placeholder="Ej: 10000000" className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer" />
             </div>
             <div>
-              <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Presupuesto máximo (COP)</label>
+              <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Bütçe máximo (COP)</label>
               <input type="number" value={filterBudgetMax} onChange={e => setFilterBudgetMax(e.target.value)} placeholder="Ej: 500000000" className="w-full bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer" />
             </div>
             <div>
-              <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Fecha inicio</label>
+              <label className="text-[10px] text-[var(--muted-foreground)] mb-1 block">Başlangıç Tarihi</label>
               <div className="flex gap-2">
                 <input type="date" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} className="flex-1 bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer" />
                 <input type="date" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} className="flex-1 bg-[var(--af-bg3)] border border-[var(--border)] rounded-lg px-2 py-1.5 text-[12px] text-[var(--foreground)] outline-none cursor-pointer" />
@@ -91,7 +91,7 @@ export default function ProjectSearchFilters({
             </div>
           </div>
           {hasActiveFilters && (
-            <button className="mt-3 text-[11px] text-[var(--af-accent)] cursor-pointer hover:underline" onClick={clearFilters}>Limpiar filtros</button>
+            <button className="mt-3 text-[11px] text-[var(--af-accent)] cursor-pointer hover:underline" onClick={clearFilters}>Filtreleri Temizle</button>
           )}
         </div>
       )}

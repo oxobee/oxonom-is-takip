@@ -18,14 +18,14 @@ export default function ReportsObra({ projects, rfis, submittals, punchItems, da
     punchLocationData,
   } = useMemo(() => {
     const rfiOpen = rfis.filter(r => r.data.status === 'Abierto').length;
-    const rfiReview = rfis.filter(r => r.data.status === 'En revisión').length;
+    const rfiReview = rfis.filter(r => r.data.status === 'İncelemede').length;
     const rfiResponded = rfis.filter(r => r.data.status === 'Respondido').length;
     const rfiClosed = rfis.filter(r => r.data.status === 'Cerrado').length;
     const rfiOverdue = rfis.filter(r => r.data.dueDate && r.data.status !== 'Cerrado' && r.data.status !== 'Respondido' && checkOverdue(r.data.dueDate)).length;
 
     const rfiStatusData = [
       { name: 'Abierto', value: rfiOpen },
-      { name: 'En revisión', value: rfiReview },
+      { name: 'İncelemede', value: rfiReview },
       { name: 'Respondido', value: rfiResponded },
       { name: 'Cerrado', value: rfiClosed },
     ].filter(d => d.value > 0);
@@ -37,25 +37,25 @@ export default function ReportsObra({ projects, rfis, submittals, punchItems, da
       .slice(0, 6)
       .map(([pid, count]) => ({ name: (projects.find(p => p.id === pid)?.data?.name || 'Sin proyecto').slice(0, 15), rfis: count }));
 
-    const subDraft = submittals.filter(s => s.data.status === 'Borrador').length;
-    const subReview = submittals.filter(s => s.data.status === 'En revisión').length;
-    const subApproved = submittals.filter(s => s.data.status === 'Aprobado').length;
-    const subRejected = submittals.filter(s => s.data.status === 'Rechazado').length;
+    const subDraft = submittals.filter(s => s.data.status === 'Taslak').length;
+    const subReview = submittals.filter(s => s.data.status === 'İncelemede').length;
+    const subApproved = submittals.filter(s => s.data.status === 'Onaylandı').length;
+    const subRejected = submittals.filter(s => s.data.status === 'Reddedildi').length;
     const subReturned = submittals.filter(s => s.data.status === 'Devuelto').length;
 
     const subStatusData = [
-      { name: 'Borrador', value: subDraft },
-      { name: 'En revisión', value: subReview },
-      { name: 'Aprobado', value: subApproved },
-      { name: 'Rechazado', value: subRejected },
+      { name: 'Taslak', value: subDraft },
+      { name: 'İncelemede', value: subReview },
+      { name: 'Onaylandı', value: subApproved },
+      { name: 'Reddedildi', value: subRejected },
       { name: 'Devuelto', value: subReturned },
     ].filter(d => d.value > 0);
 
     const subApprovalRate = submittals.length > 0 ? Math.round((subApproved / submittals.length) * 100) : 0;
 
-    const punchPending = punchItems.filter(p => p.data.status === 'Pendiente').length;
-    const punchProgress = punchItems.filter(p => p.data.status === 'En progreso').length;
-    const punchDone = punchItems.filter(p => p.data.status === 'Completado').length;
+    const punchPending = punchItems.filter(p => p.data.status === 'Beklemede').length;
+    const punchProgress = punchItems.filter(p => p.data.status === 'Devam Ediyor').length;
+    const punchDone = punchItems.filter(p => p.data.status === 'Tamamlandı').length;
     const punchPct = punchItems.length > 0 ? Math.round((punchDone / punchItems.length) * 100) : 0;
 
     const punchByLocation: Record<string, number> = {};
@@ -90,7 +90,7 @@ export default function ReportsObra({ projects, rfis, submittals, punchItems, da
       <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">RFIs (Request for Information)</h3>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
         <div className="bg-blue-500/10 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-blue-400">{rfiOpen}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Abiertos</div></div>
-        <div className="bg-amber-500/10 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-amber-400">{rfiReview}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">En revisión</div></div>
+        <div className="bg-amber-500/10 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-amber-400">{rfiReview}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">İncelemede</div></div>
         <div className="bg-emerald-500/10 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-emerald-400">{rfiResponded}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Respondidos</div></div>
         <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--foreground)]">{rfiClosed}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Cerrados</div></div>
       </div>
@@ -103,10 +103,10 @@ export default function ReportsObra({ projects, rfis, submittals, punchItems, da
     <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
       <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">Submittals</h3>
       <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-4">
-        <div className="bg-gray-500/10 rounded-lg p-3 text-center"><div className="text-xl font-bold text-gray-400">{subDraft}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Borrador</div></div>
-        <div className="bg-amber-500/10 rounded-lg p-3 text-center"><div className="text-xl font-bold text-amber-400">{subReview}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">En revisión</div></div>
-        <div className="bg-emerald-500/10 rounded-lg p-3 text-center"><div className="text-xl font-bold text-emerald-400">{subApproved}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Aprobado</div></div>
-        <div className="bg-red-500/10 rounded-lg p-3 text-center"><div className="text-xl font-bold text-red-400">{subRejected}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Rechazado</div></div>
+        <div className="bg-gray-500/10 rounded-lg p-3 text-center"><div className="text-xl font-bold text-gray-400">{subDraft}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Taslak</div></div>
+        <div className="bg-amber-500/10 rounded-lg p-3 text-center"><div className="text-xl font-bold text-amber-400">{subReview}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">İncelemede</div></div>
+        <div className="bg-emerald-500/10 rounded-lg p-3 text-center"><div className="text-xl font-bold text-emerald-400">{subApproved}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Onaylandı</div></div>
+        <div className="bg-red-500/10 rounded-lg p-3 text-center"><div className="text-xl font-bold text-red-400">{subRejected}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Reddedildi</div></div>
         <div className="bg-purple-500/10 rounded-lg p-3 text-center"><div className="text-xl font-bold text-purple-400">{subReturned}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Devuelto</div></div>
       </div>
       {subStatusData.length > 0 && <div><div className="text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wide mb-2">Distribución por estado</div><ResponsiveContainer width="100%" height={160}><PieChart><Pie data={subStatusData} cx="50%" cy="50%" innerRadius={30} outerRadius={55} paddingAngle={3} dataKey="value" stroke="none">{subStatusData.map((_, i) => <Cell key={i} fill={['#6b7280', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6'][i % 5]} />)}</Pie><Tooltip content={<ChartTooltip />} /><Legend content={<ChartLegend />} /></PieChart></ResponsiveContainer></div>}
@@ -118,9 +118,9 @@ export default function ReportsObra({ projects, rfis, submittals, punchItems, da
       <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">Punch List</h3>
       <div className="grid grid-cols-4 gap-3 mb-4">
         <div className="bg-[var(--af-bg3)] rounded-lg p-3 text-center"><div className="text-2xl font-bold text-[var(--foreground)]">{punchItems.length}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Total</div></div>
-        <div className="bg-red-500/10 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-red-400">{punchPending}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Pendientes</div></div>
-        <div className="bg-amber-500/10 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-amber-400">{punchProgress}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">En progreso</div></div>
-        <div className="bg-emerald-500/10 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-emerald-400">{punchDone}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Completados</div></div>
+        <div className="bg-red-500/10 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-red-400">{punchPending}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Beklemedes</div></div>
+        <div className="bg-amber-500/10 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-amber-400">{punchProgress}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Devam Ediyor</div></div>
+        <div className="bg-emerald-500/10 rounded-lg p-3 text-center"><div className="text-2xl font-bold text-emerald-400">{punchDone}</div><div className="text-[11px] text-[var(--muted-foreground)] mt-1">Tamamlandıs</div></div>
       </div>
       <div className="bg-[var(--af-bg3)] rounded-lg p-3 mb-4">
         <div className="flex justify-between text-xs mb-1"><span className="text-[var(--foreground)]">Progreso general</span><span className="text-[var(--muted-foreground)]">{punchPct}% completado</span></div>

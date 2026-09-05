@@ -16,7 +16,7 @@ export default function CompanyModal({ open, onClose }: { open: boolean; onClose
   return (
     <CenterModal open={open} onClose={onClose} maxWidth={500}>
       <div className="text-lg font-semibold mb-5">
-        {editingId ? 'Editar empresa' : 'Nueva empresa'}
+        {editingId ? 'Firmayı Düzenle' : 'Yeni Firma'}
       </div>
 
       <div className="space-y-3">
@@ -32,7 +32,7 @@ export default function CompanyModal({ open, onClose }: { open: boolean; onClose
           <FormField label="NIT">
             <FormInput placeholder="900123456-7" value={forms.compNit || ''} onChange={e => setForms(p => ({ ...p, compNit: e.target.value }))} />
           </FormField>
-          <FormField label="Teléfono">
+          <FormField label="Telefon">
             <FormInput placeholder="+57 300 1234567" value={forms.compPhone || ''} onChange={e => setForms(p => ({ ...p, compPhone: e.target.value }))} />
           </FormField>
         </div>
@@ -41,8 +41,8 @@ export default function CompanyModal({ open, onClose }: { open: boolean; onClose
           <FormInput placeholder="contacto@empresa.com" value={forms.compEmail || ''} onChange={e => setForms(p => ({ ...p, compEmail: e.target.value }))} />
         </FormField>
 
-        <FormField label="Dirección">
-          <FormInput placeholder="Dirección de la empresa" value={forms.compAddress || ''} onChange={e => setForms(p => ({ ...p, compAddress: e.target.value }))} />
+        <FormField label="Adres">
+          <FormInput placeholder="Adres de la empresa" value={forms.compAddress || ''} onChange={e => setForms(p => ({ ...p, compAddress: e.target.value }))} />
         </FormField>
       </div>
 
@@ -51,13 +51,13 @@ export default function CompanyModal({ open, onClose }: { open: boolean; onClose
           className="flex-1 px-4 py-2.5 rounded-lg text-[13px] font-medium cursor-pointer bg-transparent text-[var(--muted-foreground)] border border-[var(--input)] hover:bg-[var(--af-bg3)] hover:text-[var(--foreground)] transition-all"
           onClick={() => closeModal('company')}
         >
-          Cancelar
+          İptal
         </button>
         <button
           className="flex-1 px-4 py-2.5 rounded-lg text-[13px] font-semibold cursor-pointer bg-[var(--af-accent)] text-background border-none hover:bg-[var(--af-accent2)] transition-colors"
           onClick={handleSubmit}
         >
-          {editingId ? 'Guardar cambios' : 'Crear empresa'}
+          {editingId ? 'Değişiklikleri Kaydet' : 'Crear empresa'}
         </button>
       </div>
     </CenterModal>
